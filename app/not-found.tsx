@@ -6,7 +6,7 @@ import { fadeUp, scaleIn } from "@/lib/animations";
 
 export default function NotFound() {
 	return (
-		<div className="min-h-screen bg-gradient-soft flex items-center justify-center px-4">
+		<div className="min-h-screen bg-toner-100 flex items-center justify-center px-4">
 			{/* Background decoration */}
 			<div className="absolute inset-0 -z-10 overflow-hidden">
 				<div className="absolute right-1/4 top-1/4 h-[300px] w-[300px] rounded-full bg-primary/5 blur-3xl" />

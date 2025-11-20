@@ -18,13 +18,13 @@ import { Contact } from "@/features/home-v2/contact";
  */
 export default function Home() {
 	return (
-		<>
+		<div className="relative pt-6 sm:pt-0">
 			<Hero />
 			<Features />
 			<Stats />
 			<Testimonials />
 			<FAQ />
 			<Contact />
-		</>
+		</div>
 	);
 }

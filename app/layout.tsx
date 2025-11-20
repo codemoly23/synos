@@ -125,7 +125,7 @@ export default function RootLayout({
 				</noscript>
 			</head>
 			<body
-				className={`${geistSans.className} ${geistMono.className} antialiased`}
+				className={`${geistSans.className} ${geistMono.variable} antialiased`}
 			>
 				{/* Google Tag Manager (noscript) */}
 				<noscript>
@@ -139,7 +139,7 @@ export default function RootLayout({
 
 				<div className="flex min-h-screen flex-col">
 					<Header />
-					<main className="flex-1">{children}</main>
+					<main className="flex-1 w-full">{children}</main>
 					<Footer />
 				</div>
 			</body>
