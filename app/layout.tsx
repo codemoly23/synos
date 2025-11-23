@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
 import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
@@ -138,7 +138,7 @@ export default function RootLayout({
 				</noscript>
 
 				<div className="flex min-h-screen flex-col">
-					<Header />
+					<Navbar />
 					<main className="flex-1 w-full">{children}</main>
 					<Footer />
 				</div>

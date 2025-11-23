@@ -7,31 +7,37 @@ import { staggerContainer, staggerItem } from "@/lib/animations";
 const faqs = [
 	{
 		question: "Vilken typ av certifiering har er utrustning?",
-		answer: "All vår utrustning är MDR-certifierad (Medical Device Regulation) enligt de senaste EU-kraven. Detta garanterar högsta säkerhet och kvalitet för både kliniker och patienter."
+		answer:
+			"All vår utrustning är MDR-certifierad (Medical Device Regulation) enligt de senaste EU-kraven. Detta garanterar högsta säkerhet och kvalitet för både kliniker och patienter.",
 	},
 	{
 		question: "Erbjuder ni utbildning för personalen?",
-		answer: "Ja, vi erbjuder omfattande utbildningsprogram för all vår utrustning. Utbildningen inkluderar både teoretisk och praktisk träning, och vi säkerställer att er personal känner sig trygg och kompetent innan ni börjar använda utrustningen."
+		answer:
+			"Ja, vi erbjuder omfattande utbildningsprogram för all vår utrustning. Utbildningen inkluderar både teoretisk och praktisk träning, och vi säkerställer att er personal känner sig trygg och kompetent innan ni börjar använda utrustningen.",
 	},
 	{
 		question: "Hur fungerar service och support?",
-		answer: "Vi erbjuder komplett service och support med svensk teknisk personal. Vår support är tillgänglig via telefon och e-post, och vi har servicetekniker som kan komma ut vid behov. Vi erbjuder även förebyggande underhåll och serviceavtal."
+		answer:
+			"Vi erbjuder komplett service och support med svensk teknisk personal. Vår support är tillgänglig via telefon och e-post, och vi har servicetekniker som kan komma ut vid behov. Vi erbjuder även förebyggande underhåll och serviceavtal.",
 	},
 	{
 		question: "Finns det finansieringsmöjligheter?",
-		answer: "Ja, vi erbjuder flexibla finansieringslösningar anpassade efter er verksamhets behov. Vi kan hjälpa er med både leasing och avbetalningsplaner för att göra investeringen så smidig som möjligt."
+		answer:
+			"Ja, vi erbjuder flexibla finansieringslösningar anpassade efter er verksamhets behov. Vi kan hjälpa er med både leasing och avbetalningsplaner för att göra investeringen så smidig som möjligt.",
 	},
 	{
 		question: "Hur lång är leveranstiden?",
-		answer: "Leveranstiden varierar beroende på produkt och tillgänglighet, men vi strävar alltid efter att leverera så snabbt som möjligt. Kontakta oss för specifik information om den produkt ni är intresserade av."
+		answer:
+			"Leveranstiden varierar beroende på produkt och tillgänglighet, men vi strävar alltid efter att leverera så snabbt som möjligt. Kontakta oss för specifik information om den produkt ni är intresserade av.",
 	},
 	{
 		question: "Vad ingår i garantin?",
-		answer: "All vår utrustning kommer med tillverkarens garanti, och vi erbjuder även utökade garantialternativ. Garantin täcker material- och tillverkningsfel, och vi hanterar all garantiservice direkt."
-	}
+		answer:
+			"All vår utrustning kommer med tillverkarens garanti, och vi erbjuder även utökade garantialternativ. Garantin täcker material- och tillverkningsfel, och vi hanterar all garantiservice direkt.",
+	},
 ];
 
-const FAQItem = ({ faq, index }: { faq: typeof faqs[0]; index: number }) => {
+const FAQItem = ({ faq, index }: { faq: (typeof faqs)[0]; index: number }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
@@ -41,13 +47,15 @@ const FAQItem = ({ faq, index }: { faq: typeof faqs[0]; index: number }) => {
 		>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="flex w-full items-center justify-between py-6 text-left transition-colors hover:text-primary"
+				className="flex w-full items-center justify-between py-6 text-left transition-colors hover:text-secondary"
 			>
 				<span className="text-lg font-semibold text-foreground pr-8">
 					{faq.question}
 				</span>
 				<svg
-					className={`h-5 w-5 flex-shrink-0 text-primary transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+					className={`h-5 w-5 flex-shrink-0 text-secondary transition-transform duration-200 ${
+						isOpen ? "rotate-180" : ""
+					}`}
 					fill="none"
 					stroke="currentColor"
 					viewBox="0 0 24 24"
@@ -64,7 +72,7 @@ const FAQItem = ({ faq, index }: { faq: typeof faqs[0]; index: number }) => {
 				initial={false}
 				animate={{
 					height: isOpen ? "auto" : 0,
-					opacity: isOpen ? 1 : 0
+					opacity: isOpen ? 1 : 0,
 				}}
 				transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
 				className="overflow-hidden"
@@ -94,7 +102,8 @@ export function FAQ() {
 							Vanliga frågor
 						</h2>
 						<p className="text-lg text-muted-foreground">
-							Här hittar du svar på de vanligaste frågorna om vår utrustning och tjänster
+							Här hittar du svar på de vanligaste frågorna om vår
+							utrustning och tjänster
 						</p>
 					</motion.div>
 
@@ -124,7 +133,7 @@ export function FAQ() {
 						</p>
 						<a
 							href="/kontakt"
-							className="inline-flex items-center text-primary font-semibold hover:text-primary-dark transition-colors"
+							className="inline-flex items-center text-secondary font-semibold hover:text-secondary-dark transition-colors"
 						>
 							Kontakta oss
 							<svg
@@ -147,4 +156,3 @@ export function FAQ() {
 		</section>
 	);
 }
-

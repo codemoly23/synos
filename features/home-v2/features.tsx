@@ -131,7 +131,7 @@ export function Features() {
 		<section className="relative py-20 lg:py-32 section-glass-light bg-accent/20! overflow-hidden">
 			{/* Background decorations - solid colored shapes */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
-				<div className="absolute top-1/4 right-0 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse-slow" />
+				<div className="absolute top-1/4 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-pulse-slow" />
 				<div
 					className="absolute bottom-1/4 left-0 w-80 h-80 bg-accent rounded-full blur-3xl animate-pulse-slow"
 					style={{ animationDelay: "1.5s" }}

@@ -219,7 +219,7 @@ export function Contact() {
 										{...register("gdprConsent")}
 										type="checkbox"
 										id="gdprConsent"
-										className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20"
+										className="mt-1 h-4 w-4 rounded border-border text-secondary focus:ring-2 focus:ring-primary/20"
 									/>
 									<label
 										htmlFor="gdprConsent"
@@ -229,7 +229,7 @@ export function Contact() {
 										personuppgifter enligt{" "}
 										<a
 											href="/integritetspolicy"
-											className="text-primary hover:underline"
+											className="text-secondary hover:underline"
 										>
 											integritetspolicyn
 										</a>
@@ -247,7 +247,7 @@ export function Contact() {
 										{...register("marketingConsent")}
 										type="checkbox"
 										id="marketingConsent"
-										className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20"
+										className="mt-1 h-4 w-4 rounded border-border text-secondary focus:ring-2 focus:ring-primary/20"
 									/>
 									<label
 										htmlFor="marketingConsent"
@@ -264,7 +264,7 @@ export function Contact() {
 								<button
 									type="submit"
 									disabled={isSubmitting}
-									className="w-full rounded-lg bg-primary px-8 py-4 text-base font-medium text-primary-foreground shadow-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+									className="w-full rounded-lg bg-secondary px-8 py-4 text-base font-medium text-secondary-foreground shadow-md hover:bg-secondary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									{isSubmitting ? "Skickar..." : "Skicka förfrågan"}
 								</button>

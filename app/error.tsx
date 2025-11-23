@@ -1,18 +1,40 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Home, Search, ArrowRight, Sparkles } from "lucide-react";
+import {
+	Home,
+	RefreshCw,
+	AlertTriangle,
+	ArrowRight,
+	Sparkles,
+} from "lucide-react";
 import { fadeUp, scaleIn, staggerContainer, floating } from "@/lib/animations";
 
 /**
- * 404 Not Found Page
+ * Error Boundary Page
  *
- * Modern, eye-catching error page with glassmorphism design.
+ * Custom error page displayed when runtime errors occur in the application.
+ * Must be a Client Component with error boundary functionality.
  * Uses hardcoded colors from Synos Medical design system.
  * Colors: Primary #0C2C46, Accent #00949E, Accent Hover #007A82
+ *
+ * @param {Object} props - Component props
+ * @param {Error & { digest?: string }} props.error - The error object
+ * @param {() => void} props.reset - Function to reset the error boundary
  */
-export default function NotFound() {
+export default function Error({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
+	useEffect(() => {
+		// Log the error to an error reporting service
+		console.error("Application error:", error);
+	}, [error]);
+
 	return (
 		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 md:pt-24 overflow-hidden">
 			{/* Gradient Background */}
@@ -72,12 +94,15 @@ export default function NotFound() {
 						className="inline-flex items-center justify-center w-28 h-28 rounded-3xl mb-4 relative"
 						style={{
 							background:
-								"linear-gradient(135deg, rgba(0, 148, 158, 0.1) 0%, rgba(12, 44, 70, 0.05) 100%)",
-							border: "2px solid rgba(0, 148, 158, 0.2)",
-							boxShadow: "0 8px 32px rgba(0, 148, 158, 0.15)",
+								"linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)",
+							border: "2px solid rgba(239, 68, 68, 0.2)",
+							boxShadow: "0 8px 32px rgba(239, 68, 68, 0.15)",
 						}}
 					>
-						<Search className="h-14 w-14" style={{ color: "#00949E" }} />
+						<AlertTriangle
+							className="h-14 w-14"
+							style={{ color: "#EF4444" }}
+						/>
 						<motion.div
 							animate={{ rotate: 360 }}
 							transition={{
@@ -88,24 +113,24 @@ export default function NotFound() {
 							className="absolute inset-0 rounded-3xl"
 							style={{
 								background:
-									"conic-gradient(from 0deg, transparent 0%, rgba(0, 148, 158, 0.1) 50%, transparent 100%)",
+									"conic-gradient(from 0deg, transparent 0%, rgba(239, 68, 68, 0.1) 50%, transparent 100%)",
 							}}
 						/>
 					</motion.div>
 
-					{/* 404 Number with Gradient */}
+					{/* Error Text with Gradient */}
 					<motion.div variants={fadeUp}>
 						<h1
 							className="text-[10rem] md:text-[14rem] lg:text-[16rem] font-black select-none tracking-tighter leading-none mb-4"
 							style={{
 								background:
-									"linear-gradient(135deg, rgba(12, 44, 70, 0.15) 0%, rgba(0, 148, 158, 0.15) 100%)",
+									"linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%)",
 								WebkitBackgroundClip: "text",
 								WebkitTextFillColor: "transparent",
 								backgroundClip: "text",
 							}}
 						>
-							404
+							Oops
 						</h1>
 					</motion.div>
 
@@ -123,7 +148,10 @@ export default function NotFound() {
 					>
 						{/* Sparkle Icon */}
 						<motion.div
-							animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+							animate={{
+								rotate: [0, 10, -10, 0],
+								scale: [1, 1.1, 1],
+							}}
 							transition={{ duration: 3, repeat: Infinity }}
 							className="inline-block mb-6"
 						>
@@ -137,21 +165,57 @@ export default function NotFound() {
 							className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-6 tracking-tight"
 							style={{ color: "#0C2C46" }}
 						>
-							Sidan kunde inte hittas
+							Något gick fel
 						</h2>
 
 						<p
 							className="text-lg md:text-xl lg:text-2xl max-w-2xl mx-auto font-medium mb-10 leading-relaxed"
 							style={{ color: "rgba(12, 44, 70, 0.75)" }}
 						>
-							Tyvärr kunde vi inte hitta sidan du letar efter. Den kan ha
-							flyttats eller tagits bort.
+							Vi upplever tekniska svårigheter. Försök igen eller
+							kontakta oss om problemet kvarstår.
 						</p>
+
+						{/* Error Details (Development only) */}
+						{process.env.NODE_ENV === "development" && error.message && (
+							<div
+								className="mb-10 p-6 rounded-2xl text-left"
+								style={{
+									background: "rgba(254, 226, 226, 0.8)",
+									backdropFilter: "blur(10px)",
+									border: "1px solid rgba(239, 68, 68, 0.3)",
+								}}
+							>
+								<p
+									className="text-sm font-bold mb-3 uppercase tracking-wider"
+									style={{ color: "#991B1B" }}
+								>
+									⚠️ Error Details (Development)
+								</p>
+								<p
+									className="text-sm font-mono break-all leading-relaxed"
+									style={{ color: "#B91C1C" }}
+								>
+									{error.message}
+								</p>
+								{error.digest && (
+									<p
+										className="text-xs font-mono mt-3 pt-3"
+										style={{
+											color: "#DC2626",
+											borderTop: "1px solid rgba(239, 68, 68, 0.2)",
+										}}
+									>
+										Digest: {error.digest}
+									</p>
+								)}
+							</div>
+						)}
 
 						{/* CTA Buttons */}
 						<div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-							<Link
-								href="/"
+							<button
+								onClick={reset}
 								className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 shadow-lg hover:shadow-xl"
 								style={{
 									background:
@@ -159,14 +223,15 @@ export default function NotFound() {
 									color: "#FFFFFF",
 									boxShadow: "0 10px 30px rgba(0, 148, 158, 0.3)",
 								}}
+								aria-label="Try again"
 							>
-								<Home className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
-								Tillbaka till startsidan
+								<RefreshCw className="h-5 w-5 transition-transform group-hover:rotate-180" />
+								Försök igen
 								<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-							</Link>
+							</button>
 
-							<Link
-								href="/kontakt"
+							<a
+								href="/"
 								className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4"
 								style={{
 									background: "rgba(255, 255, 255, 0.9)",
@@ -175,13 +240,13 @@ export default function NotFound() {
 									boxShadow: "0 4px 20px rgba(12, 44, 70, 0.1)",
 								}}
 							>
-								Kontakta oss
-								<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-							</Link>
+								<Home className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
+								Tillbaka till startsidan
+							</a>
 						</div>
 					</motion.div>
 
-					{/* Quick Links Card */}
+					{/* Support Information Card */}
 					<motion.div
 						variants={fadeUp}
 						className="rounded-2xl p-6 md:p-8 shadow-lg"
@@ -195,30 +260,27 @@ export default function NotFound() {
 							className="text-sm font-bold mb-5 uppercase tracking-widest"
 							style={{ color: "#0C2C46" }}
 						>
-							Populära sidor
+							Behöver du hjälp?
 						</p>
-						<div className="flex flex-wrap gap-4 justify-center">
-							{[
-								{ href: "/produkter", label: "Produkter" },
-								{ href: "/om-oss", label: "Om Oss" },
-								{ href: "/utbildningar", label: "Utbildningar" },
-								{ href: "/starta-eget", label: "Starta Eget" },
-							].map((link) => (
-								<Link
-									key={link.href}
-									href={link.href}
-									className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
-									style={{
-										background: "rgba(0, 148, 158, 0.1)",
-										color: "#00949E",
-										border: "1px solid rgba(0, 148, 158, 0.2)",
-									}}
-								>
-									{link.label}
-									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-								</Link>
-							))}
-						</div>
+						<p
+							className="text-base md:text-lg font-medium mb-6 leading-relaxed"
+							style={{ color: "rgba(12, 44, 70, 0.75)" }}
+						>
+							Om problemet kvarstår, kontakta vår support så hjälper vi
+							dig.
+						</p>
+						<a
+							href="/kontakt"
+							className="group inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
+							style={{
+								background: "rgba(0, 148, 158, 0.1)",
+								color: "#00949E",
+								border: "1px solid rgba(0, 148, 158, 0.2)",
+							}}
+						>
+							Kontakta support
+							<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+						</a>
 					</motion.div>
 				</motion.div>
 			</div>

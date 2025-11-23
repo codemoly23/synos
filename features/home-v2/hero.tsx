@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export function Hero() {
 	return (
-		<section className="relative min-h-screen flex items-center overflow-hidden bg-primary">
+		<section className="relative min-h-screen flex items-center overflow-hidden bg-secondary">
 			{/* Background image with overlay */}
 			<div className="absolute inset-0 -z-10">
 				<Image
@@ -22,7 +22,7 @@ export function Hero() {
 
 			{/* Decorative colored shapes */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
-				<div className="absolute right-0 top-20 w-96 h-96 bg-primary opacity-10 rounded-full blur-3xl animate-pulse-slow" />
+				<div className="absolute right-0 top-20 w-96 h-96 bg-secondary opacity-10 rounded-full blur-3xl animate-pulse-slow" />
 				<div
 					className="absolute bottom-20 left-0 w-80 h-80 bg-accent opacity-15 rounded-full blur-3xl animate-pulse-slow"
 					style={{ animationDelay: "1s" }}
@@ -80,7 +80,7 @@ export function Hero() {
 							</Link>
 							<Link
 								href="/kontakt"
-								className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-4 text-base font-semibold text-white hover:bg-primary-hover transition-all duration-300 btn-hover-lift"
+								className="inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 text-base font-semibold text-white hover:bg-secondary-hover transition-all duration-300 btn-hover-lift"
 							>
 								Contact Us
 							</Link>
@@ -135,7 +135,7 @@ export function Hero() {
 							>
 								<div className="grid grid-cols-3 gap-4 text-center">
 									<div>
-										<div className="text-2xl font-bold text-primary">
+										<div className="text-2xl font-bold text-secondary">
 											500+
 										</div>
 										<div className="text-xs text-white/70 mt-1">
@@ -143,7 +143,7 @@ export function Hero() {
 										</div>
 									</div>
 									<div>
-										<div className="text-2xl font-bold text-primary">
+										<div className="text-2xl font-bold text-secondary">
 											100%
 										</div>
 										<div className="text-xs text-white/70 mt-1">
@@ -151,7 +151,7 @@ export function Hero() {
 										</div>
 									</div>
 									<div>
-										<div className="text-2xl font-bold text-primary">
+										<div className="text-2xl font-bold text-secondary">
 											24/7
 										</div>
 										<div className="text-xs text-white/70 mt-1">
@@ -163,7 +163,7 @@ export function Hero() {
 						</div>
 
 						{/* Decorative elements */}
-						<div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
+						<div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
 						<div className="absolute -bottom-4 -left-4 w-32 h-32 bg-accent/20 rounded-full blur-2xl" />
 					</motion.div>
 				</div>

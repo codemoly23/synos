@@ -1,1012 +1,303 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 /* ============================================
-   DESIGN TOKENS - LIGHT PREMIUM THEME
+   DESIGN TOKENS - MEDICAL SHOWCASE THEME
    ============================================ */
 
 :root {
   /* ============================================
-     BASE COLORS - SYNOS MEDICAL PALETTE
+     BASE COLORS - USER REQUESTED PALETTE
      ============================================ */
 
-  /* Primary/Toner Colors - Warm Beige/Tan Palette */
-  --color-primary: #DFB294;
-  --color-toner-100: #F8EEE8;
-  --color-toner-200: #F1DCCF;
-  --color-toner-300: #E6C4AE;
-  --color-toner-400: #DFB294;
+  /* Primary (Dark Blue) - Used for Headings, Dark Backgrounds */
+  --color-primary: #0C2C46;
+  --color-primary-foreground: #FFFFFF;
 
-  /* Secondary Dark - For Text and Accents ONLY */
-  --color-secondary-dark: #2C2D38;
-  --color-secondary-light: #3E414B;
+  /* Accent (Teal) - Used for Buttons, Highlights */
+  --color-accent: #00949E;
+  --color-accent-foreground: #FFFFFF;
+  --color-accent-hover: #007A82;
+  /* Slightly darker teal for hover */
 
-  /* Accent - Teal (Use Sparingly) */
-  --color-accent: #39898F;
+  /* Secondary (Neutrals/Warm) */
+  --color-secondary: #F1F5F9;
+  /* Keeping light gray for general secondary backgrounds */
+  --color-secondary-foreground: #0C2C46;
 
-  /* Base Colors */
-  --color-white: #FFFFFF;
-  --color-black: #000000;
+  /* Tertiary/Warm Accents (from user palette) */
+  --color-tertiary: #DBA480;
+  --color-tertiary-foreground: #21212C;
 
-  /* ============================================
-     OPACITY VARIATIONS - PRIMARY COLOR
-     ============================================ */
-  --color-primary-05: rgba(223, 178, 148, 0.05);
-  --color-primary-08: rgba(223, 178, 148, 0.08);
-  --color-primary-10: rgba(223, 178, 148, 0.1);
-  --color-primary-15: rgba(223, 178, 148, 0.15);
-  --color-primary-20: rgba(223, 178, 148, 0.2);
-  --color-primary-25: rgba(223, 178, 148, 0.25);
-  --color-primary-30: rgba(223, 178, 148, 0.3);
-  --color-primary-50: rgba(223, 178, 148, 0.5);
-  --color-primary-60: rgba(223, 178, 148, 0.6);
-  --color-primary-70: rgba(223, 178, 148, 0.7);
-  --color-primary-80: rgba(223, 178, 148, 0.8);
-  --color-primary-90: rgba(223, 178, 148, 0.9);
-  --color-primary-95: rgba(223, 178, 148, 0.95);
-  --color-primary-98: rgba(223, 178, 148, 0.98);
+  /* Backgrounds */
+  --color-background: #FFFFFF;
+  --color-foreground: #0C2C46;
+  /* Using Primary Dark Blue for main text */
 
-  /* ============================================
-     OPACITY VARIATIONS - TONER COLORS
-     ============================================ */
-  /* Toner 100 - #F8EEE8 */
-  --color-toner-100-50: rgba(248, 238, 232, 0.5);
-  --color-toner-100-80: rgba(248, 238, 232, 0.8);
-  --color-toner-100-90: rgba(248, 238, 232, 0.9);
-  --color-toner-100-95: rgba(248, 238, 232, 0.95);
-  --color-toner-100-98: rgba(248, 238, 232, 0.98);
+  /* UI Elements */
+  --color-muted: #F8FAFC;
+  --color-muted-foreground: #64748B;
 
-  /* Toner 200 - #F1DCCF */
-  --color-toner-200-50: rgba(241, 220, 207, 0.5);
-  --color-toner-200-80: rgba(241, 220, 207, 0.8);
-  --color-toner-200-90: rgba(241, 220, 207, 0.9);
-  --color-toner-200-95: rgba(241, 220, 207, 0.95);
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0C2C46;
 
-  /* Toner 300 - #E6C4AE */
-  --color-toner-300-50: rgba(230, 196, 174, 0.5);
-  --color-toner-300-80: rgba(230, 196, 174, 0.8);
-  --color-toner-300-90: rgba(230, 196, 174, 0.9);
-  --color-toner-300-95: rgba(230, 196, 174, 0.95);
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #0C2C46;
 
-  /* ============================================
-     OPACITY VARIATIONS - SECONDARY DARK
-     ============================================ */
-  --color-secondary-dark-05: rgba(44, 45, 56, 0.05);
-  --color-secondary-dark-08: rgba(44, 45, 56, 0.08);
-  --color-secondary-dark-10: rgba(44, 45, 56, 0.1);
-  --color-secondary-dark-15: rgba(44, 45, 56, 0.15);
-  --color-secondary-dark-20: rgba(44, 45, 56, 0.2);
-  --color-secondary-dark-30: rgba(44, 45, 56, 0.3);
-  --color-secondary-dark-50: rgba(44, 45, 56, 0.5);
-  --color-secondary-dark-60: rgba(44, 45, 56, 0.6);
-  --color-secondary-dark-70: rgba(44, 45, 56, 0.7);
-  --color-secondary-dark-80: rgba(44, 45, 56, 0.8);
-  --color-secondary-dark-90: rgba(44, 45, 56, 0.9);
+  --color-border: #E2E8F0;
+  --color-input: #E2E8F0;
+  --color-ring: #00949E;
+  /* Teal ring */
 
-  /* ============================================
-     OPACITY VARIATIONS - ACCENT COLOR
-     ============================================ */
-  --color-accent-05: rgba(57, 137, 143, 0.05);
-  --color-accent-08: rgba(57, 137, 143, 0.08);
-  --color-accent-10: rgba(57, 137, 143, 0.1);
-  --color-accent-15: rgba(57, 137, 143, 0.15);
-  --color-accent-20: rgba(57, 137, 143, 0.2);
-  --color-accent-30: rgba(57, 137, 143, 0.3);
-  --color-accent-50: rgba(57, 137, 143, 0.5);
-  --color-accent-60: rgba(57, 137, 143, 0.6);
-  --color-accent-70: rgba(57, 137, 143, 0.7);
-  --color-accent-80: rgba(57, 137, 143, 0.8);
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #DBA480;
+  /* Using the peach color for warning/attention */
+  --color-error: #EF4444;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
 
-  /* ============================================
-     OPACITY VARIATIONS - WHITE
-     ============================================ */
-  --color-white-05: rgba(255, 255, 255, 0.05);
-  --color-white-08: rgba(255, 255, 255, 0.08);
-  --color-white-10: rgba(255, 255, 255, 0.1);
-  --color-white-20: rgba(255, 255, 255, 0.2);
-  --color-white-30: rgba(255, 255, 255, 0.3);
-  --color-white-40: rgba(255, 255, 255, 0.4);
-  --color-white-50: rgba(255, 255, 255, 0.5);
-  --color-white-60: rgba(255, 255, 255, 0.6);
-  --color-white-70: rgba(255, 255, 255, 0.7);
-  --color-white-80: rgba(255, 255, 255, 0.8);
-  --color-white-90: rgba(255, 255, 255, 0.9);
+  /* Chart Colors */
+  --chart-1: #00949E;
+  --chart-2: #0C2C46;
+  --chart-3: #DBA480;
+  --chart-4: #21212C;
+  --chart-5: #64748B;
 
-  /* ============================================
-     OPACITY VARIATIONS - BLACK
-     ============================================ */
-  --color-black-05: rgba(0, 0, 0, 0.05);
-  --color-black-08: rgba(0, 0, 0, 0.08);
-  --color-black-10: rgba(0, 0, 0, 0.1);
-  --color-black-15: rgba(0, 0, 0, 0.15);
-  --color-black-20: rgba(0, 0, 0, 0.2);
-  --color-black-25: rgba(0, 0, 0, 0.25);
-  --color-black-30: rgba(0, 0, 0, 0.3);
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius: 0.5rem;
 
-  /* ============================================
-     LEGACY DESIGN TOKENS (Keep for compatibility)
-     ============================================ */
-  --accent: #39898F;
-  --accent-foreground: #F8EEE8;
-  --muted: #64748b;
-  --muted-foreground: #0f172a;
-  --border: #e2e8f0;
-  --border-light: #F1F5F9;
-  --success: #10B981;
-  --error: #EF4444;
-
-  /* === SHADOWS === */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.1);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  /* === SPACING === */
-  --section-padding-y: 5rem;
-  --section-padding-y-lg: 7rem;
-  --container-padding-x: 1rem;
-  --container-max-width: 1280px;
-
-  /* === BORDER RADIUS === */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-
-  /* === MOTION === */
-  --duration-fast: 0.2s;
-  --duration: 0.3s;
-  --duration-slow: 0.5s;
-  --easing: cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-  /* === GRADIENTS === */
-  --gradient-subtle: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(245, 247, 250, 0.5));
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--accent));
-  --gradient-soft: linear-gradient(to bottom, #FFFFFF, #F8FAFC);
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sidebar (shadcn) */
+  --sidebar-background: #F8FAFC;
+  --sidebar-foreground: #0C2C46;
+  --sidebar-primary: #0C2C46;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #0C2C46;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #00949E;
 }
 
-@theme {
-  /* ============================================
-     BRAND COLORS - SYNOS MEDICAL
-     ============================================ */
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #020617;
+    --color-foreground: #F8FAFC;
 
-  /* Primary Toner Colors - Warm Beige/Tan Palette */
-  --color-primary: #DFB294;
-  /* Warm beige/tan - Primary brand color */
-  --color-primary-hover: #D19F7E;
-  /* Slightly darker for hover states */
-  --color-primary-light: #F1DCCF;
-  /* Very light beige/cream */
-  --color-primary-dark: #C89A7A;
-  /* Darker tan for contrast */
+    --color-primary: #F8FAFC;
+    --color-primary-foreground: #0C2C46;
 
-  --color-toner-100: #F8EEE8;
-  /* Off-white/cream - Lightest */
-  --color-toner-200: #F1DCCF;
-  /* Very light beige/cream */
-  --color-toner-300: #E6C4AE;
-  /* Light beige */
-  --color-toner-400: #DFB294;
-  /* Warm beige/tan - Main */
-  --color-toner-700: #2C2D38;
-  /* Dark charcoal/navy */
-  --color-toner-800: #3E414B;
-  /* Medium gray */
+    --color-secondary: #1E293B;
+    --color-secondary-foreground: #F8FAFC;
 
-  /* Secondary - Dark Tones */
-  --color-secondary-dark: #2C2D38;
-  /* Dark charcoal/navy */
-  --color-secondary-light: #3E414B;
-  /* Medium gray */
+    --color-muted: #1E293B;
+    --color-muted-foreground: #94A3B8;
 
-  /* Accent - Teal (use sparingly) */
-  --color-accent: #39898F;
-  /* Teal accent - minimal use */
-  --color-accent-hover: #2F7177;
-  /* Darker teal for hover */
-  --color-accent-light: #E6F3F4;
-  /* Very light teal background */
+    --color-card: #0C2C46;
+    /* Dark Blue card background */
+    --color-card-foreground: #F8FAFC;
 
-  /* Neutral Colors */
-  --color-white: #FFFFFF;
-  --color-black: #000000;
-  --color-gray-light: #F5F5F5;
-  --color-gray-medium: #E0E0E0;
-  --color-gray-dark: #4A4A4A;
+    --color-popover: #0C2C46;
+    --color-popover-foreground: #F8FAFC;
+
+    --color-border: #1E293B;
+    --color-input: #1E293B;
+
+    --sidebar-background: #020617;
+    --sidebar-foreground: #F8FAFC;
+    --sidebar-primary: #00949E;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #1E293B;
+    --sidebar-accent-foreground: #F8FAFC;
+    --sidebar-border: #1E293B;
+  }
 }
 
 @theme inline {
   /* Colors */
-  --color-background: var(--background);
-  --color-background-soft: var(--background-soft);
-  --color-background-section: var(--background-section);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
-  --color-border-light: var(--border-light);
-  --color-card: var(--card);
-  --color-success: var(--success);
-  --color-error: var(--error);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-accent-hover: var(--color-accent-hover);
+
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
   /* Fonts */
-  --font-display: var(--font-geist-sans);
-  --font-body: var(--font-geist-sans);
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
 
-  /* Border Radius */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 /* ============================================
    BASE STYLES
    ============================================ */
 
-* {
-  border-color: var(--border);
-}
-
-body {
-  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
-  font-feature-settings: "rlig" 1, "calt" 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-  margin: 0;
-  padding: 0;
-}
-
-/* Ensure main content starts at top */
-main {
-  margin: 0;
-  padding: 0;
-}
-
-/* ============================================
-   CUSTOM SCROLLBAR STYLES - SOLID COLORS ONLY
-   ============================================ */
-
-/* Modern scrollbar with solid colors from palette */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) var(--color-primary-10);
-}
-
-/* Webkit browsers (Chrome, Safari, Edge) */
-*::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-*::-webkit-scrollbar-track {
-  background: var(--color-primary-10);
-  border-radius: 10px;
-  margin: 4px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 10px;
-  border: 2px solid var(--color-white-30);
-  transition: all 0.3s ease;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
-  border-color: var(--color-white-50);
-  box-shadow: 0 0 10px var(--color-primary-30);
-}
-
-*::-webkit-scrollbar-thumb:active {
-  background: var(--color-primary);
-}
-
-/* Scrollbar for dropdown menus - accent color variant */
-.nav-dropdown-glass::-webkit-scrollbar-thumb {
-  background: var(--color-accent);
-  border: 2px solid var(--color-white-30);
-}
-
-.nav-dropdown-glass::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent);
-  box-shadow: 0 0 10px var(--color-accent-30);
-}
-
-.nav-dropdown-glass::-webkit-scrollbar-track {
-  background: var(--color-accent-05);
-}
-
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
-
-/* Card Shadow */
-.card-shadow {
-  box-shadow: var(--shadow-card);
-  transition: box-shadow var(--duration) var(--easing), transform var(--duration) var(--easing);
-}
-
-.card-shadow:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-
-._container {
-  @apply max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-@layer utilities {
-
-  /* ============================================
-     GLASSMORPHISM EFFECTS
-     ============================================ */
-
-  /* Soft, minimal glass effect */
-  .glass-soft {
-    background-color: var(--color-white-80);
-    border: 1px solid var(--color-border, var(--color-white-20));
-    backdrop-filter: blur(12px);
-  }
-
-  /* Medium, balanced glass effect */
-  .glass {
-    background-color: var(--color-white-60);
-    border: 1px solid var(--color-border, var(--color-white-20));
-    backdrop-filter: blur(16px);
-    transition: all 0.3s ease;
-  }
-
-  /* Strong glass effect — for overlays/panels - LIGHT THEME */
-  .glass-strong {
-    @apply bg-white/90 border border-primary/10 backdrop-blur-sm;
-  }
-
-  /* ============================================
-     HEADER GLASSMORPHISM EFFECTS - LIGHT THEME
-     ============================================ */
-
-  /* Modern header glass effect - default state - LIGHT THEME */
-  .header-glass {
-    background: var(--color-toner-100-95);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    box-shadow:
-      0 4px 24px var(--color-primary-15),
-      0 2px 8px var(--color-primary-10);
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Enhanced header glass effect - scrolled state - LIGHT THEME */
-  .header-glass-scrolled {
-    background: var(--color-toner-100-98);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    box-shadow:
-      0 8px 32px var(--color-primary-25),
-      0 4px 12px var(--color-primary-15);
-  }
-
-  /* Top info bar glass effect - LIGHT THEME */
-  .info-bar-glass {
-    background: var(--color-primary-08);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transform: translateZ(0);
-    will-change: transform, opacity;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Navigation dropdown glass effect */
-  .nav-dropdown-glass {
-    background: var(--color-white-98);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid var(--color-black-08);
-    box-shadow: 0 12px 40px var(--color-black-10),
-      0 4px 12px var(--color-black-08),
-      inset 0 1px 0 var(--color-white-50);
-    /* Smooth scrolling */
-    overflow-y: auto;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-  }
-
-  /* ============================================
-     HEADER ANIMATIONS
-     ============================================ */
-
-  /* Smooth slide down animation for header */
-  .animate-header-slide-down {
-    animation: headerSlideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  /* Nav item hover animation - LIGHT THEME */
-  .nav-item-hover {
-    position: relative;
-    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    color: var(--color-secondary-dark);
-  }
-
-  .nav-item-hover::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-primary);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
-  }
-
-  .nav-item-hover:hover {
-    color: var(--color-primary);
-  }
-
-  .nav-item-hover:hover::after {
-    width: 100%;
-  }
-
-  /* Dropdown fade in animation */
-  .dropdown-fade-in {
-    animation: dropdownFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  /* Social icon hover effect */
-  .social-icon-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .social-icon-hover:hover {
-    transform: translateY(-2px) scale(1.05);
-  }
-
-  /* Logo hover effect */
-  .logo-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .logo-hover:hover {
-    transform: scale(1.02);
-    color: var(--color-primary);
-  }
-
-  /* Contact link hover effect - LIGHT THEME */
-  .contact-link-hover {
-    position: relative;
-    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--color-secondary-dark-90);
-  }
-
-  .contact-link-hover:hover {
-    color: var(--color-primary);
-  }
-
-  .contact-link-hover::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--color-primary);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .contact-link-hover:hover::before {
-    width: 100%;
-  }
-
-  /* ============================================
-     MOBILE MENU GLASSMORPHISM EFFECTS - LIGHT THEME
-     ============================================ */
-
-  /* Mobile menu drawer glass effect - LIGHT BACKGROUND */
-  .mobile-menu-glass {
-    background: var(--color-toner-100-98);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border-left: 1px solid var(--color-primary-20);
-    box-shadow: -8px 0 32px var(--color-primary-30),
-      -4px 0 16px var(--color-primary-20);
-  }
-
-  /* Mobile menu header glass - LIGHT THEME */
-  .mobile-menu-header-glass {
-    background: var(--color-toner-200-50);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--color-primary-20);
-  }
-
-  /* Mobile menu item base */
-  .mobile-menu-item {
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Mobile menu item active indicator - LIGHT THEME */
-  .mobile-menu-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 70%;
-    background: var(--color-accent-50);
-    border-radius: 0 4px 4px 0;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .mobile-menu-item:hover::before,
-  .mobile-menu-item:focus-within::before {
-    width: 4px;
-  }
-
-  /* Mobile menu item hover background - LIGHT THEME */
-  .mobile-menu-item:hover,
-  .mobile-menu-item:focus-within {
-    background: var(--color-primary-15);
-  }
-
-  /* Mobile submenu item - LIGHT THEME */
-  .mobile-submenu-item {
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .mobile-submenu-item:hover,
-  .mobile-submenu-item:focus-within {
-    background: var(--color-primary-10);
-    padding-left: 1rem;
-  }
-
-  /* ============================================
-     HOME PAGE GLASSMORPHISM EFFECTS
-     ============================================ */
-
-  /* Hero section glass overlay - LIGHT THEME */
-  .hero-glass-overlay {
-    background: var(--color-white-50);
-    backdrop-filter: blur(8px) saturate(120%);
-    -webkit-backdrop-filter: blur(8px) saturate(120%);
-  }
-
-  /* Glass card - Light variant for content sections */
-  .glass-card-light {
-    background: var(--color-white-90);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      0 4px 20px var(--color-secondary-dark-08),
-      0 2px 8px var(--color-secondary-dark-05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-  }
-
-  .glass-card-light:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow:
-      0 20px 60px var(--color-secondary-dark-15),
-      0 8px 24px var(--color-secondary-dark-10),
-      0 0 0 2px var(--color-primary-30);
-  }
-
-  /* Glass card - Medium variant for contrast sections - LIGHT THEME */
-  .glass-card-dark {
-    background: var(--color-toner-200-90);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      0 4px 20px var(--color-primary-20),
-      0 2px 8px var(--color-primary-15);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-  }
-
-  .glass-card-dark:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow:
-      0 20px 60px var(--color-primary-30),
-      0 8px 24px var(--color-primary-25),
-      0 0 0 2px var(--color-primary-50);
-  }
-
-  /* Glass card - Accent variant with teal (use sparingly) - LIGHT THEME */
-  .glass-card-accent {
-    background: var(--color-white-90);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      0 4px 20px var(--color-accent-15),
-      0 2px 8px var(--color-accent-10);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-  }
-
-  .glass-card-accent:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow:
-      0 12px 40px var(--color-accent-20),
-      0 6px 16px var(--color-accent-15),
-      0 0 0 2px var(--color-accent-30);
-  }
-
-  /* Section background - solid colors - LIGHT THEME */
-  .section-glass-light {
-    background: var(--color-toner-100);
-  }
-
-  .section-glass-dark {
-    background: var(--color-toner-300);
-  }
-
-  .section-glass-medium {
-    background: var(--color-toner-200);
-  }
-
-  .section-glass-warm {
-    background: var(--color-primary);
-  }
-
-  /* ============================================
-     MICRO ANIMATIONS & INTERACTIONS
-     ============================================ */
-
-  /* Button hover animations */
-  .btn-hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-  }
-
-  .btn-hover-lift:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 40px var(--color-black-20);
-  }
-
-  .btn-hover-lift:active {
-    transform: translateY(-2px) scale(1.02);
-  }
-
-  /* Icon animations */
-  .icon-hover-rotate {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .icon-hover-rotate:hover {
-    transform: rotate(15deg) scale(1.1);
-  }
-
-  .icon-hover-bounce {
-    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-
-  .icon-hover-bounce:hover {
-    transform: translateY(-4px);
-    animation: bounce 0.6s ease-in-out;
-  }
-
-  .icon-hover-pulse {
-    transition: transform 0.3s ease;
-  }
-
-  .icon-hover-pulse:hover {
-    animation: pulse 1s ease-in-out infinite;
-  }
-
-  /* Card hover glow effect */
-  .card-hover-glow {
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-hover-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: var(--color-primary-50);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
-    filter: blur(8px);
-  }
-
-  .card-hover-glow:hover::before {
-    opacity: 0.6;
-  }
-
-  /* Entrance animations */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  /* Loading animations */
-  .animate-spin-slow {
-    animation: spin 3s linear infinite;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s ease-in-out infinite;
-  }
-
-  /* ============================================
-     MOBILE MENU ANIMATIONS
-     ============================================ */
-
-  /* Menu item stagger animation */
-  .menu-item-stagger {
-    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  /* Chevron rotation animation */
-  .chevron-rotate {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .chevron-rotate.open {
-    transform: rotate(180deg);
-  }
-
-}
-
-/* Section Container */
-.section-container {
-  width: 100%;
-  max-width: var(--container-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--container-padding-x);
-  padding-right: var(--container-padding-x);
-}
-
-/* Gradient Subtle */
-.gradient-subtle {
-  background: var(--gradient-subtle);
-}
-
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Header-specific animations */
-@keyframes headerSlideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Mobile menu item fade in animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Bounce animation */
-@keyframes bounce {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-/* Pulse animation */
-@keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-/* Spin animation */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============================================
-   ACCESSIBILITY
-   ============================================ */
-
-/* Focus styles */
-*:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 0.25rem;
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+}
+
+/* ============================================
+   CUSTOM UTILITIES
+   ============================================ */
+
+@layer utilities {
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  .glass-dark {
+    @apply bg-[#0C2C46]/80 backdrop-blur-md border border-[#0C2C46]/50 shadow-md;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700;
+  }
+
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-600;
+  }
+
+  /* Layout */
+  .container-width {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full border-2 border-white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-300;
 }
