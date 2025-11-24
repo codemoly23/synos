@@ -41,12 +41,12 @@ export function Navbar() {
 	}, []);
 
 	return (
-		<div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 bg-">
+		<div className="fixed top-3 sm:top-6 left-0 right-0 z-50 flex justify-center px-4 bg-">
 			<header
-				className={`transition-all duration-300 rounded-xl border ${
+				className={`transition-all backdrop-blur-md duration-300 rounded-full border ${
 					isScrolled
-						? "bg-white/90 backdrop-blur-md border-primary/10 shadow-lg py-3 px-6 w-full max-w-7xl"
-						: "bg-white/70 backdrop-blur-md border-white/20 py-4 px-8 w-full max-w-7xl"
+						? "bg-slate-100/60 border-primary/10 shadow-lg py-1.5 pl-5 sm:pl-6 sm:py-3 px-2 sm:px-6 w-full max-w-7xl"
+						: "bg-slate-100/40 border-white/20 py-1.5 sm:py-4 px-2 sm:px-6 pl-5 sm:pl-6 w-full max-w-7xl"
 				}`}
 			>
 				<div className="flex items-center justify-between gap-4">
@@ -55,9 +55,10 @@ export function Navbar() {
 						<Image
 							src="https://www.synos.se/wp-content/themes/synos/assets/design/assets/images/logotype.svg"
 							alt="Synos Medical"
-							width={150}
-							height={50}
-							className="bg-accent p-1 rounded-md"
+							width={0}
+							height={0}
+							sizes="100vw"
+							className="bg-accent h-8 w-[80px] sm:h-10 sm:w-[120px] p-3 py-2 rounded"
 						/>
 					</Link>
 
@@ -150,8 +151,12 @@ export function Navbar() {
 					{/* Mobile Menu */}
 					<Sheet>
 						<SheetTrigger asChild>
-							<Button variant="ghost" size="icon" className="lg:hidden">
-								<Menu className="h-6 w-6 text-[#0C2C46]" />
+							<Button
+								variant="ghost"
+								size="icon"
+								className="lg:hidden bg-none!"
+							>
+								<Menu className="h-6 w-6 text-secondary" />
 							</Button>
 						</SheetTrigger>
 						<SheetContent

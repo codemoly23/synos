@@ -14,7 +14,7 @@ import { fadeUp, scaleIn, staggerContainer, floating } from "@/lib/animations";
  */
 export default function NotFound() {
 	return (
-		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 md:pt-24 overflow-hidden">
+		<div className="min-h-screen relative flex items-center justify-center px-4 page-padding-top pb-12 overflow-hidden ">
 			{/* Gradient Background */}
 			<div
 				className="absolute inset-0"
@@ -222,6 +222,6 @@ export default function NotFound() {
 					</motion.div>
 				</motion.div>
 			</div>
-		</main>
+		</div>
 	);
 }

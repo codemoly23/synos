@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export function Hero() {
 	return (
-		<section className="relative w-full overflow-hidden bg-slate-100 pt-32 pb-16 lg:pt-48 lg:pb-32">
+		<section className="relative w-full overflow-hidden bg-slate-100 page-padding-top pb-16 lg:pb-32">
 			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 			{/* Background Gradients */}
 			{/* <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
@@ -25,8 +25,8 @@ export function Hero() {
 				>
 					{/* Trust Badge */}
 					<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200">
-						<span className="flex h-4 w-4 rounded-full bg-green-500 animate-pulse" />
-						<span className="text-xs font-medium text-accent uppercase leading-relaxed tracking-wide">
+						<span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+						<span className="text-[10px] font-semibold text-accent uppercase leading-relaxed animate-pulse tracking-widest">
 							Sveriges ledande leverantör av MDR-certifierad
 							klinikutrustning
 						</span>

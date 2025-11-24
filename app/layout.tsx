@@ -125,7 +125,7 @@ export default function RootLayout({
 				</noscript>
 			</head>
 			<body
-				className={`${geistSans.className} ${geistMono.variable} antialiased`}
+				className={`${geistSans.className} ${geistMono.variable} antialiased bg-slate-100`}
 			>
 				{/* Google Tag Manager (noscript) */}
 				<noscript>

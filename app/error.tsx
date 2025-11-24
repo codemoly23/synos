@@ -10,6 +10,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 import { fadeUp, scaleIn, staggerContainer, floating } from "@/lib/animations";
+import Link from "next/link";
 
 /**
  * Error Boundary Page
@@ -36,7 +37,7 @@ export default function Error({
 	}, [error]);
 
 	return (
-		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 md:pt-24 overflow-hidden">
+		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 page-padding-top overflow-hidden">
 			{/* Gradient Background */}
 			<div
 				className="absolute inset-0"
@@ -230,7 +231,7 @@ export default function Error({
 								<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
 							</button>
 
-							<a
+							<Link
 								href="/"
 								className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4"
 								style={{
@@ -242,7 +243,7 @@ export default function Error({
 							>
 								<Home className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
 								Tillbaka till startsidan
-							</a>
+							</Link>
 						</div>
 					</motion.div>
 
