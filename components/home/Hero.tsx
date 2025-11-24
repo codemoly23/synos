@@ -8,14 +8,14 @@ import Image from "next/image";
 export function Hero() {
 	return (
 		<section className="relative w-full overflow-hidden bg-slate-100 pt-32 pb-16 lg:pt-48 lg:pb-32">
-			<div className="absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 			{/* Background Gradients */}
-			<div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+			{/* <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
 				<div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
 				<div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
-			</div>
+			</div> */}
 
-			<div className="container-width grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+			<div className="relative z-20 container-width grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 				{/* Left Content */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
@@ -24,9 +24,9 @@ export function Hero() {
 					className="flex flex-col gap-6 lg:gap-8 max-w-2xl"
 				>
 					{/* Trust Badge */}
-					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 w-fit border-secondary/10">
-						<span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-						<span className="text-xs font-medium text-secondary/70 uppercase tracking-wider">
+					<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200">
+						<span className="flex h-4 w-4 rounded-full bg-green-500 animate-pulse" />
+						<span className="text-xs font-medium text-accent uppercase leading-relaxed tracking-wide">
 							Sveriges ledande leverantör av MDR-certifierad
 							klinikutrustning
 						</span>
@@ -35,7 +35,7 @@ export function Hero() {
 					{/* Heading */}
 					<h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary leading-[1.1] tracking-tight">
 						Advanced Medical <br />
-						<span className="text-gradient-accent">
+						<span className="text-gradient-accent sm:text-nowrap text-3xl sm:text-4xl">
 							Equipment Solutions
 						</span>
 					</h1>
@@ -51,7 +51,7 @@ export function Hero() {
 					<div className="flex flex-wrap gap-4 pt-2">
 						<Button
 							size="lg"
-							className="bg-accent hover:bg-accent-hover text-white rounded-full px-8 h-12 text-base shadow-lg shadow-accent/20"
+							className="bg-accent hover:bg-accent-hover text-white rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-accent/20"
 						>
 							View Catalog
 							<ArrowRight className="ml-2 h-4 w-4" />

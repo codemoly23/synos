@@ -69,11 +69,11 @@ export function Navbar() {
 									<NavigationMenuItem key={item.title}>
 										{item.items ? (
 											<>
-												<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:!text-[#00949E] hover:!bg-[#00949E]/10 focus:!bg-[#00949E]/10 focus:!text-[#00949E] active:!bg-[#007A82]/20 active:!text-[#007A82] data-[state=open]:!bg-[#00949E]/10 data-[state=open]:!text-[#00949E] text-sm font-medium transition-colors">
+												<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-[#00949E]! hover:bg-[#00949E]/10! focus:bg-[#00949E]/10! focus:text-[#00949E]! active:bg-secondary/20! active:text-[#007A82]! data-[state=open]:bg-[#00949E]/10! data-[state=open]:text-[#00949E]! text-sm font-medium transition-colors">
 													{item.title}
 												</NavigationMenuTrigger>
-												<NavigationMenuContent>
-													<div className="w-[800px] p-6 md:w-[600px] lg:w-[900px] bg-white/95 backdrop-blur-md rounded-xl border border-white/20 shadow-lg">
+												<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
+													<div className="w-[800px] p-6 md:w-[600px] lg:w-[900px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">
 														<div className="grid grid-cols-3 gap-6">
 															{item.items.map((subItem) => (
 																<div
@@ -121,7 +121,7 @@ export function Navbar() {
 												href={item.href}
 												className={cn(
 													navigationMenuTriggerStyle(),
-													"!bg-transparent !text-[#0C2C46] hover:!text-[#00949E] hover:!bg-[#00949E]/10 focus:!bg-[#00949E]/10 focus:!text-[#00949E] active:!bg-[#007A82]/20 active:!text-[#007A82] transition-colors"
+													"bg-transparent! text-secondary! hover:text-accent! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-accent! active:bg-secondary/20! active:text-accent! transition-colors"
 												)}
 											>
 												{item.title}
