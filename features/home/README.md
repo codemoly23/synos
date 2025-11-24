@@ -5,6 +5,7 @@ This directory contains all feature components for the redesigned homepage with 
 ## 🎨 Design System
 
 ### Color Palette
+
 - **Background**: `#0B1226` (Deep navy)
 - **Primary**: `#7C3AED` (Indigo violet)
 - **Accent**: `#6EE7B7` (Teal)
@@ -13,11 +14,13 @@ This directory contains all feature components for the redesigned homepage with 
 - **Neutrals**: Slate 50-900
 
 ### Typography
+
 - **Display/Headings**: Geist Sans (variable)
 - **Body**: Geist Sans (variable)
 - **Monospace**: Geist Mono (variable)
 
 ### Motion
+
 - **Duration**: 0.4s
 - **Easing**: `cubic-bezier(0.2, 0.8, 0.2, 1)`
 - **Stagger**: 0.06s between children
@@ -26,9 +29,11 @@ This directory contains all feature components for the redesigned homepage with 
 ## 📦 Components
 
 ### Hero (`hero.tsx`)
+
 The main hero section with animated glass cards.
 
 **Features:**
+
 - Large display heading with gradient text
 - Animated glass card cluster (desktop only)
 - Primary and secondary CTAs
@@ -36,6 +41,7 @@ The main hero section with animated glass cards.
 - Fully responsive layout
 
 **Usage:**
+
 ```tsx
 import { Hero } from "@/features/home/hero";
 
@@ -43,15 +49,18 @@ import { Hero } from "@/features/home/hero";
 ```
 
 ### Services (`services.tsx`)
+
 Grid of service cards showcasing key benefits.
 
 **Features:**
+
 - 6 glass cards with icons
 - Hover animations (lift effect)
 - Staggered entrance animations
 - Responsive grid (1/2/3 columns)
 
 **Usage:**
+
 ```tsx
 import { Services } from "@/features/home/services";
 
@@ -62,15 +71,18 @@ import { Services } from "@/features/home/services";
 Edit the `services` array in the component to add/remove/modify services.
 
 ### Testimonials (`testimonials.tsx`)
+
 Customer testimonials with trust indicators.
 
 **Features:**
+
 - 3 testimonial cards with ratings
 - Trust metrics (500+ customers, 15+ years, 100% certified)
 - Background decorative blur
 - Responsive grid layout
 
 **Usage:**
+
 ```tsx
 import { Testimonials } from "@/features/home/testimonials";
 
@@ -81,9 +93,11 @@ import { Testimonials } from "@/features/home/testimonials";
 Edit the `testimonials` array to add real customer testimonials.
 
 ### ContactCTA (`contact-cta.tsx`)
+
 Contact form with validation and submission.
 
 **Features:**
+
 - React Hook Form + Zod validation
 - Glass card design
 - Contact information display
@@ -91,6 +105,7 @@ Contact form with validation and submission.
 - API integration ready
 
 **Usage:**
+
 ```tsx
 import { ContactCTA } from "@/features/home/contact-cta";
 
@@ -98,6 +113,7 @@ import { ContactCTA } from "@/features/home/contact-cta";
 ```
 
 **Form Fields:**
+
 - Name (min 2 characters)
 - Email (valid email format)
 - Message (min 10 characters)
@@ -108,7 +124,9 @@ Submits to `/api/contact/submit` (stub implementation included)
 ## 🛠️ Utilities
 
 ### Animations (`/lib/animations.ts`)
+
 Framer Motion animation presets:
+
 - `fadeUp` - Fade in while moving up
 - `fadeIn` - Simple opacity transition
 - `scaleIn` - Scale up from center
@@ -119,14 +137,17 @@ Framer Motion animation presets:
 - `defaultTransition` - Standard timing
 
 ### GlassCard (`/components/common/glass-card.tsx`)
+
 Reusable glassmorphism card component.
 
 **Props:**
+
 - `variant`: "default" | "bordered" | "elevated"
 - `hoverable`: boolean (enables hover effect)
 - `padding`: "none" | "sm" | "md" | "lg"
 
 **Example:**
+
 ```tsx
 <GlassCard hoverable padding="lg">
   <h3>Card Title</h3>
@@ -135,14 +156,17 @@ Reusable glassmorphism card component.
 ```
 
 ### Container (`/components/common/container.tsx`)
+
 Responsive container with consistent padding.
 
 **Props:**
+
 - `maxWidth`: "sm" | "md" | "lg" | "xl" | "2xl" | "full"
 - `center`: boolean (default: true)
 - `noPadding`: boolean (removes horizontal padding)
 
 **Example:**
+
 ```tsx
 <Container maxWidth="xl">
   <h1>Page Content</h1>
@@ -152,6 +176,7 @@ Responsive container with consistent padding.
 ## 🎯 Accessibility
 
 All components follow accessibility best practices:
+
 - ✅ Semantic HTML elements
 - ✅ ARIA labels where needed
 - ✅ Keyboard navigation support
@@ -162,6 +187,7 @@ All components follow accessibility best practices:
 ## 🚀 Performance
 
 Optimizations implemented:
+
 - ✅ Server components where possible
 - ✅ Client components only for interactivity
 - ✅ Lazy loading for non-critical content
@@ -179,20 +205,24 @@ All components are fully responsive and tested across breakpoints.
 ## 🔧 Customization
 
 ### Changing Colors
+
 Edit `/app/globals.css` CSS variables:
+
 ```css
 :root {
   --bg: #0B1226;
   --primary: #7C3AED;
-  --accent: #6EE7B7;
+  --primary: #6EE7B7;
   /* ... */
 }
 ```
 
 ### Modifying Animations
+
 Edit `/lib/animations.ts` to adjust timing, easing, or create new presets.
 
 ### Adding New Sections
+
 1. Create new component in `/features/home/`
 2. Import and add to `/app/page.tsx`
 3. Follow existing patterns for consistency
@@ -208,14 +238,17 @@ Edit `/lib/animations.ts` to adjust timing, easing, or create new presets.
 ## 🐛 Troubleshooting
 
 **Glass effect not showing:**
+
 - Check browser support for `backdrop-filter`
 - Ensure parent has background content to blur
 
 **Animations not working:**
+
 - Verify Framer Motion is installed
 - Check for `prefers-reduced-motion` setting
 
 **Form not submitting:**
+
 - Check console for validation errors
 - Verify API endpoint is accessible
 - Check network tab for request/response
@@ -226,4 +259,3 @@ Edit `/lib/animations.ts` to adjust timing, easing, or create new presets.
 - [React Hook Form](https://react-hook-form.com/)
 - [Zod Validation](https://zod.dev/)
 - [Tailwind CSS v4](https://tailwindcss.com/)
-

@@ -171,7 +171,7 @@ export function ContactForm() {
 
 					<Button
 						type="submit"
-						className="w-full bg-accent hover:bg-accent-hover text-white h-12 text-base font-medium rounded-lg shadow-lg shadow-accent/20 transition-all hover:scale-[1.02]"
+						className="w-full bg-primary hover:bg-primary-hover text-white h-12 text-base font-medium rounded-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (

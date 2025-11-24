@@ -128,12 +128,12 @@ const features = [
 
 export function Features() {
 	return (
-		<section className="relative py-20 lg:py-32 section-glass-light bg-accent/20! overflow-hidden">
+		<section className="relative py-20 lg:py-32 section-glass-light bg-primary/20! overflow-hidden">
 			{/* Background decorations - solid colored shapes */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
 				<div className="absolute top-1/4 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-pulse-slow" />
 				<div
-					className="absolute bottom-1/4 left-0 w-80 h-80 bg-accent rounded-full blur-3xl animate-pulse-slow"
+					className="absolute bottom-1/4 left-0 w-80 h-80 bg-primary rounded-full blur-3xl animate-pulse-slow"
 					style={{ animationDelay: "1.5s" }}
 				/>
 			</div>
@@ -152,9 +152,9 @@ export function Features() {
 						whileInView={{ opacity: 1, scale: 1 }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.5 }}
-						className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-accent text-sm font-medium mb-6"
+						className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-primary text-sm font-medium mb-6"
 					>
-						<span className="text-accent">●</span>
+						<span className="text-primary">●</span>
 						Why Choose Us
 					</motion.div>
 					<h2 className="text-3xl font-bold tracking-tight text-secondary-dark sm:text-4xl lg:text-5xl mb-6">
@@ -181,11 +181,11 @@ export function Features() {
 							className="group relative glass-card-light rounded-2xl p-8 transition-all duration-300 card-hover-glow"
 						>
 							{/* Icon with solid background */}
-							<div className="mb-6 inline-flex rounded-xl bg-accent/15 p-4 text-accent group-hover:bg-accent group-hover:text-white transition-all duration-300 icon-hover-bounce">
+							<div className="mb-6 inline-flex rounded-xl bg-primary/15 p-4 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 icon-hover-bounce">
 								{feature.icon}
 							</div>
 
-							<h3 className="mb-4 text-xl font-bold text-secondary-dark group-hover:text-accent transition-colors duration-300">
+							<h3 className="mb-4 text-xl font-bold text-secondary-dark group-hover:text-primary transition-colors duration-300">
 								{feature.title}
 							</h3>
 
@@ -194,7 +194,7 @@ export function Features() {
 							</p>
 
 							{/* Hover accent line */}
-							{/* <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" /> */}
+							{/* <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" /> */}
 						</motion.div>
 					))}
 				</motion.div>

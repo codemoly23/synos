@@ -24,7 +24,7 @@ export function Hero() {
 			<div className="absolute inset-0 -z-10 pointer-events-none">
 				<div className="absolute right-0 top-20 w-96 h-96 bg-secondary opacity-10 rounded-full blur-3xl animate-pulse-slow" />
 				<div
-					className="absolute bottom-20 left-0 w-80 h-80 bg-accent opacity-15 rounded-full blur-3xl animate-pulse-slow"
+					className="absolute bottom-20 left-0 w-80 h-80 bg-primary opacity-15 rounded-full blur-3xl animate-pulse-slow"
 					style={{ animationDelay: "1s" }}
 				/>
 			</div>
@@ -40,11 +40,11 @@ export function Hero() {
 					>
 						<motion.div
 							variants={staggerItem}
-							className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-accent text-sm font-medium"
+							className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card-primary text-sm font-medium"
 						>
 							<span className="relative flex h-2 w-2">
-								<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-								<span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+								<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+								<span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
 							</span>
 							MDR-Certified Medical Equipment
 						</motion.div>
@@ -54,7 +54,7 @@ export function Hero() {
 							className="text-4xl font-bold tracking-tight text-secondary-dark sm:text-5xl lg:text-6xl xl:text-7xl"
 						>
 							Professional{" "}
-							<span className="text-accent">Medical Equipment</span> for
+							<span className="text-primary">Medical Equipment</span> for
 							Modern Clinics
 						</motion.h1>
 
@@ -73,7 +73,7 @@ export function Hero() {
 						>
 							<Link
 								href="/produkter"
-								className="group inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-8 py-4 text-base font-semibold text-white shadow-lg hover:bg-accent-hover transition-all duration-300 hover:shadow-2xl btn-hover-lift"
+								className="group inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg hover:bg-primary-hover transition-all duration-300 hover:shadow-2xl btn-hover-lift"
 							>
 								Explore Products
 								<ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
@@ -92,19 +92,19 @@ export function Hero() {
 							className="flex flex-wrap items-center gap-6 pt-4"
 						>
 							<div className="flex items-center gap-2 text-secondary-dark/80">
-								<CheckCircle2 className="h-5 w-5 text-accent" />
+								<CheckCircle2 className="h-5 w-5 text-primary" />
 								<span className="text-sm font-medium">
 									MDR-Certified
 								</span>
 							</div>
 							<div className="flex items-center gap-2 text-secondary-dark/80">
-								<CheckCircle2 className="h-5 w-5 text-accent" />
+								<CheckCircle2 className="h-5 w-5 text-primary" />
 								<span className="text-sm font-medium">
 									Swedish Support
 								</span>
 							</div>
 							<div className="flex items-center gap-2 text-secondary-dark/80">
-								<CheckCircle2 className="h-5 w-5 text-accent" />
+								<CheckCircle2 className="h-5 w-5 text-primary" />
 								<span className="text-sm font-medium">
 									20+ Years Experience
 								</span>
@@ -164,7 +164,7 @@ export function Hero() {
 
 						{/* Decorative elements */}
 						<div className="absolute -top-4 -right-4 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
-						<div className="absolute -bottom-4 -left-4 w-32 h-32 bg-accent/20 rounded-full blur-2xl" />
+						<div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
 					</motion.div>
 				</div>
 			</div>

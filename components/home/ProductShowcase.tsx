@@ -117,7 +117,7 @@ export function ProductShowcase() {
 								{/* Content */}
 								<CardContent className="pt-6 grow">
 									<div className="flex justify-between items-start mb-2">
-										<h3 className="text-xl font-bold text-[#0C2C46] group-hover:text-accent transition-colors">
+										<h3 className="text-xl font-bold text-[#0C2C46] group-hover:text-primary transition-colors">
 											{product.name}
 										</h3>
 									</div>
@@ -147,7 +147,7 @@ export function ProductShowcase() {
 										href={`/produkter/${product.name
 											.toLowerCase()
 											.replace(/\s+/g, "-")}`}
-										className="text-accent hover:text-accent-hover hover:bg-accent/10 flex items-center border border-slate-200 px-5 py-1 rounded-xl"
+										className="text-primary hover:text-primary-hover hover:bg-primary/10 flex items-center border border-slate-200 px-5 py-1 rounded-xl"
 									>
 										Details <ArrowRight className="ml-1 h-4 w-4" />
 									</Link>

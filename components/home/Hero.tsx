@@ -11,7 +11,7 @@ export function Hero() {
 			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 			{/* Background Gradients */}
 			{/* <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-				<div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+				<div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
 				<div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
 			</div> */}
 
@@ -26,7 +26,7 @@ export function Hero() {
 					{/* Trust Badge */}
 					<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200">
 						<span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-						<span className="text-[10px] font-semibold text-accent uppercase leading-relaxed animate-pulse tracking-widest">
+						<span className="text-[10px] font-semibold text-primary uppercase leading-relaxed animate-pulse tracking-widest">
 							Sveriges ledande leverantör av MDR-certifierad
 							klinikutrustning
 						</span>
@@ -35,7 +35,7 @@ export function Hero() {
 					{/* Heading */}
 					<h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary leading-[1.1] tracking-tight">
 						Advanced Medical <br />
-						<span className="text-gradient-accent sm:text-nowrap text-3xl sm:text-4xl">
+						<span className="text-gradient-primary sm:text-nowrap text-3xl sm:text-4xl">
 							Equipment Solutions
 						</span>
 					</h1>
@@ -51,7 +51,7 @@ export function Hero() {
 					<div className="flex flex-wrap gap-4 pt-2">
 						<Button
 							size="lg"
-							className="bg-accent hover:bg-accent-hover text-white rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-accent/20"
+							className="bg-primary hover:bg-primary-hover text-white rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-primary/20"
 						>
 							View Catalog
 							<ArrowRight className="ml-2 h-4 w-4" />
@@ -132,8 +132,8 @@ export function Hero() {
 					>
 						<div className="glass-card w-full rounded-xl p-4 flex flex-col gap-3 bg-white/90 backdrop-blur-md border-white/40 shadow-xl">
 							<div className="flex items-center gap-3">
-								<div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-									<ShieldCheck className="h-5 w-5 text-accent" />
+								<div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+									<ShieldCheck className="h-5 w-5 text-primary" />
 								</div>
 								<div>
 									<div className="text-sm font-bold text-secondary">
@@ -154,7 +154,7 @@ export function Hero() {
 									</span>
 								</div>
 								<div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-									<div className="h-full w-[99.8%] bg-accent rounded-full" />
+									<div className="h-full w-[99.8%] bg-primary rounded-full" />
 								</div>
 							</div>
 						</div>

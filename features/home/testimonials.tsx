@@ -53,7 +53,7 @@ export function Testimonials() {
 					>
 						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
 							Vad våra{" "}
-							<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							<span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
 								kunder säger
 							</span>
 						</h2>
@@ -83,7 +83,7 @@ export function Testimonials() {
 										{[...Array(testimonial.rating)].map((_, i) => (
 											<svg
 												key={i}
-												className="w-5 h-5 text-accent"
+												className="w-5 h-5 text-primary"
 												fill="currentColor"
 												viewBox="0 0 20 20"
 											>
@@ -126,7 +126,7 @@ export function Testimonials() {
 							</div>
 							<div className="h-12 w-px bg-glass-border hidden md:block" />
 							<div className="text-center">
-								<div className="text-4xl font-bold text-accent mb-2">
+								<div className="text-4xl font-bold text-primary mb-2">
 									15+
 								</div>
 								<div className="text-slate-400">År i branschen</div>

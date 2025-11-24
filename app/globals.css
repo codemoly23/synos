@@ -11,17 +11,14 @@
      ============================================ */
 
   /* Primary (Dark Blue) - Used for Headings, Dark Backgrounds */
-  --color-primary: #0C2C46;
+  --color-primary: #00949E;
   --color-primary-foreground: #FFFFFF;
+  --color-primary-hover: #007A82;
 
-  /* Accent (Teal) - Used for Buttons, Highlights */
-  --color-accent: #00949E;
-  --color-accent-foreground: #FFFFFF;
-  --color-accent-hover: #007A82;
   /* Slightly darker teal for hover */
 
   /* Secondary (Neutrals/Warm) */
-  --color-secondary: #F1F5F9;
+  --color-secondary: #0C2C46;
   /* Keeping light gray for general secondary backgrounds */
   --color-secondary-foreground: #0C2C46;
 
@@ -77,46 +74,12 @@
   --sidebar-foreground: #0C2C46;
   --sidebar-primary: #0C2C46;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #0C2C46;
+  --sidebar-primary: #F1F5F9;
+  --sidebar-primary-foreground: #0C2C46;
   --sidebar-border: #E2E8F0;
   --sidebar-ring: #00949E;
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #020617;
-    --color-foreground: #F8FAFC;
-
-    --color-primary: #F8FAFC;
-    --color-primary-foreground: #0C2C46;
-
-    --color-secondary: #1E293B;
-    --color-secondary-foreground: #F8FAFC;
-
-    --color-muted: #1E293B;
-    --color-muted-foreground: #94A3B8;
-
-    --color-card: #0C2C46;
-    /* Dark Blue card background */
-    --color-card-foreground: #F8FAFC;
-
-    --color-popover: #0C2C46;
-    --color-popover-foreground: #F8FAFC;
-
-    --color-border: #1E293B;
-    --color-input: #1E293B;
-
-    --sidebar-background: #020617;
-    --sidebar-foreground: #F8FAFC;
-    --sidebar-primary: #00949E;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #1E293B;
-    --sidebar-accent-foreground: #F8FAFC;
-    --sidebar-border: #1E293B;
-  }
-}
 
 @theme inline {
   /* Colors */
@@ -125,13 +88,11 @@
 
   --color-primary: var(--color-primary);
   --color-primary-foreground: var(--color-primary-foreground);
+  --color-primary-hover: var(--color-primary-hover);
 
   --color-secondary: var(--color-secondary);
   --color-secondary-foreground: var(--color-secondary-foreground);
 
-  --color-accent: var(--color-accent);
-  --color-accent-foreground: var(--color-accent-foreground);
-  --color-accent-hover: var(--color-accent-hover);
 
   --color-muted: var(--color-muted);
   --color-muted-foreground: var(--color-muted-foreground);
@@ -153,10 +114,12 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-tertiary: var(--color-tertiary);
 
   /* Fonts */
   --font-sans: "Inter", system-ui, sans-serif;
@@ -266,7 +229,7 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700;
   }
 
-  .text-gradient-accent {
+  .text-gradient-primary {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-600;
   }
 

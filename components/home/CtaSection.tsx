@@ -6,7 +6,7 @@ const CtaSection = () => {
 		<section className="py-32 bg-slate-400/80 relative overflow-hidden">
 			<div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 			{/* Abstract shapes */}
-			<div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl" />
+			<div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
 			<div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl" />
 
 			<div className="container-width relative z-10">
@@ -23,7 +23,7 @@ const CtaSection = () => {
 
 						<div className="space-y-6">
 							<div className="flex items-start gap-4 text-secondary">
-								<div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 text-accent">
+								<div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 text-primary">
 									<Phone className="h-6 w-6" />
 								</div>
 								<div>
@@ -35,7 +35,7 @@ const CtaSection = () => {
 									</p>
 									<a
 										href="tel:+18005550123"
-										className="text-accent font-semibold hover:underline mt-1 block"
+										className="text-primary font-semibold hover:underline mt-1 block"
 									>
 										(800) 555-0123
 									</a>
@@ -53,7 +53,7 @@ const CtaSection = () => {
 									<p className="text-slate-500">
 										Experience our equipment firsthand
 									</p>
-									<p className="text-accent font-medium mt-1">
+									<p className="text-primary font-medium mt-1">
 										123 Medical Plaza, Tech City, CA
 									</p>
 								</div>

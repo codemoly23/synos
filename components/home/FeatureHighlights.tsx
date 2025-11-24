@@ -40,12 +40,12 @@ export function FeatureHighlights() {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ duration: 0.5, delay: index * 0.1 }}
-							className="flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-slate-200 hover:shadow-xl hover:border-accent/30 hover:-translate-y-1 transition-all duration-300 group"
+							className="flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-slate-200 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group"
 						>
-							<div className="h-12 w-12 rounded-xl bg-secondary/5 text-accent flex items-center justify-center mb-4 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+							<div className="h-12 w-12 rounded-xl bg-secondary/5 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
 								<feature.icon className="h-6 w-6" />
 							</div>
-							<h3 className="text-lg font-semibold text-[#0C2C46] mb-2 group-hover:text-accent transition-colors duration-300">
+							<h3 className="text-lg font-semibold text-[#0C2C46] mb-2 group-hover:text-primary transition-colors duration-300">
 								{feature.title}
 							</h3>
 							<p className="text-sm text-slate-600 leading-relaxed group-hover:text-[#0C2C46]/80 transition-colors duration-300">

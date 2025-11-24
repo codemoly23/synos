@@ -21,11 +21,11 @@ export function Footer() {
 					{/* Brand Column */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2 mb-4">
-							{/* <div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-xl">
+							{/* <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">
 								S
 							</div>
 							<span className="font-bold text-xl tracking-tight">
-								Synos<span className="text-accent">Medical</span>
+								Synos<span className="text-primary">Medical</span>
 							</span> */}
 							<Logo />
 						</div>
@@ -39,7 +39,7 @@ export function Footer() {
 									<a
 										key={i}
 										href="#"
-										className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors"
+										className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors"
 									>
 										<Icon className="h-4 w-4" />
 									</a>
@@ -63,7 +63,7 @@ export function Footer() {
 								<li key={item}>
 									<Link
 										href="#"
-										className="hover:text-accent transition-colors"
+										className="hover:text-primary transition-colors"
 									>
 										{item}
 									</Link>
@@ -77,7 +77,7 @@ export function Footer() {
 						<h4 className="font-bold text-lg mb-6">Contact Us</h4>
 						<ul className="space-y-4 text-sm text-secondary-foreground/70">
 							<li className="flex items-start gap-3">
-								<MapPin className="h-5 w-5 text-accent shrink-0" />
+								<MapPin className="h-5 w-5 text-primary shrink-0" />
 								<span>
 									123 Medical Center Dr,
 									<br />
@@ -85,11 +85,11 @@ export function Footer() {
 								</span>
 							</li>
 							<li className="flex items-center gap-3">
-								<Phone className="h-5 w-5 text-accent shrink-0" />
+								<Phone className="h-5 w-5 text-primary shrink-0" />
 								<span>+1 (800) 555-0123</span>
 							</li>
 							<li className="flex items-center gap-3">
-								<Mail className="h-5 w-5 text-accent shrink-0" />
+								<Mail className="h-5 w-5 text-primary shrink-0" />
 								<span>support@synosmedical.com</span>
 							</li>
 						</ul>
@@ -105,9 +105,9 @@ export function Footer() {
 						<div className="flex flex-col gap-3">
 							<Input
 								placeholder="Enter your email"
-								className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-accent"
+								className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary"
 							/>
-							<Button className="bg-accent hover:bg-accent-hover text-white w-full">
+							<Button className="bg-primary hover:bg-primary-hover text-white w-full">
 								Subscribe
 							</Button>
 						</div>

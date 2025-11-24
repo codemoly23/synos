@@ -69,7 +69,7 @@ export function ContactCTA() {
 	return (
 		<section id="contact" className="py-20 md:py-32 relative overflow-hidden">
 			{/* Background gradient */}
-			<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
+			<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/20" />
 
 			<Container maxWidth="xl" className="relative z-10">
 				<motion.div
@@ -83,7 +83,7 @@ export function ContactCTA() {
 						<motion.div variants={fadeUp} transition={defaultTransition}>
 							<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
 								Redo att ta{" "}
-								<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+								<span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
 									nästa steg?
 								</span>
 							</h2>
@@ -120,9 +120,9 @@ export function ContactCTA() {
 								</div>
 
 								<div className="flex items-center gap-4">
-									<div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+									<div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
 										<svg
-											className="w-6 h-6 text-accent"
+											className="w-6 h-6 text-primary"
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"

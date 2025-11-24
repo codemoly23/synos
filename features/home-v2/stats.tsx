@@ -33,7 +33,7 @@ export function Stats() {
 			<div className="absolute inset-0 -z-10 pointer-events-none">
 				<div className="absolute top-0 left-1/4 w-64 h-64 bg-secondary opacity-10 rounded-full blur-3xl animate-pulse-slow" />
 				<div
-					className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent opacity-10 rounded-full blur-3xl animate-pulse-slow"
+					className="absolute bottom-0 right-1/4 w-64 h-64 bg-primary opacity-10 rounded-full blur-3xl animate-pulse-slow"
 					style={{ animationDelay: "2s" }}
 				/>
 			</div>
@@ -52,10 +52,10 @@ export function Stats() {
 							variants={staggerItem}
 							className="group text-center glass-card rounded-2xl p-8 transition-all duration-300 card-hover-glow bg-white/60"
 						>
-							<div className="mb-3 text-5xl font-bold text-accent lg:text-6xl group-hover:text-secondary group-hover:scale-125 transition-all duration-300">
+							<div className="mb-3 text-5xl font-bold text-primary lg:text-6xl group-hover:text-secondary group-hover:scale-125 transition-all duration-300">
 								{stat.value}
 							</div>
-							<div className="mb-2 text-xl font-bold text-secondary-dark group-hover:text-accent transition-colors duration-300">
+							<div className="mb-2 text-xl font-bold text-secondary-dark group-hover:text-primary transition-colors duration-300">
 								{stat.label}
 							</div>
 							<div className="text-sm text-secondary-dark/70">
@@ -63,7 +63,7 @@ export function Stats() {
 							</div>
 
 							{/* Accent line */}
-							<div className="mt-6 mx-auto w-16 h-1 bg-accent rounded-full group-hover:w-24 transition-all duration-300" />
+							<div className="mt-6 mx-auto w-16 h-1 bg-primary rounded-full group-hover:w-24 transition-all duration-300" />
 						</motion.div>
 					))}
 				</motion.div>

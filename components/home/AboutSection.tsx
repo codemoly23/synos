@@ -32,14 +32,14 @@ const AboutSection = () => {
 				</div>
 
 				<div className="space-y-8">
-					<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 w-fit border border-accent/20">
-						<span className="text-xs font-bold text-accent uppercase tracking-wider">
+					<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 w-fit border border-primary/20">
+						<span className="text-xs font-bold text-primary uppercase tracking-wider">
 							Why Choose Synos
 						</span>
 					</div>
 					<h2 className="text-4xl md:text-5xl font-bold text-[#0C2C46] leading-tight">
 						Empowering Healthcare with{" "}
-						<span className="text-accent">Precision Technology</span>
+						<span className="text-primary">Precision Technology</span>
 					</h2>
 					<p className="text-slate-600 text-lg leading-relaxed">
 						{`At Synos Medical, we bridge the gap between innovation and
@@ -59,10 +59,10 @@ const AboutSection = () => {
 							"Staff Training Included",
 						].map((item, i) => (
 							<li key={i} className="flex items-center gap-3 group">
-								<div className="h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
-									<CheckCircle2 className="h-5 w-5 text-accent group-hover:text-white transition-colors duration-300" />
+								<div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+									<CheckCircle2 className="h-5 w-5 text-primary group-hover:text-white transition-colors duration-300" />
 								</div>
-								<span className="font-medium text-[#0C2C46] group-hover:text-accent transition-colors">
+								<span className="font-medium text-[#0C2C46] group-hover:text-primary transition-colors">
 									{item}
 								</span>
 							</li>

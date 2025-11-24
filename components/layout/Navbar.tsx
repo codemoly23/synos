@@ -115,7 +115,7 @@ export function Navbar() {
 												href={item.href}
 												className={cn(
 													navigationMenuTriggerStyle(),
-													"bg-transparent! text-secondary! hover:text-accent! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-accent! active:bg-secondary/20! active:text-accent! transition-colors"
+													"bg-transparent! text-secondary! hover:text-primary! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-primary! active:bg-secondary/20! active:text-primary! transition-colors"
 												)}
 											>
 												{item.title}

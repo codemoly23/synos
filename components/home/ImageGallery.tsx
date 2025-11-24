@@ -62,7 +62,7 @@ export function ImageGallery() {
 			aria-labelledby="gallery-heading"
 		>
 			{/* Decorative background elements */}
-			<div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+			<div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 			<div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none" />
 
 			<div className="container-width relative z-10">
@@ -77,10 +77,10 @@ export function ImageGallery() {
 					<motion.div
 						variants={fadeUp}
 						transition={defaultTransition}
-						className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 w-fit border border-accent/20 mb-6 mx-auto"
+						className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 w-fit border border-primary/20 mb-6 mx-auto"
 					>
-						<Eye className="h-4 w-4 text-accent" />
-						<span className="text-xs font-extrabold text-accent uppercase tracking-wider">
+						<Eye className="h-4 w-4 text-primary" />
+						<span className="text-xs font-extrabold text-primary uppercase tracking-wider">
 							Our Facilities
 						</span>
 					</motion.div>
@@ -144,7 +144,7 @@ export function ImageGallery() {
 								className={`
 									absolute inset-0 bg-linear-to-t from-primary/90 via-primary/40 to-transparent
 									transition-opacity duration-500
-									md:opacity-0 md:group-hover:opacity-100
+									md:opacity-0 md:group-hover:opacity-50
 								`}
 							/>
 
@@ -161,31 +161,31 @@ export function ImageGallery() {
 								`}
 							>
 								{/* Glass Card with Content */}
-								<div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 md:p-6 shadow-2xl transform transition-all duration-300 group-hover:shadow-accent/20">
+								<div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 md:p-6 shadow-2xl transform transition-all duration-300 group-hover:shadow-primary/20">
 									{/* Icon Badge */}
-									{/* <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-accent/10 border border-accent/20 mb-3">
-										<Maximize2 className="h-5 w-5 text-accent" />
+									{/* <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 border border-primary/20 mb-3">
+										<Maximize2 className="h-5 w-5 text-primary" />
 									</div> */}
 
 									{/* Title */}
-									<h3 className="text-xl md:text-2xl font-extrabold text-accent mb-2 line-clamp-2 tracking-tight">
+									<h3 className="text-xl md:text-2xl font-extrabold text-white mb-2 line-clamp-2 tracking-tight">
 										{image.title}
 									</h3>
 
 									{/* Subtitle */}
-									<p className="text-secondary/50 text-sm md:text-base line-clamp-2 font-medium">
+									<p className="text-slate-200 text-sm md:text-base line-clamp-2 font-medium">
 										{image.subtitle}
 									</p>
 
 									{/* Decorative accent line */}
-									<div className="mt-4 h-1 w-16 bg-linear-to-r from-accent to-accent/20 rounded-full" />
+									<div className="mt-4 h-1 w-16 bg-linear-to-r from-primary to-primary/20 rounded-full" />
 								</div>
 							</div>
 
 							{/* Hover Indicator - Desktop only */}
 							{/* <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
 								<div className="bg-white/70 backdrop-blur-md rounded-full p-2 shadow-lg">
-									<Eye className="h-5 w-5 text-accent" />
+									<Eye className="h-5 w-5 text-primary" />
 								</div>
 							</div> */}
 
@@ -215,7 +215,7 @@ export function ImageGallery() {
 							</p>
 						</div>
 						<button
-							className="shrink-0 px-6 py-3 bg-accent hover:bg-accent-hover text-white font-bold rounded-full transition-all duration-300 shadow-lg shadow-accent/20 hover:shadow-accent/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+							className="shrink-0 px-6 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
 							aria-label="Schedule a virtual tour"
 						>
 							Schedule Tour

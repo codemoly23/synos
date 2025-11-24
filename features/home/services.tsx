@@ -167,7 +167,7 @@ export function Services() {
 					>
 						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
 							Varför välja{" "}
-							<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							<span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
 								Synos Medical?
 							</span>
 						</h2>
@@ -193,7 +193,7 @@ export function Services() {
 										className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 ${
 											service.color === "primary"
 												? "bg-secondary/20 text-secondary"
-												: "bg-accent/20 text-accent"
+												: "bg-primary/20 text-primary"
 										}`}
 									>
 										{service.icon}

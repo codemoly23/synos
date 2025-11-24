@@ -50,9 +50,9 @@ export function Testimonials() {
 							Synos Medical for their equipment needs.
 						</p>
 						<div className="flex gap-2">
-							<div className="h-2 w-12 bg-accent rounded-full" />
-							<div className="h-2 w-2 bg-accent/50 rounded-full" />
-							<div className="h-2 w-2 bg-accent/50 rounded-full" />
+							<div className="h-2 w-12 bg-primary rounded-full" />
+							<div className="h-2 w-2 bg-primary/50 rounded-full" />
+							<div className="h-2 w-2 bg-primary/50 rounded-full" />
 						</div>
 					</div>
 
@@ -73,7 +73,7 @@ export function Testimonials() {
 							}}
 							pagination={{
 								clickable: true,
-								bulletActiveClass: "bg-accent opacity-100",
+								bulletActiveClass: "bg-primary opacity-100",
 								bulletClass:
 									"inline-block h-2 w-2 rounded-full bg-white/30 mx-1 cursor-pointer transition-all",
 							}}
@@ -82,12 +82,12 @@ export function Testimonials() {
 							{testimonials.map((item, index) => (
 								<SwiperSlide key={index}>
 									<div className="bg-white/10 backdrop-blur-md border border-white/10 p-8 rounded-2xl h-full min-h-[280px] flex flex-col">
-										<Quote className="h-8 w-8 text-accent mb-6 opacity-80" />
+										<Quote className="h-8 w-8 text-primary mb-6 opacity-80" />
 										<p className="text-lg leading-relaxed mb-6 flex-grow">
 											"{item.quote}"
 										</p>
 										<div className="flex items-center gap-4 mt-auto">
-											<div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
+											<div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
 												{item.author.charAt(0)}
 											</div>
 											<div>

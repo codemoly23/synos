@@ -20,11 +20,11 @@ export function Hero() {
 	return (
 		<section className="relative min-h-[90vh] flex items-center overflow-hidden py-20 md:py-32">
 			{/* Background gradient */}
-			<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-bg to-accent/10 opacity-50" />
+			<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-bg to-primary/10 opacity-50" />
 
 			{/* Decorative blur circles */}
 			<div className="absolute top-20 left-10 w-72 h-72 bg-secondary/30 rounded-full blur-3xl opacity-20" />
-			<div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/30 rounded-full blur-3xl opacity-20" />
+			<div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/30 rounded-full blur-3xl opacity-20" />
 
 			<Container maxWidth="xl" className="relative z-10">
 				<motion.div
@@ -51,7 +51,7 @@ export function Hero() {
 							className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
 						>
 							Sveriges ledande leverantör av{" "}
-							<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							<span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
 								medicinsk klinikutrustning
 							</span>
 						</motion.h1>
@@ -139,9 +139,9 @@ export function Hero() {
 								transition={{ delay: 0.4, ...defaultTransition }}
 							>
 								<div className="flex flex-col h-full justify-between">
-									<div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
+									<div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
 										<svg
-											className="w-6 h-6 text-accent"
+											className="w-6 h-6 text-primary"
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"
