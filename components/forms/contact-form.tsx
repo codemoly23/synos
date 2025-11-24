@@ -71,7 +71,10 @@ export function ContactForm() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+		<form
+			onSubmit={handleSubmit(onSubmit)}
+			className="space-y-6 text-secondary"
+		>
 			{/* Name */}
 			<div>
 				<label htmlFor="name" className="mb-2 block text-sm font-medium">
@@ -188,14 +191,14 @@ export function ContactForm() {
 			</div>
 
 			{/* GDPR Consent */}
-			<div className="space-y-4 rounded-lg border border-border bg-muted/50 p-4">
+			<div className="space-y-4 rounded-lg border border-border/15 bg-muted/10 p-4">
 				<div className="flex items-start gap-3">
 					<input
 						id="gdprConsent"
 						type="checkbox"
 						{...register("gdprConsent")}
 						className={cn(
-							"mt-1 h-4 w-4 rounded border-gray-300 text-secondary focus:ring-primary",
+							"mt-1 h-4 w-4 rounded border-gray-300 text-secondary",
 							errors.gdprConsent && "border-red-500"
 						)}
 					/>
@@ -230,7 +233,7 @@ export function ContactForm() {
 						id="marketingConsent"
 						type="checkbox"
 						{...register("marketingConsent")}
-						className="mt-1 h-4 w-4 rounded border-gray-300 text-secondary focus:ring-primary"
+						className="mt-1 h-4 w-4 rounded border-gray-300 text-secondary"
 					/>
 					<label htmlFor="marketingConsent" className="text-sm">
 						<span className="font-medium">

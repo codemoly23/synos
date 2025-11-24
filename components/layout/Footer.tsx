@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator"; // Assuming Separator exists or I'll use div
+import Logo from "../common/logo";
 
 export function Footer() {
 	return (
@@ -20,12 +21,13 @@ export function Footer() {
 					{/* Brand Column */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2 mb-4">
-							<div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-xl">
+							{/* <div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-xl">
 								S
 							</div>
 							<span className="font-bold text-xl tracking-tight">
 								Synos<span className="text-accent">Medical</span>
-							</span>
+							</span> */}
+							<Logo />
 						</div>
 						<p className="text-secondary-foreground/70 text-sm leading-relaxed">
 							Your trusted partner for advanced medical equipment and
