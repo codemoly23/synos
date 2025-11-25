@@ -37,7 +37,7 @@ const testimonials = [
 
 export function Testimonials() {
 	return (
-		<section className="section-padding bg-secondary text-secondary-foreground overflow-hidden">
+		<section className="section-padding bg-secondary text-white overflow-hidden">
 			<div className="container-width">
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
 					{/* Header */}
@@ -45,7 +45,7 @@ export function Testimonials() {
 						<h2 className="text-3xl md:text-4xl font-bold mb-6">
 							Trusted by Leading Healthcare Providers
 						</h2>
-						<p className="text-secondary-foreground/80 text-lg mb-8">
+						<p className="text-slate-100/80 text-lg mb-8">
 							See why hospitals and clinics across the country choose
 							Synos Medical for their equipment needs.
 						</p>
@@ -82,9 +82,9 @@ export function Testimonials() {
 							{testimonials.map((item, index) => (
 								<SwiperSlide key={index}>
 									<div className="bg-white/10 backdrop-blur-md border border-white/10 p-8 rounded-2xl h-full min-h-[280px] flex flex-col">
-										<Quote className="h-8 w-8 text-primary mb-6 opacity-80" />
-										<p className="text-lg leading-relaxed mb-6 flex-grow">
-											"{item.quote}"
+										<Quote className="h-8 w-8 text-slate-200 mb-6 opacity-80" />
+										<p className="text-lg leading-relaxed mb-6 grow">
+											{`"${item.quote}"`}
 										</p>
 										<div className="flex items-center gap-4 mt-auto">
 											<div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
@@ -94,7 +94,7 @@ export function Testimonials() {
 												<div className="font-bold">
 													{item.author}
 												</div>
-												<div className="text-sm text-secondary-foreground/70">
+												<div className="text-sm text-slate-200/70">
 													{item.role}, {item.hospital}
 												</div>
 											</div>

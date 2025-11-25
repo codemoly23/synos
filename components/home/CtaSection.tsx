@@ -30,7 +30,7 @@ const CtaSection = () => {
 									<h4 className="text-lg font-bold">
 										Call Us Directly
 									</h4>
-									<p className="text-slate-500">
+									<p className="text-slate-600">
 										Available 24/7 for emergency support
 									</p>
 									<a
@@ -50,7 +50,7 @@ const CtaSection = () => {
 									<h4 className="text-lg font-bold text-secondary">
 										Visit Our Showroom
 									</h4>
-									<p className="text-slate-500">
+									<p className="text-slate-600">
 										Experience our equipment firsthand
 									</p>
 									<p className="text-primary font-medium mt-1">

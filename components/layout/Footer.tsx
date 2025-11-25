@@ -15,7 +15,7 @@ import Logo from "../common/logo";
 
 export function Footer() {
 	return (
-		<footer className="bg-secondary text-secondary-foreground pt-16 pb-8">
+		<footer className="bg-secondary text-primary-foreground pt-16 pb-8">
 			<div className="container-width">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
 					{/* Brand Column */}
@@ -29,7 +29,7 @@ export function Footer() {
 							</span> */}
 							<Logo />
 						</div>
-						<p className="text-secondary-foreground/70 text-sm leading-relaxed">
+						<p className="text-primary-foreground/70 text-sm leading-relaxed">
 							Your trusted partner for advanced medical equipment and
 							healthcare solutions. Certified quality, global standards.
 						</p>
@@ -51,7 +51,7 @@ export function Footer() {
 					{/* Quick Links */}
 					<div>
 						<h4 className="font-bold text-lg mb-6">Quick Links</h4>
-						<ul className="space-y-3 text-sm text-secondary-foreground/70">
+						<ul className="space-y-3 text-sm text-primary-foreground/70">
 							{[
 								"About Us",
 								"Our Products",
@@ -75,7 +75,7 @@ export function Footer() {
 					{/* Contact Info */}
 					<div>
 						<h4 className="font-bold text-lg mb-6">Contact Us</h4>
-						<ul className="space-y-4 text-sm text-secondary-foreground/70">
+						<ul className="space-y-4 text-sm text-primary-foreground/70">
 							<li className="flex items-start gap-3">
 								<MapPin className="h-5 w-5 text-primary shrink-0" />
 								<span>
@@ -98,7 +98,7 @@ export function Footer() {
 					{/* Newsletter */}
 					<div>
 						<h4 className="font-bold text-lg mb-6">Stay Updated</h4>
-						<p className="text-sm text-secondary-foreground/70 mb-4">
+						<p className="text-sm text-primary-foreground/70 mb-4">
 							Subscribe to our newsletter for the latest product updates
 							and medical insights.
 						</p>
@@ -116,7 +116,7 @@ export function Footer() {
 
 				<div className="h-px w-full bg-white/10 my-8" />
 
-				<div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-secondary-foreground/50">
+				<div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/50">
 					<p>© 2024 Synos Medical. All rights reserved.</p>
 					<div className="flex gap-6">
 						<Link href="#" className="hover:text-white">
