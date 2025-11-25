@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContactForm } from "@/components/forms/contact-form";
+import { BookOpen, CheckSquare, HeartPlus } from "lucide-react";
 
 export const metadata: Metadata = {
 	title: "Utbildningar",
@@ -17,11 +18,11 @@ export const metadata: Metadata = {
 
 export default function UtbildningarPage() {
 	return (
-		<div className="container mx-auto px-4 py-12">
+		<div className="container mx-auto px-4 py-12 page-padding-top">
 			{/* Hero Section */}
 			<div className="mb-16 text-center">
 				<h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl">
-					Vi ser till att du kan använda vår utrustning{" "}
+					Vi ser till att du kan använda vår utrustning
 					<span className="text-secondary">på rätt sätt</span>
 				</h1>
 				<p className="mx-auto max-w-3xl text-lg text-muted-foreground">
@@ -36,7 +37,7 @@ export default function UtbildningarPage() {
 
 			{/* Main Content Section */}
 			<section className="mb-20">
-				<div className="mb-12 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
+				<div className="mb-12 rounded-lg bg-linear-to-r from-primary/10 to-primary/5 p-8 md:p-12">
 					<h2 className="mb-6 text-3xl font-bold">
 						Alltid anpassad utbildning
 					</h2>
@@ -69,19 +70,7 @@ export default function UtbildningarPage() {
 					<Card className="border-primary/20">
 						<CardContent className="p-8">
 							<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-secondary/10">
-								<svg
-									className="h-8 w-8 text-secondary"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-									/>
-								</svg>
+								<BookOpen className="h-8 w-8 text-secondary" />
 							</div>
 							<h3 className="mb-3 text-xl font-semibold">
 								Teoretisk & Praktisk Utbildning
@@ -97,19 +86,7 @@ export default function UtbildningarPage() {
 					<Card className="border-primary/20">
 						<CardContent className="p-8">
 							<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-secondary/10">
-								<svg
-									className="h-8 w-8 text-secondary"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-									/>
-								</svg>
+								<CheckSquare className="h-8 w-8 text-secondary" />
 							</div>
 							<h3 className="mb-3 text-xl font-semibold">
 								Certifiering som Synos Terapeut
@@ -124,19 +101,7 @@ export default function UtbildningarPage() {
 					<Card className="border-primary/20">
 						<CardContent className="p-8">
 							<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-secondary/10">
-								<svg
-									className="h-8 w-8 text-secondary"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-									/>
-								</svg>
+								<HeartPlus className="h-8 w-8 text-secondary" />
 							</div>
 							<h3 className="mb-3 text-xl font-semibold">
 								Livstids Support

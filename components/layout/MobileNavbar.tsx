@@ -56,7 +56,7 @@ const MobileNavbar = () => {
 											<AccordionTrigger className="text-lg font-medium hover:text-primary hover:no-underline py-3 transition-colors">
 												<Link
 													href={item.href}
-													className="w-full block hover:no-underline text-slate-100"
+													className="w-full block text-slate-100"
 													onClick={() => setOpen(false)}
 												>
 													{item.title}

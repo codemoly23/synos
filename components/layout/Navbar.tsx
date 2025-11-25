@@ -64,7 +64,9 @@ export function Navbar() {
 										{item.items ? (
 											<>
 												<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-[#00949E]! hover:bg-[#00949E]/10! focus:bg-[#00949E]/10! focus:text-[#00949E]! active:bg-secondary/20! active:text-[#007A82]! data-[state=open]:bg-[#00949E]/10! data-[state=open]:text-[#00949E]! text-sm font-medium transition-colors">
-													{item.title}
+													<Link href={item.href}>
+														{item.title}
+													</Link>
 												</NavigationMenuTrigger>
 												<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
 													<div className="w-[800px] p-6 md:w-[600px] lg:w-[900px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">
