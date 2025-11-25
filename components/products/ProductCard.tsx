@@ -1,0 +1,195 @@
+import Link from "next/link";
+import Image from "next/image";
+import { Product } from "@/types/product";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from "@/components/ui/card";
+
+interface ProductCardProps {
+	product: Product;
+	variant?: "grid" | "list";
+}
+
+export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
+	const primaryImage =
+		product.images.find((img) => img.isPrimary) || product.images[0];
+
+	if (variant === "list") {
+		return (
+			<Card className="group overflow-hidden border-border/50 transition-all hover:border-primary hover:shadow-lg">
+				<div className="flex flex-col md:flex-row">
+					{/* Image Section */}
+					<div className="relative h-64 w-full md:h-auto md:w-80 overflow-hidden bg-muted">
+						{primaryImage ? (
+							<Image
+								src={primaryImage.url}
+								alt={primaryImage.alt}
+								fill
+								className="object-cover transition-transform duration-300 group-hover:scale-105"
+							/>
+						) : (
+							<div className="flex h-full items-center justify-center bg-linear-to-br from-tertiary/30 to-muted">
+								<svg
+									className="h-20 w-20 text-tertiary/40"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={1.5}
+										d="M13 10V3L4 14h7v7l9-11h-7z"
+									/>
+								</svg>
+							</div>
+						)}
+					</div>
+
+					{/* Content Section */}
+					<div className="flex flex-1 flex-col p-6">
+						<div className="mb-3">
+							<h3 className="mb-2 text-2xl font-semibold text-foreground transition-colors group-hover:text-primary">
+								{product.name}
+							</h3>
+							<p className="text-sm text-muted-foreground line-clamp-2">
+								{product.description}
+							</p>
+						</div>
+
+						{/* Treatment Tags */}
+						<div className="mb-4 flex flex-wrap gap-2">
+							{product.treatments.slice(0, 4).map((treatment) => (
+								<Badge
+									key={treatment}
+									variant="secondary"
+									className="bg-tertiary/20 text-secondary hover:bg-tertiary/30"
+								>
+									{treatment}
+								</Badge>
+							))}
+							{product.treatments.length > 4 && (
+								<Badge
+									variant="outline"
+									className="border-tertiary text-muted-foreground"
+								>
+									+{product.treatments.length - 4} mer
+								</Badge>
+							)}
+						</div>
+
+						{/* Features Preview */}
+						{product.features.length > 0 && (
+							<ul className="mb-4 space-y-1">
+								{product.features.slice(0, 3).map((feature, index) => (
+									<li
+										key={index}
+										className="flex items-start text-sm text-foreground"
+									>
+										<svg
+											className="mr-2 mt-0.5 h-4 w-4 shrink-0 text-primary"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M5 13l4 4L19 7"
+											/>
+										</svg>
+										<span>{feature.title}</span>
+									</li>
+								))}
+							</ul>
+						)}
+
+						<div className="mt-auto">
+							<Button
+								asChild
+								className="bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+							>
+								<Link href={`/produkter/produkt/${product.slug}`}>
+									Läs mer & Specifikationer
+								</Link>
+							</Button>
+						</div>
+					</div>
+				</div>
+			</Card>
+		);
+	}
+
+	// Grid variant
+	return (
+		<Card className="group h-full overflow-hidden border-border/50 transition-all hover:border-primary hover:shadow-lg">
+			{/* Image */}
+			<div className="relative h-56 overflow-hidden bg-muted">
+				{primaryImage ? (
+					<Image
+						src={primaryImage.url}
+						alt={primaryImage.alt}
+						fill
+						className="object-cover transition-transform duration-300 group-hover:scale-105"
+					/>
+				) : (
+					<div className="flex h-full items-center justify-center bg-linear-to-br from-tertiary/30 to-muted">
+						<svg
+							className="h-16 w-16 text-tertiary/40"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={1.5}
+								d="M13 10V3L4 14h7v7l9-11h-7z"
+							/>
+						</svg>
+					</div>
+				)}
+			</div>
+
+			<CardHeader className="pb-3">
+				<h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+					{product.name}
+				</h3>
+			</CardHeader>
+
+			<CardContent className="pb-4">
+				<p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+					{product.description}
+				</p>
+
+				{/* Treatment Tags */}
+				<div className="flex flex-wrap gap-2">
+					{product.treatments.slice(0, 3).map((treatment) => (
+						<Badge
+							key={treatment}
+							variant="secondary"
+							className="bg-tertiary/20 text-secondary text-xs hover:bg-tertiary/30"
+						>
+							{treatment}
+						</Badge>
+					))}
+				</div>
+			</CardContent>
+
+			<CardFooter>
+				<Button
+					asChild
+					className="w-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+				>
+					<Link href={`/produkter/produkt/${product.slug}`}>Läs mer</Link>
+				</Button>
+			</CardFooter>
+		</Card>
+	);
+}

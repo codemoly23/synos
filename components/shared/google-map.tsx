@@ -1,95 +1,90 @@
 "use client";
 
 import { useState } from "react";
+import { MapPin } from "lucide-react";
 
 interface GoogleMapProps {
-  lat: number;
-  lng: number;
-  title: string;
-  address: string;
+	lat: number;
+	lng: number;
+	title: string;
+	address: string;
 }
 
 export function GoogleMap({ lat, lng, title, address }: GoogleMapProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+	const [isLoaded, setIsLoaded] = useState(false);
+	const [hasError, setHasError] = useState(false);
 
-  // Create Google Maps URL
-  const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || "YOUR_API_KEY"}&q=${lat},${lng}&zoom=15`;
+	// Google Maps link for opening in new tab
+	const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
-  // Fallback to static map if API key is not available
-  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&markers=color:red%7C${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || ""}`;
+	// Use iframe embed without API key (free option)
+	const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 
-  // Google Maps link for opening in new tab
-  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+	return (
+		<div className="relative h-full w-full overflow-hidden bg-slate-100">
+			{/* Loading placeholder */}
+			{!isLoaded && !hasError && (
+				<div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-100">
+					<div className="text-center">
+						<div className="mb-3 flex justify-center">
+							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00949E]/10">
+								<MapPin className="h-8 w-8 animate-pulse text-[#00949E]" />
+							</div>
+						</div>
+						<div className="mb-2 text-lg font-semibold text-[#0C2C46]">
+							Laddar karta...
+						</div>
+						<div className="text-sm text-slate-600">{address}</div>
+					</div>
+				</div>
+			)}
 
-  return (
-    <div className="relative h-full w-full overflow-hidden rounded-lg">
-      {/* Loading placeholder */}
-      {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <div className="text-center">
-            <div className="mb-2 text-lg font-medium">{title}</div>
-            <div className="text-sm text-muted-foreground">{address}</div>
-            <a
-              href={googleMapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block text-primary hover:underline"
-            >
-              Öppna i Google Maps →
-            </a>
-          </div>
-        </div>
-      )}
+			{/* Error fallback */}
+			{hasError && (
+				<div className="flex h-full items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 p-8 text-center">
+					<div className="max-w-sm">
+						<div className="mb-4 flex justify-center">
+							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00949E]/10">
+								<MapPin className="h-8 w-8 text-[#00949E]" />
+							</div>
+						</div>
+						<h3 className="mb-2 text-xl font-bold text-[#0C2C46]">
+							{title}
+						</h3>
+						<p className="mb-6 text-sm text-slate-600">{address}</p>
+						<a
+							href={googleMapsLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-2 rounded-lg bg-[#00949E] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#007A82] hover:shadow-lg"
+						>
+							<MapPin className="h-4 w-4" />
+							Visa i Google Maps
+						</a>
+					</div>
+				</div>
+			)}
 
-      {/* Embedded map */}
-      {process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ? (
-        <iframe
-          src={mapUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          onLoad={() => setIsLoaded(true)}
-          title={`Karta till ${title}`}
-        />
-      ) : (
-        <div className="flex h-full items-center justify-center bg-muted p-8 text-center">
-          <div>
-            <div className="mb-4 text-lg font-medium">{title}</div>
-            <div className="mb-4 text-sm text-muted-foreground">{address}</div>
-            <a
-              href={googleMapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary-hover"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              Öppna i Google Maps
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+			{/* Embedded map */}
+			<iframe
+				src={embedUrl}
+				width="100%"
+				height="100%"
+				style={{ border: 0 }}
+				allowFullScreen
+				loading="lazy"
+				referrerPolicy="no-referrer-when-downgrade"
+				onLoad={() => {
+					setIsLoaded(true);
+					setHasError(false);
+				}}
+				onError={() => {
+					setHasError(true);
+					setIsLoaded(false);
+				}}
+				title={`Karta till ${title}`}
+				className="h-full w-full"
+			/>
+		</div>
+	);
 }
-

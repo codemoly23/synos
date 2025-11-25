@@ -1,70 +1,270 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============================================
+   DESIGN TOKENS - MEDICAL SHOWCASE THEME
+   ============================================ */
 
 :root {
-  /* Synos Medical Brand Colors */
-  --primary: #00949e;
-  --primary-hover: #0c2c46;
-  --primary-light: #e6f7f8;
+  /* ============================================
+     BASE COLORS - USER REQUESTED PALETTE
+     ============================================ */
 
-  /* Base Colors */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --border: #e5e5e5;
+  /* Primary (Teal Accent) - Used for Buttons, Links, Accents */
+  --color-primary: #39898F;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary-hover: #2C2D38;
 
-  /* Semantic Colors */
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #3b82f6;
-}
+  /* Slightly darker teal for hover */
 
-@theme inline {
-  /* Colors */
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-light: var(--primary-light);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-error: var(--error);
-  --color-info: var(--info);
+  /* Secondary (Dark Blue/Navy) - Used for Dark Backgrounds, Secondary Text */
+  --color-secondary: #2C2D38;
+  --color-secondary-foreground: #FFFFFF;
 
-  /* Fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Tertiary/Warm Accents (Beige/Tan tones) */
+  --color-tertiary: #DFB294;
+  --color-tertiary-foreground: #2C2D38;
 
-  /* Spacing */
-  --spacing-section: 5rem;
-  --spacing-section-sm: 3rem;
+  /* Backgrounds */
+  --color-background: #FFFFFF;
+  --color-foreground: #2C2D38;
+  /* Using dark tone for main text */
 
-  /* Border Radius */
-  --radius-sm: 0.25rem;
+  /* UI Elements */
+  --color-muted: #F8EEE8;
+  --color-muted-foreground: #3E414B;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #2C2D38;
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #2C2D38;
+
+  --color-border: #E6C4AE;
+  --color-input: #E6C4AE;
+  --color-ring: #39898F;
+  /* Teal ring */
+
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #DFB294;
+  /* Using the beige/tan color for warning/attention */
+  --color-error: #EF4444;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+
+  /* Chart Colors */
+  --chart-1: #39898F;
+  --chart-2: #2C2D38;
+  --chart-3: #DFB294;
+  --chart-4: #3E414B;
+  --chart-5: #64748B;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius: 0.5rem;
+
+  /* Sidebar (shadcn) */
+  --sidebar-background: #F8EEE8;
+  --sidebar-foreground: #2C2D38;
+  --sidebar-primary: #39898F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1DCCF;
+  --sidebar-accent-foreground: #2C2D38;
+  --sidebar-border: #E6C4AE;
+  --sidebar-ring: #39898F;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+@theme inline {
+  /* Colors */
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-primary-hover: var(--color-primary-hover);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+
+
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-tertiary: var(--color-tertiary);
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
 }
 
-/* Focus styles for accessibility */
-*:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+/* ============================================
+   CUSTOM UTILITIES
+   ============================================ */
+
+@layer utilities {
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  .glass-dark {
+    @apply bg-[#0C2C46]/80 backdrop-blur-md border border-[#0C2C46]/50 shadow-md;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700;
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-600;
+  }
+
+  /* Layout */
+  .container-width {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+
+  /* page top padding to adjust the navbar height */
+  .page-padding-top {
+    @apply pt-32;
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full border-2 border-white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-300;
 }
