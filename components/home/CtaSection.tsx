@@ -9,7 +9,7 @@ const CtaSection = () => {
 			<div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
 			<div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl" />
 
-			<div className="container-width relative z-10">
+			<div className="_container relative z-10">
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 					<div className="max-w-2xl">
 						<h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-secondary">

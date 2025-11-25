@@ -29,7 +29,7 @@ const faqs = [
 export function AnimatedFAQ() {
 	return (
 		<section className="section-padding bg-slate-100">
-			<div className="container-width">
+			<div className="_container">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}

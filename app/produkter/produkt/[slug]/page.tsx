@@ -89,7 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 			/>
 
 			<div className="min-h-screen bg-linear-to-b from-muted to-background">
-				<div className="container mx-auto px-4 py-8 page-padding-top">
+				<div className="_container page-padding-top">
 					{/* Breadcrumb */}
 					<Breadcrumb
 						items={[

@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 const AboutSection = () => {
 	return (
 		<section className="section-padding bg-white relative overflow-hidden">
-			<div className="container-width grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+			<div className="_container grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 				<div className="relative h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
 					<Image
 						src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200"

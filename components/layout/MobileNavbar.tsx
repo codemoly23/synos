@@ -24,7 +24,11 @@ const MobileNavbar = () => {
 	return (
 		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTrigger asChild>
-				<Button variant="ghost" size="icon" className="lg:hidden bg-none!">
+				<Button
+					variant="ghost"
+					size="icon"
+					className="lg:hidden bg-none! hover:bg-transparent! p-0! w-auto! h-auto!"
+				>
 					<Menu className="h-6 w-6 text-secondary" />
 				</Button>
 			</SheetTrigger>

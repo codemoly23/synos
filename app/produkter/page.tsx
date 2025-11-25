@@ -5,15 +5,15 @@ import { treatmentCategories } from "@/data/categories/treatment-categories";
 import { featuredProducts } from "@/data/products/featured-products";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductSidebar } from "@/components/products/ProductSidebar";
-import { ViewToggle } from "@/components/products/ViewToggle";
+// import { ViewToggle } from "@/components/products/ViewToggle";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 
 export default function ProductsPage() {
 	const [view, setView] = useState<"grid" | "list">("grid");
 
 	return (
-		<div className="min-h-screen bg-linear-to-b from-muted to-primary/10">
-			<div className="container mx-auto px-4 py-8 page-padding-top">
+		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
+			<div className="_container mx-auto px-4 py-8 page-padding-top">
 				{/* Breadcrumb */}
 				<Breadcrumb items={[{ label: "Produkter" }]} />
 
@@ -33,7 +33,7 @@ export default function ProductsPage() {
 				<div className="flex flex-col gap-8 lg:flex-row">
 					{/* Sidebar */}
 					<div className="w-full lg:w-80 lg:shrink-0">
-						<div className="lg:sticky lg:top-24">
+						<div className="lg:sticky lg:top-28">
 							<ProductSidebar categories={treatmentCategories} />
 						</div>
 					</div>
@@ -51,7 +51,7 @@ export default function ProductsPage() {
 									produkter
 								</p>
 							</div>
-							<ViewToggle view={view} onViewChange={setView} />
+							{/* <ViewToggle view={view} onViewChange={setView} /> */}
 						</div>
 
 						{/* Products Grid/List */}
@@ -62,13 +62,15 @@ export default function ProductsPage() {
 									: "space-y-6"
 							}
 						>
-							{featuredProducts.map((product) => (
-								<ProductCard
-									key={product.id}
-									product={product}
-									variant={view}
-								/>
-							))}
+							{[...featuredProducts, ...featuredProducts].map(
+								(product) => (
+									<ProductCard
+										key={product.id}
+										product={product}
+										variant={view}
+									/>
+								)
+							)}
 						</div>
 					</div>
 				</div>

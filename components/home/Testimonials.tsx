@@ -38,7 +38,7 @@ const testimonials = [
 export function Testimonials() {
 	return (
 		<section className="section-padding bg-secondary text-white overflow-hidden">
-			<div className="container-width">
+			<div className="_container">
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
 					{/* Header */}
 					<div className="lg:col-span-1">

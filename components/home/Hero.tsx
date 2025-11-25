@@ -15,7 +15,7 @@ export function Hero() {
 				<div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
 			</div> */}
 
-			<div className="relative z-20 container-width grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+			<div className="relative z-20 _container grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 				{/* Left Content */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
