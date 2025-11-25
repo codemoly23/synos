@@ -10,55 +10,54 @@
      BASE COLORS - USER REQUESTED PALETTE
      ============================================ */
 
-  /* Primary (Dark Blue) - Used for Headings, Dark Backgrounds */
-  --color-primary: #00949E;
+  /* Primary (Teal Accent) - Used for Buttons, Links, Accents */
+  --color-primary: #39898F;
   --color-primary-foreground: #FFFFFF;
-  --color-primary-hover: #007A82;
+  --color-primary-hover: #2C2D38;
 
   /* Slightly darker teal for hover */
 
-  /* Secondary (Neutrals/Warm) */
-  --color-secondary: #0C2C46;
-  /* Keeping light gray for general secondary backgrounds */
-  --color-secondary-foreground: #0C2C46;
+  /* Secondary (Dark Blue/Navy) - Used for Dark Backgrounds, Secondary Text */
+  --color-secondary: #2C2D38;
+  --color-secondary-foreground: #FFFFFF;
 
-  /* Tertiary/Warm Accents (from user palette) */
-  --color-tertiary: #DBA480;
-  --color-tertiary-foreground: #21212C;
+  /* Tertiary/Warm Accents (Beige/Tan tones) */
+  --color-tertiary: #DFB294;
+  --color-tertiary-foreground: #2C2D38;
 
   /* Backgrounds */
   --color-background: #FFFFFF;
-  --color-foreground: #0C2C46;
-  /* Using Primary Dark Blue for main text */
+  --color-foreground: #2C2D38;
+  /* Using dark tone for main text */
 
   /* UI Elements */
-  --color-muted: #F8FAFC;
-  --color-muted-foreground: #64748B;
+  --color-muted: #F8EEE8;
+  --color-muted-foreground: #3E414B;
 
   --color-card: #FFFFFF;
-  --color-card-foreground: #0C2C46;
+  --color-card-foreground: #2C2D38;
 
   --color-popover: #FFFFFF;
-  --color-popover-foreground: #0C2C46;
+  --color-popover-foreground: #2C2D38;
 
-  --color-border: #E2E8F0;
-  --color-input: #E2E8F0;
-  --color-ring: #00949E;
+  --color-border: #E6C4AE;
+  --color-input: #E6C4AE;
+  --color-ring: #39898F;
   /* Teal ring */
 
   /* Status Colors */
   --color-success: #10B981;
-  --color-warning: #DBA480;
-  /* Using the peach color for warning/attention */
+  --color-warning: #DFB294;
+  /* Using the beige/tan color for warning/attention */
   --color-error: #EF4444;
   --color-destructive: #EF4444;
   --color-destructive-foreground: #FFFFFF;
 
   /* Chart Colors */
-  --chart-1: #00949E;
-  --chart-2: #0C2C46;
-  --chart-3: #DBA480;
-  --chart-4: #21212C;
+  --chart-1: #39898F;
+  --chart-2: #2C2D38;
+  --chart-3: #DFB294;
+  --chart-4: #3E414B;
   --chart-5: #64748B;
 
   /* Radius */
@@ -70,14 +69,14 @@
   --radius: 0.5rem;
 
   /* Sidebar (shadcn) */
-  --sidebar-background: #F8FAFC;
-  --sidebar-foreground: #0C2C46;
-  --sidebar-primary: #0C2C46;
+  --sidebar-background: #F8EEE8;
+  --sidebar-foreground: #2C2D38;
+  --sidebar-primary: #39898F;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-primary: #F1F5F9;
-  --sidebar-primary-foreground: #0C2C46;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #00949E;
+  --sidebar-accent: #F1DCCF;
+  --sidebar-accent-foreground: #2C2D38;
+  --sidebar-border: #E6C4AE;
+  --sidebar-ring: #39898F;
 }
 
 
