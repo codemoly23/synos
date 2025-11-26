@@ -115,7 +115,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 	// Grid variant
 	return (
 		<Link href={`/produkter/produkt/${product.slug}`}>
-			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 translate transition-all duration-300">
+			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 translate transition-all duration-300 p-0!">
 				{/* Image */}
 				<div className="relative h-56 overflow-hidden bg-primary/50">
 					<ImageComponent
@@ -130,24 +130,24 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 					/>
 				</div>
 
-				<CardHeader className="pb-3">
-					<h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+				<CardHeader className="px-2 py-1">
+					<h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.name}
 					</h3>
 				</CardHeader>
 
-				<CardContent className="pb-4">
-					<p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+				<CardContent className="px-2 py-1">
+					<p className="mb-2 text-xs text-muted-foreground line-clamp-2">
 						{product.description}
 					</p>
 
 					{/* Treatment Tags */}
-					<div className="flex flex-wrap gap-2">
+					<div className="flex flex-wrap gap-0.5">
 						{product.treatments.slice(0, 3).map((treatment) => (
 							<Badge
 								key={treatment}
 								variant="secondary"
-								className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
+								className="bg-primary/5 text-primary/80 text-[10px] hover:bg-primary/5"
 							>
 								{treatment}
 							</Badge>
@@ -155,8 +155,11 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 					</div>
 				</CardContent>
 
-				<CardFooter>
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+				<CardFooter className="p-2!">
+					<Button
+						size="sm"
+						className="w-full bg-primary text-primary-foreground transition-colors p-0!"
+					>
 						Läs mer
 					</Button>
 				</CardFooter>
