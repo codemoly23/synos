@@ -31,7 +31,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 					"cursor-pointer",
 					// Variants
 					{
-						"bg-secondary text-white hover:bg-secondary-hover":
+						"bg-primary text-white hover:bg-primary-hover":
 							variant === "primary",
 						"bg-secondary-hover text-white hover:bg-secondary":
 							variant === "secondary",

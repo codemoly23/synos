@@ -119,7 +119,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 				{/* Image */}
 				<div className="relative h-56 overflow-hidden bg-primary/50">
 					<ImageComponent
-						src="/placeholder.jpeg"
+						src={primaryImage?.url}
 						alt={primaryImage?.alt}
 						height={0}
 						width={0}
