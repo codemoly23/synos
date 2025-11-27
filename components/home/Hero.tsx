@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ShieldCheck, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { ImageComponent } from "../common/image-component";
 
 export function Hero() {
 	return (
@@ -88,12 +88,16 @@ export function Hero() {
 						className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] z-10"
 					>
 						<div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-white">
-							<Image
-								fill
+							<ImageComponent
 								src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 								alt="Advanced MRI Machine"
-								className="w-full h-full object-cover"
+								height={0}
+								width={0}
+								sizes="100vw"
+								wrapperClasses="w-full h-full"
+								className="object-cover w-full h-full"
 							/>
+
 							{/* Overlay Gradient */}
 							<div className="absolute inset-0 bg-linear-to-t from-secondary/40 to-transparent pointer-events-none" />
 						</div>
@@ -108,11 +112,14 @@ export function Hero() {
 					>
 						<div className="w-full h-full rounded-xl overflow-hidden shadow-xl border border-white/50 bg-white p-0">
 							<div className="w-full h-full rounded-lg overflow-hidden relative">
-								<Image
-									fill
+								<ImageComponent
 									src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=400"
 									alt="Medical Technology Detail"
-									className="w-full h-full object-cover"
+									height={0}
+									width={0}
+									sizes="100vw"
+									wrapperClasses="w-full h-full"
+									className="object-cover w-full h-full"
 								/>
 								<div className="absolute bottom-0 left-0 right-0 bg-secondary/80 backdrop-blur-sm p-2 text-center rounded-b-xl">
 									<span className="text-xs font-medium text-white">

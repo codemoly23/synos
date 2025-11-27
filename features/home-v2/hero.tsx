@@ -4,19 +4,23 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import Image from "next/image";
+import { ImageComponent } from "@/components/common/image-component";
 
 export function Hero() {
 	return (
 		<section className="relative min-h-screen flex items-center overflow-hidden bg-secondary">
 			{/* Background image with overlay */}
 			<div className="absolute inset-0 -z-10">
-				<Image
+				<ImageComponent
 					src="/image.png"
 					alt="Medical equipment background"
-					className="w-full h-full object-cover opacity-10"
-					fill
+					className="w-full h-full object-cover opacity-10 group-hover:scale-105 transition-transform duration-500"
+					height={0}
+					width={0}
+					sizes="100vw"
+					wrapperClasses="w-full h-full"
 				/>
+
 				<div className="hero-glass-overlay absolute inset-0" />
 			</div>
 

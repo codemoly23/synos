@@ -17,7 +17,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 	const primaryImage =
-		product.images.find((img) => img.isPrimary) || product.images[0];
+		product.images?.find((img) => img.isPrimary) ||
+		product.images?.[0] ||
+		null;
 
 	if (variant === "list") {
 		return (

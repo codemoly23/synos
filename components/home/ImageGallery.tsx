@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Eye } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { fadeUp, staggerContainer, defaultTransition } from "@/lib/animations";
+import { ImageComponent } from "../common/image-component";
 
 /**
  * Image Gallery Data Structure
@@ -126,17 +126,20 @@ export function ImageGallery() {
 							`}
 						>
 							{/* Image */}
-							<Image
+
+							<ImageComponent
 								src={image.src}
 								alt={`${image.title} - ${image.subtitle}`}
-								fill
 								loading={index === 0 ? "eager" : "lazy"}
-								className="object-cover transition-transform duration-700 group-hover:scale-110"
+								height={0}
+								width={0}
 								sizes={
 									index === 0
 										? "(max-width: 768px) 100vw, 50vw"
-										: "(max-width: 768px) 100vw, 25vw"
+										: "100vw"
 								}
+								wrapperClasses="w-full h-full"
+								className="object-cover w-full h-full"
 							/>
 
 							{/* Gradient Overlay - Always visible on mobile, hover on desktop */}

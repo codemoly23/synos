@@ -1,17 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import Link from "next/link";
+import { ImageComponent } from "../common/image-component";
 
 // Dummy Data
 const products = [
@@ -98,12 +93,21 @@ export function ProductShowcase() {
 							<Card className="bg-white group overflow-hidden border-border/10 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
 								{/* Image Area */}
 								<div className="relative h-64 overflow-hidden bg-secondary/50">
-									<Image
-										fill
+									<ImageComponent
 										src={product.image}
 										alt={product.name}
 										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+										loading={index === 0 ? "eager" : "lazy"}
+										height={0}
+										width={0}
+										sizes={
+											index === 0
+												? "(max-width: 768px) 100vw, 50vw"
+												: "100vw"
+										}
+										wrapperClasses="w-full h-full"
 									/>
+
 									<div className="absolute top-4 right-4">
 										<Badge
 											variant="secondary"
