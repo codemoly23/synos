@@ -7,7 +7,7 @@ import { AnimatedFAQ } from "./_components/animated-faq";
 
 export default function ContactPage() {
 	return (
-		<div className="min-h-screen bg-slate-100">
+		<div className="bg-slate-100 w-full">
 			{/* Hero Section */}
 			<AnimatedHero
 				phone={siteConfig.company.phone}
@@ -34,7 +34,7 @@ export default function ContactPage() {
 
 			{/* Office Locations Section */}
 			<section className="section-padding bg-slate-50">
-				<div className="_container">
+				<div className="_container overflow-hidden">
 					<AnimatedOfficeLocations
 						addresses={siteConfig.company.addresses}
 					/>

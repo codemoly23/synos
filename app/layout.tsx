@@ -138,12 +138,12 @@ export default function RootLayout({
 					/>
 				</noscript>
 
-				<div className="flex min-h-screen flex-col">
+				<div className="flex flex-col">
 					<Navbar />
 					<main className="flex-1 w-full">{children}</main>
 					<Footer />
-					<MobileBottomNav />
 				</div>
+				<MobileBottomNav />
 			</body>
 		</html>
 	);
