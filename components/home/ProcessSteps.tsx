@@ -36,7 +36,7 @@ const steps = [
 export function ProcessSteps() {
 	return (
 		<section className="section-padding bg-slate-50">
-			<div className="container-width">
+			<div className="_container">
 				<div className="text-center max-w-3xl mx-auto mb-16">
 					<h2 className="text-3xl md:text-4xl font-bold text-[#0C2C46] mb-4">
 						Streamlined Procurement Process

@@ -68,7 +68,7 @@ const products = [
 export function ProductShowcase() {
 	return (
 		<section className="section-padding bg-white">
-			<div className="container-width">
+			<div className="_container ">
 				{/* Section Header */}
 				<div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div className="max-w-2xl">

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 export function SearchSection() {
 	return (
 		<section className="py-12 bg-white sm:border-b sm:border-slate-100">
-			<div className="container-width">
+			<div className="_container ">
 				<div className="max-w-4xl mx-auto">
 					<div className="flex flex-col sm:flex-row gap-4 items-center sm:bg-slate-50 p-2 rounded-full sm:border sm:border-slate-200 sm:shadow-sm sm:focus-within:ring-2 sm:focus-within:ring-primary/20 transition-all">
 						<div className="pl-4 text-slate-500 hidden sm:block">

@@ -34,7 +34,7 @@ export function AnimatedContactCards({
 }: AnimatedContactCardsProps) {
 	return (
 		<section className="relative -mt-16 pb-20">
-			<div className="container-width">
+			<div className="_container">
 				<motion.div
 					initial="initial"
 					whileInView="animate"

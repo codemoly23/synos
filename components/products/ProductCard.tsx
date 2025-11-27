@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Product } from "@/types/product";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
+import { ImageComponent } from "../common/image-component";
 
 interface ProductCardProps {
 	product: Product;
@@ -21,34 +21,20 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
 	if (variant === "list") {
 		return (
-			<Card className="group overflow-hidden border-border/50 transition-all hover:border-primary hover:shadow-lg">
+			<Card className="group overflow-hidden border-primary/50 transition-all hover:border-primary/50 hover:shadow-lg">
 				<div className="flex flex-col md:flex-row">
 					{/* Image Section */}
-					<div className="relative h-64 w-full md:h-auto md:w-80 overflow-hidden bg-muted">
-						{primaryImage ? (
-							<Image
-								src={primaryImage.url}
-								alt={primaryImage.alt}
-								fill
-								className="object-cover transition-transform duration-300 group-hover:scale-105"
-							/>
-						) : (
-							<div className="flex h-full items-center justify-center bg-linear-to-br from-tertiary/30 to-muted">
-								<svg
-									className="h-20 w-20 text-tertiary/40"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={1.5}
-										d="M13 10V3L4 14h7v7l9-11h-7z"
-									/>
-								</svg>
-							</div>
-						)}
+					<div className="relative w-40 h-full max-h-[300px] md:w-80 overflow-hidden bg-primary">
+						<ImageComponent
+							src={primaryImage?.url}
+							alt={primaryImage?.alt}
+							height={0}
+							width={0}
+							sizes="100vw"
+							showLoader
+							wrapperClasses="w-full h-full"
+							className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+						/>
 					</div>
 
 					{/* Content Section */}
@@ -76,7 +62,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 							{product.treatments.length > 4 && (
 								<Badge
 									variant="outline"
-									className="border-tertiary text-muted-foreground"
+									className="border-primary/5 text-muted-foreground"
 								>
 									+{product.treatments.length - 4} mer
 								</Badge>
@@ -128,68 +114,56 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
 	// Grid variant
 	return (
-		<Card className="group h-full overflow-hidden border-border/50 transition-all hover:border-primary hover:shadow-lg">
-			{/* Image */}
-			<div className="relative h-56 overflow-hidden bg-muted">
-				{primaryImage ? (
-					<Image
-						src={primaryImage.url}
-						alt={primaryImage.alt}
-						fill
-						className="object-cover transition-transform duration-300 group-hover:scale-105"
+		<Link href={`/produkter/produkt/${product.slug}`}>
+			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 translate transition-all duration-300 p-0!">
+				{/* Image */}
+				<div className="relative h-56 overflow-hidden bg-primary/50">
+					<ImageComponent
+						src={primaryImage?.url}
+						alt={primaryImage?.alt}
+						height={0}
+						width={0}
+						sizes="100vw"
+						showLoader
+						wrapperClasses="w-full h-full"
+						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
-				) : (
-					<div className="flex h-full items-center justify-center bg-linear-to-br from-tertiary/30 to-muted">
-						<svg
-							className="h-16 w-16 text-tertiary/40"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={1.5}
-								d="M13 10V3L4 14h7v7l9-11h-7z"
-							/>
-						</svg>
-					</div>
-				)}
-			</div>
-
-			<CardHeader className="pb-3">
-				<h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
-					{product.name}
-				</h3>
-			</CardHeader>
-
-			<CardContent className="pb-4">
-				<p className="mb-4 text-sm text-muted-foreground line-clamp-2">
-					{product.description}
-				</p>
-
-				{/* Treatment Tags */}
-				<div className="flex flex-wrap gap-2">
-					{product.treatments.slice(0, 3).map((treatment) => (
-						<Badge
-							key={treatment}
-							variant="secondary"
-							className="bg-tertiary/20 text-secondary text-xs hover:bg-tertiary/30"
-						>
-							{treatment}
-						</Badge>
-					))}
 				</div>
-			</CardContent>
 
-			<CardFooter>
-				<Button
-					asChild
-					className="w-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
-				>
-					<Link href={`/produkter/produkt/${product.slug}`}>Läs mer</Link>
-				</Button>
-			</CardFooter>
-		</Card>
+				<CardHeader className="px-2 py-1">
+					<h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">
+						{product.name}
+					</h3>
+				</CardHeader>
+
+				<CardContent className="px-2 py-1">
+					<p className="mb-2 text-xs text-muted-foreground line-clamp-2">
+						{product.description}
+					</p>
+
+					{/* Treatment Tags */}
+					<div className="flex flex-wrap gap-0.5">
+						{product.treatments.slice(0, 3).map((treatment) => (
+							<Badge
+								key={treatment}
+								variant="secondary"
+								className="bg-primary/5 text-primary/80 text-[10px] hover:bg-primary/5"
+							>
+								{treatment}
+							</Badge>
+						))}
+					</div>
+				</CardContent>
+
+				<CardFooter className="p-2!">
+					<Button
+						size="sm"
+						className="w-full bg-primary text-primary-foreground transition-colors p-0!"
+					>
+						Läs mer
+					</Button>
+				</CardFooter>
+			</Card>
+		</Link>
 	);
 }

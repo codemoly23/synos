@@ -2,6 +2,7 @@
 
 import { LayoutGrid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ViewToggleProps {
 	view: "grid" | "list";
@@ -10,29 +11,29 @@ interface ViewToggleProps {
 
 export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
 	return (
-		<div className="flex items-center gap-2 rounded-lg border border-border/50 bg-background p-1">
+		<div className="flex items-center gap-2 rounded-lg border border-primary/50 bg-slate-100 p-1">
 			<Button
-				variant={view === "grid" ? "default" : "ghost"}
+				variant={view === "grid" ? "primary" : "ghost"}
 				size="sm"
 				onClick={() => onViewChange("grid")}
-				className={
-					view === "grid"
-						? "bg-primary text-primary-foreground hover:bg-primary-hover"
-						: "text-foreground hover:bg-muted hover:text-foreground"
-				}
+				className={cn(
+					"text-foreground hover:bg-primary/5 border border-transparent hover:border-primary/20",
+					view === "grid" &&
+						"bg-primary text-primary-foreground hover:bg-primary/80"
+				)}
 				aria-label="Grid view"
 			>
 				<LayoutGrid className="h-4 w-4" />
 			</Button>
 			<Button
-				variant={view === "list" ? "default" : "ghost"}
+				variant={view === "list" ? "primary" : "ghost"}
 				size="sm"
 				onClick={() => onViewChange("list")}
-				className={
-					view === "list"
-						? "bg-primary text-primary-foreground hover:bg-primary-hover"
-						: "text-foreground hover:bg-muted hover:text-foreground"
-				}
+				className={cn(
+					"text-foreground hover:bg-primary/5 border border-transparent hover:border-primary/20",
+					view === "list" &&
+						"bg-primary text-primary-foreground hover:bg-primary/80"
+				)}
 				aria-label="List view"
 			>
 				<List className="h-4 w-4" />

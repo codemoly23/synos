@@ -16,7 +16,7 @@ import Logo from "../common/logo";
 export function Footer() {
 	return (
 		<footer className="bg-secondary text-primary-foreground pt-16 pb-8">
-			<div className="container-width">
+			<div className="_container">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
 					{/* Brand Column */}
 					<div className="space-y-4">

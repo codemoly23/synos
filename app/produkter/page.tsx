@@ -1,19 +1,45 @@
-"use client";
-
-import { useState } from "react";
 import { treatmentCategories } from "@/data/categories/treatment-categories";
 import { featuredProducts } from "@/data/products/featured-products";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductSidebar } from "@/components/products/ProductSidebar";
-import { ViewToggle } from "@/components/products/ViewToggle";
+// import { ViewToggle } from "@/components/products/ViewToggle";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import { Button } from "@/components/ui/button";
+
+import {
+	Drawer,
+	DrawerContent,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
+import { ListFilter } from "lucide-react";
+
+const MobileDrawer = () => {
+	return (
+		<div className="flex justify-end">
+			<Drawer>
+				<DrawerTrigger asChild>
+					<Button variant="primary" size="sm" className="block sm:hidden">
+						<ListFilter className="h-4 w-4" />
+					</Button>
+				</DrawerTrigger>
+				<DrawerContent className="p-0! rounded-t-sm">
+					<DrawerTitle className="sr-only">Filter</DrawerTitle>
+					<div className="max-h-[90vh] p-3 overflow-y-auto">
+						<ProductSidebar categories={treatmentCategories} />
+					</div>
+				</DrawerContent>
+			</Drawer>
+		</div>
+	);
+};
 
 export default function ProductsPage() {
-	const [view, setView] = useState<"grid" | "list">("grid");
+	// const [view, setView] = useState<"grid" | "list">("grid");
 
 	return (
-		<div className="min-h-screen bg-linear-to-b from-muted to-primary/10">
-			<div className="container mx-auto px-4 py-8 page-padding-top">
+		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
+			<div className="_container mx-auto px-4 py-8 page-padding-top">
 				{/* Breadcrumb */}
 				<Breadcrumb items={[{ label: "Produkter" }]} />
 
@@ -33,9 +59,10 @@ export default function ProductsPage() {
 				<div className="flex flex-col gap-8 lg:flex-row">
 					{/* Sidebar */}
 					<div className="w-full lg:w-80 lg:shrink-0">
-						<div className="lg:sticky lg:top-24">
+						<div className="lg:sticky lg:top-28 hidden sm:block">
 							<ProductSidebar categories={treatmentCategories} />
 						</div>
+						<MobileDrawer />
 					</div>
 
 					{/* Main Content */}
@@ -51,24 +78,26 @@ export default function ProductsPage() {
 									produkter
 								</p>
 							</div>
-							<ViewToggle view={view} onViewChange={setView} />
+							{/* <ViewToggle view={view} onViewChange={setView} /> */}
 						</div>
 
 						{/* Products Grid/List */}
 						<div
 							className={
-								view === "grid"
-									? "grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
-									: "space-y-6"
+								// view === "grid" ?
+								"grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+								// : "space-y-6"
 							}
 						>
-							{featuredProducts.map((product) => (
-								<ProductCard
-									key={product.id}
-									product={product}
-									variant={view}
-								/>
-							))}
+							{[...featuredProducts, ...featuredProducts].map(
+								(product, index) => (
+									<ProductCard
+										key={product.id + index}
+										product={product}
+										variant={"grid"}
+									/>
+								)
+							)}
 						</div>
 					</div>
 				</div>

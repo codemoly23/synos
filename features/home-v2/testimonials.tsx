@@ -8,38 +8,38 @@ const testimonials = [
 		quote: "Synos Medical har varit en fantastisk partner för vår klinik. Utrustningen är av högsta kvalitet och supporten är exceptionell. Vi kan varmt rekommendera dem till alla som söker professionell medicinsk utrustning.",
 		author: "Dr. Anna Bergström",
 		role: "Klinikchef, Stockholm Hudklinik",
-		rating: 5
+		rating: 5,
 	},
 	{
 		quote: "Vi har arbetat med Synos i över 5 år och är mycket nöjda. Deras lasersystem har revolutionerat våra behandlingar och patienterna är mycket nöjda med resultaten. Utbildningen vi fick var också mycket grundlig.",
 		author: "Maria Lindqvist",
 		role: "Ägare, Skönhetskliniken Linköping",
-		rating: 5
+		rating: 5,
 	},
 	{
 		quote: "Professionalism från start till mål. Synos hjälpte oss att välja rätt utrustning för vår verksamhet och stod vid vår sida genom hela processen. Servicen är förstklassig och tekniken fungerar felfritt.",
 		author: "Erik Johansson",
 		role: "Verksamhetschef, Nordiska Laserkliniken",
-		rating: 5
+		rating: 5,
 	},
 	{
 		quote: "Som ny klinik var vi osäkra på vilken utrustning vi skulle välja. Synos Medical tog sig tid att förstå våra behov och rekommenderade perfekta lösningar. Investeringen har redan betalat sig.",
 		author: "Sofia Andersson",
 		role: "Grundare, Estetiska Kliniken Göteborg",
-		rating: 5
+		rating: 5,
 	},
 	{
 		quote: "Kvaliteten på utrustningen och den kontinuerliga supporten gör Synos till en ovärderlig partner. Vi har expanderat vår verksamhet tack vare deras pålitliga produkter och expertis.",
 		author: "Dr. Peter Nilsson",
 		role: "Medicinsk Ansvarig, Malmö Lasercenter",
-		rating: 5
+		rating: 5,
 	},
 	{
 		quote: "Synos Medical förstår verkligen behoven hos moderna kliniker. Deras MDR-certifierade utrustning ger oss och våra patienter trygghet. Vi är mycket glada över vårt samarbete.",
 		author: "Karin Svensson",
 		role: "Klinikägare, Uppsala Hudvård",
-		rating: 5
-	}
+		rating: 5,
+	},
 ];
 
 const StarRating = ({ rating }: { rating: number }) => (
@@ -47,7 +47,9 @@ const StarRating = ({ rating }: { rating: number }) => (
 		{[...Array(5)].map((_, i) => (
 			<svg
 				key={i}
-				className={`h-5 w-5 ${i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+				className={`h-5 w-5 ${
+					i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
+				}`}
 				viewBox="0 0 20 20"
 			>
 				<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -92,7 +94,7 @@ export function Testimonials() {
 						>
 							<StarRating rating={testimonial.rating} />
 							<blockquote className="mt-6 text-muted-foreground leading-relaxed">
-								"{testimonial.quote}"
+								{`"${testimonial.quote}"`}
 							</blockquote>
 							<div className="mt-6 border-t border-border pt-6">
 								<div className="font-semibold text-foreground">
@@ -109,4 +111,3 @@ export function Testimonials() {
 		</section>
 	);
 }
-

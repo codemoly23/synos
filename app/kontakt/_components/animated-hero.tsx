@@ -25,13 +25,13 @@ interface AnimatedHeroProps {
 
 export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 	return (
-		<section className="relative overflow-hidden bg-gradient-to-br from-[#0C2C46] via-[#0C2C46] to-[#00949E] page-padding-top pb-24 pt-32">
+		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-secondary/60 page-padding-top pb-24 pt-32">
 			{/* Background Pattern */}
-			<div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+			{/* <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" /> */}
 			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-[#00949E]/20 blur-3xl" />
 			<div className="absolute bottom-0 left-0 h-[400px] w-[400px] translate-y-1/3 -translate-x-1/3 rounded-full bg-white/5 blur-3xl" />
 
-			<div className="container-width relative z-10">
+			<div className="_container relative z-10">
 				<motion.div
 					initial="initial"
 					animate="animate"
@@ -41,10 +41,10 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					{/* Badge */}
 					<motion.div
 						variants={fadeUp}
-						className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
+						className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
 					>
-						<MessageCircle className="h-4 w-4 text-[#00949E]" />
-						<span className="text-sm font-medium text-white">
+						<MessageCircle className="h-4 w-4 text-primary" />
+						<span className="text-sm font-medium text-primary">
 							Vi finns här för dig
 						</span>
 					</motion.div>
@@ -74,7 +74,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					>
 						<Button
 							size="lg"
-							className="h-12 gap-2 rounded-full bg-[#00949E] px-8 text-white shadow-lg shadow-[#00949E]/30 hover:bg-[#007A82]"
+							className="h-12 gap-2 rounded-full bg-primary px-8 text-white shadow-lg shadow-[#00949E]/30 hover:bg-[#007A82]"
 							asChild
 						>
 							<a href={`tel:${phone.replace(/\s/g, "")}`}>
@@ -85,7 +85,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 						<Button
 							size="lg"
 							variant="outline"
-							className="h-12 gap-2 rounded-full border-white/30 bg-white/10 px-8 text-white backdrop-blur-sm hover:bg-white/20"
+							className="h-12 gap-2 rounded-full border-white/30 bg-primary/10 px-8 text-white backdrop-blur-sm hover:bg-primary/20"
 							asChild
 						>
 							<a href={`mailto:${email}`}>

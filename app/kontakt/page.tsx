@@ -25,7 +25,7 @@ export default function ContactPage() {
 
 			{/* Contact Form Section */}
 			<section className="section-padding bg-white">
-				<div className="container-width">
+				<div className="_container">
 					<div className="mx-auto max-w-3xl">
 						<AnimatedFormSection />
 					</div>
@@ -34,7 +34,7 @@ export default function ContactPage() {
 
 			{/* Office Locations Section */}
 			<section className="section-padding bg-slate-50">
-				<div className="container-width">
+				<div className="_container">
 					<AnimatedOfficeLocations
 						addresses={siteConfig.company.addresses}
 					/>

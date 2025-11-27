@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
 import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
@@ -141,6 +142,7 @@ export default function RootLayout({
 					<Navbar />
 					<main className="flex-1 w-full">{children}</main>
 					<Footer />
+					<MobileBottomNav />
 				</div>
 			</body>
 		</html>

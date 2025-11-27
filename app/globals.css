@@ -209,6 +209,14 @@
    ============================================ */
 
 @layer utilities {
+  ._container {
+    @apply max-w-[1440px] w-full mx-auto px-3 sm:px-5;
+  }
+
+  /* page top padding to adjust the navbar height */
+  .page-padding-top {
+    @apply pt-32;
+  }
 
   /* Glassmorphism */
   .glass {
@@ -233,7 +241,7 @@
   }
 
   /* Layout */
-  .container-width {
+  ._container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
@@ -241,10 +249,7 @@
     @apply py-16 lg:py-24;
   }
 
-  /* page top padding to adjust the navbar height */
-  .page-padding-top {
-    @apply pt-32;
-  }
+
 }
 
 /* ============================================

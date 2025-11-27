@@ -30,8 +30,8 @@ const features = [
 
 export function FeatureHighlights() {
 	return (
-		<section className="py-16 bg-slate-100 border-y border-border/50">
-			<div className="container-width">
+		<section className="py-16 bg-slate-100 border-y border-primary/50">
+			<div className="_container ">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 					{features.map((feature, index) => (
 						<motion.div

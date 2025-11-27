@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
 	return (
-		<div className="container mx-auto px-4 py-12 page-padding-top">
+		<div className="_container page-padding-top">
 			{/* Hero Section */}
 			<div className="mb-16 text-center">
-				<h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
+				<h1 className="mb-4 text-4xl font-bold tracking-tight text-primary md:text-5xl">
 					Om Synos Medical
 				</h1>
 				<p className="mx-auto max-w-3xl text-lg text-muted-foreground">
@@ -29,7 +29,7 @@ export default function AboutPage() {
 			</div>
 
 			{/* Main Content Sections */}
-			<div className="mx-auto max-w-4xl space-y-12">
+			<div className="space-y-12">
 				{/* Professionell leverantör */}
 				<section>
 					<h2 className="mb-4 text-3xl font-bold text-secondary">
