@@ -16,7 +16,7 @@ export function SearchSection() {
 						<Input
 							type="text"
 							placeholder="Search for medical equipment, categories, or services..."
-							className="border border-slate-200 sm:border-none sm:border-0 text-wrap bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base h-12 text-[#0C2C46] placeholder:text-slate-500"
+							className="border border-slate-200 sm:border-none sm:border-0 text-wrap bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base h-12 text-secondary placeholder:text-slate-500"
 						/>
 						<Button className="w-full sm:w-auto rounded-full px-8 h-12 bg-primary hover:bg-primary-hover text-white font-medium">
 							Search

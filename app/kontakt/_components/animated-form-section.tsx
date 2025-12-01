@@ -13,13 +13,13 @@ export function AnimatedFormSection() {
 			transition={{ duration: 0.6 }}
 		>
 			<div className="mb-8">
-				<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#00949E]/10 px-4 py-1.5">
-					<Send className="h-4 w-4 text-[#00949E]" />
-					<span className="text-sm font-semibold text-[#00949E]">
+				<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-1.5">
+					<Send className="h-4 w-4 text-secondary" />
+					<span className="text-sm font-semibold text-secondary">
 						Skicka meddelande
 					</span>
 				</div>
-				<h2 className="mb-4 text-3xl font-bold text-[#0C2C46] md:text-4xl">
+				<h2 className="mb-4 text-3xl font-bold text-secondary md:text-4xl">
 					Berätta om ditt projekt
 				</h2>
 				<p className="text-lg text-slate-600">

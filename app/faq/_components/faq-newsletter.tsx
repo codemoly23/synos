@@ -42,11 +42,11 @@ export function FAQNewsletter() {
 	};
 
 	return (
-		<section className="py-20 bg-linear-to-br from-[#2C2D38] to-[#3E414B] relative overflow-hidden">
+		<section className="py-20 bg-linear-to-br from-secondary/20 to-secondary/40 relative overflow-hidden">
 			{/* Background Pattern */}
 			<div className="absolute inset-0 opacity-10">
-				<div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#39898F] rounded-full blur-3xl -translate-y-1/2 -translate-x-1/4" />
-				<div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#DFB294] rounded-full blur-3xl translate-y-1/2 translate-x-1/4" />
+				<div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary rounded-full blur-3xl -translate-y-1/2 -translate-x-1/4" />
+				<div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-tertiary rounded-full blur-3xl translate-y-1/2 translate-x-1/4" />
 			</div>
 
 			<div className="_container relative z-10">
@@ -59,8 +59,8 @@ export function FAQNewsletter() {
 						className="text-center mb-8"
 					>
 						{/* Icon */}
-						<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#39898F]/20 mb-6">
-							<Mail className="h-8 w-8 text-[#39898F]" />
+						<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/20 mb-6">
+							<Mail className="h-8 w-8 text-primary" />
 						</div>
 
 						{/* Title */}
@@ -97,7 +97,7 @@ export function FAQNewsletter() {
 										disabled={
 											status === "loading" || status === "success"
 										}
-										className="w-full px-6 py-4 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-white/50 focus:outline-none focus:border-[#39898F] focus:ring-4 focus:ring-[#39898F]/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+										className="w-full px-6 py-4 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-white/50 focus:outline-none focus:border-primary focus:ring-4 focus:ring-secondary/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
 									/>
 								</div>
 								<button
@@ -105,7 +105,7 @@ export function FAQNewsletter() {
 									disabled={
 										status === "loading" || status === "success"
 									}
-									className="px-8 py-4 rounded-full bg-[#39898F] text-white font-semibold hover:bg-[#39898F]/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 whitespace-nowrap"
+									className="px-8 py-4 rounded-full bg-primary text-white font-semibold hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 whitespace-nowrap"
 								>
 									{status === "loading" ? (
 										<>
@@ -133,7 +133,7 @@ export function FAQNewsletter() {
 									animate={{ opacity: 1, y: 0 }}
 									className={`mt-4 flex items-center gap-2 justify-center text-sm ${
 										status === "success"
-											? "text-[#39898F]"
+											? "text-primary"
 											: "text-red-400"
 									}`}
 								>

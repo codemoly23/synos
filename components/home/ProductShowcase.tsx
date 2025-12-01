@@ -67,7 +67,7 @@ export function ProductShowcase() {
 				{/* Section Header */}
 				<div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div className="max-w-2xl">
-						<h2 className="text-3xl md:text-4xl font-bold text-[#0C2C46] mb-4">
+						<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
 							Premium Medical Equipment
 						</h2>
 						<p className="text-slate-600 text-lg">
@@ -121,7 +121,7 @@ export function ProductShowcase() {
 								{/* Content */}
 								<CardContent className="pt-6 grow">
 									<div className="flex justify-between items-start mb-2">
-										<h3 className="text-xl font-bold text-[#0C2C46] group-hover:text-primary transition-colors">
+										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors">
 											{product.name}
 										</h3>
 									</div>
@@ -144,7 +144,7 @@ export function ProductShowcase() {
 
 								{/* Footer */}
 								<CardFooter className="border-t border-border/10 pt-4 flex justify-between items-center">
-									{/* <span className="text-lg font-bold text-[#0C2C46]">
+									{/* <span className="text-lg font-bold text-secondary">
 										{product.price}
 									</span> */}
 									<Link

@@ -27,11 +27,11 @@ export function GoogleMap({ lat, lng, title, address }: GoogleMapProps) {
 				<div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-100">
 					<div className="text-center">
 						<div className="mb-3 flex justify-center">
-							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00949E]/10">
-								<MapPin className="h-8 w-8 animate-pulse text-[#00949E]" />
+							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
+								<MapPin className="h-8 w-8 animate-pulse text-secondary" />
 							</div>
 						</div>
-						<div className="mb-2 text-lg font-semibold text-[#0C2C46]">
+						<div className="mb-2 text-lg font-semibold text-secondary">
 							Laddar karta...
 						</div>
 						<div className="text-sm text-slate-600">{address}</div>
@@ -44,11 +44,11 @@ export function GoogleMap({ lat, lng, title, address }: GoogleMapProps) {
 				<div className="flex h-full items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 p-8 text-center">
 					<div className="max-w-sm">
 						<div className="mb-4 flex justify-center">
-							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00949E]/10">
-								<MapPin className="h-8 w-8 text-[#00949E]" />
+							<div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
+								<MapPin className="h-8 w-8 text-secondary" />
 							</div>
 						</div>
-						<h3 className="mb-2 text-xl font-bold text-[#0C2C46]">
+						<h3 className="mb-2 text-xl font-bold text-secondary">
 							{title}
 						</h3>
 						<p className="mb-6 text-sm text-slate-600">{address}</p>
@@ -56,7 +56,7 @@ export function GoogleMap({ lat, lng, title, address }: GoogleMapProps) {
 							href={googleMapsLink}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="inline-flex items-center gap-2 rounded-lg bg-[#00949E] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#007A82] hover:shadow-lg"
+							className="inline-flex items-center gap-2 rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary hover:shadow-lg"
 						>
 							<MapPin className="h-4 w-4" />
 							Visa i Google Maps

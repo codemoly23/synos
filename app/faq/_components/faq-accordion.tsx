@@ -11,7 +11,7 @@ interface FAQAccordionProps {
 
 /**
  * FAQ Accordion Component
- * 
+ *
  * Modern accordion with:
  * - Radix UI-inspired smooth animations
  * - Search functionality
@@ -45,13 +45,13 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 				className="mb-8"
 			>
 				<div className="relative">
-					<Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#2C2D38]/40" />
+					<Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary/40" />
 					<input
 						type="text"
 						placeholder="Sök efter frågor..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-[#E6C4AE] bg-white/80 backdrop-blur-sm text-[#2C2D38] placeholder:text-[#2C2D38]/40 focus:outline-none focus:border-[#39898F] focus:ring-4 focus:ring-[#39898F]/10 transition-all duration-300"
+						className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-primary bg-white/80 backdrop-blur-sm text-secondary placeholder:text-secondary/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-secondary/10 transition-all duration-300"
 					/>
 				</div>
 			</motion.div>
@@ -62,9 +62,11 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						className="text-center py-12 text-[#2C2D38]/60"
+						className="text-center py-12 text-secondary/60"
 					>
-						<p className="text-lg">Inga frågor hittades. Försök med en annan sökning.</p>
+						<p className="text-lg">
+							Inga frågor hittades. Försök med en annan sökning.
+						</p>
 					</motion.div>
 				) : (
 					filteredFAQs.map((faq, index) => (
@@ -79,8 +81,8 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 									rounded-2xl border-2 transition-all duration-300 overflow-hidden
 									${
 										openIndex === index
-											? "border-[#39898F] bg-white shadow-xl shadow-[#39898F]/10"
-											: "border-[#E6C4AE] bg-white/80 backdrop-blur-sm hover:border-[#DFB294] hover:shadow-lg"
+											? "border-primary bg-white shadow-xl shadow-primary/10"
+											: "border-secondary/50 bg-white/80 backdrop-blur-sm hover:border-secondary hover:shadow-lg"
 									}
 								`}
 							>
@@ -91,7 +93,7 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 									aria-expanded={openIndex === index}
 									aria-controls={`faq-answer-${faq.id}`}
 								>
-									<span className="font-semibold text-[#2C2D38] text-lg flex-1 leading-relaxed">
+									<span className="font-semibold text-secondary text-lg flex-1 leading-relaxed">
 										{faq.question}
 									</span>
 									<motion.div
@@ -104,8 +106,8 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 										<ChevronDown
 											className={`h-6 w-6 transition-colors duration-300 ${
 												openIndex === index
-													? "text-[#39898F]"
-													: "text-[#2C2D38]/40 group-hover:text-[#39898F]"
+													? "text-primary"
+													: "text-secondary/40 group-hover:text-primary"
 											}`}
 										/>
 									</motion.div>
@@ -119,12 +121,15 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 											initial={{ height: 0, opacity: 0 }}
 											animate={{ height: "auto", opacity: 1 }}
 											exit={{ height: 0, opacity: 0 }}
-											transition={{ duration: 0.3, ease: "easeInOut" }}
+											transition={{
+												duration: 0.3,
+												ease: "easeInOut",
+											}}
 											className="overflow-hidden"
 										>
 											<div className="px-6 pb-6 pt-0">
-												<div className="border-t-2 border-[#F1DCCF] pt-4">
-													<p className="text-[#2C2D38]/80 leading-relaxed">
+												<div className="border-t-2 border-primary pt-4">
+													<p className="text-secondary/80 leading-relaxed">
 														{faq.answer}
 													</p>
 												</div>
@@ -146,12 +151,12 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 					transition={{ duration: 0.5, delay: 0.3 }}
 					className="mt-12 text-center"
 				>
-					<p className="text-[#2C2D38]/60 mb-4">
+					<p className="text-secondary/60 mb-4">
 						Hittade du inte svar på din fråga?
 					</p>
 					<a
 						href="/kontakt"
-						className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#39898F] text-white font-semibold hover:bg-[#2C2D38] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+						className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary text-white font-semibold hover:bg-secondary transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
 					>
 						Kontakta oss
 					</a>
@@ -160,4 +165,3 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 		</div>
 	);
 }
-

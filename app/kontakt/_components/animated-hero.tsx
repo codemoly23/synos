@@ -28,7 +28,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-secondary/60 page-padding-top pb-24 pt-32">
 			{/* Background Pattern */}
 			{/* <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" /> */}
-			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-[#00949E]/20 blur-3xl" />
+			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary/20 blur-3xl" />
 			<div className="absolute bottom-0 left-0 h-[400px] w-[400px] translate-y-1/3 -translate-x-1/3 rounded-full bg-white/5 blur-3xl" />
 
 			<div className="_container relative z-10">
@@ -74,7 +74,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					>
 						<Button
 							size="lg"
-							className="h-12 gap-2 rounded-full bg-primary px-8 text-white shadow-lg shadow-[#00949E]/30 hover:bg-[#007A82]"
+							className="h-12 gap-2 rounded-full bg-primary px-8 text-white shadow-lg shadow-secondary/30 hover:bg-primary"
 							asChild
 						>
 							<a href={`tel:${phone.replace(/\s/g, "")}`}>
@@ -101,11 +101,11 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 						className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-white/80"
 					>
 						<div className="flex items-center gap-2">
-							<MessageCircle className="h-4 w-4 text-[#00949E]" />
+							<MessageCircle className="h-4 w-4 text-secondary" />
 							<span>Svar inom 24 timmar</span>
 						</div>
 						<div className="flex items-center gap-2">
-							<span className="flex h-2 w-2 rounded-full bg-[#00949E] animate-pulse" />
+							<span className="flex h-2 w-2 rounded-full bg-secondary animate-pulse" />
 							<span>Kontor i Stockholm & Linköping</span>
 						</div>
 					</motion.div>

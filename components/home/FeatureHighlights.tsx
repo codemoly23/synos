@@ -45,10 +45,10 @@ export function FeatureHighlights() {
 							<div className="h-12 w-12 rounded-xl bg-secondary/5 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
 								<feature.icon className="h-6 w-6" />
 							</div>
-							<h3 className="text-lg font-semibold text-[#0C2C46] mb-2 group-hover:text-primary transition-colors duration-300">
+							<h3 className="text-lg font-semibold text-secondary mb-2 group-hover:text-primary transition-colors duration-300">
 								{feature.title}
 							</h3>
-							<p className="text-sm text-slate-600 leading-relaxed group-hover:text-[#0C2C46]/80 transition-colors duration-300">
+							<p className="text-sm text-slate-600 leading-relaxed group-hover:text-secondary/80 transition-colors duration-300">
 								{feature.description}
 							</p>
 						</motion.div>

@@ -41,7 +41,7 @@ const AboutSection = () => {
 							Why Choose Synos
 						</span>
 					</div>
-					<h2 className="text-4xl md:text-5xl font-bold text-[#0C2C46] leading-tight">
+					<h2 className="text-4xl md:text-5xl font-bold text-secondary leading-tight">
 						Empowering Healthcare with{" "}
 						<span className="text-primary">Precision Technology</span>
 					</h2>
@@ -66,7 +66,7 @@ const AboutSection = () => {
 								<div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
 									<CheckCircle2 className="h-5 w-5 text-primary group-hover:text-white transition-colors duration-300" />
 								</div>
-								<span className="font-medium text-[#0C2C46] group-hover:text-primary transition-colors">
+								<span className="font-medium text-secondary group-hover:text-primary transition-colors">
 									{item}
 								</span>
 							</li>

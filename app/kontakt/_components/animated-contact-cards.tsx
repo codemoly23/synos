@@ -45,19 +45,19 @@ export function AnimatedContactCards({
 					{/* Phone Card */}
 					<motion.div
 						variants={scaleIn}
-						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-[#00949E]/30"
+						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-secondary/30"
 					>
-						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-[#00949E]/5 transition-all duration-300 group-hover:scale-150" />
+						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-secondary/5 transition-all duration-300 group-hover:scale-150" />
 						<div className="relative">
-							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00949E]/10 text-[#00949E] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#00949E] group-hover:text-white">
+							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 text-secondary transition-all duration-300 group-hover:scale-110 group-hover:bg-secondary group-hover:text-white">
 								<Phone className="h-7 w-7" />
 							</div>
-							<h3 className="mb-2 text-xl font-bold text-[#0C2C46]">
+							<h3 className="mb-2 text-xl font-bold text-secondary">
 								Telefon
 							</h3>
 							<a
 								href={`tel:${phone.replace(/\s/g, "")}`}
-								className="mb-3 block text-lg font-semibold text-[#00949E] hover:underline"
+								className="mb-3 block text-lg font-semibold text-secondary hover:underline"
 							>
 								{phone}
 							</a>
@@ -71,19 +71,19 @@ export function AnimatedContactCards({
 					{/* Email Card */}
 					<motion.div
 						variants={scaleIn}
-						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-[#00949E]/30"
+						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-secondary/30"
 					>
-						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-[#0C2C46]/5 transition-all duration-300 group-hover:scale-150" />
+						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-secondary/5 transition-all duration-300 group-hover:scale-150" />
 						<div className="relative">
-							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0C2C46]/10 text-[#0C2C46] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#0C2C46] group-hover:text-white">
+							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 text-secondary transition-all duration-300 group-hover:scale-110 group-hover:bg-secondary group-hover:text-white">
 								<Mail className="h-7 w-7" />
 							</div>
-							<h3 className="mb-2 text-xl font-bold text-[#0C2C46]">
+							<h3 className="mb-2 text-xl font-bold text-secondary">
 								E-post
 							</h3>
 							<a
 								href={`mailto:${email}`}
-								className="mb-3 block text-lg font-semibold text-[#00949E] hover:underline"
+								className="mb-3 block text-lg font-semibold text-secondary hover:underline"
 							>
 								{email}
 							</a>
@@ -97,14 +97,14 @@ export function AnimatedContactCards({
 					{/* Social Media Card */}
 					<motion.div
 						variants={scaleIn}
-						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-[#00949E]/30"
+						className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-secondary/30"
 					>
-						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-[#00949E]/5 transition-all duration-300 group-hover:scale-150" />
+						<div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-secondary/5 transition-all duration-300 group-hover:scale-150" />
 						<div className="relative">
-							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00949E]/10 text-[#00949E] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#00949E] group-hover:text-white">
+							<div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 text-secondary transition-all duration-300 group-hover:scale-110 group-hover:bg-secondary group-hover:text-white">
 								<MessageCircle className="h-7 w-7" />
 							</div>
-							<h3 className="mb-2 text-xl font-bold text-[#0C2C46]">
+							<h3 className="mb-2 text-xl font-bold text-secondary">
 								Sociala medier
 							</h3>
 							<div className="mb-3 flex gap-3">
@@ -112,7 +112,7 @@ export function AnimatedContactCards({
 									href={facebookUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-[#0C2C46] transition-all hover:bg-[#00949E] hover:text-white"
+									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-secondary transition-all hover:bg-secondary hover:text-white"
 									aria-label="Facebook"
 								>
 									<svg
@@ -127,7 +127,7 @@ export function AnimatedContactCards({
 									href={instagramUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-[#0C2C46] transition-all hover:bg-[#00949E] hover:text-white"
+									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-secondary transition-all hover:bg-secondary hover:text-white"
 									aria-label="Instagram"
 								>
 									<svg
@@ -142,7 +142,7 @@ export function AnimatedContactCards({
 									href={linkedinUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-[#0C2C46] transition-all hover:bg-[#00949E] hover:text-white"
+									className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-secondary transition-all hover:bg-secondary hover:text-white"
 									aria-label="LinkedIn"
 								>
 									<svg
