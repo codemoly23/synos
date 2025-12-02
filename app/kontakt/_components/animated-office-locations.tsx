@@ -32,13 +32,13 @@ export function AnimatedOfficeLocations({
 			transition={{ duration: 0.6 }}
 		>
 			<div className="mb-8">
-				<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#00949E]/10 px-4 py-1.5">
-					<MapPin className="h-4 w-4 text-[#00949E]" />
-					<span className="text-sm font-semibold text-[#00949E]">
+				<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-1.5">
+					<MapPin className="h-4 w-4 text-secondary" />
+					<span className="text-sm font-semibold text-secondary">
 						Våra kontor
 					</span>
 				</div>
-				<h2 className="mb-4 text-3xl font-bold text-[#0C2C46] md:text-4xl">
+				<h2 className="mb-4 text-3xl font-bold text-secondary md:text-4xl">
 					Besök oss
 				</h2>
 				<p className="text-lg text-slate-600">
@@ -55,8 +55,8 @@ export function AnimatedOfficeLocations({
 						onClick={() => setActiveTab(index)}
 						className={`flex-1 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-200 ${
 							activeTab === index
-								? "bg-white text-[#0C2C46] shadow-md"
-								: "text-slate-600 hover:text-[#0C2C46]"
+								? "bg-white text-secondary shadow-md"
+								: "text-slate-600 hover:text-secondary"
 						}`}
 					>
 						{address.city}
@@ -110,18 +110,18 @@ export function AnimatedOfficeLocations({
 						>
 							<div className="mb-6 flex items-start justify-between">
 								<div>
-									<h3 className="mb-2 text-2xl font-bold text-[#0C2C46]">
+									<h3 className="mb-2 text-2xl font-bold text-secondary">
 										{addresses[activeTab].name}
 									</h3>
 									<div className="flex items-center gap-2 text-sm text-slate-600">
-										<MapPin className="h-4 w-4 text-[#00949E]" />
+										<MapPin className="h-4 w-4 text-secondary" />
 										<span className="font-medium">
 											{addresses[activeTab].city}
 										</span>
 									</div>
 								</div>
-								<div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00949E]/10">
-									<MapPin className="h-7 w-7 text-[#00949E]" />
+								<div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary/10">
+									<MapPin className="h-7 w-7 text-secondary" />
 								</div>
 							</div>
 
@@ -134,7 +134,7 @@ export function AnimatedOfficeLocations({
 										<p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
 											Adress
 										</p>
-										<p className="font-medium text-[#0C2C46]">
+										<p className="font-medium text-secondary">
 											{addresses[activeTab].street}
 										</p>
 										<p className="text-sm text-slate-600">
@@ -155,7 +155,7 @@ export function AnimatedOfficeLocations({
 										<p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
 											Öppettider
 										</p>
-										<p className="font-medium text-[#0C2C46]">
+										<p className="font-medium text-secondary">
 											Mån-Fre 09:00-17:00
 										</p>
 										<p className="text-sm text-slate-600">
@@ -169,7 +169,7 @@ export function AnimatedOfficeLocations({
 								href={`https://www.google.com/maps/search/?api=1&query=${addresses[activeTab].lat},${addresses[activeTab].lng}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#00949E] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#007A82] hover:shadow-lg"
+								className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-primary hover:shadow-lg"
 							>
 								<MapPin className="h-4 w-4" />
 								Öppna i Google Maps

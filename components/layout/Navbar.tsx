@@ -53,7 +53,7 @@ export function Navbar() {
 										<NavigationMenuItem key={item.title}>
 											{item.items ? (
 												<>
-													<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-[#00949E]! hover:bg-[#00949E]/10! focus:bg-[#00949E]/10! focus:text-[#00949E]! active:bg-secondary/20! active:text-[#007A82]! data-[state=open]:bg-[#00949E]/10! data-[state=open]:text-[#00949E]! text-sm font-medium transition-colors">
+													<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-secondary! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-secondary! active:bg-secondary/20! active:text-primary! data-[state=open]:bg-secondary/10! data-[state=open]:text-secondary! text-sm font-medium transition-colors">
 														<Link href={item.href}>
 															{item.title}
 														</Link>
@@ -68,7 +68,7 @@ export function Navbar() {
 																	>
 																		<Link
 																			href={subItem.href}
-																			className="block text-sm font-bold text-[#0C2C46] hover:text-[#00949E] hover:underline transition-colors"
+																			className="block text-sm font-bold text-secondary hover:text-secondary hover:underline transition-colors"
 																		>
 																			{subItem.title}
 																		</Link>
@@ -85,7 +85,7 @@ export function Navbar() {
 																								href={
 																									childItem.href
 																								}
-																								className="block text-sm text-[#64748B] hover:text-[#00949E] transition-colors line-clamp-1 hover:underline"
+																								className="block text-sm text-slate-400 hover:text-secondary transition-colors line-clamp-1 hover:underline"
 																							>
 																								{
 																									childItem.title
@@ -124,7 +124,7 @@ export function Navbar() {
 							<div className="space-y-2">
 								<a
 									href="mailto:info@synos.se"
-									className="flex items-center gap-2 text-xs font-medium text-[#00949E] hover:text-[#007A82] hover:underline transition-colors whitespace-nowrap"
+									className="flex items-center gap-2 text-xs font-medium text-secondary hover:text-primary hover:underline transition-colors whitespace-nowrap"
 								>
 									<Mail className="h-4 w-4" />
 									<span>info@synos.se</span>
@@ -137,7 +137,7 @@ export function Navbar() {
 									<span>(800) 555-0123</span>
 								</a>
 							</div>
-							<Button className="bg-primary hover:bg-primary text-white rounded-full px-6 shadow-md shadow-[#00949E]/20">
+							<Button className="bg-primary hover:bg-primary text-white rounded-full px-6 shadow-md shadow-secondary/20">
 								Get Quote
 							</Button>
 						</div>

@@ -53,7 +53,7 @@ const FAQItem = ({ faq, index }: { faq: (typeof faqs)[0]; index: number }) => {
 					{faq.question}
 				</span>
 				<svg
-					className={`h-5 w-5 flex-shrink-0 text-secondary transition-transform duration-200 ${
+					className={`h-5 w-5 shrink-0 text-secondary transition-transform duration-200 ${
 						isOpen ? "rotate-180" : ""
 					}`}
 					fill="none"

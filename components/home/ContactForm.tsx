@@ -63,7 +63,7 @@ export function ContactForm() {
 	return (
 		<div className="w-full max-w-xl mx-auto rounded-2xl bg-slate-100 shadow-xl border border-border/50 p-8">
 			<div className="mb-8 text-center">
-				<h3 className="text-2xl font-bold text-[#0C2C46] mb-2">
+				<h3 className="text-2xl font-bold text-secondary mb-2">
 					Get in Touch
 				</h3>
 				<p className="text-slate-600">

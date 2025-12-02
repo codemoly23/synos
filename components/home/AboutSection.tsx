@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import Image from "next/image";
 import { Button } from "../ui/button";
+import { ImageComponent } from "../common/image-component";
 
 {
 	/* About / Why Choose Us Section */
@@ -10,12 +10,16 @@ const AboutSection = () => {
 		<section className="section-padding bg-white relative overflow-hidden">
 			<div className="_container grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 				<div className="relative h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
-					<Image
+					<ImageComponent
 						src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200"
 						alt="Modern Hospital Interior"
-						fill
-						className="object-cover"
+						height={0}
+						width={0}
+						sizes="100vw"
+						wrapperClasses="w-full h-full"
+						className="object-cover w-full h-full"
 					/>
+
 					{/* Decorative elements */}
 					<div className="absolute inset-0 bg-linear-to-t from-secondary/60 via-transparent to-transparent" />
 					<div className="absolute bottom-8 left-8 right-8 text-white bg-secondary/30 p-8 rounded-3xl">
@@ -37,7 +41,7 @@ const AboutSection = () => {
 							Why Choose Synos
 						</span>
 					</div>
-					<h2 className="text-4xl md:text-5xl font-bold text-[#0C2C46] leading-tight">
+					<h2 className="text-4xl md:text-5xl font-bold text-secondary leading-tight">
 						Empowering Healthcare with{" "}
 						<span className="text-primary">Precision Technology</span>
 					</h2>
@@ -62,7 +66,7 @@ const AboutSection = () => {
 								<div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
 									<CheckCircle2 className="h-5 w-5 text-primary group-hover:text-white transition-colors duration-300" />
 								</div>
-								<span className="font-medium text-[#0C2C46] group-hover:text-primary transition-colors">
+								<span className="font-medium text-secondary group-hover:text-primary transition-colors">
 									{item}
 								</span>
 							</li>

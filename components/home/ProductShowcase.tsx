@@ -1,17 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import Link from "next/link";
+import { ImageComponent } from "../common/image-component";
 
 // Dummy Data
 const products = [
@@ -72,7 +67,7 @@ export function ProductShowcase() {
 				{/* Section Header */}
 				<div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 					<div className="max-w-2xl">
-						<h2 className="text-3xl md:text-4xl font-bold text-[#0C2C46] mb-4">
+						<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
 							Premium Medical Equipment
 						</h2>
 						<p className="text-slate-600 text-lg">
@@ -98,12 +93,21 @@ export function ProductShowcase() {
 							<Card className="bg-white group overflow-hidden border-border/10 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
 								{/* Image Area */}
 								<div className="relative h-64 overflow-hidden bg-secondary/50">
-									<Image
-										fill
+									<ImageComponent
 										src={product.image}
 										alt={product.name}
 										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+										loading={index === 0 ? "eager" : "lazy"}
+										height={0}
+										width={0}
+										sizes={
+											index === 0
+												? "(max-width: 768px) 100vw, 50vw"
+												: "100vw"
+										}
+										wrapperClasses="w-full h-full"
 									/>
+
 									<div className="absolute top-4 right-4">
 										<Badge
 											variant="secondary"
@@ -117,7 +121,7 @@ export function ProductShowcase() {
 								{/* Content */}
 								<CardContent className="pt-6 grow">
 									<div className="flex justify-between items-start mb-2">
-										<h3 className="text-xl font-bold text-[#0C2C46] group-hover:text-primary transition-colors">
+										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors">
 											{product.name}
 										</h3>
 									</div>
@@ -140,7 +144,7 @@ export function ProductShowcase() {
 
 								{/* Footer */}
 								<CardFooter className="border-t border-border/10 pt-4 flex justify-between items-center">
-									{/* <span className="text-lg font-bold text-[#0C2C46]">
+									{/* <span className="text-lg font-bold text-secondary">
 										{product.price}
 									</span> */}
 									<Link

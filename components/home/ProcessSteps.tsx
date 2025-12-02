@@ -38,7 +38,7 @@ export function ProcessSteps() {
 		<section className="section-padding bg-slate-50">
 			<div className="_container">
 				<div className="text-center max-w-3xl mx-auto mb-16">
-					<h2 className="text-3xl md:text-4xl font-bold text-[#0C2C46] mb-4">
+					<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
 						Streamlined Procurement Process
 					</h2>
 					<p className="text-slate-600 text-lg">
@@ -64,11 +64,11 @@ export function ProcessSteps() {
 								<div className="flex flex-col items-center text-center">
 									<div className="h-24 w-24 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center mb-6 relative z-10 shadow-sm">
 										<step.icon className="h-10 w-10 text-primary" />
-										<div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-[#0C2C46] text-white flex items-center justify-center text-sm font-bold">
+										<div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-secondary text-white flex items-center justify-center text-sm font-bold">
 											{step.number}
 										</div>
 									</div>
-									<h3 className="text-xl font-bold text-[#0C2C46] mb-3">
+									<h3 className="text-xl font-bold text-secondary mb-3">
 										{step.title}
 									</h3>
 									<p className="text-slate-600">{step.description}</p>

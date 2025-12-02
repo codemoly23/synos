@@ -37,13 +37,13 @@ export function AnimatedFAQ() {
 					transition={{ duration: 0.6 }}
 					className="mx-auto max-w-4xl text-center"
 				>
-					<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#00949E]/10 px-4 py-1.5">
-						<MessageCircle className="h-4 w-4 text-[#00949E]" />
-						<span className="text-sm font-semibold text-[#00949E]">
+					<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-1.5">
+						<MessageCircle className="h-4 w-4 text-secondary" />
+						<span className="text-sm font-semibold text-secondary">
 							Vanliga frågor
 						</span>
 					</div>
-					<h2 className="mb-4 text-3xl font-bold text-[#0C2C46] md:text-4xl">
+					<h2 className="mb-4 text-3xl font-bold text-secondary md:text-4xl">
 						Har du frågor?
 					</h2>
 					<p className="mb-12 text-lg text-slate-600">
@@ -60,13 +60,13 @@ export function AnimatedFAQ() {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
 							transition={{ duration: 0.4, delay: index * 0.1 }}
-							className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#00949E]/30"
+							className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-secondary/30"
 						>
 							<div className="mb-3 flex items-start gap-3">
-								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#00949E]/10 text-[#00949E] transition-all duration-300 group-hover:bg-[#00949E] group-hover:text-white">
+								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary transition-all duration-300 group-hover:bg-secondary group-hover:text-white">
 									<CheckCircle2 className="h-5 w-5" />
 								</div>
-								<h3 className="font-bold text-[#0C2C46]">
+								<h3 className="font-bold text-secondary">
 									{faq.question}
 								</h3>
 							</div>
