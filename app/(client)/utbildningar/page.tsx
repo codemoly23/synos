@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function UtbildningarPage() {
 	return (
-		<div className="_container page-padding-top">
+		<div className="_container padding-top">
 			{/* Hero Section */}
 			<div className="mb-16 text-center">
 				<h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl">

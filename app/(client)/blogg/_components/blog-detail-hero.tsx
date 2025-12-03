@@ -35,7 +35,7 @@ export function BlogDetailHero({ article }: BlogDetailHeroProps) {
 	const readingTime = Math.ceil(wordCount / 200);
 
 	return (
-		<section className="relative overflow-hidden bg-linear-to-b from-slate-50 to-primary/20 page-padding-top pb-8">
+		<section className="relative overflow-hidden bg-linear-to-b from-slate-50 to-primary/20 padding-top pb-8">
 			<section className="_container">
 				<Breadcrumb
 					items={[

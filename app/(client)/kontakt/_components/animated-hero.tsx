@@ -25,7 +25,7 @@ interface AnimatedHeroProps {
 
 export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 	return (
-		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-secondary/60 page-padding-top pb-24 pt-32">
+		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-secondary/60 padding-top pb-24 pt-32">
 			{/* Background Pattern */}
 			{/* <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" /> */}
 			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary/20 blur-3xl" />

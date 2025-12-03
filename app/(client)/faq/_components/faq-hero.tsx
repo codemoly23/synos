@@ -15,7 +15,7 @@ import Link from "next/link";
  */
 export function FAQHero() {
 	return (
-		<section className="relative w-full overflow-hidden bg-linear-to-br from-slate-100 to-primary/20 page-padding-top pb-20">
+		<section className="relative w-full overflow-hidden bg-linear-to-br from-slate-100 to-primary/20 padding-top pb-20">
 			{/* Background Pattern */}
 			<div className="absolute inset-0 opacity-10">
 				<div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />

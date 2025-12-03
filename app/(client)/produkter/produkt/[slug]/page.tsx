@@ -122,7 +122,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 			/>
 
 			<div className="min-h-screen bg-linear-to-b from-slate-200 to-primary/10">
-				<div className="page-padding-top">
+				<div className="padding-top">
 					<div className="_container">
 						{/* Breadcrumb */}
 						<Breadcrumb

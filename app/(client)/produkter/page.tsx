@@ -39,7 +39,7 @@ export default function ProductsPage() {
 
 	return (
 		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
-			<div className="_container mx-auto px-4 py-8 page-padding-top">
+			<div className="_container mx-auto px-4 py-8 padding-top">
 				{/* Breadcrumb */}
 				<Breadcrumb items={[{ label: "Produkter" }]} />
 

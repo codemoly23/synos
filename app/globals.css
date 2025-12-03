@@ -11,7 +11,8 @@
      ============================================ */
 
   /* Primary (Teal Accent) - Used for Buttons, Links, Accents */
-  --color-primary: #39898F;
+  --color-primary: #DCA783;
+  /* #39898F; */
   --color-primary-foreground: #FFFFFF;
   --color-primary-hover: #2C2D38;
 
@@ -19,6 +20,7 @@
 
   /* Secondary (Dark Blue/Navy) - Used for Dark Backgrounds, Secondary Text */
   --color-secondary: #2C2D38;
+  /* #39898F; */
   --color-secondary-foreground: #FFFFFF;
 
   /* Tertiary/Warm Accents (Beige/Tan tones) */
@@ -214,7 +216,7 @@
   }
 
   /* page top padding to adjust the navbar height */
-  .page-padding-top {
+  .padding-top {
     @apply pt-32;
   }
 
