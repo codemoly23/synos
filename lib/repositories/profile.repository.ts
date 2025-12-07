@@ -15,9 +15,14 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 	/**
 	 * Find profile by user ID
 	 */
-	async findByUserId(userId: string | mongoose.Types.ObjectId): Promise<IProfile | null> {
+	async findByUserId(
+		userId: string | mongoose.Types.ObjectId
+	): Promise<IProfile | null> {
 		try {
-			const objectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 			return await this.findOne({ userId: objectId });
 		} catch (error) {
 			logger.error("Error finding profile by user ID", error);
@@ -33,7 +38,10 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 		data?: Partial<IProfile>
 	): Promise<IProfile> {
 		try {
-			const objectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
 			const profileData: Partial<IProfile> = {
 				userId: objectId,
@@ -55,12 +63,12 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 		update: Partial<IProfile>
 	): Promise<IProfile | null> {
 		try {
-			const objectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
-			return await this.updateOne(
-				{ userId: objectId },
-				{ $set: update }
-			);
+			return await this.updateOne({ userId: objectId }, { $set: update });
 		} catch (error) {
 			logger.error("Error updating profile by user ID", error);
 			throw error;
@@ -100,9 +108,14 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 	/**
 	 * Delete profile by user ID
 	 */
-	async deleteByUserId(userId: string | mongoose.Types.ObjectId): Promise<IProfile | null> {
+	async deleteByUserId(
+		userId: string | mongoose.Types.ObjectId
+	): Promise<IProfile | null> {
 		try {
-			const objectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 			return await this.deleteOne({ userId: objectId });
 		} catch (error) {
 			logger.error("Error deleting profile by user ID", error);
@@ -113,9 +126,14 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 	/**
 	 * Check if profile exists for user
 	 */
-	async existsForUser(userId: string | mongoose.Types.ObjectId): Promise<boolean> {
+	async existsForUser(
+		userId: string | mongoose.Types.ObjectId
+	): Promise<boolean> {
 		try {
-			const objectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 			return await this.exists({ userId: objectId });
 		} catch (error) {
 			logger.error("Error checking profile existence", error);
@@ -131,27 +149,29 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 		defaultData?: Partial<IProfile>
 	): Promise<IProfile> {
 		try {
-			console.log("👤 [ProfileRepository] findOrCreateForUser called");
-			console.log("👤 [ProfileRepository] userId:", userId);
-			console.log("👤 [ProfileRepository] userId type:", typeof userId);
+			// console.log("👤 [ProfileRepository] findOrCreateForUser called");
+			// console.log("👤 [ProfileRepository] userId:", userId);
+			// console.log("👤 [ProfileRepository] userId type:", typeof userId);
 
 			// Try to find existing profile
-			console.log("👤 [ProfileRepository] Searching for existing profile...");
+			// console.log("👤 [ProfileRepository] Searching for existing profile...");
 			let profile = await this.findByUserId(userId);
 
-			console.log("👤 [ProfileRepository] Search result:", {
-				found: !!profile,
-				profileId: profile?._id?.toString()
-			});
+			// console.log("👤 [ProfileRepository] Search result:", {
+			// 	found: !!profile,
+			// 	profileId: profile?._id?.toString()
+			// });
 
 			// Create if doesn't exist
 			if (!profile) {
-				console.log("👤 [ProfileRepository] Profile not found, creating new one...");
+				// console.log(
+				// 	"👤 [ProfileRepository] Profile not found, creating new one..."
+				// );
 				profile = await this.createForUser(userId, defaultData);
-				console.log("👤 [ProfileRepository] Profile created:", {
-					profileId: profile._id.toString(),
-					userId: profile.userId.toString()
-				});
+				// console.log("👤 [ProfileRepository] Profile created:", {
+				// 	profileId: profile._id.toString(),
+				// 	userId: profile.userId.toString(),
+				// });
 				logger.info("Created new profile for user", { userId });
 			} else {
 				console.log("👤 [ProfileRepository] Profile already exists");
@@ -159,7 +179,10 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 
 			return profile;
 		} catch (error) {
-			console.log("❌ [ProfileRepository] Error in findOrCreateForUser:", error);
+			// console.log(
+			// 	"❌ [ProfileRepository] Error in findOrCreateForUser:",
+			// 	error
+			// );
 			logger.error("Error in findOrCreateForUser", error);
 			throw error;
 		}

@@ -1,0 +1,251 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { TreeSelect } from "./TreeSelect";
+import {
+	createCategorySchema,
+	updateCategorySchema,
+	type CreateCategoryInput,
+	type UpdateCategoryInput,
+} from "@/lib/validations/category.validation";
+import { generateSlug } from "@/lib/utils/product-helpers";
+import type { ICategory, ICategoryTreeNode } from "@/models/category.model";
+
+/**
+ * Form data type that works for both create and update
+ */
+type CategoryFormData = {
+	name?: string;
+	slug?: string;
+	description?: string;
+	parent?: string | null;
+	image?: string | null;
+	order?: number;
+	isActive?: boolean;
+};
+
+interface CategoryFormProps {
+	category?: ICategory | null;
+	categoryTree: ICategoryTreeNode[];
+	onSubmit: (data: CategoryFormData) => Promise<void>;
+	onCancel?: () => void;
+	isLoading?: boolean;
+	className?: string;
+}
+
+/**
+ * CategoryForm Component
+ * Form for creating and editing categories
+ */
+export function CategoryForm({
+	category,
+	categoryTree,
+	onSubmit,
+	onCancel,
+	isLoading = false,
+	className,
+}: CategoryFormProps) {
+	const isEditing = !!category;
+
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		watch,
+		formState: { errors, isDirty },
+	} = useForm<CreateCategoryInput | UpdateCategoryInput>({
+		resolver: zodResolver(
+			isEditing ? updateCategorySchema : createCategorySchema
+		),
+		defaultValues: {
+			name: category?.name || "",
+			slug: category?.slug || "",
+			description: category?.description || "",
+			parent: category?.parent?.toString() || null,
+			image: category?.image || "",
+			order: category?.order || 0,
+			isActive: category?.isActive ?? true,
+		},
+	});
+
+	const name = watch("name");
+	const slug = watch("slug");
+	const parent = watch("parent");
+	const isActive = watch("isActive");
+
+	// Auto-generate slug from name
+	const handleNameBlur = () => {
+		if (!slug && name) {
+			setValue("slug", generateSlug(name), { shouldDirty: true });
+		}
+	};
+
+	// Handle parent selection
+	const handleParentChange = (selected: string[]) => {
+		setValue("parent", selected[0] || null, { shouldDirty: true });
+	};
+
+	const onFormSubmit = async (
+		data: CreateCategoryInput | UpdateCategoryInput
+	) => {
+		await onSubmit(data as CategoryFormData);
+	};
+
+	return (
+		<form
+			onSubmit={handleSubmit(onFormSubmit)}
+			className={cn("space-y-6", className)}
+		>
+			{/* Name */}
+			<div className="space-y-2">
+				<Label htmlFor="name">
+					Category Name <span className="text-red-500">*</span>
+				</Label>
+				<Input
+					id="name"
+					{...register("name")}
+					onBlur={handleNameBlur}
+					placeholder="Enter category name"
+					disabled={isLoading}
+					className={errors.name ? "border-red-500" : ""}
+				/>
+				{errors.name && (
+					<p className="text-sm text-red-500">{errors.name.message}</p>
+				)}
+			</div>
+
+			{/* Slug */}
+			<div className="space-y-2">
+				<Label htmlFor="slug">
+					Slug <span className="text-red-500">*</span>
+				</Label>
+				<Input
+					id="slug"
+					{...register("slug")}
+					placeholder="category-slug"
+					disabled={isLoading}
+					className={errors.slug ? "border-red-500" : ""}
+				/>
+				<p className="text-xs text-slate-500">
+					URL-friendly identifier. Auto-generated from name if left empty.
+				</p>
+				{errors.slug && (
+					<p className="text-sm text-red-500">{errors.slug.message}</p>
+				)}
+			</div>
+
+			{/* Description */}
+			<div className="space-y-2">
+				<Label htmlFor="description">Description</Label>
+				<Textarea
+					id="description"
+					{...register("description")}
+					placeholder="Enter category description"
+					disabled={isLoading}
+					rows={3}
+				/>
+				{errors.description && (
+					<p className="text-sm text-red-500">
+						{errors.description.message}
+					</p>
+				)}
+			</div>
+
+			{/* Parent Category */}
+			<div className="space-y-2">
+				<Label>Parent Category</Label>
+				<TreeSelect
+					value={parent ? [parent] : []}
+					onChange={handleParentChange}
+					tree={categoryTree}
+					placeholder="Select parent category (optional)"
+					multiple={false}
+					disabled={isLoading}
+					excludeId={category?._id?.toString()}
+				/>
+				<p className="text-xs text-slate-500">
+					Leave empty for a root-level category
+				</p>
+			</div>
+
+			{/* Image URL */}
+			<div className="space-y-2">
+				<Label htmlFor="image">Image URL</Label>
+				<Input
+					id="image"
+					type="url"
+					{...register("image")}
+					placeholder="https://example.com/image.jpg"
+					disabled={isLoading}
+				/>
+				{errors.image && (
+					<p className="text-sm text-red-500">{errors.image.message}</p>
+				)}
+			</div>
+
+			{/* Order */}
+			<div className="space-y-2">
+				<Label htmlFor="order">Display Order</Label>
+				<Input
+					id="order"
+					type="number"
+					{...register("order", { valueAsNumber: true })}
+					placeholder="0"
+					disabled={isLoading}
+				/>
+				<p className="text-xs text-slate-500">
+					Lower numbers appear first. Categories with the same order are
+					sorted alphabetically.
+				</p>
+			</div>
+
+			{/* Active Status */}
+			<div className="flex items-center gap-3">
+				<input
+					type="checkbox"
+					id="isActive"
+					checked={isActive}
+					onChange={(e) =>
+						setValue("isActive", e.target.checked, { shouldDirty: true })
+					}
+					disabled={isLoading}
+					className="h-4 w-4 rounded border-slate-300"
+				/>
+				<Label htmlFor="isActive" className="cursor-pointer">
+					Active
+				</Label>
+				<p className="text-xs text-slate-500">
+					Inactive categories are hidden from public view
+				</p>
+			</div>
+
+			{/* Actions */}
+			<div className="flex gap-3 pt-4 border-t">
+				{onCancel && (
+					<Button
+						type="button"
+						variant="outline"
+						onClick={onCancel}
+						disabled={isLoading}
+					>
+						Cancel
+					</Button>
+				)}
+				<Button
+					type="submit"
+					disabled={isLoading || (!isDirty && isEditing)}
+				>
+					{isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+					{isEditing ? "Update Category" : "Create Category"}
+				</Button>
+			</div>
+		</form>
+	);
+}

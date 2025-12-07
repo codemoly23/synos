@@ -8,6 +8,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
 import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -144,6 +145,7 @@ export default function RootLayout({
 					<Footer />
 				</div>
 				<MobileBottomNav />
+				<Toaster richColors={true} expand />
 			</body>
 		</html>
 	);

@@ -25,7 +25,7 @@ interface AnimatedHeroProps {
 
 export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 	return (
-		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-secondary/60 padding-top pb-24 pt-32">
+		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-primary/20 padding-top pb-24">
 			{/* Background Pattern */}
 			{/* <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" /> */}
 			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary/20 blur-3xl" />
@@ -44,7 +44,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 						className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
 					>
 						<MessageCircle className="h-4 w-4 text-primary" />
-						<span className="text-sm font-medium text-primary">
+						<span className="text-sm font-medium text-black">
 							Vi finns här för dig
 						</span>
 					</motion.div>
@@ -52,7 +52,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					{/* Heading */}
 					<motion.h1
 						variants={fadeUp}
-						className="mb-6 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl"
+						className="mb-6 text-4xl font-bold tracking-tight text-primary md:text-5xl lg:text-6xl"
 					>
 						Låt oss prata om ditt projekt
 					</motion.h1>
@@ -60,7 +60,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					{/* Description */}
 					<motion.p
 						variants={fadeUp}
-						className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl"
+						className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-black md:text-xl"
 					>
 						Har du frågor om våra produkter, utbildningar eller vill veta
 						mer om hur du startar din egen klinik? Vårt team finns här för

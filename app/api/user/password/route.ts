@@ -16,8 +16,6 @@ import { updatePasswordSchema } from "@/lib/validations/user.validation";
  */
 export async function PUT(request: NextRequest) {
 	try {
-		console.log("=== PUT /api/user/password ===");
-
 		// Get session from Better Auth
 		const auth = await getAuth();
 		const session = await auth.api.getSession({ headers: request.headers });
@@ -28,33 +26,33 @@ export async function PUT(request: NextRequest) {
 			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
 		}
 
-		console.log("✅ User authenticated:", session.user.id);
+		// console.log("✅ User authenticated:", session.user.id);
 
 		// Parse request body
 		const body = await request.json();
-		console.log("📦 Request body received (passwords hidden)");
+		// console.log("📦 Request body received (passwords hidden)");
 
 		// Validate input
 		const validation = updatePasswordSchema.safeParse(body);
 		if (!validation.success) {
-			console.log("❌ Validation failed:", validation.error);
+			// console.log("❌ Validation failed:", validation.error);
 			return badRequestResponse("Validation failed", validation.error);
 		}
 
-		console.log("✅ Validation passed");
+		// console.log("✅ Validation passed");
 
 		// Use Better Auth's change password method
 		try {
 			await auth.api.changePassword({
+				headers: request.headers,
 				body: {
-					// userId: session.user.id,
 					newPassword: validation.data.newPassword,
 					currentPassword: validation.data.currentPassword,
-					revokeOtherSessions: true,
+					revokeOtherSessions: false, // Keep other sessions active
 				},
 			});
 
-			console.log("✅ Password updated successfully");
+			// console.log("✅ Password updated successfully");
 
 			logger.info("Password updated successfully", {
 				userId: session.user.id,
@@ -65,11 +63,14 @@ export async function PUT(request: NextRequest) {
 				"Password updated successfully"
 			);
 		} catch (error: any) {
-			console.log("❌ Password update failed:", error.message);
+			// console.log("❌ Password update failed:", error.message);
 
+			// Better Auth throws specific error messages
 			if (
-				error.message?.includes("Invalid current password") ||
-				error.message?.includes("incorrect")
+				error.message?.includes("Invalid password") ||
+				error.message?.includes("incorrect") ||
+				error.message?.includes("wrong") ||
+				error.status === "UNAUTHORIZED"
 			) {
 				return badRequestResponse("Current password is incorrect");
 			}
@@ -77,7 +78,7 @@ export async function PUT(request: NextRequest) {
 			throw error;
 		}
 	} catch (error) {
-		console.log("❌ Error updating password:", error);
+		// console.log("❌ Error updating password:", error);
 		logger.error("Error in PUT /api/user/password", error);
 		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
 	}

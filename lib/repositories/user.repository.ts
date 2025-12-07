@@ -23,46 +23,48 @@ export class UserRepository extends BaseRepository<IUser> {
 		}
 	}
 
-
 	/**
 	 * Find user with their profile by _id
 	 */
 	async findByIdWithProfile(userId: string): Promise<IUser | null> {
 		try {
-			console.log("🗄️  [UserRepository] findByIdWithProfile called");
-			console.log("🗄️  [UserRepository] userId:", userId);
-			console.log("🗄️  [UserRepository] Model name:", this.model.modelName);
-			console.log("🗄️  [UserRepository] Collection name:", this.model.collection.name);
+			// console.log("🗄️  [UserRepository] findByIdWithProfile called");
+			// console.log("🗄️  [UserRepository] userId:", userId);
+			// console.log("🗄️  [UserRepository] Model name:", this.model.modelName);
+			// console.log("🗄️  [UserRepository] Collection name:", this.model.collection.name);
 
 			await this.ensureConnection();
-			console.log("🗄️  [UserRepository] DB connection ensured");
+			// console.log("🗄️  [UserRepository] DB connection ensured");
 
 			logger.info("Finding user by ID with profile", { userId });
 
-			console.log("🗄️  [UserRepository] Executing query: findById with populate...");
+			// console.log("🗄️  [UserRepository] Executing query: findById with populate...");
 			const user = await this.model
 				.findById(userId)
 				.populate("profile")
 				.exec();
 
-			console.log("🗄️  [UserRepository] Query executed. Result:", {
-				found: !!user,
-				userId: user?._id?.toString(),
-				email: user?.email,
-				name: user?.name,
-				hasProfile: user ? !!user.profile : false,
-				profileValue: user?.profile
-			});
+			// console.log("🗄️  [UserRepository] Query executed. Result:", {
+			// 	found: !!user,
+			// 	userId: user?._id?.toString(),
+			// 	email: user?.email,
+			// 	name: user?.name,
+			// 	hasProfile: user ? !!user.profile : false,
+			// 	profileValue: user?.profile
+			// });
 
 			logger.info("User query result", {
 				found: !!user,
 				userId,
-				hasProfile: user ? !!user.profile : false
+				hasProfile: user ? !!user.profile : false,
 			});
 
 			return user;
 		} catch (error) {
-			console.log("❌ [UserRepository] Error in findByIdWithProfile:", error);
+			// console.log(
+			// 	"❌ [UserRepository] Error in findByIdWithProfile:",
+			// 	error
+			// );
 			logger.error("Error finding user with profile", { error, userId });
 			throw error;
 		}

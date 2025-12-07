@@ -27,12 +27,12 @@ export async function POST(request: NextRequest) {
 		const validatedData = contactSchema.parse(body);
 
 		// Log to console (stub behavior)
-		console.log("=== Contact Form Submission ===");
-		console.log("Timestamp:", new Date().toISOString());
-		console.log("Name:", validatedData.name);
-		console.log("Email:", validatedData.email);
-		console.log("Message:", validatedData.message);
-		console.log("================================");
+		// console.log("=== Contact Form Submission ===");
+		// console.log("Timestamp:", new Date().toISOString());
+		// console.log("Name:", validatedData.name);
+		// console.log("Email:", validatedData.email);
+		// console.log("Message:", validatedData.message);
+		// console.log("================================");
 
 		// TODO: In production, implement:
 		// 1. Send email notification via Resend

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email format"),
@@ -57,8 +58,7 @@ function LoginForm() {
 				throw new Error(res?.error?.message);
 			}
 
-			console.log("Login successful:", res);
-
+			toast.success("Login successful");
 			// Redirect to callback URL or dashboard on success
 			router.push(callbackUrl);
 		} catch (err: any) {

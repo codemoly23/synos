@@ -110,6 +110,16 @@ export const API_ROUTES = {
 		PROFILE: "/api/user/profile",
 		AVATAR: "/api/user/profile/avatar",
 	},
+	PRODUCTS: {
+		BASE: "/api/products",
+		STATS: "/api/products/stats",
+		SEARCH: "/api/products/search",
+		TAGS: "/api/products/tags",
+	},
+	CATEGORIES: {
+		BASE: "/api/categories",
+		TREE: "/api/categories/tree",
+	},
 	HEALTH: "/api/health",
 } as const;
 
@@ -122,6 +132,10 @@ export const APP_ROUTES = {
 	RESET_PASSWORD: "/reset-password",
 	DASHBOARD: "/dashboard",
 	PROFILE: "/dashboard/profile",
+	PRODUCTS: "/dashboard/products",
+	PRODUCTS_NEW: "/dashboard/products/new",
+	CATEGORIES: "/dashboard/categories",
+	CATEGORIES_NEW: "/dashboard/categories/new",
 	ADMIN: "/admin",
 	ADMIN_USERS: "/admin/users",
 } as const;

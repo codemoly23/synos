@@ -17,45 +17,42 @@ import { NotFoundError } from "@/lib/utils/api-error";
  */
 export async function GET(request: NextRequest) {
 	try {
-		console.log("=== /api/user/me GET request started ===");
-
 		// Get session from Better Auth
 		const auth = await getAuth();
-		console.log("Auth instance obtained:", !!auth);
 
 		const session = await auth.api.getSession({ headers: request.headers });
-		console.log("Session:", {
-			exists: !!session,
-			hasUser: !!session?.user,
-			userId: session?.user?.id,
-			userEmail: session?.user?.email,
-			userName: session?.user?.name
-		});
+		// console.log("Session:", {
+		// 	exists: !!session,
+		// 	hasUser: !!session?.user,
+		// 	userId: session?.user?.id,
+		// 	userEmail: session?.user?.email,
+		// 	userName: session?.user?.name
+		// });
 
 		// Check if user is authenticated
 		if (!session || !session.user) {
-			console.log("❌ No session or user found");
-			logger.warn("Unauthenticated access attempt to /api/user/me");
+			// console.log("❌ No session or user found");
+			// logger.warn("Unauthenticated access attempt to /api/user/me");
 			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
 		}
 
-		console.log("✅ Session valid, userId:", session.user.id);
+		// console.log("✅ Session valid, userId:", session.user.id);
 		logger.info("Fetching user data", { userId: session.user.id });
 
 		try {
-			console.log("🔍 Calling userService.getUserWithProfile with userId:", session.user.id);
+			// console.log("🔍 Calling userService.getUserWithProfile with userId:", session.user.id);
 
 			// Get user with profile from our database using Better Auth user._id
 			const { user, profile } = await userService.getUserWithProfile({
 				userId: session.user.id,
 			});
 
-			console.log("✅ User and profile retrieved:", {
-				userId: user._id,
-				userEmail: user.email,
-				profileId: profile._id,
-				hasProfile: !!profile
-			});
+			// console.log("✅ User and profile retrieved:", {
+			// 	userId: user._id,
+			// 	userEmail: user.email,
+			// 	profileId: profile._id,
+			// 	hasProfile: !!profile
+			// });
 
 			logger.info("User profile retrieved", { userId: user._id });
 
@@ -86,11 +83,11 @@ export async function GET(request: NextRequest) {
 				"User data retrieved successfully"
 			);
 		} catch (error) {
-			console.log("❌ Error fetching user:", error);
+			// console.log("❌ Error fetching user:", error);
 
 			// If user not found, create profile (user should exist in Better Auth's collection)
 			if (error instanceof NotFoundError) {
-				console.log("⚠️  User not found, attempting to create profile");
+				// console.log("⚠️  User not found, attempting to create profile");
 
 				logger.warn(
 					"User or profile not found, attempting to create profile",

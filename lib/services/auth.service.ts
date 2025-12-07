@@ -1,9 +1,17 @@
 import { userRepository } from "@/lib/repositories/user.repository";
 import { profileRepository } from "@/lib/repositories/profile.repository";
 import { logger } from "@/lib/utils/logger";
-import { ConflictError, UnauthorizedError, DatabaseError } from "@/lib/utils/api-error";
+import {
+	ConflictError,
+	UnauthorizedError,
+	DatabaseError,
+} from "@/lib/utils/api-error";
 import { API_MESSAGES } from "@/lib/utils/constants";
 import type { RegisterInput } from "@/lib/validations/auth.validation";
+import { getAuth } from "@/lib/db/auth";
+import type { IUser } from "@/models/user.model";
+import crypto from "crypto";
+import { getMongoClient } from "../db/mongo";
 
 /**
  * Authentication Service
@@ -20,7 +28,10 @@ class AuthService {
 		name: string
 	): Promise<{ userId: string; profileId: string }> {
 		try {
-			logger.info("Creating profile for newly registered user", { userId, email });
+			logger.info("Creating profile for newly registered user", {
+				userId,
+				email,
+			});
 
 			// Create default profile for the user
 			const profile = await profileRepository.createForUser(userId, {
@@ -32,7 +43,7 @@ class AuthService {
 
 			logger.info("Profile created for user", {
 				userId,
-				profileId: profile._id
+				profileId: profile._id,
 			});
 
 			return {
@@ -163,6 +174,120 @@ class AuthService {
 		} catch (error) {
 			logger.error("Error syncing user from Better Auth", error);
 			throw new DatabaseError("Failed to sync user data");
+		}
+	}
+
+	/**
+	 * Create new user by admin/authenticated user
+	 * Only logged-in users can create new users
+	 *
+	 * IMPORTANT: We hash the password manually and create both user and account records
+	 * to avoid Better Auth's signUpEmail which would create a session for the new user
+	 * and log out the admin who is creating them.
+	 */
+	async createUserByAdmin(data: {
+		name: string;
+		email: string;
+		password: string;
+		createdBy: string;
+	}): Promise<IUser> {
+		try {
+			logger.info("Creating new user by admin", {
+				email: data.email,
+				createdBy: data.createdBy,
+			});
+
+			const mongoClient = await getMongoClient();
+			const db = mongoClient.db(process.env.MONGODB_DB || "synos-db");
+
+			// Generate unique ID for the user (Better Auth uses random strings)
+			const userId = crypto.randomBytes(16).toString("hex");
+
+			// Hash the password using scrypt (EXACTLY as Better Auth does)
+			// Better Auth format: {salt}:{hash} (no "scrypt:" prefix!)
+			// Parameters: N=16384, r=16, p=1, dkLen=64
+			const salt = crypto.randomBytes(16).toString("hex"); // Hex-encoded salt
+			const normalizedPassword = data.password.normalize("NFKC"); // NFKC normalization
+
+			const hashedPassword = await new Promise<string>((resolve, reject) => {
+				crypto.scrypt(
+					normalizedPassword,
+					salt,
+					64, // dkLen (derived key length)
+					{
+						N: 16384, // CPU/memory cost parameter
+						r: 16, // Block size parameter
+						p: 1, // Parallelization parameter
+						maxmem: 128 * 16384 * 16 * 2, // Memory limit
+					},
+					(err: Error | null, derivedKey: Buffer) => {
+						if (err) reject(err);
+						// Format: salt:hash (Better Auth format - NO "scrypt:" prefix)
+						resolve(`${salt}:${derivedKey.toString("hex")}`);
+					}
+				);
+			});
+
+			// Create user in Better Auth user collection
+			const userCollection = db.collection("user");
+			await userCollection.insertOne({
+				id: userId,
+				email: data.email.toLowerCase(),
+				name: data.name,
+				emailVerified: false,
+				image: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			// Create account record for credential-based authentication
+			// This is CRITICAL - Better Auth requires an account record with providerId="credential"
+			const accountCollection = db.collection("account");
+			await accountCollection.insertOne({
+				id: crypto.randomBytes(16).toString("hex"), // Unique account ID
+				userId: userId,
+				accountId: userId, // For credential accounts, accountId equals userId
+				providerId: "credential", // CRITICAL: Must be "credential" for email/password
+				password: hashedPassword, // Hashed password stored in account table
+				accessToken: null,
+				refreshToken: null,
+				accessTokenExpiresAt: null,
+				refreshTokenExpiresAt: null,
+				scope: null,
+				idToken: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			// Fetch the created user using our repository (to get proper IUser type)
+			const newUser = await userRepository.findByEmail(
+				data.email.toLowerCase()
+			);
+			if (!newUser) {
+				throw new DatabaseError("User created but could not be retrieved");
+			}
+
+			// Create profile for the new user
+			await this.handlePostRegistration(
+				newUser._id.toString(),
+				data.email,
+				data.name
+			);
+
+			logger.info("User and account created successfully by admin", {
+				userId: newUser._id.toString(),
+				createdBy: data.createdBy,
+			});
+
+			return newUser;
+		} catch (error) {
+			logger.error("Error creating user by admin", error);
+
+			if (error instanceof DatabaseError) {
+				throw error;
+			}
+
+			throw new DatabaseError("Failed to create user");
 		}
 	}
 }

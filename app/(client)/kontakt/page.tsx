@@ -7,7 +7,7 @@ import { AnimatedFAQ } from "./_components/animated-faq";
 
 export default function ContactPage() {
 	return (
-		<div className="bg-slate-100 w-full">
+		<div className="bg-primary/50 w-full">
 			{/* Hero Section */}
 			<AnimatedHero
 				phone={siteConfig.company.phone}

@@ -149,7 +149,9 @@ export function Navbar() {
 									Get Quote
 								</Button>
 							</div>
-							<ProtectedNavbar />
+							<div className="hidden lg:block">
+								<ProtectedNavbar />
+							</div>
 
 							{/* Mobile Menu */}
 							<MobileNavbar />

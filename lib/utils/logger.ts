@@ -96,8 +96,15 @@ class Logger {
 	/**
 	 * Log HTTP request
 	 */
-	http(method: string, url: string, statusCode: number, duration?: number): void {
-		const message = `${method} ${url} - ${statusCode}${duration ? ` (${duration}ms)` : ""}`;
+	http(
+		method: string,
+		url: string,
+		statusCode: number,
+		duration?: number
+	): void {
+		const message = `${method} ${url} - ${statusCode}${
+			duration ? ` (${duration}ms)` : ""
+		}`;
 
 		if (statusCode >= 500) {
 			this.error(message);
@@ -112,7 +119,9 @@ class Logger {
 	 * Log database operation
 	 */
 	db(operation: string, collection: string, duration?: number): void {
-		const message = `DB ${operation} on ${collection}${duration ? ` (${duration}ms)` : ""}`;
+		const message = `DB ${operation} on ${collection}${
+			duration ? ` (${duration}ms)` : ""
+		}`;
 		this.debug(message);
 	}
 

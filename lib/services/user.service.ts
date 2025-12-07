@@ -27,21 +27,21 @@ class UserService {
 		profile: IProfile;
 	}> {
 		try {
-			console.log("📦 [UserService] getUserWithProfile called");
-			console.log("📦 [UserService] userId:", userId);
-			console.log("📦 [UserService] userId type:", typeof userId);
+			// console.log("📦 [UserService] getUserWithProfile called");
+			// console.log("📦 [UserService] userId:", userId);
+			// console.log("📦 [UserService] userId type:", typeof userId);
 
 			logger.info("getUserWithProfile called with userId:", userId);
 
 			// Get user with populated profile using _id
-			console.log("📦 [UserService] Calling userRepository.findByIdWithProfile...");
+			// console.log("📦 [UserService] Calling userRepository.findByIdWithProfile...");
 			const user = await userRepository.findByIdWithProfile(userId);
 
-			console.log("📦 [UserService] Repository result:", {
-				found: !!user,
-				userId: user?._id?.toString(),
-				email: user?.email
-			});
+			// console.log("📦 [UserService] Repository result:", {
+			// 	found: !!user,
+			// 	userId: user?._id?.toString(),
+			// 	email: user?.email
+			// });
 
 			logger.info(
 				"User from getUserWithProfile:",
@@ -49,17 +49,17 @@ class UserService {
 			);
 
 			if (!user) {
-				console.log("❌ [UserService] User not found, throwing NotFoundError");
+				// console.log("❌ [UserService] User not found, throwing NotFoundError");
 				throw new NotFoundError(API_MESSAGES.USER_NOT_FOUND);
 			}
 
 			// Get or create profile (in case population failed or profile doesn't exist)
-			console.log("📦 [UserService] Getting/creating profile for user:", user._id.toString());
+			// console.log("📦 [UserService] Getting/creating profile for user:", user._id.toString());
 			const profile = await profileRepository.findOrCreateForUser(user._id);
-			console.log("📦 [UserService] Profile result:", {
-				found: !!profile,
-				profileId: profile?._id?.toString()
-			});
+			// console.log("📦 [UserService] Profile result:", {
+			// 	found: !!profile,
+			// 	profileId: profile?._id?.toString()
+			// });
 
 			return {
 				user,
@@ -252,6 +252,39 @@ class UserService {
 			}
 
 			throw new DatabaseError("Failed to update user info");
+		}
+	}
+
+	/**
+	 * Update user profile image
+	 * Supports both URL and base64-encoded images
+	 */
+	async updateUserImage(userId: string, image: string | null): Promise<IUser> {
+		try {
+			// Update user image
+			const updatedUser = await userRepository.updateById(userId, {
+				$set: { image },
+			});
+
+			if (!updatedUser) {
+				throw new NotFoundError(API_MESSAGES.USER_NOT_FOUND);
+			}
+
+			logger.info("User image updated", {
+				userId,
+				isBase64: image ? image.startsWith("data:image") : false,
+				removed: image === null,
+			});
+
+			return updatedUser;
+		} catch (error) {
+			logger.error("Error updating user image", error);
+
+			if (error instanceof NotFoundError) {
+				throw error;
+			}
+
+			throw new DatabaseError("Failed to update user image");
 		}
 	}
 

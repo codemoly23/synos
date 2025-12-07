@@ -54,12 +54,12 @@ export function ContactCTA() {
 			if (response.ok) {
 				setSubmitStatus("success");
 				reset();
-				console.log("Contact form submitted:", data);
+				// console.log("Contact form submitted:", data);
 			} else {
 				setSubmitStatus("error");
 			}
 		} catch (error) {
-			console.error("Contact form error:", error);
+			// console.error("Contact form error:", error);
 			setSubmitStatus("error");
 		} finally {
 			setIsSubmitting(false);

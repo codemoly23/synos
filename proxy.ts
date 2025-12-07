@@ -32,8 +32,6 @@ export const config = {
  */
 export async function proxy(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
-	console.log("pathname: ", pathname);
-
 	// Log the request (helpful for debugging)
 	logger.debug("Proxy checking route", { pathname });
 
@@ -43,8 +41,6 @@ export async function proxy(request: NextRequest) {
 
 	// Alternative: Check for custom session cookie if you configured one
 	// const sessionToken = request.cookies.get("synos_session")?.value;
-	console.log("sessionToken: ", sessionToken);
-
 	// Determine if user is authenticated
 	const isAuthenticated = !!sessionToken;
 

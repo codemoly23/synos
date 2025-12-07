@@ -27,10 +27,7 @@ export class BaseRepository<T extends Document> {
 	/**
 	 * Find all documents
 	 */
-	async findAll(
-		filter: any = {},
-		options: QueryOptions = {}
-	): Promise<T[]> {
+	async findAll(filter: any = {}, options: QueryOptions = {}): Promise<T[]> {
 		try {
 			await this.ensureConnection();
 			const startTime = Date.now();
@@ -70,7 +67,12 @@ export class BaseRepository<T extends Document> {
 
 			// Execute queries in parallel
 			const [data, total] = await Promise.all([
-				this.model.find(filter).sort(sort).skip(skip).limit(validLimit).exec(),
+				this.model
+					.find(filter)
+					.sort(sort)
+					.skip(skip)
+					.limit(validLimit)
+					.exec(),
 				this.model.countDocuments(filter).exec(),
 			]);
 
@@ -94,15 +96,14 @@ export class BaseRepository<T extends Document> {
 	/**
 	 * Find one document by filter
 	 */
-	async findOne(
-		filter: any,
-		options: QueryOptions = {}
-	): Promise<T | null> {
+	async findOne(filter: any, options: QueryOptions = {}): Promise<T | null> {
 		try {
 			await this.ensureConnection();
 			const startTime = Date.now();
 
-			const document = await this.model.findOne(filter, null, options).exec();
+			const document = await this.model
+				.findOne(filter, null, options)
+				.exec();
 
 			logger.db("findOne", this.modelName, Date.now() - startTime);
 			return document;
@@ -115,12 +116,23 @@ export class BaseRepository<T extends Document> {
 	/**
 	 * Find document by ID
 	 */
-	async findById(id: string, options: QueryOptions = {}): Promise<T | null> {
+	async findById(
+		id: string | { _id: string },
+		options: QueryOptions = {}
+	): Promise<T | null> {
 		try {
 			await this.ensureConnection();
 			const startTime = Date.now();
 
-			const document = await this.model.findById(id, null, options).exec();
+			const normalizedId = typeof id === "object" && id?._id ? id?._id : id;
+
+			if (typeof normalizedId !== "string") {
+				throw new Error("Invalid ID format");
+			}
+
+			const document = await this.model
+				.findById(normalizedId, null, options)
+				.exec();
 
 			logger.db("findById", this.modelName, Date.now() - startTime);
 			return document;
