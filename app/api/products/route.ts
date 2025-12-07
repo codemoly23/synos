@@ -1,10 +1,13 @@
 import { NextRequest } from "next/server";
 import { getAuth } from "@/lib/db/auth";
 import { productService } from "@/lib/services/product.service";
-import { createProductDraftSchema, productListQuerySchema } from "@/lib/validations/product.validation";
+import {
+	createProductDraftSchema,
+	productListQuerySchema,
+} from "@/lib/validations/product.validation";
 import { logger } from "@/lib/utils/logger";
 import {
-	successResponse,
+	// successResponse,
 	createdResponse,
 	badRequestResponse,
 	unauthorizedResponse,
@@ -33,10 +36,14 @@ export async function GET(request: NextRequest) {
 		});
 
 		if (!queryResult.success) {
-			return badRequestResponse("Invalid query parameters", queryResult.error.issues);
+			return badRequestResponse(
+				"Invalid query parameters",
+				queryResult.error.issues
+			);
 		}
 
-		const { page, limit, search, category, publishType, visibility, sort } = queryResult.data;
+		const { page, limit, search, category, publishType, visibility, sort } =
+			queryResult.data;
 
 		const result = await productService.getProducts({
 			page,
@@ -57,7 +64,8 @@ export async function GET(request: NextRequest) {
 		);
 	} catch (error: unknown) {
 		logger.error("Error fetching products", error);
-		const message = error instanceof Error ? error.message : "Failed to fetch products";
+		const message =
+			error instanceof Error ? error.message : "Failed to fetch products";
 		return internalServerErrorResponse(message);
 	}
 }
@@ -74,7 +82,9 @@ export async function POST(request: NextRequest) {
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to create product");
-			return unauthorizedResponse("You must be logged in to create products");
+			return unauthorizedResponse(
+				"You must be logged in to create products"
+			);
 		}
 
 		// Parse and validate request body
@@ -85,7 +95,10 @@ export async function POST(request: NextRequest) {
 			logger.warn("Product creation validation failed", {
 				errors: validationResult.error.issues,
 			});
-			return badRequestResponse("Validation failed", validationResult.error.issues);
+			return badRequestResponse(
+				"Validation failed",
+				validationResult.error.issues
+			);
 		}
 
 		// Create product
@@ -113,7 +126,8 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to create product";
+		const message =
+			error instanceof Error ? error.message : "Failed to create product";
 		return internalServerErrorResponse(message);
 	}
 }

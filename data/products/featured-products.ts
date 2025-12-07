@@ -461,11 +461,11 @@ export const featuredProducts: Product[] = [
 		updatedAt: "2024-01-01",
 	},
 	{
-		id: "toro-pico",
+		id: "pico",
 		brochureUrl:
 			"https://www.synos.se/wp-content/uploads/2024/04/Toro-Brochyr-svenska.pdf",
 		videoUrl: "https://www.youtube.com/watch?v=example",
-		slug: "toro-pico-laser",
+		slug: "pico",
 		name: "TORO Pico Laser",
 		description:
 			"TORO laser for professional tattoo removal. Market-leading technology with three wavelengths. Invest in the in-demand treatment of the future.",

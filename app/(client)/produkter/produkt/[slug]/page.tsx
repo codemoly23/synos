@@ -14,6 +14,7 @@ import { ProductShareButtons } from "@/components/products/ProductShareButtons";
 import { ProductLongDescription } from "@/components/products/ProductLongDescription";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
+import { ApiResponse, ProductType } from "@/types";
 
 interface ProductPageProps {
 	params: Promise<{
@@ -47,70 +48,78 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
 	const { slug } = await params;
-	const product = featuredProducts.find((p) => p.slug === slug);
+	// const product = featuredProducts.find((p) => p.slug === slug);
+	const productResponse = await fetch(
+		`http://localhost:3000/api/products/client/${slug}`
+	);
+	const productRes: ApiResponse<ProductType> = await productResponse.json();
+	const product = productRes.data;
+
+	console.log("########################################################");
+	console.log("details => ", product);
+
+	console.log("########################################################");
 
 	if (!product) {
 		notFound();
 	}
 
 	// Get related products (same category, excluding current product)
-	const relatedProducts = featuredProducts
-		.filter(
-			(p) =>
-				p.id !== product.id &&
-				p.categories.some((cat) => product.categories.includes(cat))
-		)
-		.slice(0, 3);
+	// const relatedProducts = featuredProducts
+	// 	.filter(
+	// 		(p) =>
+	// 			p.id !== product.id &&
+	// 			p.categories.some((cat) => product.categories.includes(cat))
+	// 	)
+	// 	.slice(0, 3);
 
-	const primaryImage =
-		product.images.find((img) => img.isPrimary) || product.images[0];
-
+	const primaryImage = product.overviewImage;
 	// Structured data for SEO
 	const structuredData = {
 		"@context": "https://schema.org",
 		"@type": "Product",
-		name: product.name,
+		name: product.title,
 		description: product.description,
-		image: primaryImage?.url,
+		image: product.overviewImage,
 		brand: {
 			"@type": "Brand",
 			name: "Synos Medical",
 		},
-		offers: product.price
-			? {
-					"@type": "Offer",
-					price: product.price.amount,
-					priceCurrency: product.price.currency,
-					availability: "https://schema.org/InStock",
-			  }
-			: undefined,
-		aggregateRating:
-			product.reviews && product.reviews.length > 0
-				? {
-						"@type": "AggregateRating",
-						ratingValue:
-							product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-							product.reviews.length,
-						reviewCount: product.reviews.length,
-				  }
-				: undefined,
-		review:
-			product.reviews && product.reviews.length > 0
-				? product.reviews.map((review) => ({
-						"@type": "Review",
-						author: {
-							"@type": "Person",
-							name: review.author,
-						},
-						datePublished: review.date,
-						reviewRating: {
-							"@type": "Rating",
-							ratingValue: review.rating,
-							bestRating: 5,
-						},
-						reviewBody: review.content,
-				  }))
-				: undefined,
+		// offers: product.price
+		// 	? {
+		// 			"@type": "Offer",
+		// 			price: product.price.amount,
+		// 			priceCurrency: product.price.currency,
+		// 			availability: "https://schema.org/InStock",
+		// 	  }
+		// 	: undefined,
+		// aggregateRating:
+		// 	product.reviews && product.reviews.length > 0
+		// 		? {
+		// 				"@type": "AggregateRating",
+		// 				ratingValue:
+		// 					product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+		// 					product.reviews.length,
+		// 				reviewCount: product.reviews.length,
+		// 		  }
+		// 		: undefined,
+		// review:
+		// 	product.reviews && product.reviews.length > 0
+		// 		? product.reviews.map((review) => ({
+		// 				"@type": "Review",
+		// 				author: {
+		// 					"@type": "Person",
+		// 					name: review.author,
+		// 				},
+		// 				datePublished: review.date,
+		// 				reviewRating: {
+		// 					"@type": "Rating",
+		// 					ratingValue: review.rating,
+		// 					bestRating: 5,
+		// 				},
+		// 				reviewBody: review.content,
+		// 		  }))
+		// 		: undefined,
 	};
 
 	return (
@@ -128,7 +137,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 						<Breadcrumb
 							items={[
 								{ label: "Produkter", href: "/produkter" },
-								{ label: product.name },
+								{ label: product.title },
 							]}
 						/>
 					</div>
@@ -142,17 +151,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 								<div className="grid gap-8 lg:grid-cols-2">
 									{/* Left Column - Image Gallery */}
 									<div>
-										{product.gallery && product.gallery.length > 0 ? (
+										{product.productImages &&
+										product.productImages.length > 0 ? (
 											<ProductImageGallery
-												images={product.gallery}
-												productName={product.name}
+												images={product.productImages}
+												productName={product.title}
 											/>
 										) : (
 											<div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-linear-to-br from-slate-100 to-primary/20">
 												{primaryImage ? (
 													<ImageComponent
-														src={primaryImage.url}
-														alt={primaryImage.alt}
+														src={primaryImage}
+														alt={product.title}
 														// fill
 														className="object-cover w-full h-full"
 														priority
@@ -188,7 +198,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 										{/* Header with Share Button */}
 										<div className="flex items-start justify-between mb-4">
 											<div className="flex flex-wrap gap-2">
-												{product.treatments.map((treatment) => (
+												{product?.treatments?.map((treatment) => (
 													<Badge
 														key={treatment}
 														variant="secondary"
@@ -199,17 +209,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
 												))}
 											</div>
 											<ProductShareButtons
-												productName={product.name}
+												productName={product.title}
 												productUrl={`/produkter/produkt/${product.slug}`}
 											/>
 										</div>
 
 										<h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-											{product.name}
+											{product.title}
 										</h1>
 
 										<p className="mb-6 text-lg text-muted-foreground leading-relaxed">
-											{product.description}
+											{product.shortDescription}
 										</p>
 
 										{/* Benefits List */}
@@ -255,11 +265,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 														(cert, index) => (
 															<div
 																key={index}
-																className="px-4 py-2 rounded-lg bg-primary/10 border border-primary/20"
-																title={cert.description}
+																className="px-4 py-2 rounded-lg bg-ring/10 border border-ring/20"
+																title={cert}
 															>
-																<span className="text-sm font-semibold text-primary">
-																	{cert.name}
+																<span className="text-sm font-semibold text-ring">
+																	{cert}
 																</span>
 															</div>
 														)
@@ -269,16 +279,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
 									</div>
 								</div>
 							</div>
-
 							{/* Long Description Section */}
-							{product.longDescription && (
+							{product.productDescription && (
 								<ProductLongDescription
-									description={product.longDescription}
+									description={product.productDescription}
 								/>
 							)}
-
 							{/* Features Section */}
-							{product.features.length > 0 && (
+							{/* {product.features.length > 0 && (
 								<section className="mb-12" id="features">
 									<h2 className="text-3xl font-bold text-secondary mb-8">
 										Funktioner & Fördelar
@@ -318,41 +326,43 @@ export default async function ProductPage({ params }: ProductPageProps) {
 										))}
 									</div>
 								</section>
-							)}
-
+							)} */}
 							{/* Specifications Section */}
-							{product.specifications.length > 0 && (
-								<section className="mb-12" id="specifications">
-									<h2 className="text-3xl font-bold text-secondary mb-8">
-										Tekniska Specifikationer
-									</h2>
-									<div className="p-8 rounded-2xl bg-card/80 backdrop-blur-sm border border-primary/50">
-										<div className="grid gap-4 md:grid-cols-2">
-											{product.specifications.map((spec, index) => (
-												<div
-													key={index}
-													className="flex justify-between items-center py-4 px-4 rounded-lg hover:bg-primary/20 transition-colors duration-200"
-												>
-													<span className="font-semibold text-foreground">
-														{spec.label}
-													</span>
-													<span className="text-muted-foreground font-medium">
-														{spec.value}
-													</span>
-												</div>
-											))}
+							{product?.techSpecifications &&
+								product?.techSpecifications?.length > 0 && (
+									<section className="mb-12" id="specifications">
+										<h2 className="text-3xl font-bold text-secondary mb-8">
+											Tekniska Specifikationer
+										</h2>
+										<div className="p-8 rounded-2xl bg-card/80 backdrop-blur-sm border border-primary/50">
+											<div className="grid gap-4 md:grid-cols-2">
+												{product?.techSpecifications?.map(
+													(spec, index) => (
+														<div
+															key={index}
+															className="flex justify-between items-center py-4 px-4 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+														>
+															<span className="font-semibold text-foreground">
+																{spec.title}
+															</span>
+															<span className="text-muted-foreground font-medium">
+																{spec.description}
+															</span>
+														</div>
+													)
+												)}
+											</div>
 										</div>
-									</div>
-								</section>
-							)}
+									</section>
+								)}
 						</article>
 
 						{/* Sidebar */}
 						<div className="w-full lg:w-96 lg:shrink-0">
 							<div className="lg:sticky lg:top-24 pt-5">
 								<ProductDetailSidebar
-									brochureUrl={product.brochureUrl}
-									videoUrl={product.videoUrl}
+									brochureUrl={product.documentation}
+									videoUrl={product.youtubeUrl}
 								/>
 							</div>
 						</div>
@@ -360,25 +370,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
 					{/* Full Width Sections */}
 					{/* Customer Reviews */}
-					{product.reviews && product.reviews.length > 0 && (
+					{/* {product.reviews && product.reviews.length > 0 && (
 						<ProductReviews
 							reviews={product.reviews}
 							productName={product.name}
 						/>
-					)}
+					)} */}
 
 					{/* FAQ Section */}
-					{product.faqs && product.faqs.length > 0 && (
-						<ProductFAQ faqs={product.faqs} />
+					{product.qa && product.qa.length > 0 && (
+						<ProductFAQ faqs={product.qa} />
 					)}
 
 					{/* Q&A Section */}
-					{product.qna && product.qna.length > 0 && (
+					{/* {product.qna && product.qna.length > 0 && (
 						<ProductQnA qna={product.qna} />
-					)}
+					)} */}
 
 					{/* Related Products */}
-					{relatedProducts.length > 0 && (
+					{/* {relatedProducts.length > 0 && (
 						<section className="py-16 md:py-24">
 							<div className="_container">
 								<h2 className="mb-12 text-3xl md:text-4xl font-bold text-center text-secondary">
@@ -395,11 +405,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 								</div>
 							</div>
 						</section>
-					)}
+					)} */}
 
 					{/* Product Inquiry Form */}
 					<ProductInquiryForm
-						productName={product.name}
+						productName={product.title}
 						productId={product.id}
 					/>
 				</div>

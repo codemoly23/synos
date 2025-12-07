@@ -8,12 +8,15 @@ import {
 	Mail,
 	Check,
 	BookOpen,
-	Ligature,
 	Zap,
 } from "lucide-react";
 
 interface ProductDetailSidebarProps {
-	brochureUrl?: string;
+	brochureUrl?: Array<{
+		title: string;
+		url: string;
+		_id: string;
+	}> | null;
 	videoUrl?: string;
 }
 
@@ -66,19 +69,21 @@ export function ProductDetailSidebar({
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-2">
-						{brochureUrl && (
-							<a
-								href={brochureUrl}
+						{brochureUrl?.map((brochure) => (
+							<Link
+								key={brochure._id}
+								href={brochure.url}
+								title={brochure.title}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="flex items-center gap-3 rounded-lg border border-primary/50 bg-background p-3 text-sm font-medium text-foreground transition-colors hover:border-primary hover:bg-muted"
 							>
 								<Download className="h-4 w-4 text-primary" />
 								Ladda ner broschyr
-							</a>
-						)}
+							</Link>
+						))}
 						{videoUrl && (
-							<a
+							<Link
 								href={videoUrl}
 								target="_blank"
 								rel="noopener noreferrer"
@@ -86,7 +91,7 @@ export function ProductDetailSidebar({
 							>
 								<Video className="h-4 w-4 text-primary" />
 								Se produktvideo
-							</a>
+							</Link>
 						)}
 					</CardContent>
 				</Card>

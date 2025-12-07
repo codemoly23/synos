@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
-import { ProductImage } from "@/types/product";
 import { ImageComponent } from "../common/image-component";
 
 interface ProductImageGalleryProps {
-	images: ProductImage[];
+	images: string[];
 	productName: string;
 }
 
@@ -49,8 +48,8 @@ export function ProductImageGallery({
 				className="relative aspect-4/3 overflow-hidden rounded-2xl bg-primary/10 group"
 			>
 				<ImageComponent
-					src={selectedImage.url}
-					alt={selectedImage.alt}
+					src={selectedImage}
+					alt={productName}
 					height={0}
 					width={0}
 					sizes="100vw"
@@ -119,8 +118,8 @@ export function ProductImageGallery({
 							aria-label={`View image ${index + 1}`}
 						>
 							<ImageComponent
-								src={image.url}
-								alt={image.alt}
+								src={image}
+								alt={productName}
 								// fill
 								height={0}
 								width={0}
@@ -170,8 +169,8 @@ export function ProductImageGallery({
 							/> */}
 
 							<ImageComponent
-								src={selectedImage.url}
-								alt={selectedImage.alt}
+								src={selectedImage}
+								alt={productName}
 								// fill
 								height={0}
 								width={0}

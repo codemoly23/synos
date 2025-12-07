@@ -28,6 +28,67 @@ export interface Product {
 	updatedAt: string;
 }
 
+export type ProductType = {
+	_id: string;
+	title: string;
+	slug: string;
+	description: string;
+	shortDescription: string;
+	productDescription: string | null;
+	benefits: Array<string> | null;
+	certifications: Array<string> | null;
+	treatments: Array<string> | null;
+	productImages: Array<string>;
+	overviewImage: string;
+	techSpecifications: Array<{
+		title: string;
+		description: string;
+		_id: string;
+	}> | null;
+	documentation: Array<{
+		title: string;
+		url: string;
+		_id: string;
+	}> | null;
+	purchaseInfo: {
+		title: string;
+		description: string;
+	};
+	seo: {
+		title: string;
+		description: string;
+		ogImage: string;
+		canonicalUrl: string;
+		noindex: boolean;
+	};
+	categories: Array<{
+		_id: string;
+		name: string;
+		slug: string;
+		id: string;
+	}>;
+	qa: Array<{
+		question: string;
+		answer: string;
+		visible: boolean;
+		_id: string;
+	}>;
+	youtubeUrl: string;
+	rubric: string;
+	publishType: string;
+	visibility: string;
+	lastEditedBy: {
+		_id: string;
+		name: string;
+		email: string;
+		id: string;
+	};
+	publishedAt: string | null;
+	createdAt: string;
+	updatedAt: string;
+	id: string;
+};
+
 export interface Category {
 	id: string;
 	slug: string;

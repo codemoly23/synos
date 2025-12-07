@@ -9,6 +9,7 @@ interface ProductLongDescriptionProps {
 export function ProductLongDescription({
 	description,
 }: ProductLongDescriptionProps) {
+	console.log("description => ", description);
 	return (
 		<motion.section
 			initial={{ opacity: 0, y: 30 }}

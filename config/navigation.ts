@@ -38,7 +38,7 @@ export const mainNav: NavItem[] = [
 				items: [
 					{
 						title: "TORO Pico Laser",
-						href: "/produkter/produkt/toro-pico-laser",
+						href: "/produkter/produkt/pico",
 					},
 					{
 						title: "QTERRA Q10 Q-Switch",
@@ -140,7 +140,7 @@ export const mainNav: NavItem[] = [
 				items: [
 					{
 						title: "TORO Pico Laser",
-						href: "/produkter/produkt/toro-pico-laser",
+						href: "/produkter/produkt/pico",
 					},
 					{
 						title: "MOTUS PRO",
