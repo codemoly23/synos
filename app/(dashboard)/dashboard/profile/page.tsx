@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { API_ROUTES } from "@/lib/utils/constants";
+import { ImageComponent } from "@/components/common/image-component";
 
 // ============================================================================
 // Validation Schemas
@@ -156,7 +156,9 @@ export default function ProfilePage() {
 				});
 			} catch (err) {
 				console.error("Error fetching profile:", err);
-				setError(err instanceof Error ? err.message : "Failed to load profile");
+				setError(
+					err instanceof Error ? err.message : "Failed to load profile"
+				);
 			} finally {
 				setLoading(false);
 			}
@@ -208,7 +210,9 @@ export default function ProfilePage() {
 			setTimeout(() => setSuccess(null), 3000);
 		} catch (err) {
 			console.error("Error updating profile:", err);
-			setError(err instanceof Error ? err.message : "Failed to update profile");
+			setError(
+				err instanceof Error ? err.message : "Failed to update profile"
+			);
 		} finally {
 			setSaving(false);
 		}
@@ -240,7 +244,9 @@ export default function ProfilePage() {
 			setTimeout(() => setSuccess(null), 3000);
 		} catch (err) {
 			console.error("Error updating password:", err);
-			setError(err instanceof Error ? err.message : "Failed to update password");
+			setError(
+				err instanceof Error ? err.message : "Failed to update password"
+			);
 		} finally {
 			setSaving(false);
 		}
@@ -300,7 +306,9 @@ export default function ProfilePage() {
 			reader.readAsDataURL(file);
 		} catch (err) {
 			console.error("Error uploading image:", err);
-			setError(err instanceof Error ? err.message : "Failed to upload image");
+			setError(
+				err instanceof Error ? err.message : "Failed to upload image"
+			);
 			setImagePreview(userData?.image || null);
 		} finally {
 			setUploadingImage(false);
@@ -329,7 +337,9 @@ export default function ProfilePage() {
 			setTimeout(() => setSuccess(null), 3000);
 		} catch (err) {
 			console.error("Error removing image:", err);
-			setError(err instanceof Error ? err.message : "Failed to remove image");
+			setError(
+				err instanceof Error ? err.message : "Failed to remove image"
+			);
 		} finally {
 			setUploadingImage(false);
 		}
@@ -361,8 +371,8 @@ export default function ProfilePage() {
 						Profile Settings
 					</h1>
 					<p className="text-sm text-gray-600 mt-1">
-						Manage your profile information, security settings, and profile
-						image
+						Manage your profile information, security settings, and
+						profile image
 					</p>
 				</div>
 
@@ -443,8 +453,8 @@ export default function ProfilePage() {
 												/>
 											</FormControl>
 											<FormDescription>
-												Brief description for your profile. Maximum 500
-												characters.
+												Brief description for your profile. Maximum
+												500 characters.
 											</FormDescription>
 											<FormMessage />
 										</FormItem>
@@ -483,7 +493,10 @@ export default function ProfilePage() {
 											<FormItem>
 												<FormLabel>Street</FormLabel>
 												<FormControl>
-													<Input placeholder="Storgatan 1" {...field} />
+													<Input
+														placeholder="Storgatan 1"
+														{...field}
+													/>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -498,7 +511,10 @@ export default function ProfilePage() {
 												<FormItem>
 													<FormLabel>City</FormLabel>
 													<FormControl>
-														<Input placeholder="Stockholm" {...field} />
+														<Input
+															placeholder="Stockholm"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -512,7 +528,10 @@ export default function ProfilePage() {
 												<FormItem>
 													<FormLabel>Postal Code</FormLabel>
 													<FormControl>
-														<Input placeholder="111 22" {...field} />
+														<Input
+															placeholder="111 22"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -570,7 +589,7 @@ export default function ProfilePage() {
 							<div className="flex items-center space-x-6">
 								<div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
 									{imagePreview ? (
-										<Image
+										<ImageComponent
 											src={imagePreview}
 											alt="Profile"
 											fill
@@ -601,7 +620,9 @@ export default function ProfilePage() {
 												variant="outline"
 												disabled={uploadingImage}
 												onClick={() =>
-													document.getElementById("image-upload")?.click()
+													document
+														.getElementById("image-upload")
+														?.click()
 												}
 											>
 												{uploadingImage
@@ -653,9 +674,9 @@ export default function ProfilePage() {
 								Change Password
 							</h3>
 							<p className="text-sm text-gray-600 mb-6">
-								Update your password to keep your account secure. Password
-								must be at least 8 characters and contain uppercase,
-								lowercase, and numbers.
+								Update your password to keep your account secure.
+								Password must be at least 8 characters and contain
+								uppercase, lowercase, and numbers.
 							</p>
 						</div>
 
@@ -698,8 +719,8 @@ export default function ProfilePage() {
 												/>
 											</FormControl>
 											<FormDescription>
-												Must be at least 8 characters with uppercase,
-												lowercase, and numbers
+												Must be at least 8 characters with
+												uppercase, lowercase, and numbers
 											</FormDescription>
 											<FormMessage />
 										</FormItem>

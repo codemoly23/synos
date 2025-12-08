@@ -11,6 +11,10 @@ import {
 	AlertTriangle,
 	Save,
 	Send,
+	GripVertical,
+	ImageIcon,
+	FileText,
+	X,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -27,8 +31,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TagInput } from "./TagInput";
 import { TreeSelect } from "./TreeSelect";
-import { RichTextEditor } from "./RichTextEditor";
-import { ImageUrlList } from "./ImageUrlList";
+import { MediaPicker, MediaGallery } from "@/components/storage";
+import type { FileMetadata } from "@/lib/storage/client";
 import {
 	createProductDraftSchema,
 	updateProductSchema,
@@ -40,6 +44,220 @@ import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
 import type { PublishValidationError } from "@/lib/services/product.service";
 import TextEditor from "../common/TextEditor";
+
+/**
+ * ProductImageGallery Component
+ * Manages multiple product images with drag-to-reorder and MediaGallery selection
+ */
+interface ProductImageGalleryProps {
+	images: string[];
+	onChange: (urls: string[]) => void;
+	disabled?: boolean;
+}
+
+function ProductImageGallery({
+	images = [],
+	onChange,
+	disabled = false,
+}: ProductImageGalleryProps) {
+	const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
+	const [dragIndex, setDragIndex] = React.useState<number | null>(null);
+
+	const handleAddImage = (file: FileMetadata) => {
+		if (!images.includes(file.url)) {
+			onChange([...images, file.url]);
+		}
+	};
+
+	const handleRemoveImage = (index: number) => {
+		onChange(images.filter((_, i) => i !== index));
+	};
+
+	const handleDragStart = (index: number) => {
+		setDragIndex(index);
+	};
+
+	const handleDragOver = (e: React.DragEvent, index: number) => {
+		e.preventDefault();
+		if (dragIndex === null || dragIndex === index) return;
+
+		const newImages = [...images];
+		const [draggedItem] = newImages.splice(dragIndex, 1);
+		newImages.splice(index, 0, draggedItem);
+		onChange(newImages);
+		setDragIndex(index);
+	};
+
+	const handleDragEnd = () => {
+		setDragIndex(null);
+	};
+
+	return (
+		<div className="space-y-3">
+			{/* Image Grid */}
+			{images.length > 0 && (
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+					{images.map((url, index) => (
+						<div
+							key={`${url}-${index}`}
+							draggable={!disabled}
+							onDragStart={() => handleDragStart(index)}
+							onDragOver={(e) => handleDragOver(e, index)}
+							onDragEnd={handleDragEnd}
+							className={cn(
+								"group relative aspect-square rounded-lg border-2 border-border overflow-hidden bg-muted cursor-move",
+								dragIndex === index && "opacity-50 border-primary"
+							)}
+						>
+							{/* eslint-disable-next-line @next/next/no-img-element */}
+							<img
+								src={url}
+								alt={`Product image ${index + 1}`}
+								className="h-full w-full object-cover"
+							/>
+							{/* Drag Handle */}
+							<div className="absolute top-1 left-1 p-1 rounded bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+								<GripVertical className="h-4 w-4" />
+							</div>
+							{/* Remove Button */}
+							<button
+								type="button"
+								onClick={() => handleRemoveImage(index)}
+								disabled={disabled}
+								className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
+							>
+								<X className="h-4 w-4" />
+							</button>
+							{/* Index Badge */}
+							<div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/50 text-white text-xs">
+								{index + 1}
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+
+			{/* Add Image Button */}
+			<Button
+				type="button"
+				variant="outline"
+				onClick={() => setIsGalleryOpen(true)}
+				disabled={disabled}
+				className="w-full h-24 border-dashed"
+			>
+				<div className="flex flex-col items-center gap-2">
+					<ImageIcon className="h-8 w-8 text-muted-foreground" />
+					<span>Add Images from Gallery</span>
+				</div>
+			</Button>
+
+			{/* Media Gallery Modal */}
+			<MediaGallery
+				open={isGalleryOpen}
+				onOpenChange={setIsGalleryOpen}
+				type="image"
+				onSelect={handleAddImage}
+				title="Select Product Images"
+			/>
+		</div>
+	);
+}
+
+/**
+ * DocumentPicker Component
+ * Simplified picker for selecting a document (PDF/DOC) file
+ */
+interface DocumentPickerProps {
+	value: string;
+	onChange: (url: string | null) => void;
+	disabled?: boolean;
+}
+
+function DocumentPicker({
+	value,
+	onChange,
+	disabled = false,
+}: DocumentPickerProps) {
+	const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
+
+	const handleSelect = (file: FileMetadata) => {
+		onChange(file.url);
+		setIsGalleryOpen(false);
+	};
+
+	const handleClear = () => {
+		onChange(null);
+	};
+
+	if (value) {
+		// Show selected document
+		const filename = value.split("/").pop() || "Document";
+		return (
+			<div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
+				<FileText className="h-8 w-8 text-muted-foreground shrink-0" />
+				<div className="flex-1 min-w-0">
+					<p className="text-sm font-medium truncate">{filename}</p>
+					<p className="text-xs text-muted-foreground truncate">{value}</p>
+				</div>
+				<div className="flex gap-1">
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onClick={() => setIsGalleryOpen(true)}
+						disabled={disabled}
+					>
+						Change
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onClick={handleClear}
+						disabled={disabled}
+						className="text-destructive hover:text-destructive"
+					>
+						Remove
+					</Button>
+				</div>
+
+				<MediaGallery
+					open={isGalleryOpen}
+					onOpenChange={setIsGalleryOpen}
+					type="document"
+					onSelect={handleSelect}
+					selectedUrl={value}
+					title="Select Document"
+				/>
+			</div>
+		);
+	}
+
+	return (
+		<>
+			<Button
+				type="button"
+				variant="outline"
+				onClick={() => setIsGalleryOpen(true)}
+				disabled={disabled}
+				className="w-full justify-start gap-2 h-auto py-3"
+			>
+				<FileText className="h-5 w-5 text-muted-foreground" />
+				<span className="text-muted-foreground">
+					Select document from gallery...
+				</span>
+			</Button>
+
+			<MediaGallery
+				open={isGalleryOpen}
+				onOpenChange={setIsGalleryOpen}
+				type="document"
+				onSelect={handleSelect}
+				title="Select Document"
+			/>
+		</>
+	);
+}
 
 /**
  * Form data type that works for both create and update
@@ -227,6 +445,9 @@ export function ProductForm({
 			setIsPublishing(false);
 		}
 	};
+
+	console.log("errors => ", errors);
+	console.log("doc url => ", watch("documentation"));
 
 	return (
 		<div className={cn("space-y-6", className)}>
@@ -602,35 +823,45 @@ export function ProductForm({
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-6">
-								{/* Product Images */}
-								<div className="space-y-2">
+								{/* Product Images - Gallery Mode */}
+								<div className="space-y-3">
 									<Label>
 										Product Images{" "}
 										<span className="text-red-500">*</span>
 									</Label>
-									<ImageUrlList
-										value={watch("productImages") || []}
+									<p className="text-sm text-muted-foreground">
+										Select multiple images from the media library or
+										upload new ones.
+									</p>
+									<ProductImageGallery
+										images={watch("productImages") || []}
 										onChange={(urls) =>
 											setValue("productImages", urls, {
 												shouldDirty: true,
 											})
 										}
-										placeholder="Enter product image URL..."
 										disabled={isLoading}
 									/>
 								</div>
 
 								{/* Overview Image */}
 								<div className="space-y-2">
-									<Label htmlFor="overviewImage">
-										Overview Image URL
-									</Label>
-									<Input
-										id="overviewImage"
-										type="url"
-										{...register("overviewImage")}
-										placeholder="https://example.com/overview.jpg"
+									<Label>Overview Image</Label>
+									<p className="text-sm text-muted-foreground">
+										Main image shown in product listings and overview
+										sections.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("overviewImage") || null}
+										onChange={(url) =>
+											setValue("overviewImage", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select overview image"
 										disabled={isLoading}
+										galleryTitle="Select Overview Image"
 									/>
 								</div>
 
@@ -713,37 +944,55 @@ export function ProductForm({
 							<Card>
 								<CardHeader>
 									<CardTitle>Documentation</CardTitle>
+									<CardDescription>
+										Upload and manage product documentation (PDF, DOC,
+										DOCX)
+									</CardDescription>
 								</CardHeader>
 								<CardContent className="space-y-4">
 									{docFields.map((field, index) => (
 										<div
 											key={field.id}
-											className="flex gap-2 items-start"
+											className="p-4 border rounded-lg space-y-3"
 										>
+											<div className="flex justify-between items-start">
+												<span className="text-sm font-medium">
+													Document #{index + 1}
+												</span>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={() => removeDoc(index)}
+													disabled={isLoading}
+													className="text-red-500 h-8 w-8"
+												>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
 											<Input
 												{...register(
 													`documentation.${index}.title`
 												)}
-												placeholder="Document title"
+												placeholder="Document title (e.g., User Manual, Specifications)"
 												disabled={isLoading}
-												className="flex-1"
 											/>
-											<Input
-												{...register(`documentation.${index}.url`)}
-												placeholder="Document URL"
+											<DocumentPicker
+												value={
+													watch(`documentation.${index}.url`) || ""
+												}
+												onChange={(url) => {
+													console.log("url from doc => ", url);
+													setValue(
+														`documentation.${index}.url`,
+														url || "",
+														{
+															shouldDirty: true,
+														}
+													);
+												}}
 												disabled={isLoading}
-												className="flex-1"
 											/>
-											<Button
-												type="button"
-												variant="ghost"
-												size="icon"
-												onClick={() => removeDoc(index)}
-												disabled={isLoading}
-												className="text-red-500"
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
 										</div>
 									))}
 									<Button

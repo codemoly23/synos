@@ -73,9 +73,17 @@ class ProductService {
 			});
 		}
 
-		if (!product.description?.trim()) {
+		if (!product.shortDescription?.trim()) {
 			errors.push({
-				field: "description",
+				field: "shortDescription",
+				message: "Short Description is required for publishing",
+				type: "error",
+			});
+		}
+
+		if (!product.productDescription?.trim()) {
+			errors.push({
+				field: "productDescription",
 				message: "Description is required for publishing",
 				type: "error",
 			});
@@ -88,27 +96,28 @@ class ProductService {
 				message: "At least one product image is required for publishing",
 				type: "error",
 			});
-		} else {
-			// Validate each image URL
-			product.productImages.forEach((url, index) => {
-				if (!isValidUrl(url)) {
-					errors.push({
-						field: `productImages[${index}]`,
-						message: `Invalid URL format for product image ${index + 1}`,
-						type: "error",
-					});
-				}
-			});
 		}
+		// else {
+		// 	// Validate each image URL
+		// 	product.productImages.forEach((url, index) => {
+		// 		if (!isValidUrl(url)) {
+		// 			errors.push({
+		// 				field: `productImages[${index}]`,
+		// 				message: `Invalid URL format for product image ${index + 1}`,
+		// 				type: "error",
+		// 			});
+		// 		}
+		// 	});
+		// }
 
 		// Validate overview image if present
-		if (product.overviewImage && !isValidUrl(product.overviewImage)) {
-			errors.push({
-				field: "overviewImage",
-				message: "Invalid URL format for overview image",
-				type: "error",
-			});
-		}
+		// if (product.overviewImage && !isValidUrl(product.overviewImage)) {
+		// 	errors.push({
+		// 		field: "overviewImage",
+		// 		message: "Invalid URL format for overview image",
+		// 		type: "error",
+		// 	});
+		// }
 
 		// Validate tech specifications
 		if (product.techSpecifications) {
@@ -148,13 +157,14 @@ class ProductService {
 						message: `Documentation ${index + 1} requires a URL`,
 						type: "error",
 					});
-				} else if (!isValidUrl(doc.url)) {
-					errors.push({
-						field: `documentation[${index}].url`,
-						message: `Invalid URL format for documentation ${index + 1}`,
-						type: "error",
-					});
 				}
+				// else if (!isValidUrl(doc.url)) {
+				// 	errors.push({
+				// 		field: `documentation[${index}].url`,
+				// 		message: `Invalid URL format for documentation ${index + 1}`,
+				// 		type: "error",
+				// 	});
+				// }
 			});
 		}
 

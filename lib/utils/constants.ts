@@ -120,6 +120,11 @@ export const API_ROUTES = {
 		BASE: "/api/categories",
 		TREE: "/api/categories/tree",
 	},
+	STORAGE: {
+		UPLOAD: "/api/storage/upload",
+		DELETE: "/api/storage/delete",
+		LIST: "/api/storage/list",
+	},
 	HEALTH: "/api/health",
 } as const;
 

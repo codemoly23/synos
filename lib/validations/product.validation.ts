@@ -68,7 +68,9 @@ const techSpecSchema = z.object({
  */
 const documentEntrySchema = z.object({
 	title: z.string().min(1, "Document title is required").max(200),
-	url: urlSchema,
+	url: z.string({
+		message: "Documentation file is required",
+	}),
 });
 
 /**
@@ -83,7 +85,10 @@ const purchaseInfoSchema = z.object({
  * SEO Schema
  */
 const seoSchema = z.object({
-	title: z.string().max(70, "SEO title should not exceed 70 characters").optional(),
+	title: z
+		.string()
+		.max(70, "SEO title should not exceed 70 characters")
+		.optional(),
 	description: z
 		.string()
 		.max(160, "SEO description should not exceed 160 characters")
@@ -165,7 +170,9 @@ export const publishProductSchema = z.object({
 	documentation: z.array(
 		z.object({
 			title: z.string().min(1, "Document title is required"),
-			url: urlSchema,
+			url: z.string({
+				message: "Documentation file is required",
+			}),
 		})
 	),
 	qa: z.array(
@@ -176,7 +183,10 @@ export const publishProductSchema = z.object({
 		})
 	),
 	seo: z.object({
-		title: z.string().min(1, "SEO title is recommended for publishing").optional(),
+		title: z
+			.string()
+			.min(1, "SEO title is recommended for publishing")
+			.optional(),
 		description: z
 			.string()
 			.min(1, "SEO description is recommended for publishing")
@@ -194,15 +204,38 @@ export const publishProductSchema = z.object({
 export const productListQuerySchema = z.object({
 	page: z.coerce.number().int().positive().default(1),
 	limit: z.coerce.number().int().positive().max(100).default(10),
-	search: z.string().nullable().optional().transform(val => val || undefined),
-	category: z.string().nullable().optional().transform(val => val || undefined),
-	publishType: z.enum(["publish", "draft", "private"]).nullable().optional().transform(val => val || undefined),
-	visibility: z.enum(["public", "hidden"]).nullable().optional().transform(val => val || undefined),
+	search: z
+		.string()
+		.nullable()
+		.optional()
+		.transform((val) => val || undefined),
+	category: z
+		.string()
+		.nullable()
+		.optional()
+		.transform((val) => val || undefined),
+	publishType: z
+		.enum(["publish", "draft", "private"])
+		.nullable()
+		.optional()
+		.transform((val) => val || undefined),
+	visibility: z
+		.enum(["public", "hidden"])
+		.nullable()
+		.optional()
+		.transform((val) => val || undefined),
 	sort: z
-		.enum(["createdAt", "-createdAt", "title", "-title", "publishedAt", "-publishedAt"])
+		.enum([
+			"createdAt",
+			"-createdAt",
+			"title",
+			"-title",
+			"publishedAt",
+			"-publishedAt",
+		])
 		.nullable()
 		.default("-createdAt")
-		.transform(val => val || "-createdAt"),
+		.transform((val) => val || "-createdAt"),
 });
 
 // Type exports

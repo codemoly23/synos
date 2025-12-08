@@ -11,6 +11,7 @@ import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
 import type { PublishValidationError } from "@/lib/services/product.service";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 /**
  * Edit Product Page
@@ -66,7 +67,8 @@ export default function EditProductPage() {
 				if (productData.success) {
 					setProduct(productData.data);
 				} else {
-					alert("Product not found");
+					// alert("Product not found");
+					toast.error("Product not found");
 					router.push("/dashboard/products");
 				}
 
@@ -79,7 +81,8 @@ export default function EditProductPage() {
 				}
 			} catch (error) {
 				console.error("Failed to fetch data:", error);
-				alert("Failed to load product");
+				// alert("Failed to load product");
+				toast.error("Failed to load product");
 				router.push("/dashboard/products");
 			} finally {
 				setIsLoading(false);
@@ -111,13 +114,16 @@ export default function EditProductPage() {
 
 			if (result.success) {
 				setProduct(result.data);
-				alert("Product saved successfully");
+				// alert("Product saved successfully");
+				toast.success("Product saved successfully");
 			} else {
-				alert(result.message || "Failed to save product");
+				// alert(result.message || "Failed to save product");
+				toast.error(result.message || "Failed to save product");
 			}
 		} catch (error) {
 			console.error("Failed to save product:", error);
-			alert("Failed to save product");
+			// alert("Failed to save product");
+			toast.error("Failed to save product");
 		} finally {
 			setIsSaving(false);
 		}
@@ -135,8 +141,12 @@ export default function EditProductPage() {
 
 		if (result.success) {
 			setProduct(result.data.product);
+			toast.success("Product published successfully");
 			return { warnings: result.data.warnings || [] };
 		} else {
+			console.error("error -> ", result);
+			toast.error(result.message || "Failed to publish");
+
 			throw new Error(result.message || "Failed to publish");
 		}
 	};

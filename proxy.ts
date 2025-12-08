@@ -37,7 +37,9 @@ export async function proxy(request: NextRequest) {
 
 	// Check for Better Auth session cookie
 	// Better Auth uses "better-auth.session_token" by default
-	const sessionToken = request.cookies.get("synos.session_token")?.value;
+	const sessionToken =
+		request.cookies.get("synos.session_token")?.value ||
+		request.cookies.get("__Secure-synos.session_token")?.value;
 
 	// Alternative: Check for custom session cookie if you configured one
 	// const sessionToken = request.cookies.get("synos_session")?.value;

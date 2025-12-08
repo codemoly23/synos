@@ -22,35 +22,35 @@ interface ProductPageProps {
 	}>;
 }
 
-export async function generateMetadata({
-	params,
-}: ProductPageProps): Promise<Metadata> {
-	const { slug } = await params;
-	const product = featuredProducts.find((p) => p.slug === slug);
+// export async function generateMetadata({
+// 	params,
+// }: ProductPageProps): Promise<Metadata> {
+// 	const { slug } = await params;
+// 	const product = featuredProducts.find((p) => p.slug === slug);
 
-	if (!product) {
-		return {
-			title: "Produkt hittades inte",
-		};
-	}
+// 	if (!product) {
+// 		return {
+// 			title: "Produkt hittades inte",
+// 		};
+// 	}
 
-	return {
-		title: product.seo.title,
-		description: product.seo.description,
-		keywords: product.seo.keywords,
-		openGraph: {
-			title: product.seo.title,
-			description: product.seo.description,
-			images: product.seo.ogImage ? [product.seo.ogImage] : undefined,
-		},
-	};
-}
+// 	return {
+// 		title: product.seo.title,
+// 		description: product.seo.description,
+// 		keywords: product.seo.keywords,
+// 		openGraph: {
+// 			title: product.seo.title,
+// 			description: product.seo.description,
+// 			images: product.seo.ogImage ? [product.seo.ogImage] : undefined,
+// 		},
+// 	};
+// }
 
 export default async function ProductPage({ params }: ProductPageProps) {
 	const { slug } = await params;
 	// const product = featuredProducts.find((p) => p.slug === slug);
 	const productResponse = await fetch(
-		`http://localhost:3000/api/products/client/${slug}`
+		`${process.env.BETTER_AUTH_URL}/api/products/client/${slug}`
 	);
 	const productRes: ApiResponse<ProductType> = await productResponse.json();
 	const product = productRes.data;
@@ -418,8 +418,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 	);
 }
 
-export async function generateStaticParams() {
-	return featuredProducts.map((product) => ({
-		slug: product.slug,
-	}));
-}
+// export async function generateStaticParams() {
+// 	return featuredProducts.map((product) => ({
+// 		slug: product.slug,
+// 	}));
+// }

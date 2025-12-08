@@ -71,6 +71,8 @@ export async function getAuth() {
 					process.env.BETTER_AUTH_URL || "http://localhost:3000",
 					process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
 						"http://localhost:3000",
+					"https://unrancorous-symphonically-pura.ngrok-free.dev",
+					"http://192.168.68.86:3000",
 				],
 
 				// Plugins

@@ -1,15 +1,15 @@
 import { NextRequest } from "next/server";
 import { productService } from "@/lib/services/product.service";
 import { logger } from "@/lib/utils/logger";
-import { isValidObjectId } from "@/lib/utils/product-helpers";
+// import { isValidObjectId } from "@/lib/utils/product-helpers";
 import {
 	successResponse,
-	badRequestResponse,
-	unauthorizedResponse,
+	// badRequestResponse,
+	// unauthorizedResponse,
 	notFoundResponse,
 	internalServerErrorResponse,
-	noContentResponse,
-	conflictResponse,
+	// noContentResponse,
+	// conflictResponse,
 } from "@/lib/utils/api-response";
 
 interface RouteParams {
@@ -21,10 +21,9 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
-		console.log("GET");
-		console.log("params  => ", params);
-
 		const { slug } = await params;
+		// console.log("GET");
+		// console.log("params  => ", await params);
 
 		// if (!isValidObjectId(slug)) {
 		// 	return badRequestResponse("Invalid product slug format");
