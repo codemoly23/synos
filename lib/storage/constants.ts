@@ -16,7 +16,11 @@ export const STORAGE_CONFIG = {
 	FOLDERS: {
 		IMAGES: "images" as StorageFolder,
 		DOCUMENTS: "documents" as StorageFolder,
+		AVATARS: "avatars" as StorageFolder,
 	},
+
+	/** Folders visible in storage manager (excludes avatars) */
+	PUBLIC_FOLDERS: ["images", "documents"] as StorageFolder[],
 
 	/** Default pagination */
 	DEFAULT_PAGE: 1,

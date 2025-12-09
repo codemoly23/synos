@@ -24,6 +24,10 @@ type ContactFormData = z.infer<typeof contactSchema>;
 /**
  * ContactCTA Section - Contact form with glassmorphism design
  */
+// Contact info - hardcoded since env vars are read at build time
+const COMPANY_PHONE = "010-205 15 01";
+const COMPANY_EMAIL = "info@synos.se";
+
 export function ContactCTA() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitStatus, setSubmitStatus] = useState<
@@ -69,7 +73,7 @@ export function ContactCTA() {
 	return (
 		<section id="contact" className="py-20 md:py-32 relative overflow-hidden">
 			{/* Background gradient */}
-			<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/20" />
+			<div className="absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-primary/20" />
 
 			<Container maxWidth="xl" className="relative z-10">
 				<motion.div
@@ -83,7 +87,7 @@ export function ContactCTA() {
 						<motion.div variants={fadeUp} transition={defaultTransition}>
 							<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
 								Redo att ta{" "}
-								<span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
+								<span className="bg-linear-to-r from-primary to-primary bg-clip-text text-transparent">
 									nästa steg?
 								</span>
 							</h2>
@@ -114,7 +118,7 @@ export function ContactCTA() {
 									<div>
 										<p className="text-sm text-slate-400">Telefon</p>
 										<p className="text-slate-100 font-medium">
-											010-205 15 01
+											{COMPANY_PHONE}
 										</p>
 									</div>
 								</div>
@@ -138,7 +142,7 @@ export function ContactCTA() {
 									<div>
 										<p className="text-sm text-slate-400">E-post</p>
 										<p className="text-slate-100 font-medium">
-											info@synos.se
+											{COMPANY_EMAIL}
 										</p>
 									</div>
 								</div>

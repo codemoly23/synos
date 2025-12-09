@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { API_ROUTES } from "@/lib/utils/constants";
 import { ImageComponent } from "@/components/common/image-component";
+import { useConfirmModal } from "@/components/ui/confirm-modal";
+import { toast } from "sonner";
 
 // ============================================================================
 // Validation Schemas
@@ -93,6 +95,16 @@ export default function ProfilePage() {
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [uploadingImage, setUploadingImage] = useState(false);
+
+	// Pending image state for confirmation flow
+	const [pendingImage, setPendingImage] = useState<File | null>(null);
+	const [pendingImagePreview, setPendingImagePreview] = useState<string | null>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	// Confirmation modal for delete
+	const { confirm: confirmDelete, ConfirmModal } = useConfirmModal({
+		variant: "destructive",
+	});
 
 	// Profile form
 	const profileForm = useForm<ProfileFormValues>({
@@ -253,77 +265,107 @@ export default function ProfilePage() {
 	};
 
 	// ========================================================================
-	// Image upload handler
+	// Image selection handler (creates preview for confirmation)
 	// ========================================================================
-	const handleImageUpload = async (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 		if (!file) return;
 
 		// Validate file type
 		if (!file.type.startsWith("image/")) {
-			setError("Please select a valid image file");
+			toast.error("Please select a valid image file");
 			return;
 		}
 
 		// Validate file size (5MB max)
 		if (file.size > 5 * 1024 * 1024) {
-			setError("Image size must not exceed 5MB");
+			toast.error("Image size must not exceed 5MB");
 			return;
 		}
+
+		// Create preview for confirmation
+		const reader = new FileReader();
+		reader.onloadend = () => {
+			setPendingImagePreview(reader.result as string);
+			setPendingImage(file);
+		};
+		reader.readAsDataURL(file);
+
+		// Reset input so same file can be selected again
+		if (fileInputRef.current) {
+			fileInputRef.current.value = "";
+		}
+	};
+
+	// ========================================================================
+	// Confirm and upload the pending image
+	// ========================================================================
+	const handleConfirmUpload = async () => {
+		if (!pendingImage) return;
 
 		try {
 			setUploadingImage(true);
 			setError(null);
 
-			// Convert to base64
-			const reader = new FileReader();
-			reader.onloadend = async () => {
-				const base64String = reader.result as string;
-				setImagePreview(base64String);
+			// Create FormData for file upload
+			const formData = new FormData();
+			formData.append("file", pendingImage);
 
-				// Upload to server
-				const response = await fetch("/api/user/image", {
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ image: base64String }),
-				});
+			// Upload to server using the new avatar endpoint
+			const response = await fetch("/api/user/avatar", {
+				method: "POST",
+				body: formData,
+			});
 
-				if (!response.ok) {
-					const data = await response.json();
-					throw new Error(data.message || "Failed to upload image");
-				}
+			const data = await response.json();
 
-				setSuccess("Profile image updated successfully!");
-				setTimeout(() => setSuccess(null), 3000);
-			};
+			if (!response.ok) {
+				throw new Error(data.message || "Failed to upload image");
+			}
 
-			reader.onerror = () => {
-				throw new Error("Failed to read image file");
-			};
+			// Update preview with the new URL
+			setImagePreview(data.data.url);
+			toast.success("Profile image updated successfully!");
 
-			reader.readAsDataURL(file);
+			// Clear pending state
+			setPendingImage(null);
+			setPendingImagePreview(null);
 		} catch (err) {
 			console.error("Error uploading image:", err);
-			setError(
+			toast.error(
 				err instanceof Error ? err.message : "Failed to upload image"
 			);
-			setImagePreview(userData?.image || null);
 		} finally {
 			setUploadingImage(false);
 		}
 	};
 
 	// ========================================================================
+	// Cancel pending upload
+	// ========================================================================
+	const handleCancelUpload = () => {
+		setPendingImage(null);
+		setPendingImagePreview(null);
+	};
+
+	// ========================================================================
 	// Remove image handler
 	// ========================================================================
 	const handleRemoveImage = async () => {
+		const confirmed = await confirmDelete({
+			title: "Remove Profile Image",
+			description:
+				"Are you sure you want to remove your profile image? This action cannot be undone.",
+			confirmText: "Remove",
+		});
+
+		if (!confirmed) return;
+
 		try {
 			setUploadingImage(true);
 			setError(null);
 
-			const response = await fetch("/api/user/image", {
+			const response = await fetch("/api/user/avatar", {
 				method: "DELETE",
 			});
 
@@ -333,11 +375,10 @@ export default function ProfilePage() {
 			}
 
 			setImagePreview(null);
-			setSuccess("Profile image removed successfully!");
-			setTimeout(() => setSuccess(null), 3000);
+			toast.success("Profile image removed successfully!");
 		} catch (err) {
 			console.error("Error removing image:", err);
-			setError(
+			toast.error(
 				err instanceof Error ? err.message : "Failed to remove image"
 			);
 		} finally {
@@ -363,8 +404,10 @@ export default function ProfilePage() {
 	// Main render
 	// ========================================================================
 	return (
-		<div className="max-w-4xl mx-auto px-4 py-8">
-			<div className="bg-white rounded-lg shadow-sm border">
+		<>
+			<ConfirmModal />
+			<div className="space-y-6 w-full mx-auto">
+				<div className="bg-white rounded-lg shadow-sm border">
 				{/* Header */}
 				<div className="border-b px-6 py-4">
 					<h1 className="text-2xl font-bold text-gray-900">
@@ -581,89 +624,118 @@ export default function ProfilePage() {
 								</h3>
 								<p className="text-sm text-gray-600 mb-4">
 									Upload a profile image. Maximum size: 5MB. Supported
-									formats: JPG, PNG, GIF, WebP, SVG
+									formats: JPG, PNG, GIF, WebP
 								</p>
 							</div>
 
-							{/* Image Preview */}
-							<div className="flex items-center space-x-6">
-								<div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
-									{imagePreview ? (
-										<ImageComponent
-											src={imagePreview}
-											alt="Profile"
-											fill
-											className="object-cover"
-										/>
-									) : (
-										<div className="w-full h-full flex items-center justify-center text-gray-400">
-											<svg
-												className="w-16 h-16"
-												fill="currentColor"
-												viewBox="0 0 20 20"
-											>
-												<path
-													fillRule="evenodd"
-													d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-													clipRule="evenodd"
-												/>
-											</svg>
+							{/* Pending Image Preview (Confirmation Flow) */}
+							{pendingImagePreview && (
+								<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+									<h4 className="text-sm font-semibold text-blue-900 mb-3">
+										Preview New Image
+									</h4>
+									<div className="flex items-center space-x-6">
+										<div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-blue-300">
+											<ImageComponent
+												src={pendingImagePreview}
+												alt="New Profile Preview"
+												fill
+												className="object-cover"
+											/>
 										</div>
-									)}
+										<div className="flex-1 space-y-3">
+											<p className="text-sm text-blue-800">
+												Click &quot;Confirm&quot; to save this as your new
+												profile image. Your previous image will be
+												automatically removed.
+											</p>
+											<div className="flex gap-2">
+												<Button
+													type="button"
+													onClick={handleConfirmUpload}
+													disabled={uploadingImage}
+												>
+													{uploadingImage
+														? "Uploading..."
+														: "Confirm"}
+												</Button>
+												<Button
+													type="button"
+													variant="outline"
+													onClick={handleCancelUpload}
+													disabled={uploadingImage}
+												>
+													Cancel
+												</Button>
+											</div>
+										</div>
+									</div>
 								</div>
+							)}
 
-								<div className="flex-1 space-y-3">
-									<div>
-										<label htmlFor="image-upload">
+							{/* Current Image Preview */}
+							{!pendingImagePreview && (
+								<div className="flex items-center space-x-6">
+									<div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+										{imagePreview ? (
+											<ImageComponent
+												src={imagePreview}
+												alt="Profile"
+												fill
+												className="object-cover"
+											/>
+										) : (
+											<div className="w-full h-full flex items-center justify-center text-gray-400">
+												<svg
+													className="w-16 h-16"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+												>
+													<path
+														fillRule="evenodd"
+														d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+														clipRule="evenodd"
+													/>
+												</svg>
+											</div>
+										)}
+									</div>
+
+									<div className="flex-1 space-y-3">
+										<div>
 											<Button
 												type="button"
 												variant="outline"
 												disabled={uploadingImage}
-												onClick={() =>
-													document
-														.getElementById("image-upload")
-														?.click()
-												}
+												onClick={() => fileInputRef.current?.click()}
 											>
 												{uploadingImage
-													? "Uploading..."
-													: "Upload Image"}
+													? "Processing..."
+													: "Select Image"}
 											</Button>
-										</label>
-										<input
-											id="image-upload"
-											type="file"
-											accept="image/*"
-											onChange={handleImageUpload}
-											className="hidden"
-										/>
+											<input
+												ref={fileInputRef}
+												type="file"
+												accept="image/jpeg,image/png,image/gif,image/webp"
+												onChange={handleImageSelect}
+												className="hidden"
+											/>
+										</div>
+
+										{imagePreview && (
+											<Button
+												type="button"
+												variant="outline"
+												onClick={handleRemoveImage}
+												disabled={uploadingImage}
+												className="text-red-600 hover:text-red-700"
+											>
+												Remove Image
+											</Button>
+										)}
 									</div>
-
-									{imagePreview && (
-										<Button
-											type="button"
-											variant="outline"
-											onClick={handleRemoveImage}
-											disabled={uploadingImage}
-											className="text-red-600 hover:text-red-700"
-										>
-											Remove Image
-										</Button>
-									)}
 								</div>
-							</div>
-
-							{/* Technical Info */}
-							<div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-								<h4 className="text-sm font-semibold text-blue-900 mb-2">
-									Image Storage
-								</h4>
-								<p className="text-sm text-blue-800">
-									Images are stored as base64-encoded strings in the
-									database. This allows for easy storage and retrieval
-									without needing separate file storage infrastructure.
-								</p>
-							</div>
+							)}
 						</div>
 					</TabsContent>
 
@@ -764,7 +836,8 @@ export default function ProfilePage() {
 						</Form>
 					</TabsContent>
 				</Tabs>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }

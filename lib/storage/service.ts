@@ -22,12 +22,15 @@ import {
 	getFolderPath,
 	getFilePath,
 	getFileUrl,
+	getUserAvatarFolderPath,
+	getUserAvatarUrl,
 	isAllowedMimeType,
 	isValidFileSize,
 	verifyMagicBytes,
 	inferFolder,
 	sanitizeFilename,
 	getMimeFromExtension,
+	getExtensionFromMime,
 	getExtensionFromFilename,
 } from "./utils";
 
@@ -387,6 +390,185 @@ class StorageService {
 			count: result.total,
 			totalSize,
 		};
+	}
+
+	// =========================================================================
+	// User Avatar Methods
+	// =========================================================================
+
+	/**
+	 * Upload user avatar
+	 * Automatically deletes any existing avatar for this user
+	 * @param userId - User ID
+	 * @param buffer - File buffer
+	 * @param mimeType - File MIME type
+	 * @param size - File size in bytes
+	 * @returns Public URL of the uploaded avatar
+	 */
+	async uploadUserAvatar(
+		userId: string,
+		buffer: Buffer,
+		mimeType: string,
+		size: number
+	): Promise<{ url: string; filename: string }> {
+		await this.ensureInitialized();
+
+		// Validate MIME type (only images allowed for avatars)
+		if (!mimeType.startsWith("image/") || !isAllowedMimeType(mimeType)) {
+			throw new StorageError(
+				"Only image files are allowed for avatars",
+				"INVALID_MIME_TYPE",
+				400,
+				{ field: "mimeType", value: mimeType }
+			);
+		}
+
+		// Validate file size
+		if (!isValidFileSize(size, mimeType)) {
+			throw new StorageError(
+				STORAGE_MESSAGES.FILE_TOO_LARGE,
+				"FILE_TOO_LARGE",
+				400,
+				{ field: "size", value: size }
+			);
+		}
+
+		// Verify magic bytes
+		if (!verifyMagicBytes(buffer, mimeType)) {
+			throw new StorageError(
+				STORAGE_MESSAGES.MIME_MISMATCH,
+				"MIME_MISMATCH",
+				400,
+				{ field: "file", value: mimeType }
+			);
+		}
+
+		// Get user's avatar folder path
+		const userAvatarFolder = getUserAvatarFolderPath(userId);
+
+		// Create user folder if it doesn't exist
+		await fs.mkdir(userAvatarFolder, { recursive: true });
+
+		// Delete existing avatar(s) for this user
+		try {
+			const existingFiles = await fs.readdir(userAvatarFolder);
+			for (const file of existingFiles) {
+				if (file.startsWith("avatar.")) {
+					await fs.unlink(path.join(userAvatarFolder, file));
+					logger.info("Deleted existing avatar", { userId, filename: file });
+				}
+			}
+		} catch (error) {
+			// Folder might not exist yet, which is fine
+			if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+				logger.warn("Error cleaning up existing avatars", error);
+			}
+		}
+
+		// Generate filename with correct extension
+		const extension = getExtensionFromMime(mimeType) || ".jpg";
+		const filename = `avatar${extension}`;
+		const filePath = path.join(userAvatarFolder, filename);
+
+		try {
+			// Write file to disk
+			await fs.writeFile(filePath, buffer);
+
+			const url = getUserAvatarUrl(userId, filename);
+
+			logger.info("User avatar uploaded successfully", {
+				userId,
+				filename,
+				size,
+				mimeType,
+			});
+
+			return { url, filename };
+		} catch (error) {
+			logger.error("Failed to write avatar file", error);
+			throw new StorageError(
+				STORAGE_MESSAGES.STORAGE_ERROR,
+				"STORAGE_ERROR",
+				500
+			);
+		}
+	}
+
+	/**
+	 * Delete user avatar
+	 * @param userId - User ID
+	 */
+	async deleteUserAvatar(userId: string): Promise<void> {
+		await this.ensureInitialized();
+
+		const userAvatarFolder = getUserAvatarFolderPath(userId);
+
+		try {
+			const existingFiles = await fs.readdir(userAvatarFolder);
+			let deleted = false;
+
+			for (const file of existingFiles) {
+				if (file.startsWith("avatar.")) {
+					await fs.unlink(path.join(userAvatarFolder, file));
+					deleted = true;
+					logger.info("Deleted user avatar", { userId, filename: file });
+				}
+			}
+
+			if (!deleted) {
+				throw new StorageError(
+					"No avatar found for this user",
+					"FILE_NOT_FOUND",
+					404,
+					{ field: "userId", value: userId }
+				);
+			}
+		} catch (error) {
+			if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+				throw new StorageError(
+					"No avatar found for this user",
+					"FILE_NOT_FOUND",
+					404,
+					{ field: "userId", value: userId }
+				);
+			}
+
+			if (error instanceof StorageError) {
+				throw error;
+			}
+
+			logger.error("Failed to delete avatar", error);
+			throw new StorageError(
+				STORAGE_MESSAGES.STORAGE_ERROR,
+				"STORAGE_ERROR",
+				500
+			);
+		}
+	}
+
+	/**
+	 * Get user avatar URL if it exists
+	 * @param userId - User ID
+	 * @returns Avatar URL or null if not found
+	 */
+	async getUserAvatarUrl(userId: string): Promise<string | null> {
+		await this.ensureInitialized();
+
+		const userAvatarFolder = getUserAvatarFolderPath(userId);
+
+		try {
+			const existingFiles = await fs.readdir(userAvatarFolder);
+
+			for (const file of existingFiles) {
+				if (file.startsWith("avatar.")) {
+					return getUserAvatarUrl(userId, file);
+				}
+			}
+
+			return null;
+		} catch {
+			return null;
+		}
 	}
 }
 

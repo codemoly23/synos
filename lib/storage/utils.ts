@@ -169,6 +169,20 @@ export function getFolderPath(folder: StorageFolder): string {
 }
 
 /**
+ * Get the absolute path for a user's avatar folder
+ */
+export function getUserAvatarFolderPath(userId: string): string {
+	return path.join(getStorageBasePath(), "avatars", userId);
+}
+
+/**
+ * Get the public URL for a user's avatar
+ */
+export function getUserAvatarUrl(userId: string, filename: string): string {
+	return `/storage/avatars/${userId}/${filename}`;
+}
+
+/**
  * Get the absolute path for a file
  */
 export function getFilePath(folder: StorageFolder, filename: string): string {

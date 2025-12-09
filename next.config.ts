@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "www.synos.se",
 			},
+			{
+				protocol: "https",
+				hostname: "images.pexels.com",
+			},
 		],
 	},
 };

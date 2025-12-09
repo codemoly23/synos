@@ -37,7 +37,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	}
 
 	/**
-	 * Find product by slug with populated categories
+	 * Find product by slug with populated categories (admin - no visibility filter)
 	 */
 	async findBySlugWithCategories(slug: string): Promise<IProduct | null> {
 		try {
@@ -58,6 +58,32 @@ class ProductRepository extends BaseRepository<IProduct> {
 			return product;
 		} catch (error) {
 			logger.error("Error finding product by slug with categories", error);
+			throw new DatabaseError("Failed to find product");
+		}
+	}
+
+	/**
+	 * Find published & public product by slug (for client/public access)
+	 * Only returns products that are published AND visible to public
+	 */
+	async findPublicBySlug(slug: string): Promise<IProduct | null> {
+		try {
+			await this.ensureConnection();
+			const startTime = Date.now();
+
+			const product = await this.model
+				.findOne({
+					slug,
+					publishType: "publish",
+					visibility: "public",
+				})
+				.populate("categories", "name slug")
+				.exec();
+
+			logger.db("findPublicBySlug", this.modelName, Date.now() - startTime);
+			return product;
+		} catch (error) {
+			logger.error("Error finding public product by slug", error);
 			throw new DatabaseError("Failed to find product");
 		}
 	}

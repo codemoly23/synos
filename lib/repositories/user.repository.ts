@@ -117,15 +117,19 @@ export class UserRepository extends BaseRepository<IUser> {
 
 	/**
 	 * Search users by name or email
+	 * When searchTerm is empty, returns all users
 	 */
 	async searchUsers(searchTerm: string, page?: number, limit?: number) {
 		try {
-			const filter = {
-				$or: [
-					{ name: { $regex: searchTerm, $options: "i" } },
-					{ email: { $regex: searchTerm, $options: "i" } },
-				],
-			};
+			// Only apply filter if search term is provided
+			const filter = searchTerm.trim()
+				? {
+						$or: [
+							{ name: { $regex: searchTerm, $options: "i" } },
+							{ email: { $regex: searchTerm, $options: "i" } },
+						],
+					}
+				: {};
 
 			if (page && limit) {
 				return await this.findPaginated(filter, page, limit);

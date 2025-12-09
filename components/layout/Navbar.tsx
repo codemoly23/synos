@@ -17,11 +17,16 @@ import {
 
 import { mainNav } from "@/config/navigation";
 import { cn } from "@/lib/utils";
+import type { SiteConfigType } from "@/config/site";
 import Logo from "../common/logo";
 import MobileNavbar from "./MobileNavbar";
 import ProtectedNavbar from "./ProtectedNavbar";
 
-export function Navbar() {
+interface NavbarProps {
+	config: SiteConfigType;
+}
+
+export function Navbar({ config }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 
 	useEffect(() => {
@@ -131,22 +136,22 @@ export function Navbar() {
 							<div className="hidden md:flex items-center gap-6 shrink-0">
 								<div className="space-y-2">
 									<a
-										href="mailto:info@synos.se"
+										href={`mailto:${config.company.email}`}
 										className="flex items-center gap-2 text-xs font-medium text-primary hover:underline transition-colors whitespace-nowrap"
 									>
 										<Mail className="h-4 w-4" />
-										<span>info@synos.se</span>
+										<span>{config.company.email}</span>
 									</a>
 									<a
-										href="tel:+1234567890"
+										href={`tel:${config.company.phone.replace(/\s/g, "")}`}
 										className="flex items-center gap-2 text-xs font-medium text-primary hover:text-primary hover:underline transition-colors whitespace-nowrap"
 									>
 										<Phone className="h-4 w-4" />
-										<span>(800) 555-0123</span>
+										<span>{config.company.phone}</span>
 									</a>
 								</div>
 								<Button className="bg-primary hover:bg-primary text-white rounded-full px-6 shadow-md shadow-secondary/20">
-									Get Quote
+									Begär offert
 								</Button>
 							</div>
 							<div className="hidden lg:block">

@@ -11,7 +11,7 @@ import { BlogContent } from "../_components/blog-content";
 import { BlogAuthor } from "../_components/blog-author";
 import { RelatedPosts } from "../_components/related-posts";
 import { BlogComments } from "../_components/blog-comments";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+// import { Breadcrumb } from "@/components/shared/Breadcrumb";
 
 /**
  * Blog Detail Page

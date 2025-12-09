@@ -67,13 +67,17 @@ export async function getAuth() {
 				},
 
 				// Trusted origins for CORS
+				// Add additional trusted origins via BETTER_AUTH_TRUSTED_ORIGINS env var (comma-separated)
 				trustedOrigins: [
 					process.env.BETTER_AUTH_URL || "http://localhost:3000",
-					process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
-						"http://localhost:3000",
-					"https://unrancorous-symphonically-pura.ngrok-free.dev",
-					"http://192.168.68.86:3000",
-				],
+					process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+					// Parse additional origins from env if provided
+					...(process.env.BETTER_AUTH_TRUSTED_ORIGINS
+						? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map((o) =>
+								o.trim()
+							)
+						: []),
+				].filter(Boolean),
 
 				// Plugins
 				plugins: [

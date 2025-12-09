@@ -5,8 +5,9 @@
 
 /**
  * Available storage folders
+ * Note: "avatars" is for user profile images and is NOT listed in the storage manager
  */
-export type StorageFolder = "images" | "documents";
+export type StorageFolder = "images" | "documents" | "avatars";
 
 /**
  * File information returned after upload

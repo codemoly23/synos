@@ -59,10 +59,8 @@ function LoginForm() {
 			}
 
 			toast.success("Login successful");
-			// Redirect to callback URL or dashboard on success
 			router.push(callbackUrl);
 		} catch (err: any) {
-			console.error("Login error:", err);
 			setError(
 				err?.message || "Login failed. Please check your credentials."
 			);

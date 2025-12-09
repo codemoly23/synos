@@ -169,7 +169,7 @@ export default function UsersPage() {
 	// Main render
 	// ========================================================================
 	return (
-		<div className="max-w-6xl mx-auto px-4 py-8">
+		<div className="space-y-6">
 			<div className="bg-white rounded-lg shadow-sm border">
 				{/* Header */}
 				<div className="border-b px-6 py-4 flex items-center justify-between">

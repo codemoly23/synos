@@ -9,42 +9,24 @@ interface ProductLongDescriptionProps {
 export function ProductLongDescription({
 	description,
 }: ProductLongDescriptionProps) {
-	console.log("description => ", description);
 	return (
 		<motion.section
 			initial={{ opacity: 0, y: 30 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true, margin: "-100px" }}
 			transition={{ duration: 0.6, ease: "easeOut" }}
-			className="mb-16"
+			className="mb-12"
 			id="about"
 		>
-			<div className="p-8 md:p-10 rounded-2xl bg-card/80 backdrop-blur-sm border border-primary/20 hover:border-primary/50 transition-colors duration-300">
-				<motion.h2
-					initial={{ opacity: 0, x: -20 }}
-					whileInView={{ opacity: 1, x: 0 }}
-					viewport={{ once: true }}
-					transition={{ duration: 0.1, delay: 0.1 }}
-					className="text-3xl font-bold text-secondary mb-6"
-				>
-					Om Produkten
-				</motion.h2>
-				<div className="prose prose-lg max-w-none">
-					<div className="text-muted-foreground leading-relaxed space-y-4">
-						{/* {description.split("\n\n").map((paragraph, index) => (
-							<motion.div
-								key={index}
-								initial={{ opacity: 0, y: 20 }}
-								whileInView={{ opacity: 1, y: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-								className="text-base md:text-lg"
-							>
-								<div dangerouslySetInnerHTML={{ __html: paragraph }} />
-							</motion.div>
-						))} */}
-						<div dangerouslySetInnerHTML={{ __html: description }} />
-					</div>
+			<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
+				Om Produkten
+			</h2>
+			<div className="p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+				<div className="prose prose-slate prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 overflow-wrap-anywhere">
+					<div
+						className="leading-relaxed wrap-break-word overflow-wrap-anywhere [&>p]:mb-4 [&>p]:wrap-break-word [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>h3]:text-lg [&>h3]:sm:text-xl [&>h3]:font-semibold [&>h3]:mt-6 [&>h3]:mb-3 [&>h3]:wrap-break-word [&>h4]:text-base [&>h4]:sm:text-lg [&>h4]:font-medium [&>h4]:mt-4 [&>h4]:mb-2 [&>h4]:wrap-break-word [&_a]:break-all [&_strong]:wrap-break-word"
+						dangerouslySetInnerHTML={{ __html: description }}
+					/>
 				</div>
 			</div>
 		</motion.section>

@@ -124,10 +124,12 @@ export function Hero() {
 						className="relative hidden lg:block"
 					>
 						<div className="relative aspect-square overflow-hidden rounded-3xl glass-card-light shadow-2xl">
-							<img
+							<ImageComponent
 								src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?q=80&w=2070&auto=format&fit=crop"
 								alt="Medical laser equipment"
 								className="w-full h-full object-cover"
+								height={1000}
+								width={1000}
 							/>
 
 							{/* Floating stats card */}

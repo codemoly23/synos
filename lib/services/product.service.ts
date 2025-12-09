@@ -308,10 +308,24 @@ class ProductService {
 	}
 
 	/**
-	 * Get product by slug
+	 * Get product by slug (admin - no visibility filter)
 	 */
 	async getProductBySlug(slug: string): Promise<IProduct> {
 		const product = await productRepository.findBySlugWithCategories(slug);
+
+		if (!product) {
+			throw new NotFoundError("Product not found");
+		}
+
+		return product;
+	}
+
+	/**
+	 * Get public product by slug (for client/frontend)
+	 * Only returns published products with public visibility
+	 */
+	async getPublicProductBySlug(slug: string): Promise<IProduct> {
+		const product = await productRepository.findPublicBySlug(slug);
 
 		if (!product) {
 			throw new NotFoundError("Product not found");

@@ -156,23 +156,26 @@ export async function GET(request: NextRequest) {
 		const search = searchParams.get("search") || "";
 
 		// 3. Fetch users
-		let users;
-		if (search) {
-			users = await userService.searchUsers(search, page, limit);
-		} else {
-			// Get all users with pagination
-			users = await userService.searchUsers("", page, limit);
-		}
+		const result = await userService.searchUsers(search, page, limit);
+
+		// Handle both array and paginated responses
+		const users = Array.isArray(result) ? result : result.data;
+		const pagination = Array.isArray(result)
+			? { total: result.length, page: 1, limit: result.length, totalPages: 1 }
+			: { total: result.total, page: result.page, limit: result.limit, totalPages: result.totalPages };
 
 		logger.info("Users list retrieved", {
 			requestedBy: session.user.id,
-			count: Array.isArray(users) ? users.length : users.data?.length || 0,
+			count: users.length,
 		});
 
-		// 4. Return users list
+		// 4. Return users list with consistent structure
 		return NextResponse.json({
 			success: true,
-			data: users,
+			data: {
+				users,
+				...pagination,
+			},
 		});
 	} catch (error: any) {
 		logger.error("Error fetching users", error);

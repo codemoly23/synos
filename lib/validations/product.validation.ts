@@ -1,37 +1,72 @@
 import { z } from "zod";
 
 /**
- * URL validation helper
+ * Check if a string is a valid local path (starts with /)
  */
-const urlSchema = z
-	.string()
-	.url("Invalid URL format")
-	.refine(
-		(url) => {
-			try {
-				const parsed = new URL(url);
-				return ["http:", "https:"].includes(parsed.protocol);
-			} catch {
-				return false;
-			}
-		},
-		{ message: "URL must use http or https protocol" }
-	);
+const isLocalPath = (str: string): boolean => {
+	return str.startsWith("/");
+};
 
+/**
+ * Check if a string is a valid external URL
+ */
+const isValidExternalUrl = (str: string): boolean => {
+	try {
+		const parsed = new URL(str);
+		return ["http:", "https:"].includes(parsed.protocol);
+	} catch {
+		return false;
+	}
+};
+
+/**
+ * URL validation helper - accepts both local paths and external URLs
+ */
+const urlSchema = z.string().refine(
+	(url) => {
+		if (!url || url.trim() === "") return false;
+		return isLocalPath(url) || isValidExternalUrl(url);
+	},
+	{ message: "Must be a valid local path (starting with /) or URL (http/https)" }
+);
+
+/**
+ * Optional URL schema - accepts local paths, external URLs, or empty
+ */
 const optionalUrlSchema = z
 	.string()
 	.optional()
 	.refine(
 		(url) => {
 			if (!url || url.trim() === "") return true;
-			try {
-				const parsed = new URL(url);
-				return ["http:", "https:"].includes(parsed.protocol);
-			} catch {
-				return false;
-			}
+			return isLocalPath(url) || isValidExternalUrl(url);
 		},
-		{ message: "URL must use http or https protocol" }
+		{ message: "Must be a valid local path (starting with /) or URL (http/https)" }
+	);
+
+/**
+ * Image URL schema - same as urlSchema but with image-specific message
+ */
+const imageUrlSchema = z.string().refine(
+	(url) => {
+		if (!url || url.trim() === "") return false;
+		return isLocalPath(url) || isValidExternalUrl(url);
+	},
+	{ message: "Must be a valid image path (local or URL)" }
+);
+
+/**
+ * Optional image URL schema
+ */
+const optionalImageUrlSchema = z
+	.string()
+	.optional()
+	.refine(
+		(url) => {
+			if (!url || url.trim() === "") return true;
+			return isLocalPath(url) || isValidExternalUrl(url);
+		},
+		{ message: "Must be a valid image path (local or URL)" }
 	);
 
 /**
@@ -159,7 +194,7 @@ export const publishProductSchema = z.object({
 	slug: slugSchema,
 	description: z.string().min(1, "Description is required for publishing"),
 	productImages: z
-		.array(urlSchema)
+		.array(imageUrlSchema)
 		.min(1, "At least one product image is required for publishing"),
 	techSpecifications: z.array(
 		z.object({
@@ -191,7 +226,7 @@ export const publishProductSchema = z.object({
 			.string()
 			.min(1, "SEO description is recommended for publishing")
 			.optional(),
-		ogImage: optionalUrlSchema,
+		ogImage: optionalImageUrlSchema,
 		canonicalUrl: optionalUrlSchema,
 		noindex: z.boolean().optional(),
 	}),

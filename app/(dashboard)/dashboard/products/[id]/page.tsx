@@ -6,10 +6,14 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ProductForm } from "@/components/admin/ProductForm";
+import {
+	ProductForm,
+	type ProductFormData,
+	type ProductFormResult,
+	normalizeCategories,
+} from "@/components/admin/ProductForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
-import type { PublishValidationError } from "@/lib/services/product.service";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -93,16 +97,15 @@ export default function EditProductPage() {
 	}, [session, productId, router]);
 
 	// Handle save draft
-	const handleSaveDraft = async (data: Record<string, unknown>) => {
+	const handleSaveDraft = async (
+		data: ProductFormData
+	): Promise<ProductFormResult> => {
 		setIsSaving(true);
 		try {
-			const categories = Array.isArray(data.categories)
-				? data?.categories?.map((c) =>
-						typeof c === "string" ? c : c._id || c.id || c.value
-				  )
-				: [];
-
-			const payload = { ...data, categories };
+			const payload = {
+				...data,
+				categories: normalizeCategories(data.categories),
+			};
 
 			const response = await fetch(`/api/products/${productId}`, {
 				method: "PUT",
@@ -114,16 +117,20 @@ export default function EditProductPage() {
 
 			if (result.success) {
 				setProduct(result.data);
-				// alert("Product saved successfully");
 				toast.success("Product saved successfully");
+				return { success: true, data: result.data };
 			} else {
-				// alert(result.message || "Failed to save product");
 				toast.error(result.message || "Failed to save product");
+				return {
+					success: false,
+					errors: result.errors,
+					message: result.message,
+				};
 			}
 		} catch (error) {
 			console.error("Failed to save product:", error);
-			// alert("Failed to save product");
 			toast.error("Failed to save product");
+			return { success: false, message: "Failed to save product" };
 		} finally {
 			setIsSaving(false);
 		}
@@ -131,23 +138,63 @@ export default function EditProductPage() {
 
 	// Handle publish
 	const handlePublish = async (
-		id: string
-	): Promise<{ warnings: PublishValidationError[] }> => {
-		const response = await fetch(`/api/products/${id}/publish`, {
-			method: "POST",
-		});
+		data: ProductFormData
+	): Promise<ProductFormResult> => {
+		setIsSaving(true);
+		try {
+			// First save the current data
+			const payload = {
+				...data,
+				categories: normalizeCategories(data.categories),
+			};
 
-		const result = await response.json();
+			const saveResponse = await fetch(`/api/products/${productId}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
 
-		if (result.success) {
-			setProduct(result.data.product);
-			toast.success("Product published successfully");
-			return { warnings: result.data.warnings || [] };
-		} else {
-			console.error("error -> ", result);
-			toast.error(result.message || "Failed to publish");
+			const saveResult = await saveResponse.json();
 
-			throw new Error(result.message || "Failed to publish");
+			if (!saveResult.success) {
+				toast.error(saveResult.message || "Failed to save product");
+				return {
+					success: false,
+					errors: saveResult.errors,
+					message: saveResult.message,
+				};
+			}
+
+			// Then publish
+			const publishResponse = await fetch(
+				`/api/products/${productId}/publish`,
+				{ method: "POST" }
+			);
+
+			const publishResult = await publishResponse.json();
+
+			if (publishResult.success) {
+				setProduct(publishResult.data.product);
+				toast.success("Product published successfully");
+				return {
+					success: true,
+					data: publishResult.data.product,
+					warnings: publishResult.data.warnings,
+				};
+			} else {
+				toast.error(publishResult.message || "Failed to publish");
+				return {
+					success: false,
+					errors: publishResult.errors,
+					message: publishResult.message,
+				};
+			}
+		} catch (error) {
+			console.error("Failed to publish product:", error);
+			toast.error("Failed to publish product");
+			return { success: false, message: "Failed to publish product" };
+		} finally {
+			setIsSaving(false);
 		}
 	};
 
@@ -204,14 +251,17 @@ export default function EditProductPage() {
 						{product.visibility === "hidden" && (
 							<Badge variant="outline">Hidden</Badge>
 						)}
-						<Link
-							href={`/produkter/produkt/${product.slug}`}
-							target="_blank"
-						>
-							<Button variant="outline" size="sm">
-								View Live
-							</Button>
-						</Link>
+						{product.visibility == "public" &&
+							product.publishType == "publish" && (
+								<Link
+									href={`/produkter/produkt/${product.slug}`}
+									target="_blank"
+								>
+									<Button variant="outline" size="sm">
+										View Live
+									</Button>
+								</Link>
+							)}
 					</div>
 				</div>
 

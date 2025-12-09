@@ -1,16 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { StorageManager, MediaPicker } from "@/components/storage";
+import { StorageManager } from "@/components/storage";
 import type { StorageFile, StorageFolder } from "@/lib/storage/client";
 
 export default function StoragePage() {
-	// Example state for MediaPicker demo
-	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-	const [selectedDocument, setSelectedDocument] = useState<string | null>(
-		null
-	);
-
 	const handleUpload = (file: StorageFile) => {
 		console.log("File uploaded:", file);
 	};
@@ -20,102 +13,40 @@ export default function StoragePage() {
 	};
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-6">
 			{/* Header */}
-			<div className="bg-white rounded-lg shadow-sm border p-6">
-				<h1 className="text-3xl font-bold text-gray-900 mb-2">
-					File Storage
-				</h1>
-				<p className="text-gray-600">
+			<div>
+				<h1 className="text-2xl font-bold text-gray-900">File Storage</h1>
+				<p className="text-sm text-gray-600 mt-1">
 					Upload, manage, and organize your images and documents.
 				</p>
 			</div>
 
-			{/* Media Picker Demo */}
-			<div className="bg-white rounded-lg shadow-sm border p-6">
-				<h2 className="text-xl font-bold text-gray-900 mb-4">
-					Media Picker
-				</h2>
-				<p className="text-sm text-gray-600 mb-6">
-					Use the MediaPicker component in forms to select files from your
-					library or upload new ones.
-				</p>
-
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					{/* Image Picker */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Featured Image
-						</label>
-						<MediaPicker
-							type="image"
-							value={selectedImage}
-							onChange={setSelectedImage}
-							placeholder="Click to select image"
-							galleryTitle="Select Featured Image"
-						/>
-						{selectedImage && (
-							<p className="mt-2 text-xs text-gray-500 truncate">
-								URL: {selectedImage}
-							</p>
-						)}
-					</div>
-
-					{/* Document Picker */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Product PDF
-						</label>
-						<MediaPicker
-							type="document"
-							value={selectedDocument}
-							onChange={setSelectedDocument}
-							placeholder="Click to select document"
-							galleryTitle="Select Product Document"
-						/>
-						{selectedDocument && (
-							<p className="mt-2 text-xs text-gray-500 truncate">
-								URL: {selectedDocument}
-							</p>
-						)}
-					</div>
-				</div>
-			</div>
-
 			{/* Storage Manager */}
-			<div className="bg-white rounded-lg shadow-sm border p-6">
-				<h2 className="text-xl font-bold text-gray-900 mb-4">
-					Full Storage Manager
-				</h2>
-				<StorageManager
-					defaultTab="images"
-					onUpload={handleUpload}
-					onDelete={handleDelete}
-				/>
-			</div>
+			<StorageManager
+				defaultTab="images"
+				onUpload={handleUpload}
+				onDelete={handleDelete}
+			/>
 
 			{/* Usage Info */}
 			<div className="bg-white rounded-lg shadow-sm border p-6">
-				<h2 className="text-xl font-bold text-gray-900 mb-4">
-					Usage Information
+				<h2 className="text-lg font-semibold text-gray-900 mb-4">
+					Supported Formats
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<h3 className="font-semibold text-gray-800 mb-2">Images</h3>
+						<h3 className="font-medium text-gray-800 mb-2">Images</h3>
 						<ul className="text-sm text-gray-600 space-y-1">
-							<li>Supported formats: JPG, PNG, WebP, GIF</li>
-							<li>Maximum file size: 5MB</li>
-							<li>Publicly accessible after upload</li>
+							<li>Formats: JPG, PNG, WebP, GIF</li>
+							<li>Maximum size: 5MB</li>
 						</ul>
 					</div>
 					<div>
-						<h3 className="font-semibold text-gray-800 mb-2">
-							Documents
-						</h3>
+						<h3 className="font-medium text-gray-800 mb-2">Documents</h3>
 						<ul className="text-sm text-gray-600 space-y-1">
-							<li>Supported formats: PDF, DOC, DOCX</li>
-							<li>Maximum file size: 20MB</li>
-							<li>Publicly accessible after upload</li>
+							<li>Formats: PDF, DOC, DOCX</li>
+							<li>Maximum size: 20MB</li>
 						</ul>
 					</div>
 				</div>

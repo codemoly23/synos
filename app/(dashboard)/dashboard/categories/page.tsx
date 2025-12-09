@@ -30,6 +30,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { useConfirmModal } from "@/components/ui/confirm-modal";
+import { toast } from "sonner";
 import type { ICategoryTreeNode } from "@/models/category.model";
 
 interface TreeNodeProps {
@@ -174,6 +176,11 @@ export default function CategoriesPage() {
 	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>([]);
 	const [isLoading, setIsLoading] = React.useState(true);
 
+	// Confirmation modal
+	const { confirm, ConfirmModal } = useConfirmModal({
+		variant: "destructive",
+	});
+
 	// Redirect if not authenticated
 	React.useEffect(() => {
 		if (!isPending && !session) {
@@ -220,7 +227,14 @@ export default function CategoriesPage() {
 
 	// Handle delete
 	const handleDelete = async (id: string) => {
-		if (!confirm("Are you sure you want to delete this category?")) return;
+		const confirmed = await confirm({
+			title: "Delete Category",
+			description:
+				"Are you sure you want to delete this category? This action cannot be undone.",
+			confirmText: "Delete",
+		});
+
+		if (!confirmed) return;
 
 		try {
 			const response = await fetch(`/api/categories/${id}`, {
@@ -228,13 +242,15 @@ export default function CategoriesPage() {
 			});
 
 			if (response.ok) {
+				toast.success("Category deleted successfully");
 				fetchCategories();
 			} else {
 				const data = await response.json();
-				alert(data.message || "Failed to delete category");
+				toast.error(data.message || "Failed to delete category");
 			}
 		} catch (error) {
 			console.error("Failed to delete category:", error);
+			toast.error("Failed to delete category");
 		}
 	};
 
@@ -285,7 +301,8 @@ export default function CategoriesPage() {
 	}
 
 	return (
-		<div className="_container py-8">
+		<>
+			<ConfirmModal />
 			<div className="space-y-6">
 				{/* Header */}
 				<div className="flex justify-between items-center">
@@ -349,6 +366,6 @@ export default function CategoriesPage() {
 					</CardContent>
 				</Card>
 			</div>
-		</div>
+		</>
 	);
 }

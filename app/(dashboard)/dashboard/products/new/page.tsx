@@ -4,10 +4,17 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { ProductForm } from "@/components/admin/ProductForm";
+import {
+	ProductForm,
+	type ProductFormData,
+	type ProductFormResult,
+	normalizeCategories,
+} from "@/components/admin/ProductForm";
 import type { ICategoryTreeNode } from "@/models/category.model";
+
 /**
  * New Product Page
  */
@@ -15,9 +22,14 @@ export default function NewProductPage() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
 
-	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>([]);
-	const [treatmentSuggestions, setTreatmentSuggestions] = React.useState<string[]>([]);
-	const [certificationSuggestions, setCertificationSuggestions] = React.useState<string[]>([]);
+	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>(
+		[]
+	);
+	const [treatmentSuggestions, setTreatmentSuggestions] = React.useState<
+		string[]
+	>([]);
+	const [certificationSuggestions, setCertificationSuggestions] =
+		React.useState<string[]>([]);
 	const [isLoading, setIsLoading] = React.useState(false);
 
 	// Redirect if not authenticated
@@ -57,25 +69,107 @@ export default function NewProductPage() {
 	}, [session]);
 
 	// Handle save draft
-	const handleSaveDraft = async (data: Record<string, unknown>) => {
+	const handleSaveDraft = async (
+		data: ProductFormData
+	): Promise<ProductFormResult> => {
 		setIsLoading(true);
 		try {
+			const payload = {
+				...data,
+				categories: normalizeCategories(data.categories),
+			};
+
 			const response = await fetch("/api/products", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
+				body: JSON.stringify(payload),
 			});
 
 			const result = await response.json();
 
 			if (result.success) {
+				toast.success("Product created successfully");
 				router.push(`/dashboard/products/${result.data._id}`);
+				return { success: true, data: result.data };
 			} else {
-				alert(result.message || "Failed to create product");
+				toast.error(result.message || "Failed to create product");
+				return {
+					success: false,
+					errors: result.errors,
+					message: result.message,
+				};
 			}
 		} catch (error) {
 			console.error("Failed to create product:", error);
-			alert("Failed to create product");
+			toast.error("Failed to create product");
+			return { success: false, message: "Failed to create product" };
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Handle publish (create and publish in one go)
+	const handlePublish = async (
+		data: ProductFormData
+	): Promise<ProductFormResult> => {
+		setIsLoading(true);
+		try {
+			// First create the product
+			const payload = {
+				...data,
+				categories: normalizeCategories(data.categories),
+				publishType: "draft" as const,
+			};
+
+			const createResponse = await fetch("/api/products", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+
+			const createResult = await createResponse.json();
+
+			if (!createResult.success) {
+				toast.error(createResult.message || "Failed to create product");
+				return {
+					success: false,
+					errors: createResult.errors,
+					message: createResult.message,
+				};
+			}
+
+			// Then publish it
+			const publishResponse = await fetch(
+				`/api/products/${createResult.data._id}/publish`,
+				{ method: "POST" }
+			);
+
+			const publishResult = await publishResponse.json();
+
+			if (publishResult.success) {
+				toast.success("Product published successfully");
+				router.push(`/dashboard/products/${createResult.data._id}`);
+				return {
+					success: true,
+					data: publishResult.data?.product,
+					warnings: publishResult.data?.warnings,
+				};
+			} else {
+				// Product was created but publish failed - redirect to edit page
+				toast.error(
+					publishResult.message || "Product created but publish failed"
+				);
+				router.push(`/dashboard/products/${createResult.data._id}`);
+				return {
+					success: false,
+					errors: publishResult.errors,
+					message: publishResult.message,
+				};
+			}
+		} catch (error) {
+			console.error("Failed to publish product:", error);
+			toast.error("Failed to publish product");
+			return { success: false, message: "Failed to publish product" };
 		} finally {
 			setIsLoading(false);
 		}
@@ -115,6 +209,7 @@ export default function NewProductPage() {
 					treatmentSuggestions={treatmentSuggestions}
 					certificationSuggestions={certificationSuggestions}
 					onSaveDraft={handleSaveDraft}
+					onPublish={handlePublish}
 					onCancel={() => router.push("/dashboard/products")}
 					isLoading={isLoading}
 				/>

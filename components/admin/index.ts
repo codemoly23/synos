@@ -9,3 +9,5 @@ export { RichTextEditor } from "./RichTextEditor";
 export { ImageUrlList } from "./ImageUrlList";
 export { CategoryForm } from "./CategoryForm";
 export { ProductForm } from "./ProductForm";
+export { AdminSidebar } from "./AdminSidebar";
+export { DashboardShell } from "./DashboardShell";

@@ -32,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TagInput } from "./TagInput";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker, MediaGallery } from "@/components/storage";
+import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import type { FileMetadata } from "@/lib/storage/client";
 import {
 	createProductDraftSchema,
@@ -47,7 +48,7 @@ import TextEditor from "../common/TextEditor";
 
 /**
  * ProductImageGallery Component
- * Manages multiple product images with drag-to-reorder and MediaGallery selection
+ * Manages multiple product images with drag-to-reorder and MediaGallery multi-select
  */
 interface ProductImageGalleryProps {
 	images: string[];
@@ -63,9 +64,13 @@ function ProductImageGallery({
 	const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
 	const [dragIndex, setDragIndex] = React.useState<number | null>(null);
 
-	const handleAddImage = (file: FileMetadata) => {
-		if (!images.includes(file.url)) {
-			onChange([...images, file.url]);
+	// Handle multi-select from gallery - adds new images that aren't already in the list
+	const handleMultiSelect = (files: FileMetadata[]) => {
+		const newUrls = files
+			.map((f) => f.url)
+			.filter((url) => !images.includes(url));
+		if (newUrls.length > 0) {
+			onChange([...images, ...newUrls]);
 		}
 	};
 
@@ -151,12 +156,14 @@ function ProductImageGallery({
 				</div>
 			</Button>
 
-			{/* Media Gallery Modal */}
+			{/* Media Gallery Modal - Multi-select mode */}
 			<MediaGallery
 				open={isGalleryOpen}
 				onOpenChange={setIsGalleryOpen}
 				type="image"
-				onSelect={handleAddImage}
+				multiSelect={true}
+				onMultiSelect={handleMultiSelect}
+				selectedUrls={images}
 				title="Select Product Images"
 			/>
 		</div>
@@ -262,15 +269,59 @@ function DocumentPicker({
 /**
  * Form data type that works for both create and update
  */
-type ProductFormData = Record<string, unknown>;
+export type ProductFormData = CreateProductDraftInput | UpdateProductInput;
+
+/**
+ * Server error structure from API responses (Zod issue format)
+ */
+export interface ServerFieldError {
+	path?: (string | number)[];
+	message: string;
+	code?: string;
+}
+
+/**
+ * Result type for save/publish operations
+ */
+export interface ProductFormResult {
+	success: boolean;
+	data?: IProduct;
+	warnings?: PublishValidationError[];
+	errors?: ServerFieldError[];
+	message?: string;
+}
+
+/**
+ * Helper to extract category ID from various formats
+ * Handles: string, ObjectId, populated category object
+ */
+type CategoryInput = string | { _id?: unknown; id?: string; value?: string } | unknown;
+export function normalizeCategoryId(category: CategoryInput): string {
+	if (typeof category === "string") return category;
+	if (category && typeof category === "object") {
+		const cat = category as { _id?: unknown; id?: string; value?: string };
+		if (cat._id) return String(cat._id);
+		if (cat.id) return cat.id;
+		if (cat.value) return cat.value;
+	}
+	return String(category);
+}
+
+/**
+ * Normalize an array of categories to string IDs
+ */
+export function normalizeCategories(categories: CategoryInput[] | undefined): string[] {
+	if (!categories || !Array.isArray(categories)) return [];
+	return categories.map(normalizeCategoryId);
+}
 
 interface ProductFormProps {
 	product?: IProduct | null;
 	categoryTree: ICategoryTreeNode[];
 	treatmentSuggestions?: string[];
 	certificationSuggestions?: string[];
-	onSaveDraft: (data: ProductFormData) => Promise<void>;
-	onPublish?: (id: string) => Promise<{ warnings: PublishValidationError[] }>;
+	onSaveDraft: (data: ProductFormData) => Promise<ProductFormResult>;
+	onPublish?: (data: ProductFormData) => Promise<ProductFormResult>;
 	onValidate?: (id: string) => Promise<{
 		canPublish: boolean;
 		errors: PublishValidationError[];
@@ -302,8 +353,56 @@ export function ProductForm({
 		errors: PublishValidationError[];
 		warnings: PublishValidationError[];
 	} | null>(null);
+	const [serverErrors, setServerErrors] = React.useState<Record<string, string>>({});
+	const [generalError, setGeneralError] = React.useState<string | null>(null);
 	const [isSaving, setIsSaving] = React.useState(false);
 	const [isPublishing, setIsPublishing] = React.useState(false);
+
+	// Helper to convert server errors to field-level errors
+	const processServerErrors = (errors?: ServerFieldError[]): PublishValidationError[] => {
+		if (!errors || errors.length === 0) return [];
+
+		const fieldErrors: Record<string, string> = {};
+		const publishErrors: PublishValidationError[] = [];
+
+		errors.forEach((err) => {
+			const fieldPath = err.path?.map(String).join(".") || "general";
+			fieldErrors[fieldPath] = err.message;
+			publishErrors.push({
+				field: fieldPath,
+				message: err.message,
+				type: "error",
+			});
+		});
+		setServerErrors(fieldErrors);
+		return publishErrors;
+	};
+
+	// Clear server error when field is modified
+	const clearServerError = (fieldName: string) => {
+		if (serverErrors[fieldName]) {
+			setServerErrors((prev) => {
+				const updated = { ...prev };
+				delete updated[fieldName];
+				return updated;
+			});
+		}
+	};
+
+	// Get combined error for a field (form validation + server)
+	const getFieldError = (fieldName: string): string | undefined => {
+		// Check form validation errors first
+		const formError = fieldName.split(".").reduce((obj: Record<string, unknown> | undefined, key) => {
+			return obj?.[key] as Record<string, unknown> | undefined;
+		}, errors as Record<string, unknown>);
+
+		if (formError && typeof formError === "object" && "message" in formError) {
+			return formError.message as string;
+		}
+
+		// Then check server errors
+		return serverErrors[fieldName];
+	};
 
 	const {
 		register,
@@ -348,7 +447,7 @@ export function ProductForm({
 				canonicalUrl: product?.seo?.canonicalUrl || "",
 				noindex: product?.seo?.noindex || false,
 			},
-			categories: product?.categories?.map((c) => c?._id?.toString()) || [],
+			categories: normalizeCategories(product?.categories as CategoryInput[]),
 			qa:
 				product?.qa?.map((q) => ({
 					question: q.question,
@@ -410,12 +509,22 @@ export function ProductForm({
 	};
 
 	// Handle save draft
-	const handleSaveDraft = async (
-		data: CreateProductDraftInput | UpdateProductInput
-	) => {
+	const handleSaveDraft = async (data: ProductFormData) => {
 		setIsSaving(true);
+		setServerErrors({});
+		setGeneralError(null);
+		setValidationResults(null);
 		try {
-			await onSaveDraft(data);
+			const result = await onSaveDraft(data);
+			if (!result.success) {
+				const publishErrors = processServerErrors(result.errors);
+				if (publishErrors.length > 0) {
+					setValidationResults({ errors: publishErrors, warnings: [] });
+				}
+				if (result.message) {
+					setGeneralError(result.message);
+				}
+			}
 		} finally {
 			setIsSaving(false);
 		}
@@ -431,26 +540,48 @@ export function ProductForm({
 		});
 	};
 
-	// Handle publish
-	const handlePublish = async () => {
-		if (!product?._id || !onPublish) return;
+	// Handle publish (can be used for both new and existing products)
+	const handlePublish = async (data: ProductFormData) => {
+		if (!onPublish) return;
 		setIsPublishing(true);
+		setServerErrors({});
+		setGeneralError(null);
+		setValidationResults(null);
 		try {
-			const result = await onPublish(product._id.toString());
-			setValidationResults({
-				errors: [],
-				warnings: result.warnings,
-			});
+			const result = await onPublish(data);
+			if (result.success) {
+				setValidationResults({
+					errors: [],
+					warnings: result.warnings || [],
+				});
+			} else {
+				const publishErrors = processServerErrors(result.errors);
+				if (publishErrors.length > 0) {
+					setValidationResults({ errors: publishErrors, warnings: [] });
+				}
+				if (result.message) {
+					setGeneralError(result.message);
+				}
+			}
 		} finally {
 			setIsPublishing(false);
 		}
 	};
 
-	console.log("errors => ", errors);
-	console.log("doc url => ", watch("documentation"));
-
 	return (
 		<div className={cn("space-y-6", className)}>
+			{/* General Error Banner */}
+			{generalError && (
+				<Card className="border-red-300 bg-red-50">
+					<CardContent className="pt-4">
+						<div className="flex items-center gap-2 text-red-600">
+							<AlertCircle className="h-5 w-5" />
+							<span className="font-medium">{generalError}</span>
+						</div>
+					</CardContent>
+				</Card>
+			)}
+
 			{/* Validation Results Banner */}
 			{validationResults &&
 				(validationResults.errors.length > 0 ||
@@ -1082,98 +1213,172 @@ export function ProductForm({
 
 					{/* SEO Tab */}
 					<TabsContent value="seo">
-						<Card>
-							<CardHeader>
-								<CardTitle>SEO Settings</CardTitle>
-								<CardDescription>
-									Search engine optimization
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-6">
-								{/* SEO Title */}
-								<div className="space-y-2">
-									<Label htmlFor="seo.title">
-										SEO Title
-										<span className="text-xs text-slate-500 ml-2">
-											({(watch("seo.title") || "").length}/70)
-										</span>
-									</Label>
-									<Input
-										id="seo.title"
-										{...register("seo.title")}
-										placeholder="SEO title (recommended 50-60 characters)"
-										disabled={isLoading}
-										maxLength={70}
-									/>
-								</div>
+						<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+							{/* Left Column - SEO Settings */}
+							<div className="space-y-6">
+								<Card>
+									<CardHeader>
+										<CardTitle>SEO Settings</CardTitle>
+										<CardDescription>
+											Search engine optimization
+										</CardDescription>
+									</CardHeader>
+									<CardContent className="space-y-6">
+										{/* SEO Title */}
+										<div className="space-y-2">
+											<Label htmlFor="seo.title">SEO Title</Label>
+											<Input
+												id="seo.title"
+												{...register("seo.title")}
+												placeholder="SEO title (recommended 50-60 characters)"
+												disabled={isLoading}
+												maxLength={70}
+												onChange={(e) => {
+													register("seo.title").onChange(e);
+													clearServerError("seo.title");
+												}}
+											/>
+											<CharacterCount
+												value={watch("seo.title") || ""}
+												min={30}
+												max={70}
+												optimal={{ min: 50, max: 60 }}
+												label="Title length"
+											/>
+											{getFieldError("seo.title") && (
+												<p className="text-sm text-red-500">
+													{getFieldError("seo.title")}
+												</p>
+											)}
+										</div>
 
-								{/* SEO Description */}
-								<div className="space-y-2">
-									<Label htmlFor="seo.description">
-										SEO Description
-										<span className="text-xs text-slate-500 ml-2">
-											({(watch("seo.description") || "").length}/160)
-										</span>
-									</Label>
-									<Textarea
-										id="seo.description"
-										{...register("seo.description")}
-										placeholder="SEO description (recommended 150-160 characters)"
-										disabled={isLoading}
-										rows={3}
-										maxLength={160}
-									/>
-								</div>
+										{/* SEO Description */}
+										<div className="space-y-2">
+											<Label htmlFor="seo.description">
+												Meta Description
+											</Label>
+											<Textarea
+												id="seo.description"
+												{...register("seo.description")}
+												placeholder="SEO description (recommended 120-160 characters)"
+												disabled={isLoading}
+												rows={3}
+												maxLength={200}
+												onChange={(e) => {
+													register("seo.description").onChange(e);
+													clearServerError("seo.description");
+												}}
+											/>
+											<CharacterCount
+												value={watch("seo.description") || ""}
+												min={80}
+												max={200}
+												optimal={{ min: 120, max: 160 }}
+												label="Description length"
+											/>
+											{getFieldError("seo.description") && (
+												<p className="text-sm text-red-500">
+													{getFieldError("seo.description")}
+												</p>
+											)}
+										</div>
 
-								{/* OG Image */}
-								<div className="space-y-2">
-									<Label htmlFor="seo.ogImage">
-										Open Graph Image URL
-									</Label>
-									<Input
-										id="seo.ogImage"
-										type="url"
-										{...register("seo.ogImage")}
-										placeholder="https://example.com/og-image.jpg"
-										disabled={isLoading}
-									/>
-								</div>
+										{/* OG Image */}
+										<div className="space-y-2">
+											<Label>Open Graph Image</Label>
+											<p className="text-sm text-muted-foreground">
+												Image shown when sharing on social media (recommended 1200x630px)
+											</p>
+											<MediaPicker
+												type="image"
+												value={watch("seo.ogImage") || null}
+												onChange={(url) =>
+													setValue("seo.ogImage", url || "", {
+														shouldDirty: true,
+													})
+												}
+												placeholder="Select OG image"
+												disabled={isLoading}
+												galleryTitle="Select Open Graph Image"
+											/>
+										</div>
 
-								{/* Canonical URL */}
-								<div className="space-y-2">
-									<Label htmlFor="seo.canonicalUrl">
-										Canonical URL
-									</Label>
-									<Input
-										id="seo.canonicalUrl"
-										type="url"
-										{...register("seo.canonicalUrl")}
-										placeholder="https://example.com/product"
-										disabled={isLoading}
-									/>
-								</div>
+										{/* Canonical URL */}
+										<div className="space-y-2">
+											<Label htmlFor="seo.canonicalUrl">
+												Canonical URL
+											</Label>
+											<Input
+												id="seo.canonicalUrl"
+												type="url"
+												{...register("seo.canonicalUrl")}
+												placeholder="https://example.com/product"
+												disabled={isLoading}
+											/>
+											<p className="text-xs text-slate-500">
+												Leave empty to use the default product URL
+											</p>
+										</div>
 
-								{/* Noindex */}
-								<div className="flex items-center gap-3">
-									<input
-										type="checkbox"
-										id="seo.noindex"
-										{...register("seo.noindex")}
-										disabled={isLoading}
-										className="h-4 w-4"
-									/>
-									<Label
-										htmlFor="seo.noindex"
-										className="cursor-pointer"
-									>
-										No Index
-									</Label>
-									<p className="text-xs text-slate-500">
-										Prevent search engines from indexing this product
-									</p>
-								</div>
-							</CardContent>
-						</Card>
+										{/* Noindex */}
+										<div className="flex items-center gap-3">
+											<input
+												type="checkbox"
+												id="seo.noindex"
+												{...register("seo.noindex")}
+												disabled={isLoading}
+												className="h-4 w-4"
+											/>
+											<Label
+												htmlFor="seo.noindex"
+												className="cursor-pointer"
+											>
+												No Index
+											</Label>
+											<p className="text-xs text-slate-500">
+												Prevent search engines from indexing this product
+											</p>
+										</div>
+									</CardContent>
+								</Card>
+
+								{/* SEO Analysis */}
+								<SeoAnalysis
+									data={{
+										title: watch("seo.title") || "",
+										description: watch("seo.description") || "",
+										slug: watch("slug") || "",
+										productTitle: watch("title") || "",
+										hasOgImage: !!(watch("seo.ogImage")),
+									}}
+								/>
+							</div>
+
+							{/* Right Column - Previews */}
+							<div className="space-y-6">
+								<Card>
+									<CardHeader>
+										<CardTitle>Preview</CardTitle>
+										<CardDescription>
+											See how your product will appear in search results and social media
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<SeoPreview
+											data={{
+												title: watch("seo.title") || "",
+												description: watch("seo.description") || "",
+												slug: watch("slug") || "",
+												ogImage: watch("seo.ogImage") || watch("overviewImage") || (watch("productImages")?.[0]) || null,
+												siteUrl: "synos.se",
+												siteName: "Synos",
+												productTitle: watch("title") || "",
+											}}
+										/>
+									</CardContent>
+								</Card>
+							</div>
+						</div>
 					</TabsContent>
 				</Tabs>
 
@@ -1216,10 +1421,10 @@ export function ProductForm({
 							Save Draft
 						</Button>
 
-						{isEditing && onPublish && (
+						{onPublish && (
 							<Button
 								type="button"
-								onClick={handlePublish}
+								onClick={handleSubmit(handlePublish)}
 								disabled={isLoading || isPublishing}
 							>
 								{isPublishing && (

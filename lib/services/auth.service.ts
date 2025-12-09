@@ -12,6 +12,7 @@ import { getAuth } from "@/lib/db/auth";
 import type { IUser } from "@/models/user.model";
 import crypto from "crypto";
 import { getMongoClient } from "../db/mongo";
+import { ObjectId } from "mongodb";
 
 /**
  * Authentication Service
@@ -184,6 +185,10 @@ class AuthService {
 	 * IMPORTANT: We hash the password manually and create both user and account records
 	 * to avoid Better Auth's signUpEmail which would create a session for the new user
 	 * and log out the admin who is creating them.
+	 *
+	 * The records must match Better Auth's MongoDB adapter format:
+	 * - User: uses _id as ObjectId (adapter maps to/from 'id' field)
+	 * - Account: userId is ObjectId referencing user._id
 	 */
 	async createUserByAdmin(data: {
 		name: string;
@@ -192,63 +197,56 @@ class AuthService {
 		createdBy: string;
 	}): Promise<IUser> {
 		try {
-			logger.info("Creating new user by admin", {
-				email: data.email,
-				createdBy: data.createdBy,
-			});
-
 			const mongoClient = await getMongoClient();
 			const db = mongoClient.db(process.env.MONGODB_DB || "synos-db");
 
-			// Generate unique ID for the user (Better Auth uses random strings)
-			const userId = crypto.randomBytes(16).toString("hex");
+			// Generate ObjectId for the user (Better Auth's MongoDB adapter uses ObjectId for _id)
+			const userObjectId = new ObjectId();
+			const accountObjectId = new ObjectId();
 
 			// Hash the password using scrypt (EXACTLY as Better Auth does)
-			// Better Auth format: {salt}:{hash} (no "scrypt:" prefix!)
-			// Parameters: N=16384, r=16, p=1, dkLen=64
-			const salt = crypto.randomBytes(16).toString("hex"); // Hex-encoded salt
-			const normalizedPassword = data.password.normalize("NFKC"); // NFKC normalization
+			const salt = crypto.randomBytes(16).toString("hex");
+			const normalizedPassword = data.password.normalize("NFKC");
 
 			const hashedPassword = await new Promise<string>((resolve, reject) => {
 				crypto.scrypt(
 					normalizedPassword,
 					salt,
-					64, // dkLen (derived key length)
+					64,
 					{
-						N: 16384, // CPU/memory cost parameter
-						r: 16, // Block size parameter
-						p: 1, // Parallelization parameter
-						maxmem: 128 * 16384 * 16 * 2, // Memory limit
+						N: 16384,
+						r: 16,
+						p: 1,
+						maxmem: 128 * 16384 * 16 * 2,
 					},
 					(err: Error | null, derivedKey: Buffer) => {
 						if (err) reject(err);
-						// Format: salt:hash (Better Auth format - NO "scrypt:" prefix)
 						resolve(`${salt}:${derivedKey.toString("hex")}`);
 					}
 				);
 			});
 
-			// Create user in Better Auth user collection
-			const userCollection = db.collection("user");
-			await userCollection.insertOne({
-				id: userId,
+			// Create user document
+			const userDoc = {
+				_id: userObjectId,
 				email: data.email.toLowerCase(),
 				name: data.name,
 				emailVerified: false,
 				image: null,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-			});
+			};
 
-			// Create account record for credential-based authentication
-			// This is CRITICAL - Better Auth requires an account record with providerId="credential"
-			const accountCollection = db.collection("account");
-			await accountCollection.insertOne({
-				id: crypto.randomBytes(16).toString("hex"), // Unique account ID
-				userId: userId,
-				accountId: userId, // For credential accounts, accountId equals userId
-				providerId: "credential", // CRITICAL: Must be "credential" for email/password
-				password: hashedPassword, // Hashed password stored in account table
+			const userCollection = db.collection("user");
+			await userCollection.insertOne(userDoc);
+
+			// Create account document
+			const accountDoc = {
+				_id: accountObjectId,
+				userId: userObjectId,
+				accountId: userObjectId,
+				providerId: "credential",
+				password: hashedPassword,
 				accessToken: null,
 				refreshToken: null,
 				accessTokenExpiresAt: null,
@@ -257,27 +255,21 @@ class AuthService {
 				idToken: null,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-			});
+			};
 
-			// Fetch the created user using our repository (to get proper IUser type)
-			const newUser = await userRepository.findByEmail(
-				data.email.toLowerCase()
-			);
+			const accountCollection = db.collection("account");
+			await accountCollection.insertOne(accountDoc);
+
+			// Fetch the created user using our repository
+			const newUser = await userRepository.findByEmail(data.email.toLowerCase());
 			if (!newUser) {
 				throw new DatabaseError("User created but could not be retrieved");
 			}
 
 			// Create profile for the new user
-			await this.handlePostRegistration(
-				newUser._id.toString(),
-				data.email,
-				data.name
-			);
+			await this.handlePostRegistration(newUser._id.toString(), data.email, data.name);
 
-			logger.info("User and account created successfully by admin", {
-				userId: newUser._id.toString(),
-				createdBy: data.createdBy,
-			});
+			logger.info("User created by admin", { userId: newUser._id.toString(), email: data.email });
 
 			return newUser;
 		} catch (error) {

@@ -18,14 +18,21 @@ export const storageFolderSchema = z.enum(["images", "documents"], {
 });
 
 /**
- * Filename schema (UUID format with extension)
+ * Filename schema (slugified name with extension)
+ * Accepts: alphanumeric characters, hyphens, and must have an extension
+ * Examples: "my-image.jpg", "document-1.pdf", "file-name-here.png"
  */
 export const filenameSchema = z
 	.string()
 	.min(1, "Filename is required")
+	.max(255, "Filename too long")
 	.regex(
-		/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.[a-z0-9]+$/i,
-		"Invalid filename format"
+		/^[a-z0-9][a-z0-9-]*\.[a-z0-9]+$/i,
+		"Invalid filename format. Use alphanumeric characters, hyphens, and include file extension"
+	)
+	.refine(
+		(name) => !name.includes("..") && !name.includes("//"),
+		"Invalid filename: path traversal not allowed"
 	);
 
 /**

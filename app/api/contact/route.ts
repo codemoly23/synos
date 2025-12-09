@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
 		// Send email to company
 		const companyEmailResult = await resend.emails.send({
-			from: "Synos Medical Kontaktformulär <noreply@synos.se>",
+			from: `${siteConfig.name} Kontaktformulär <${siteConfig.company.noreplyEmail}>`,
 			to: siteConfig.company.email,
 			subject: contactEmail.subject,
 			html: contactEmail.html,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
 		// Send auto-reply to customer
 		const autoReplyResult = await resend.emails.send({
-			from: "Synos Medical <noreply@synos.se>",
+			from: `${siteConfig.name} <${siteConfig.company.noreplyEmail}>`,
 			to: data.email,
 			subject: autoReply.subject,
 			html: autoReply.html,
