@@ -20,10 +20,7 @@ interface RouteParams {
  * POST /api/products/[id]/publish
  * Publish a product (runs validation)
  */
-export async function POST(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -33,7 +30,9 @@ export async function POST(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to publish product");
-			return unauthorizedResponse("You must be logged in to publish products");
+			return unauthorizedResponse(
+				"You must be logged in to publish products"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -65,7 +64,8 @@ export async function POST(
 			}
 			if (error.message.includes("cannot be published")) {
 				// Get validation errors from the error object
-				const validationErrors = (error as { errors?: unknown[] }).errors || [];
+				const validationErrors =
+					(error as { errors?: unknown[] }).errors || [];
 				return validationErrorResponse(
 					"Product cannot be published due to validation errors",
 					validationErrors
@@ -73,7 +73,8 @@ export async function POST(
 			}
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to publish product";
+		const message =
+			error instanceof Error ? error.message : "Failed to publish product";
 		return internalServerErrorResponse(message);
 	}
 }

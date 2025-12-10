@@ -22,10 +22,7 @@ interface RouteParams {
  * GET /api/categories/[id]
  * Get a single category by ID
  */
-export async function GET(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -43,7 +40,8 @@ export async function GET(
 			return notFoundResponse("Category not found");
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to fetch category";
+		const message =
+			error instanceof Error ? error.message : "Failed to fetch category";
 		return internalServerErrorResponse(message);
 	}
 }
@@ -52,10 +50,7 @@ export async function GET(
  * PUT /api/categories/[id]
  * Update a category (requires authentication)
  */
-export async function PUT(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -65,7 +60,9 @@ export async function PUT(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to update category");
-			return unauthorizedResponse("You must be logged in to update categories");
+			return unauthorizedResponse(
+				"You must be logged in to update categories"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -80,11 +77,17 @@ export async function PUT(
 			logger.warn("Category update validation failed", {
 				errors: validationResult.error.issues,
 			});
-			return badRequestResponse("Validation failed", validationResult.error.issues);
+			return badRequestResponse(
+				"Validation failed",
+				validationResult.error.issues
+			);
 		}
 
 		// Update category
-		const category = await categoryService.updateCategory(id, validationResult.data);
+		const category = await categoryService.updateCategory(
+			id,
+			validationResult.data
+		);
 
 		logger.info("Category updated", {
 			categoryId: id,
@@ -103,12 +106,16 @@ export async function PUT(
 			if (error.message.includes("already exists")) {
 				return conflictResponse(error.message);
 			}
-			if (error.message.includes("circular") || error.message.includes("cycle")) {
+			if (
+				error.message.includes("circular") ||
+				error.message.includes("cycle")
+			) {
 				return badRequestResponse(error.message);
 			}
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to update category";
+		const message =
+			error instanceof Error ? error.message : "Failed to update category";
 		return internalServerErrorResponse(message);
 	}
 }
@@ -117,10 +124,7 @@ export async function PUT(
  * DELETE /api/categories/[id]
  * Delete a category (requires authentication)
  */
-export async function DELETE(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -130,7 +134,9 @@ export async function DELETE(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to delete category");
-			return unauthorizedResponse("You must be logged in to delete categories");
+			return unauthorizedResponse(
+				"You must be logged in to delete categories"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -163,7 +169,8 @@ export async function DELETE(
 			}
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to delete category";
+		const message =
+			error instanceof Error ? error.message : "Failed to delete category";
 		return internalServerErrorResponse(message);
 	}
 }

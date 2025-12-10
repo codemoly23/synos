@@ -9,7 +9,7 @@ This document describes the API endpoints for the Product CMS system built with 
 All admin API endpoints require an authenticated session. Include the session cookie in your requests.
 
 ```typescript
-// Client-side example
+console.logClient-side example
 const response = await fetch('/api/products', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -23,16 +23,16 @@ All API responses follow this structure:
 
 ```typescript
 interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-  meta?: {
-    page?: number;
-    limit?: number;
-    total?: number;
-    totalPages?: number;
-  };
-  errors?: any;
+	success: boolean;
+	message: string;
+	data?: T;
+	meta?: {
+		page?: number;
+		limit?: number;
+		total?: number;
+		totalPages?: number;
+	};
+	errors?: any;
 }
 ```
 
@@ -45,14 +45,16 @@ interface ApiResponse<T = any> {
 **GET** `/api/categories`
 
 Query parameters:
-- `page` (number, default: 1) - Page number
-- `limit` (number, default: 50) - Items per page
-- `parent` (string|null) - Filter by parent ID, use "null" for root categories
-- `isActive` (boolean) - Filter by active status
-- `tree` (boolean, default: false) - Return as tree structure
-- `search` (string) - Search by name
+
+-  `page` (number, default: 1) - Page number
+-  `limit` (number, default: 50) - Items per page
+-  `parent` (string|null) - Filter by parent ID, use "null" for root categories
+-  `isActive` (boolean) - Filter by active status
+-  `tree` (boolean, default: false) - Return as tree structure
+-  `search` (string) - Search by name
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -72,32 +74,34 @@ Query parameters:
 **GET** `/api/categories/tree`
 
 Query parameters:
-- `activeOnly` (boolean) - Only include active categories
+
+-  `activeOnly` (boolean) - Only include active categories
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Category tree retrieved successfully",
-  "data": [
-    {
-      "_id": "...",
-      "name": "Parent Category",
-      "slug": "parent-category",
-      "children": [
-        {
-          "_id": "...",
-          "name": "Child Category",
-          "slug": "child-category",
-          "children": [],
-          "depth": 1,
-          "path": "parent-category/child-category"
-        }
-      ],
-      "depth": 0,
-      "path": "parent-category"
-    }
-  ]
+	"success": true,
+	"message": "Category tree retrieved successfully",
+	"data": [
+		{
+			"_id": "...",
+			"name": "Parent Category",
+			"slug": "parent-category",
+			"children": [
+				{
+					"_id": "...",
+					"name": "Child Category",
+					"slug": "child-category",
+					"children": [],
+					"depth": 1,
+					"path": "parent-category/child-category"
+				}
+			],
+			"depth": 0,
+			"path": "parent-category"
+		}
+	]
 }
 ```
 
@@ -106,22 +110,23 @@ Query parameters:
 **GET** `/api/categories/:id`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Category retrieved successfully",
-  "data": {
-    "_id": "...",
-    "name": "Category Name",
-    "slug": "category-name",
-    "description": "...",
-    "parent": null,
-    "image": "https://...",
-    "order": 0,
-    "isActive": true,
-    "createdAt": "...",
-    "updatedAt": "..."
-  }
+	"success": true,
+	"message": "Category retrieved successfully",
+	"data": {
+		"_id": "...",
+		"name": "Category Name",
+		"slug": "category-name",
+		"description": "...",
+		"parent": null,
+		"image": "https://...",
+		"order": 0,
+		"isActive": true,
+		"createdAt": "...",
+		"updatedAt": "..."
+	}
 }
 ```
 
@@ -130,19 +135,21 @@ Query parameters:
 **POST** `/api/categories` (Auth Required)
 
 **Request Body:**
+
 ```json
 {
   "name": "Category Name",
-  "slug": "category-name",       // Optional, auto-generated from name
-  "description": "...",          // Optional
-  "parent": "parent_id",         // Optional, null for root
-  "image": "https://...",        // Optional
-  "order": 0,                    // Optional
-  "isActive": true               // Optional, default: true
+  "slug": "category-name",       console.logOptional, auto-generated from name
+  "description": "...",          console.logOptional
+  "parent": "parent_id",         console.logOptional, null for root
+  "image": "https://...",        console.logOptional
+  "order": 0,                    console.logOptional
+  "isActive": true               console.logOptional, default: true
 }
 ```
 
 **Response:** (201 Created)
+
 ```json
 {
   "success": true,
@@ -156,19 +163,21 @@ Query parameters:
 **PUT** `/api/categories/:id` (Auth Required)
 
 **Request Body:** (all fields optional)
+
 ```json
 {
-  "name": "Updated Name",
-  "slug": "updated-slug",
-  "description": "...",
-  "parent": "new_parent_id",
-  "image": "https://...",
-  "order": 1,
-  "isActive": false
+	"name": "Updated Name",
+	"slug": "updated-slug",
+	"description": "...",
+	"parent": "new_parent_id",
+	"image": "https://...",
+	"order": 1,
+	"isActive": false
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -182,7 +191,8 @@ Query parameters:
 **DELETE** `/api/categories/:id` (Auth Required)
 
 Query parameters:
-- `reparentChildren` (boolean) - If true, move children to deleted category's parent
+
+-  `reparentChildren` (boolean) - If true, move children to deleted category's parent
 
 **Response:** (204 No Content)
 
@@ -195,15 +205,17 @@ Query parameters:
 **GET** `/api/products`
 
 Query parameters:
-- `page` (number, default: 1)
-- `limit` (number, default: 10, max: 100)
-- `search` (string) - Full-text search
-- `category` (string) - Filter by category ID
-- `publishType` (string) - "publish" | "draft" | "private"
-- `visibility` (string) - "public" | "hidden"
-- `sort` (string) - "createdAt" | "-createdAt" | "title" | "-title" | "publishedAt" | "-publishedAt"
+
+-  `page` (number, default: 1)
+-  `limit` (number, default: 10, max: 100)
+-  `search` (string) - Full-text search
+-  `category` (string) - Filter by category ID
+-  `publishType` (string) - "publish" | "draft" | "private"
+-  `visibility` (string) - "public" | "hidden"
+-  `sort` (string) - "createdAt" | "-createdAt" | "title" | "-title" | "publishedAt" | "-publishedAt"
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -218,9 +230,10 @@ Query parameters:
 **GET** `/api/products/search`
 
 Query parameters:
-- `q` (string, required) - Search query (min 2 characters)
-- `page` (number)
-- `limit` (number)
+
+-  `q` (string, required) - Search query (min 2 characters)
+-  `page` (number)
+-  `limit` (number)
 
 Returns only published, public products.
 
@@ -229,15 +242,16 @@ Returns only published, public products.
 **GET** `/api/products/stats` (Auth Required)
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "total": 100,
-    "published": 75,
-    "draft": 20,
-    "private": 5
-  }
+	"success": true,
+	"data": {
+		"total": 100,
+		"published": 75,
+		"draft": 20,
+		"private": 5
+	}
 }
 ```
 
@@ -246,13 +260,14 @@ Returns only published, public products.
 **GET** `/api/products/tags`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "treatments": ["Treatment A", "Treatment B"],
-    "certifications": ["ISO 9001", "CE"]
-  }
+	"success": true,
+	"data": {
+		"treatments": ["Treatment A", "Treatment B"],
+		"certifications": ["ISO 9001", "CE"]
+	}
 }
 ```
 
@@ -261,51 +276,46 @@ Returns only published, public products.
 **GET** `/api/products/:id`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "_id": "...",
-    "title": "Product Title",
-    "slug": "product-title",
-    "description": "<p>Rich HTML content</p>",
-    "shortDescription": "...",
-    "productDescription": "<p>...</p>",
-    "benefits": ["Benefit 1", "Benefit 2"],
-    "certifications": ["ISO 9001"],
-    "treatments": ["Treatment A"],
-    "productImages": ["https://..."],
-    "overviewImage": "https://...",
-    "techSpecifications": [
-      { "title": "Weight", "description": "5kg" }
-    ],
-    "documentation": [
-      { "title": "User Manual", "url": "https://..." }
-    ],
-    "purchaseInfo": {
-      "title": "How to Order",
-      "description": "<p>...</p>"
-    },
-    "seo": {
-      "title": "SEO Title",
-      "description": "SEO Description",
-      "ogImage": "https://...",
-      "canonicalUrl": "https://...",
-      "noindex": false
-    },
-    "categories": [{ "_id": "...", "name": "...", "slug": "..." }],
-    "qa": [
-      { "question": "...", "answer": "...", "visible": true }
-    ],
-    "youtubeUrl": "https://youtube.com/...",
-    "rubric": "...",
-    "publishType": "publish",
-    "visibility": "public",
-    "lastEditedBy": { "_id": "...", "name": "...", "email": "..." },
-    "publishedAt": "...",
-    "createdAt": "...",
-    "updatedAt": "..."
-  }
+	"success": true,
+	"data": {
+		"_id": "...",
+		"title": "Product Title",
+		"slug": "product-title",
+		"description": "<p>Rich HTML content</p>",
+		"shortDescription": "...",
+		"productDescription": "<p>...</p>",
+		"benefits": ["Benefit 1", "Benefit 2"],
+		"certifications": ["ISO 9001"],
+		"treatments": ["Treatment A"],
+		"productImages": ["https://..."],
+		"overviewImage": "https://...",
+		"techSpecifications": [{ "title": "Weight", "description": "5kg" }],
+		"documentation": [{ "title": "User Manual", "url": "https://..." }],
+		"purchaseInfo": {
+			"title": "How to Order",
+			"description": "<p>...</p>"
+		},
+		"seo": {
+			"title": "SEO Title",
+			"description": "SEO Description",
+			"ogImage": "https://...",
+			"canonicalUrl": "https://...",
+			"noindex": false
+		},
+		"categories": [{ "_id": "...", "name": "...", "slug": "..." }],
+		"qa": [{ "question": "...", "answer": "...", "visible": true }],
+		"youtubeUrl": "https://youtube.com/...",
+		"rubric": "...",
+		"publishType": "publish",
+		"visibility": "public",
+		"lastEditedBy": { "_id": "...", "name": "...", "email": "..." },
+		"publishedAt": "...",
+		"createdAt": "...",
+		"updatedAt": "..."
+	}
 }
 ```
 
@@ -316,10 +326,11 @@ Returns only published, public products.
 Creates a new product (defaults to draft).
 
 **Request Body:**
+
 ```json
 {
-  "title": "Product Title",        // Required
-  "slug": "product-slug",          // Optional, auto-generated
+  "title": "Product Title",        console.logRequired
+  "slug": "product-slug",          console.logOptional, auto-generated
   "description": "<p>...</p>",
   "shortDescription": "...",
   "productDescription": "<p>...</p>",
@@ -362,6 +373,7 @@ Creates a new product (defaults to draft).
 Validates the product and publishes if all validation passes.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -376,13 +388,18 @@ Validates the product and publishes if all validation passes.
 ```
 
 **Error Response (Validation Failed):**
+
 ```json
 {
-  "success": false,
-  "message": "Product cannot be published due to validation errors",
-  "errors": [
-    { "field": "productImages", "message": "At least one product image is required", "type": "error" }
-  ]
+	"success": false,
+	"message": "Product cannot be published due to validation errors",
+	"errors": [
+		{
+			"field": "productImages",
+			"message": "At least one product image is required",
+			"type": "error"
+		}
+	]
 }
 ```
 
@@ -399,6 +416,7 @@ Sets product status back to draft.
 Preview validation results without publishing.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -418,11 +436,12 @@ Preview validation results without publishing.
 Creates a copy of the product as a draft.
 
 **Response:** (201 Created)
+
 ```json
 {
   "success": true,
   "message": "Product duplicated successfully",
-  "data": { ... }  // New product
+  "data": { ... }  console.logNew product
 }
 ```
 
@@ -431,22 +450,25 @@ Creates a copy of the product as a draft.
 ## Validation Rules
 
 ### Draft Validation (Minimal)
-- `title` is required
+
+-  `title` is required
 
 ### Publish Validation (Strict)
 
 **Required (Errors):**
-- `title` - Non-empty string
-- `slug` - Valid URL-safe format
-- `description` - Non-empty
-- `productImages` - At least one valid URL
-- `techSpecifications[].title` and `.description` - Required if array has items
-- `documentation[].title` and `.url` - Required if array has items, URL must be valid
-- `qa[].question` and `.answer` - Required if array has items
+
+-  `title` - Non-empty string
+-  `slug` - Valid URL-safe format
+-  `description` - Non-empty
+-  `productImages` - At least one valid URL
+-  `techSpecifications[].title` and `.description` - Required if array has items
+-  `documentation[].title` and `.url` - Required if array has items, URL must be valid
+-  `qa[].question` and `.answer` - Required if array has items
 
 **Recommended (Warnings):**
-- `seo.title` - Recommended for search visibility
-- `seo.description` - Recommended for search visibility
+
+-  `seo.title` - Recommended for search visibility
+-  `seo.description` - Recommended for search visibility
 
 ---
 
@@ -456,16 +478,16 @@ Creates a copy of the product as a draft.
 
 ```typescript
 interface ICategory {
-  _id: ObjectId;
-  name: string;
-  slug: string;
-  description?: string;
-  parent: ObjectId | null;
-  image?: string;
-  order: number;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+	_id: ObjectId;
+	name: string;
+	slug: string;
+	description?: string;
+	parent: ObjectId | null;
+	image?: string;
+	order: number;
+	isActive: boolean;
+	createdAt: Date;
+	updatedAt: Date;
 }
 ```
 
@@ -476,9 +498,9 @@ interface IProduct {
   _id: ObjectId;
   title: string;
   slug: string;
-  description: string;                    // Rich HTML
+  description: string;                    console.logRich HTML
   shortDescription?: string;
-  productDescription?: string;            // Rich HTML
+  productDescription?: string;            console.logRich HTML
   benefits: string[];
   certifications: string[];
   treatments: string[];
@@ -505,27 +527,27 @@ interface IProduct {
 
 ## Error Codes
 
-| Status | Meaning |
-|--------|---------|
-| 200 | Success |
-| 201 | Created |
-| 204 | No Content (successful delete) |
-| 400 | Bad Request (validation error, invalid ID) |
-| 401 | Unauthorized (not logged in) |
-| 404 | Not Found |
-| 409 | Conflict (duplicate slug) |
-| 422 | Unprocessable Entity (publish validation failed) |
-| 500 | Internal Server Error |
+| Status | Meaning                                          |
+| ------ | ------------------------------------------------ |
+| 200    | Success                                          |
+| 201    | Created                                          |
+| 204    | No Content (successful delete)                   |
+| 400    | Bad Request (validation error, invalid ID)       |
+| 401    | Unauthorized (not logged in)                     |
+| 404    | Not Found                                        |
+| 409    | Conflict (duplicate slug)                        |
+| 422    | Unprocessable Entity (publish validation failed) |
+| 500    | Internal Server Error                            |
 
 ---
 
 ## Admin UI Routes
 
-| Route | Description |
-|-------|-------------|
-| `/dashboard/products` | Products list with stats and filters |
-| `/dashboard/products/new` | Create new product |
-| `/dashboard/products/:id` | Edit product |
-| `/dashboard/categories` | Categories tree view |
-| `/dashboard/categories/new` | Create new category |
-| `/dashboard/categories/:id` | Edit category |
+| Route                       | Description                          |
+| --------------------------- | ------------------------------------ |
+| `/dashboard/products`       | Products list with stats and filters |
+| `/dashboard/products/new`   | Create new product                   |
+| `/dashboard/products/:id`   | Edit product                         |
+| `/dashboard/categories`     | Categories tree view                 |
+| `/dashboard/categories/new` | Create new category                  |
+| `/dashboard/categories/:id` | Edit category                        |

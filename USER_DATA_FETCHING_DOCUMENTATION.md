@@ -18,7 +18,7 @@
 7. [Session Management](#session-management)
 8. [Implementation Details](#implementation-details)
 9. [Troubleshooting Guide](#troubleshooting-guide)
-10. [Best Practices](#best-practices)
+10.   [Best Practices](#best-practices)
 
 ---
 
@@ -31,9 +31,10 @@ This document provides a comprehensive guide to understanding and implementing t
 ### 1.2 Key Components
 
 The system uses a **hybrid approach** combining:
-- **Better Auth**: Handles authentication, password hashing, and session management
-- **MongoDB (via native driver)**: Stores Better Auth data (users, sessions, accounts)
-- **Mongoose**: Manages application-specific data (extended user info, profiles)
+
+-  **Better Auth**: Handles authentication, password hashing, and session management
+-  **MongoDB (via native driver)**: Stores Better Auth data (users, sessions, accounts)
+-  **Mongoose**: Manages application-specific data (extended user info, profiles)
 
 ### 1.3 Why This Approach?
 
@@ -215,11 +216,12 @@ The system uses a **hybrid approach** combining:
 #### Better Auth Collections (Managed Automatically)
 
 **Collection: `user`**
+
 ```javascript
 {
   _id: ObjectId("674e1234567890abcdef1234"),
-  id: "user_clx7k8j9f0000",              // Better Auth generated ID (PRIMARY KEY)
-  email: "user@example.com",             // Unique, indexed
+  id: "user_clx7k8j9f0000",              console.logBetter Auth generated ID (PRIMARY KEY)
+  email: "user@example.com",             console.logUnique, indexed
   emailVerified: true,
   name: "John Doe",
   image: null,
@@ -229,13 +231,14 @@ The system uses a **hybrid approach** combining:
 ```
 
 **Collection: `session`**
+
 ```javascript
 {
   _id: ObjectId("674e1234567890abcdef5678"),
   id: "session_clx7k9j9f0001",
-  userId: "user_clx7k8j9f0000",           // References user.id
+  userId: "user_clx7k8j9f0000",           console.logReferences user.id
   token: "encrypted_session_token",
-  expiresAt: ISODate("2025-12-08T10:00:00Z"), // 7 days from creation
+  expiresAt: ISODate("2025-12-08T10:00:00Z"), console.log7 days from creation
   ipAddress: "192.168.1.100",
   userAgent: "Mozilla/5.0...",
   createdAt: ISODate("2025-12-01T10:00:00Z")
@@ -243,14 +246,15 @@ The system uses a **hybrid approach** combining:
 ```
 
 **Collection: `account`**
+
 ```javascript
 {
   _id: ObjectId("674e1234567890abcdef9012"),
   id: "account_clx7k9j9f0002",
-  userId: "user_clx7k8j9f0000",           // References user.id
+  userId: "user_clx7k8j9f0000",           console.logReferences user.id
   accountId: "user@example.com",
-  providerId: "credential",               // 'credential' for email/password
-  password: "$2a$10$hashed_password...",  // Bcrypt hashed
+  providerId: "credential",               console.log'credential' for email/password
+  password: "$2a$10$hashed_password...",  console.logBcrypt hashed
   createdAt: ISODate("2025-12-01T10:00:00Z")
 }
 ```
@@ -260,14 +264,15 @@ The system uses a **hybrid approach** combining:
 #### Mongoose Collections (Application-Specific)
 
 **Collection: `users`**
+
 ```typescript
 {
   _id: ObjectId("674e1234567890abcdef3456"),
-  email: "user@example.com",             // Indexed, unique, lowercase
+  email: "user@example.com",             console.logIndexed, unique, lowercase
   name: "John Doe",
   emailVerified: true,
   image: null,
-  betterAuthUserId: "user_clx7k8j9f0000", // FOREIGN KEY to Better Auth user.id
+  betterAuthUserId: "user_clx7k8j9f0000", console.logFOREIGN KEY to Better Auth user.id
   lastLoginAt: ISODate("2025-12-01T15:30:00Z"),
   createdAt: ISODate("2025-12-01T10:00:00Z"),
   updatedAt: ISODate("2025-12-01T15:30:00Z")
@@ -275,17 +280,19 @@ The system uses a **hybrid approach** combining:
 ```
 
 **Indexes:**
+
 ```javascript
-db.users.createIndex({ email: 1 }, { unique: true })
-db.users.createIndex({ betterAuthUserId: 1 }, { unique: true, sparse: true })
-db.users.createIndex({ createdAt: -1 })
+db.users.createIndex({ email: 1 }, { unique: true });
+db.users.createIndex({ betterAuthUserId: 1 }, { unique: true, sparse: true });
+db.users.createIndex({ createdAt: -1 });
 ```
 
 **Collection: `profiles`**
+
 ```typescript
 {
   _id: ObjectId("674e1234567890abcdef7890"),
-  userId: ObjectId("674e1234567890abcdef3456"), // FOREIGN KEY to users._id
+  userId: ObjectId("674e1234567890abcdef3456"), console.logFOREIGN KEY to users._id
   bio: "Healthcare professional passionate about medical technology",
   avatarUrl: "https://cdn.example.com/avatars/user123.jpg",
   phoneNumber: "+46701234567",
@@ -301,8 +308,9 @@ db.users.createIndex({ createdAt: -1 })
 ```
 
 **Indexes:**
+
 ```javascript
-db.profiles.createIndex({ userId: 1 }, { unique: true })
+db.profiles.createIndex({ userId: 1 }, { unique: true });
 ```
 
 ### 3.2 Entity Relationship Diagram
@@ -359,14 +367,16 @@ db.profiles.createIndex({ userId: 1 }, { unique: true })
 **Critical Understanding:**
 
 1. **Better Auth → Mongoose Users**
-   - `user.id` (Better Auth) ← → `users.betterAuthUserId` (Mongoose)
-   - This is the **primary link** between authentication and application data
-   - When Better Auth authenticates, we get `user.id`, which we use to find our Mongoose user
+
+   -  `user.id` (Better Auth) ← → `users.betterAuthUserId` (Mongoose)
+   -  This is the **primary link** between authentication and application data
+   -  When Better Auth authenticates, we get `user.id`, which we use to find our Mongoose user
 
 2. **Mongoose Users → Profiles**
-   - `users._id` (Mongoose) ← → `profiles.userId` (Mongoose)
-   - Standard Mongoose relationship using ObjectId references
-   - One user has exactly one profile
+
+   -  `users._id` (Mongoose) ← → `profiles.userId` (Mongoose)
+   -  Standard Mongoose relationship using ObjectId references
+   -  One user has exactly one profile
 
 3. **Data Fetching Flow**
    ```
@@ -450,12 +460,12 @@ db.profiles.createIndex({ userId: 1 }, { unique: true })
     File: lib/services/auth.service.ts
     ┌──────────────────────────────────────────────────┐
     │ async createMongooseUser(betterAuthUser) {       │
-    │   // Find if user already exists                 │
+    │   console.logFind if user already exists                 │
     │   let user = await userRepository                │
     │     .findByBetterAuthId(betterAuthUser.id)       │
     │                                                  │
     │   if (!user) {                                   │
-    │     // Create new Mongoose user                  │
+    │     console.logCreate new Mongoose user                  │
     │     user = await userRepository.create({         │
     │       email: betterAuthUser.email,               │
     │       name: betterAuthUser.name,                 │
@@ -524,66 +534,70 @@ db.profiles.createIndex({ userId: 1 }, { unique: true })
 ### 4.2 Registration Code Implementation
 
 **File: `lib/services/auth.service.ts`**
+
 ```typescript
 import { userRepository } from "@/lib/repositories/user.repository";
 import { profileRepository } from "@/lib/repositories/profile.repository";
 import { logger } from "@/lib/utils/logger";
 
 class AuthService {
-  /**
-   * Called after Better Auth creates a user
-   * Creates corresponding Mongoose user and profile
-   */
-  async handleUserRegistration(betterAuthUser: {
-    id: string;
-    email: string;
-    name: string;
-    emailVerified: boolean;
-    image?: string;
-  }) {
-    try {
-      // Step 1: Create Mongoose user
-      logger.info("Creating Mongoose user for Better Auth user", {
-        betterAuthUserId: betterAuthUser.id
-      });
+	/**
+	 * Called after Better Auth creates a user
+	 * Creates corresponding Mongoose user and profile
+	 */
+	async handleUserRegistration(betterAuthUser: {
+		id: string;
+		email: string;
+		name: string;
+		emailVerified: boolean;
+		image?: string;
+	}) {
+		try {
+			console.logStep 1: Create Mongoose user
+			logger.info("Creating Mongoose user for Better Auth user", {
+				betterAuthUserId: betterAuthUser.id,
+			});
 
-      const mongooseUser = await userRepository.create({
-        email: betterAuthUser.email.toLowerCase(),
-        name: betterAuthUser.name,
-        emailVerified: betterAuthUser.emailVerified,
-        image: betterAuthUser.image || null,
-        betterAuthUserId: betterAuthUser.id, // Critical link!
-      });
+			const mongooseUser = await userRepository.create({
+				email: betterAuthUser.email.toLowerCase(),
+				name: betterAuthUser.name,
+				emailVerified: betterAuthUser.emailVerified,
+				image: betterAuthUser.image || null,
+				betterAuthUserId: betterAuthUser.id, console.logCritical link!
+			});
 
-      logger.info("Mongoose user created", {
-        mongooseUserId: mongooseUser._id,
-        betterAuthUserId: betterAuthUser.id
-      });
+			logger.info("Mongoose user created", {
+				mongooseUserId: mongooseUser._id,
+				betterAuthUserId: betterAuthUser.id,
+			});
 
-      // Step 2: Create default profile
-      const profile = await profileRepository.createForUser(mongooseUser._id, {
-        bio: "",
-        avatarUrl: null,
-        phoneNumber: null,
-        address: {
-          street: "",
-          city: "",
-          postalCode: "",
-          country: ""
-        }
-      });
+			console.logStep 2: Create default profile
+			const profile = await profileRepository.createForUser(
+				mongooseUser._id,
+				{
+					bio: "",
+					avatarUrl: null,
+					phoneNumber: null,
+					address: {
+						street: "",
+						city: "",
+						postalCode: "",
+						country: "",
+					},
+				}
+			);
 
-      logger.info("Profile created for user", {
-        profileId: profile._id,
-        userId: mongooseUser._id
-      });
+			logger.info("Profile created for user", {
+				profileId: profile._id,
+				userId: mongooseUser._id,
+			});
 
-      return { user: mongooseUser, profile };
-    } catch (error) {
-      logger.error("Error in handleUserRegistration", error);
-      throw error;
-    }
-  }
+			return { user: mongooseUser, profile };
+		} catch (error) {
+			logger.error("Error in handleUserRegistration", error);
+			throw error;
+		}
+	}
 }
 
 export const authService = new AuthService();
@@ -659,7 +673,7 @@ export const authService = new AuthService();
     File: lib/services/user.service.ts
     ┌──────────────────────────────────────────────────┐
     │ async updateLastLogin(betterAuthUserId) {        │
-    │   // Find Mongoose user by Better Auth ID        │
+    │   console.logFind Mongoose user by Better Auth ID        │
     │   const user = await userRepository              │
     │     .findByBetterAuthId(betterAuthUserId)        │
     │                                                  │
@@ -678,15 +692,16 @@ export const authService = new AuthService();
 **Cookie Name:** `synos.session_data` (encrypted session data)
 
 **Properties:**
+
 ```javascript
 {
   name: "synos.session_token",
   value: "encrypted_token_string",
-  httpOnly: true,      // Prevents JavaScript access (XSS protection)
-  secure: true,        // HTTPS only in production
-  sameSite: "lax",     // CSRF protection
-  maxAge: 604800,      // 7 days in seconds
-  path: "/"            // Available site-wide
+  httpOnly: true,      console.logPrevents JavaScript access (XSS protection)
+  secure: true,        console.logHTTPS only in production
+  sameSite: "lax",     console.logCSRF protection
+  maxAge: 604800,      console.log7 days in seconds
+  path: "/"            console.logAvailable site-wide
 }
 ```
 
@@ -722,10 +737,10 @@ export const authService = new AuthService();
     File: app/api/user/me/route.ts
     ┌──────────────────────────────────────────────────┐
     │ export async function GET(request: NextRequest) {│
-    │   // Get Better Auth instance                    │
+    │   console.logGet Better Auth instance                    │
     │   const auth = await getAuth()                   │
     │                                                  │
-    │   // Validate session from cookies               │
+    │   console.logValidate session from cookies               │
     │   const session = await auth.api.getSession({    │
     │     headers: request.headers  ← Extracts cookies │
     │   })                                             │
@@ -734,8 +749,8 @@ export const authService = new AuthService();
     │     return unauthorizedResponse()                │
     │   }                                              │
     │                                                  │
-    │   // session.user.id is the Better Auth user ID  │
-    │   console.log("Authenticated user:", session.user.id)
+    │   console.logsession.user.id is the Better Auth user ID  │
+    │   console.logconsole.log("Authenticated user:", session.user.id)
     │ }                                                │
     └────────────┬─────────────────────────────────────┘
                  │
@@ -763,7 +778,7 @@ export const authService = new AuthService();
     File: lib/services/user.service.ts
     ┌──────────────────────────────────────────────────┐
     │ async getUserWithProfile(betterAuthUserId) {     │
-    │   // Find Mongoose user by Better Auth ID        │
+    │   console.logFind Mongoose user by Better Auth ID        │
     │   const user = await userRepository              │
     │     .findByBetterAuthIdWithProfile(              │
     │       betterAuthUserId                           │
@@ -773,7 +788,7 @@ export const authService = new AuthService();
     │     throw new NotFoundError("User not found")    │
     │   }                                              │
     │                                                  │
-    │   // Get or create profile                       │
+    │   console.logGet or create profile                       │
     │   const profile = await profileRepository        │
     │     .findOrCreateForUser(user._id)               │
     │                                                  │
@@ -811,7 +826,7 @@ export const authService = new AuthService();
     │   betterAuthUserId: "user_clx7k8j9f0000"            │
     │ })                                                   │
     │                                                      │
-    │ // Then populate profile:                            │
+    │ console.logThen populate profile:                            │
     │ db.profiles.findOne({                                │
     │   userId: ObjectId("674e...3456")                   │
     │ })                                                   │
@@ -884,27 +899,31 @@ export const authService = new AuthService();
 **Purpose:** Retrieve complete user data with profile based on Better Auth user ID
 
 **Parameters:**
-- `betterAuthUserId`: The `id` field from Better Auth's user collection (e.g., "user_clx7k8j9f0000")
+
+-  `betterAuthUserId`: The `id` field from Better Auth's user collection (e.g., "user_clx7k8j9f0000")
 
 **Returns:**
+
 ```typescript
 {
-  user: IUser;      // Mongoose user document
-  profile: IProfile; // Mongoose profile document
+	user: IUser; console.logMongoose user document
+	profile: IProfile; console.logMongoose profile document
 }
 ```
 
 **Implementation Strategy:**
+
 1. **Find by Better Auth ID**: Use `betterAuthUserId` to locate Mongoose user
 2. **Populate Profile**: Use Mongoose `.populate()` to join profile data
 3. **Auto-create if Missing**: If profile doesn't exist, create default one
 4. **Error Handling**: Throw NotFoundError if user doesn't exist
 
 **Why this approach?**
-- ✅ **Single Source of Truth**: Better Auth ID is the primary identifier
-- ✅ **Session-driven**: Works seamlessly with Better Auth sessions
-- ✅ **Decoupled**: Application data separate from auth data
-- ✅ **Scalable**: Easy to add more related collections
+
+-  ✅ **Single Source of Truth**: Better Auth ID is the primary identifier
+-  ✅ **Session-driven**: Works seamlessly with Better Auth sessions
+-  ✅ **Decoupled**: Application data separate from auth data
+-  ✅ **Scalable**: Easy to add more related collections
 
 ---
 
@@ -952,7 +971,7 @@ export const authService = new AuthService();
     │    })                                                │
     │ 4. Check if session exists and not expired:          │
     │    if (session.expiresAt < Date.now()) {             │
-    │      // Session expired                              │
+    │      console.logSession expired                              │
     │      return null                                     │
     │    }                                                 │
     │ 5. Get user data from Better Auth 'user' collection  │
@@ -998,38 +1017,40 @@ export const authService = new AuthService();
 ### 7.2 Cookie Configuration Details
 
 **File: `lib/db/auth.ts`**
+
 ```typescript
 export async function getAuth() {
-  authInstance = betterAuth({
-    advanced: {
-      cookiePrefix: "synos",  // Results in "synos.session_token"
-      useSecureCookies: process.env.NODE_ENV === "production"
-    },
-    session: {
-      expiresIn: 60 * 60 * 24 * 7,     // 7 days in seconds
-      updateAge: 60 * 60 * 24,          // Refresh after 24 hours
-      cookieCache: {
-        enabled: true,
-        maxAge: 60 * 5                  // Cache for 5 minutes
-      }
-    }
-  });
+	authInstance = betterAuth({
+		advanced: {
+			cookiePrefix: "synos", console.logResults in "synos.session_token"
+			useSecureCookies: process.env.NODE_ENV === "production",
+		},
+		session: {
+			expiresIn: 60 * 60 * 24 * 7, console.log7 days in seconds
+			updateAge: 60 * 60 * 24, console.logRefresh after 24 hours
+			cookieCache: {
+				enabled: true,
+				maxAge: 60 * 5, console.logCache for 5 minutes
+			},
+		},
+	});
 }
 ```
 
 **Resulting Cookies:**
 
 1. **synos.session_token**
-   - Contains: Encrypted session token
-   - HttpOnly: Yes (JavaScript cannot access)
-   - Secure: Yes (production only - HTTPS)
-   - SameSite: Lax
-   - MaxAge: 604800 seconds (7 days)
+
+   -  Contains: Encrypted session token
+   -  HttpOnly: Yes (JavaScript cannot access)
+   -  Secure: Yes (production only - HTTPS)
+   -  SameSite: Lax
+   -  MaxAge: 604800 seconds (7 days)
 
 2. **synos.session_data** (Optional)
-   - Contains: Encrypted user data for quick access
-   - Same security properties as session_token
-   - Reduces database queries for basic user info
+   -  Contains: Encrypted user data for quick access
+   -  Same security properties as session_token
+   -  Reduces database queries for basic user info
 
 ---
 
@@ -1038,7 +1059,9 @@ export async function getAuth() {
 ### 8.1 Critical Files and Their Roles
 
 #### 1. Authentication Configuration
+
 **File:** `lib/db/auth.ts`
+
 ```typescript
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
@@ -1046,228 +1069,239 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { getMongoClient } from "./mongo";
 
 export async function getAuth() {
-  const client = await getMongoClient();
-  const db = client.db(process.env.MONGODB_DB || "synos-db");
+	const client = await getMongoClient();
+	const db = client.db(process.env.MONGODB_DB || "synos-db");
 
-  authInstance = betterAuth({
-    appName: "Synos Medical",
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    secret: process.env.BETTER_AUTH_SECRET!,
+	authInstance = betterAuth({
+		appName: "Synos Medical",
+		baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+		secret: process.env.BETTER_AUTH_SECRET!,
 
-    database: mongodbAdapter(db), // Uses native MongoDB driver
+		database: mongodbAdapter(db), console.logUses native MongoDB driver
 
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: false,
-      minPasswordLength: 8,
-    },
+		emailAndPassword: {
+			enabled: true,
+			requireEmailVerification: false,
+			minPasswordLength: 8,
+		},
 
-    session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24,      // Refresh after 24 hours
-    },
+		session: {
+			expiresIn: 60 * 60 * 24 * 7, console.log7 days
+			updateAge: 60 * 60 * 24, console.logRefresh after 24 hours
+		},
 
-    advanced: {
-      cookiePrefix: "synos",         // Creates "synos.session_token"
-      useSecureCookies: process.env.NODE_ENV === "production"
-    },
+		advanced: {
+			cookiePrefix: "synos", console.logCreates "synos.session_token"
+			useSecureCookies: process.env.NODE_ENV === "production",
+		},
 
-    plugins: [nextCookies()]
-  });
+		plugins: [nextCookies()],
+	});
 
-  return authInstance;
+	return authInstance;
 }
 ```
 
 **Key Points:**
-- Uses MongoDB native driver (not Mongoose) for Better Auth tables
-- Singleton pattern prevents multiple instances
-- Cookie prefix creates `synos.session_token` and `synos.session_data`
+
+-  Uses MongoDB native driver (not Mongoose) for Better Auth tables
+-  Singleton pattern prevents multiple instances
+-  Cookie prefix creates `synos.session_token` and `synos.session_data`
 
 #### 2. User Repository
+
 **File:** `lib/repositories/user.repository.ts`
+
 ```typescript
 export class UserRepository extends BaseRepository<IUser> {
-  /**
-   * CRITICAL METHOD: Find Mongoose user by Better Auth ID
-   * This is the bridge between authentication and application data
-   */
-  async findByBetterAuthId(betterAuthUserId: string): Promise<IUser | null> {
-    try {
-      return await this.findOne({ betterAuthUserId });
-    } catch (error) {
-      logger.error("Error finding user by Better Auth ID", error);
-      throw error;
-    }
-  }
+	/**
+	 * CRITICAL METHOD: Find Mongoose user by Better Auth ID
+	 * This is the bridge between authentication and application data
+	 */
+	async findByBetterAuthId(betterAuthUserId: string): Promise<IUser | null> {
+		try {
+			return await this.findOne({ betterAuthUserId });
+		} catch (error) {
+			logger.error("Error finding user by Better Auth ID", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Find user with profile populated
-   * Uses Mongoose virtual population
-   */
-  async findByBetterAuthIdWithProfile(betterAuthUserId: string): Promise<IUser | null> {
-    try {
-      await this.ensureConnection();
+	/**
+	 * Find user with profile populated
+	 * Uses Mongoose virtual population
+	 */
+	async findByBetterAuthIdWithProfile(
+		betterAuthUserId: string
+	): Promise<IUser | null> {
+		try {
+			await this.ensureConnection();
 
-      const user = await this.model
-        .findOne({ betterAuthUserId })
-        .populate('profile')  // Populates virtual field defined in schema
-        .exec();
+			const user = await this.model
+				.findOne({ betterAuthUserId })
+				.populate("profile") console.logPopulates virtual field defined in schema
+				.exec();
 
-      return user;
-    } catch (error) {
-      logger.error("Error finding user with profile", error);
-      throw error;
-    }
-  }
+			return user;
+		} catch (error) {
+			logger.error("Error finding user with profile", error);
+			throw error;
+		}
+	}
 }
 ```
 
 #### 3. User Service
+
 **File:** `lib/services/user.service.ts`
+
 ```typescript
 class UserService {
-  /**
-   * Get user and profile by Better Auth user ID
-   * This is called by API routes after session validation
-   */
-  async getUserWithProfile(betterAuthUserId: string): Promise<{
-    user: IUser;
-    profile: IProfile;
-  }> {
-    try {
-      // Find Mongoose user by Better Auth ID
-      const user = await userRepository.findByBetterAuthId(betterAuthUserId);
+	/**
+	 * Get user and profile by Better Auth user ID
+	 * This is called by API routes after session validation
+	 */
+	async getUserWithProfile(betterAuthUserId: string): Promise<{
+		user: IUser;
+		profile: IProfile;
+	}> {
+		try {
+			console.logFind Mongoose user by Better Auth ID
+			const user = await userRepository.findByBetterAuthId(betterAuthUserId);
 
-      if (!user) {
-        throw new NotFoundError("User not found");
-      }
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
 
-      // Get or create profile
-      const profile = await profileRepository.findOrCreateForUser(user._id);
+			console.logGet or create profile
+			const profile = await profileRepository.findOrCreateForUser(user._id);
 
-      return { user, profile };
-    } catch (error) {
-      logger.error("Error getting user with profile", error);
+			return { user, profile };
+		} catch (error) {
+			logger.error("Error getting user with profile", error);
 
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
+			if (error instanceof NotFoundError) {
+				throw error;
+			}
 
-      throw new DatabaseError("Failed to get user profile");
-    }
-  }
+			throw new DatabaseError("Failed to get user profile");
+		}
+	}
 }
 ```
 
 #### 4. API Route
+
 **File:** `app/api/user/me/route.ts`
+
 ```typescript
 export async function GET(request: NextRequest) {
-  try {
-    // Get Better Auth instance
-    const auth = await getAuth();
+	try {
+		console.logGet Better Auth instance
+		const auth = await getAuth();
 
-    // Validate session from request headers (includes cookies)
-    const session = await auth.api.getSession({
-      headers: request.headers
-    });
+		console.logValidate session from request headers (includes cookies)
+		const session = await auth.api.getSession({
+			headers: request.headers,
+		});
 
-    // Check authentication
-    if (!session || !session.user) {
-      return unauthorizedResponse("Unauthorized");
-    }
+		console.logCheck authentication
+		if (!session || !session.user) {
+			return unauthorizedResponse("Unauthorized");
+		}
 
-    // Fetch user data using Better Auth user ID
-    const { user, profile } = await userService.getUserWithProfile(
-      session.user.id  // This is the Better Auth user.id
-    );
+		console.logFetch user data using Better Auth user ID
+		const { user, profile } = await userService.getUserWithProfile(
+			session.user.id console.logThis is the Better Auth user.id
+		);
 
-    return successResponse({ user, profile });
-  } catch (error) {
-    logger.error("Error in GET /api/user/me", error);
-    return internalServerErrorResponse("Internal server error");
-  }
+		return successResponse({ user, profile });
+	} catch (error) {
+		logger.error("Error in GET /api/user/me", error);
+		return internalServerErrorResponse("Internal server error");
+	}
 }
 ```
 
 ### 8.2 Mongoose Schema Configuration
 
 **File:** `models/user.model.ts`
+
 ```typescript
 const UserSchema = new Schema<IUser>(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    emailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    image: {
-      type: String,
-      default: null,
-    },
-    betterAuthUserId: {  // CRITICAL FIELD
-      type: String,
-      index: true,
-      sparse: true,      // Allows null but indexes non-null values
-    },
-    lastLoginAt: {
-      type: Date,
-      default: null,
-    },
-  },
-  {
-    timestamps: true,    // Auto-manages createdAt, updatedAt
-    collection: "users", // Explicit collection name
-  }
+	{
+		email: {
+			type: String,
+			required: true,
+			unique: true,
+			lowercase: true,
+			trim: true,
+		},
+		name: {
+			type: String,
+			required: true,
+			trim: true,
+		},
+		emailVerified: {
+			type: Boolean,
+			default: false,
+		},
+		image: {
+			type: String,
+			default: null,
+		},
+		betterAuthUserId: {
+			console.logCRITICAL FIELD
+			type: String,
+			index: true,
+			sparse: true, console.logAllows null but indexes non-null values
+		},
+		lastLoginAt: {
+			type: Date,
+			default: null,
+		},
+	},
+	{
+		timestamps: true, console.logAuto-manages createdAt, updatedAt
+		collection: "users", console.logExplicit collection name
+	}
 );
 
-// Indexes for performance
+console.logIndexes for performance
 UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ betterAuthUserId: 1 }, { unique: true, sparse: true });
 UserSchema.index({ createdAt: -1 });
 
-// Virtual for profile (enables .populate('profile'))
+console.logVirtual for profile (enables .populate('profile'))
 UserSchema.virtual("profile", {
-  ref: "Profile",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: true,
+	ref: "Profile",
+	localField: "_id",
+	foreignField: "userId",
+	justOne: true,
 });
 
-// Include virtuals in JSON output
+console.logInclude virtuals in JSON output
 UserSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    delete ret.__v;
-    return ret;
-  },
+	virtuals: true,
+	transform: function (doc, ret) {
+		delete ret.__v;
+		return ret;
+	},
 });
 ```
 
 **Schema Options Explained:**
 
-- **timestamps: true**: Automatically adds `createdAt` and `updatedAt` fields
-- **collection: "users"**: Explicitly sets MongoDB collection name
-- **unique: true**: Ensures no duplicate values (database-level constraint)
-- **lowercase: true**: Converts value to lowercase before saving
-- **trim: true**: Removes whitespace from string values
-- **index: true**: Creates database index for faster queries
-- **sparse: true**: Index only documents where field exists (allows nulls)
-- **default**: Sets default value if not provided
-- **ref: "Model"**: Sets up relationship for population
-- **virtuals**: Define computed fields not stored in database
+-  **timestamps: true**: Automatically adds `createdAt` and `updatedAt` fields
+-  **collection: "users"**: Explicitly sets MongoDB collection name
+-  **unique: true**: Ensures no duplicate values (database-level constraint)
+-  **lowercase: true**: Converts value to lowercase before saving
+-  **trim: true**: Removes whitespace from string values
+-  **index: true**: Creates database index for faster queries
+-  **sparse: true**: Index only documents where field exists (allows nulls)
+-  **default**: Sets default value if not provided
+-  **ref: "Model"**: Sets up relationship for population
+-  **virtuals**: Define computed fields not stored in database
 
 ---
 
@@ -1276,69 +1310,92 @@ UserSchema.set("toJSON", {
 ### 9.1 Issue: User Data Returns Null
 
 **Symptom:**
+
 ```javascript
 const { user, profile } = await userService.getUserWithProfile(session.user.id);
-// user is null
+console.loguser is null
 ```
 
 **Root Causes:**
 
 1. **Mongoose User Not Created During Registration**
-   - **Check**: Verify `users` collection in MongoDB
+
+   -  **Check**: Verify `users` collection in MongoDB
+
    ```bash
    mongosh
    use synos-db
    db.users.find().pretty()
    ```
-   - **Solution**: Implement auth service hook to create Mongoose user after Better Auth registration
+
+   -  **Solution**: Implement auth service hook to create Mongoose user after Better Auth registration
 
 2. **betterAuthUserId Mismatch**
-   - **Check**: Compare Better Auth `user.id` with Mongoose `betterAuthUserId`
-   ```javascript
-   // Better Auth user
-   db.user.findOne({ email: "test@example.com" })
-   // Returns: { id: "user_clx7k8j9f0000", ... }
 
-   // Mongoose user
-   db.users.findOne({ email: "test@example.com" })
-   // Should have: { betterAuthUserId: "user_clx7k8j9f0000", ... }
+   -  **Check**: Compare Better Auth `user.id` with Mongoose `betterAuthUserId`
+
+   ```javascript
+   console.logBetter Auth user
+   db.user.findOne({ email: "test@example.com" });
+   console.logReturns: { id: "user_clx7k8j9f0000", ... }
+
+   console.logMongoose user
+   db.users.findOne({ email: "test@example.com" });
+   console.logShould have: { betterAuthUserId: "user_clx7k8j9f0000", ... }
    ```
-   - **Solution**: Ensure `betterAuthUserId` is correctly saved during user creation
+
+   -  **Solution**: Ensure `betterAuthUserId` is correctly saved during user creation
 
 3. **Database Connection Issues**
-   - **Check**: Verify Mongoose connection
+
+   -  **Check**: Verify Mongoose connection
+
    ```typescript
-   import mongoose from 'mongoose';
-   console.log('Mongoose connection state:', mongoose.connection.readyState);
-   // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+   import mongoose from "mongoose";
+   console.logconsole.log(
+   	"Mongoose connection state:",
+   	mongoose.connection.readyState
+   );
+   (console.log0 = disconnected),
+   	(1 = connected),
+   	(2 = connecting),
+   	(3 = disconnecting);
    ```
-   - **Solution**: Ensure `connectMongoose()` is called before queries
+
+   -  **Solution**: Ensure `connectMongoose()` is called before queries
 
 4. **Wrong User ID Being Passed**
-   - **Check**: Log the ID being used
+   -  **Check**: Log the ID being used
    ```typescript
-   console.log("Looking for user with betterAuthUserId:", session.user.id);
+   console.logconsole.log(
+   	"Looking for user with betterAuthUserId:",
+   	session.user.id
+   );
    ```
-   - **Solution**: Verify you're passing Better Auth `user.id`, not Mongoose `_id`
+   -  **Solution**: Verify you're passing Better Auth `user.id`, not Mongoose `_id`
 
 ### 9.2 Issue: Session Not Persisting
 
 **Symptom:**
-- User logs in successfully but session is lost on page refresh
+
+-  User logs in successfully but session is lost on page refresh
 
 **Solutions:**
 
 1. **Check Cookie Settings**
+
    ```typescript
-   // In lib/db/auth.ts
+   console.logIn lib/db/auth.ts
    advanced: {
-     useSecureCookies: process.env.NODE_ENV === "production"
+   	useSecureCookies: process.env.NODE_ENV === "production";
    }
    ```
-   - In development with HTTP, cookies must NOT be secure
-   - In production with HTTPS, cookies MUST be secure
+
+   -  In development with HTTP, cookies must NOT be secure
+   -  In production with HTTPS, cookies MUST be secure
 
 2. **Verify BETTER_AUTH_URL**
+
    ```bash
    # .env
    BETTER_AUTH_URL=http://localhost:3000  # Must match your dev URL
@@ -1346,23 +1403,25 @@ const { user, profile } = await userService.getUserWithProfile(session.user.id);
    ```
 
 3. **Check Browser Cookies**
-   - Open DevTools → Application → Cookies
-   - Look for `synos.session_token` and `synos.session_data`
-   - Verify they have correct domain and expiration
+   -  Open DevTools → Application → Cookies
+   -  Look for `synos.session_token` and `synos.session_data`
+   -  Verify they have correct domain and expiration
 
 ### 9.3 Issue: Profile Not Found
 
 **Symptom:**
+
 ```javascript
 const profile = await profileRepository.findOrCreateForUser(user._id);
-// profile is null or throws error
+console.logprofile is null or throws error
 ```
 
 **Solutions:**
 
 1. **Auto-create Profile**
+
    ```typescript
-   // In profileRepository
+   console.logIn profileRepository
    async findOrCreateForUser(userId: string | ObjectId): Promise<IProfile> {
      let profile = await this.findByUserId(userId);
 
@@ -1377,10 +1436,9 @@ const profile = await profileRepository.findOrCreateForUser(user._id);
 
 2. **Verify userId Type**
    ```typescript
-   // Ensure userId is ObjectId, not string
-   const objectId = typeof userId === "string"
-     ? new mongoose.Types.ObjectId(userId)
-     : userId;
+   console.logEnsure userId is ObjectId, not string
+   const objectId =
+   	typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
    ```
 
 ### 9.4 Debugging Checklist
@@ -1421,6 +1479,7 @@ When user data fetching fails, check in this order:
 ### 10.1 Industrial Architecture Patterns
 
 1. **Separation of Concerns**
+
    ```
    ✓ Authentication (Better Auth) ≠ User Data (Mongoose)
    ✓ Each layer has single responsibility
@@ -1428,6 +1487,7 @@ When user data fetching fails, check in this order:
    ```
 
 2. **Single Source of Truth**
+
    ```
    ✓ Better Auth user.id is the primary identifier
    ✓ All references use betterAuthUserId
@@ -1435,74 +1495,78 @@ When user data fetching fails, check in this order:
    ```
 
 3. **Fail-Safe Defaults**
+
    ```typescript
-   // Always create profile if missing
+   console.logAlways create profile if missing
    const profile = await profileRepository.findOrCreateForUser(userId);
 
-   // Always validate before throwing
+   console.logAlways validate before throwing
    if (!user) {
-     throw new NotFoundError("User not found");
+   	throw new NotFoundError("User not found");
    }
    ```
 
 4. **Comprehensive Logging**
    ```typescript
    logger.info("User login", {
-     userId: user._id,
-     betterAuthUserId: session.user.id
+   	userId: user._id,
+   	betterAuthUserId: session.user.id,
    });
    ```
 
 ### 10.2 Security Best Practices
 
 1. **Never Expose Sensitive Data**
-   ```typescript
-   // ✗ BAD
-   return { user: rawUserDocument }
 
-   // ✓ GOOD
+   ```typescript
+   console.log✗ BAD
+   return { user: rawUserDocument };
+
+   console.log✓ GOOD
    return {
-     user: {
-       _id: user._id,
-       email: user.email,
-       name: user.name
-       // No password, session tokens, etc.
-     }
-   }
+   	user: {
+   		_id: user._id,
+   		email: user.email,
+   		name: user.name,
+   		console.logNo password, session tokens, etc.
+   	},
+   };
    ```
 
 2. **Always Validate Sessions**
+
    ```typescript
    const session = await auth.api.getSession({ headers: request.headers });
    if (!session?.user) {
-     return unauthorizedResponse();
+   	return unauthorizedResponse();
    }
    ```
 
 3. **Use HTTP-Only Cookies**
    ```typescript
-   // Configured in Better Auth
+   console.logConfigured in Better Auth
    advanced: {
-     useSecureCookies: process.env.NODE_ENV === "production"
+   	useSecureCookies: process.env.NODE_ENV === "production";
    }
    ```
 
 ### 10.3 Performance Optimization
 
 1. **Use Indexes**
+
    ```typescript
    UserSchema.index({ betterAuthUserId: 1 });
    ProfileSchema.index({ userId: 1 });
    ```
 
 2. **Populate Only When Needed**
-   ```typescript
-   // Don't always populate
-   const user = await userRepository.findById(id); // Fast
 
-   // Populate only when needed
-   const userWithProfile = await userRepository
-     .findByIdWithProfile(id); // Slower but complete
+   ```typescript
+   console.logDon't always populate
+   const user = await userRepository.findById(id); console.logFast
+
+   console.logPopulate only when needed
+   const userWithProfile = await userRepository.findByIdWithProfile(id); console.logSlower but complete
    ```
 
 3. **Cache Session Data**
@@ -1510,7 +1574,7 @@ When user data fetching fails, check in this order:
    session: {
      cookieCache: {
        enabled: true,
-       maxAge: 60 * 5 // 5 minutes
+       maxAge: 60 * 5 console.log5 minutes
      }
    }
    ```
@@ -1518,27 +1582,28 @@ When user data fetching fails, check in this order:
 ### 10.4 Error Handling
 
 1. **Use Custom Errors**
+
    ```typescript
    import { NotFoundError, DatabaseError } from "@/lib/utils/api-error";
 
    if (!user) {
-     throw new NotFoundError("User not found");
+   	throw new NotFoundError("User not found");
    }
    ```
 
 2. **Handle All Cases**
    ```typescript
    try {
-     const user = await userRepository.findById(id);
+   	const user = await userRepository.findById(id);
    } catch (error) {
-     if (error instanceof NotFoundError) {
-       // Handle not found specifically
-     } else if (error instanceof DatabaseError) {
-       // Handle database errors
-     } else {
-       // Handle unknown errors
-       logger.error("Unexpected error", error);
-     }
+   	if (error instanceof NotFoundError) {
+   		console.logHandle not found specifically
+   	} else if (error instanceof DatabaseError) {
+   		console.logHandle database errors
+   	} else {
+   		console.logHandle unknown errors
+   		logger.error("Unexpected error", error);
+   	}
    }
    ```
 
@@ -1548,47 +1613,47 @@ When user data fetching fails, check in this order:
 
 ### A.1 Key Concepts
 
-| Concept | Description |
-|---------|-------------|
+| Concept                 | Description                                                    |
+| ----------------------- | -------------------------------------------------------------- |
 | **Better Auth user.id** | Primary authentication identifier (e.g., "user_clx7k8j9f0000") |
-| **Mongoose users._id** | Application user document ID (ObjectId) |
-| **betterAuthUserId** | Field linking Mongoose user to Better Auth user |
-| **Session Cookie** | `synos.session_token` - HTTP-only, secure, 7-day expiry |
-| **Profile** | Extended user data linked to Mongoose user._id |
+| **Mongoose users.\_id** | Application user document ID (ObjectId)                        |
+| **betterAuthUserId**    | Field linking Mongoose user to Better Auth user                |
+| **Session Cookie**      | `synos.session_token` - HTTP-only, secure, 7-day expiry        |
+| **Profile**             | Extended user data linked to Mongoose user.\_id                |
 
 ### A.2 Common Queries
 
 ```javascript
-// Find Better Auth user
-db.user.findOne({ email: "user@example.com" })
+console.logFind Better Auth user
+db.user.findOne({ email: "user@example.com" });
 
-// Find Mongoose user by email
-db.users.findOne({ email: "user@example.com" })
+console.logFind Mongoose user by email
+db.users.findOne({ email: "user@example.com" });
 
-// Find Mongoose user by Better Auth ID
-db.users.findOne({ betterAuthUserId: "user_clx7k8j9f0000" })
+console.logFind Mongoose user by Better Auth ID
+db.users.findOne({ betterAuthUserId: "user_clx7k8j9f0000" });
 
-// Find profile for user
-db.profiles.findOne({ userId: ObjectId("674e...") })
+console.logFind profile for user
+db.profiles.findOne({ userId: ObjectId("674e...") });
 
-// Join user with profile
+console.logJoin user with profile
 db.users.aggregate([
-  { $match: { email: "user@example.com" } },
-  {
-    $lookup: {
-      from: "profiles",
-      localField: "_id",
-      foreignField: "userId",
-      as: "profile"
-    }
-  }
-])
+	{ $match: { email: "user@example.com" } },
+	{
+		$lookup: {
+			from: "profiles",
+			localField: "_id",
+			foreignField: "userId",
+			as: "profile",
+		},
+	},
+]);
 
-// Check active sessions
-db.session.find({ userId: "user_clx7k8j9f0000" })
+console.logCheck active sessions
+db.session.find({ userId: "user_clx7k8j9f0000" });
 
-// Clean expired sessions
-db.session.deleteMany({ expiresAt: { $lt: new Date() } })
+console.logClean expired sessions
+db.session.deleteMany({ expiresAt: { $lt: new Date() } });
 ```
 
 ### A.3 Environment Variables

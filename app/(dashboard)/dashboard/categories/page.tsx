@@ -173,7 +173,9 @@ export default function CategoriesPage() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
 
-	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>([]);
+	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>(
+		[]
+	);
 	const [isLoading, setIsLoading] = React.useState(true);
 
 	// Confirmation modal

@@ -343,9 +343,9 @@ class ProductService {
 		userId: string
 	): Promise<IProduct> {
 		try {
-			// console.log("updateProduct => ", id);
+			// // console.log("updateProduct => ", id);
 			const product = await productRepository.findById(id);
-			// console.log("product => ", product);
+			// // console.log("product => ", product);
 
 			if (!product) {
 				throw new NotFoundError("Product not found");
@@ -358,13 +358,13 @@ class ProductService {
 				}
 			}
 
-			// console.log("data.categories => ", data.categories);
+			// // console.log("data.categories => ", data.categories);
 			// Validate categories exist if provided
 			if (data.categories && data.categories.length > 0) {
 				// for (const categoryId of data.categories) {
-				// 	console.log("type => ", typeof categoryId);
-				// 	console.log("categoryId => ", categoryId);
-				// 	console.log("|=> ", JSON.stringify(categoryId));
+				// 	// console.log("type => ", typeof categoryId);
+				// 	// console.log("categoryId => ", categoryId);
+				// 	// console.log("|=> ", JSON.stringify(categoryId));
 				// 	console.dir(categoryId);
 
 				// 	const category = await categoryRepository.findById(categoryId);

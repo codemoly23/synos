@@ -18,7 +18,7 @@
 7. [API Route Implementation](#api-route-implementation)
 8. [Complete Example: Medical Records](#complete-example-medical-records)
 9. [Testing Your Implementation](#testing-your-implementation)
-10. [Best Practices Checklist](#best-practices-checklist)
+10.   [Best Practices Checklist](#best-practices-checklist)
 
 ---
 
@@ -31,10 +31,11 @@ This guide provides a comprehensive, step-by-step process for creating new datab
 ### 1.2 When to Create a New Model
 
 Create a new database model when you need to:
-- ✓ Store a new type of entity (e.g., Medical Records, Appointments, Prescriptions)
-- ✓ Implement a feature requiring persistent data storage
-- ✓ Separate concerns for better organization
-- ✓ Establish relationships with existing models
+
+-  ✓ Store a new type of entity (e.g., Medical Records, Appointments, Prescriptions)
+-  ✓ Implement a feature requiring persistent data storage
+-  ✓ Separate concerns for better organization
+-  ✓ Establish relationships with existing models
 
 ### 1.3 Architecture Layers
 
@@ -128,6 +129,7 @@ Every new model requires implementation across all layers:
 **Location:** `models/[entity].model.ts`
 
 **Template:**
+
 ```typescript
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
@@ -139,12 +141,12 @@ import { connectMongoose } from "@/lib/db/db-connect";
 export interface I[EntityName] extends Document {
   _id: mongoose.Types.ObjectId;
 
-  // Add your fields here with types
+  console.logAdd your fields here with types
   fieldName: string;
   anotherField: number;
   optionalField?: boolean;
 
-  // Timestamps (added automatically if timestamps: true)
+  console.logTimestamps (added automatically if timestamps: true)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -155,12 +157,12 @@ export interface I[EntityName] extends Document {
  */
 const [EntityName]Schema = new Schema<I[EntityName]>(
   {
-    // Define fields with validation
+    console.logDefine fields with validation
     fieldName: {
       type: String,
       required: true,
       trim: true,
-      // Add more validation as needed
+      console.logAdd more validation as needed
     },
 
     anotherField: {
@@ -176,16 +178,16 @@ const [EntityName]Schema = new Schema<I[EntityName]>(
     },
   },
   {
-    timestamps: true,           // Auto-manage createdAt, updatedAt
-    collection: "[collection_name]",  // MongoDB collection name
+    timestamps: true,           console.logAuto-manage createdAt, updatedAt
+    collection: "[collection_name]",  console.logMongoDB collection name
   }
 );
 
-// Add indexes for performance
+console.logAdd indexes for performance
 [EntityName]Schema.index({ fieldName: 1 });
 [EntityName]Schema.index({ createdAt: -1 });
 
-// Configure JSON output
+console.logConfigure JSON output
 [EntityName]Schema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {
@@ -220,110 +222,111 @@ export function get[EntityName]ModelSync(): Model<I[EntityName]> {
 ```
 
 **Example: Medical Record Model**
+
 ```typescript
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 
 export interface IMedicalRecord extends Document {
-  _id: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;  // Reference to User
-  patientId: string;
-  recordType: "consultation" | "lab" | "imaging" | "prescription";
-  title: string;
-  description: string;
-  date: Date;
-  attachments: string[];  // URLs to files
-  metadata: Record<string, any>;  // Flexible field for additional data
-  createdAt: Date;
-  updatedAt: Date;
+	_id: mongoose.Types.ObjectId;
+	userId: mongoose.Types.ObjectId; console.logReference to User
+	patientId: string;
+	recordType: "consultation" | "lab" | "imaging" | "prescription";
+	title: string;
+	description: string;
+	date: Date;
+	attachments: string[]; console.logURLs to files
+	metadata: Record<string, any>; console.logFlexible field for additional data
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 const MedicalRecordSchema = new Schema<IMedicalRecord>(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-      index: true,
-    },
-    patientId: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    recordType: {
-      type: String,
-      required: true,
-      enum: ["consultation", "lab", "imaging", "prescription"],
-    },
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 200,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 2000,
-    },
-    date: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    attachments: {
-      type: [String],
-      default: [],
-    },
-    metadata: {
-      type: Schema.Types.Mixed,
-      default: {},
-    },
-  },
-  {
-    timestamps: true,
-    collection: "medical_records",
-  }
+	{
+		userId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: "User",
+			index: true,
+		},
+		patientId: {
+			type: String,
+			required: true,
+			trim: true,
+			index: true,
+		},
+		recordType: {
+			type: String,
+			required: true,
+			enum: ["consultation", "lab", "imaging", "prescription"],
+		},
+		title: {
+			type: String,
+			required: true,
+			trim: true,
+			maxlength: 200,
+		},
+		description: {
+			type: String,
+			required: true,
+			trim: true,
+			maxlength: 2000,
+		},
+		date: {
+			type: Date,
+			required: true,
+			default: Date.now,
+		},
+		attachments: {
+			type: [String],
+			default: [],
+		},
+		metadata: {
+			type: Schema.Types.Mixed,
+			default: {},
+		},
+	},
+	{
+		timestamps: true,
+		collection: "medical_records",
+	}
 );
 
-// Indexes
+console.logIndexes
 MedicalRecordSchema.index({ userId: 1, date: -1 });
 MedicalRecordSchema.index({ patientId: 1 });
 MedicalRecordSchema.index({ recordType: 1 });
 MedicalRecordSchema.index({ createdAt: -1 });
 
-// Virtual for user (enables .populate('user'))
+console.logVirtual for user (enables .populate('user'))
 MedicalRecordSchema.virtual("user", {
-  ref: "User",
-  localField: "userId",
-  foreignField: "_id",
-  justOne: true,
+	ref: "User",
+	localField: "userId",
+	foreignField: "_id",
+	justOne: true,
 });
 
 MedicalRecordSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    delete ret.__v;
-    return ret;
-  },
+	virtuals: true,
+	transform: function (doc, ret) {
+		delete ret.__v;
+		return ret;
+	},
 });
 
 export async function getMedicalRecordModel(): Promise<Model<IMedicalRecord>> {
-  await connectMongoose();
-  return (
-    (mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
-    mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
-  );
+	await connectMongoose();
+	return (
+		(mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
+		mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
+	);
 }
 
 export function getMedicalRecordModelSync(): Model<IMedicalRecord> {
-  return (
-    (mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
-    mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
-  );
+	return (
+		(mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
+		mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
+	);
 }
 ```
 
@@ -334,6 +337,7 @@ export function getMedicalRecordModelSync(): Model<IMedicalRecord> {
 **Location:** `lib/repositories/[entity].repository.ts`
 
 **Template:**
+
 ```typescript
 import { BaseRepository } from "./base.repository";
 import { I[EntityName], get[EntityName]ModelSync } from "@/models/[entity].model";
@@ -434,7 +438,7 @@ export class [EntityName]Repository extends BaseRepository<I[EntityName]> {
     updateData: Partial<I[EntityName]>
   ): Promise<I[EntityName] | null> {
     try {
-      // Custom validation logic here
+      console.logCustom validation logic here
       if (updateData.fieldName && updateData.fieldName.length < 3) {
         throw new Error("Field name must be at least 3 characters");
       }
@@ -447,167 +451,172 @@ export class [EntityName]Repository extends BaseRepository<I[EntityName]> {
   }
 }
 
-// Export singleton instance
+console.logExport singleton instance
 export const [entity]Repository = new [EntityName]Repository();
 ```
 
 **Example: Medical Record Repository**
+
 ```typescript
 import { BaseRepository } from "./base.repository";
-import { IMedicalRecord, getMedicalRecordModelSync } from "@/models/medical-record.model";
+import {
+	IMedicalRecord,
+	getMedicalRecordModelSync,
+} from "@/models/medical-record.model";
 import { logger } from "@/lib/utils/logger";
 import mongoose from "mongoose";
 
 export class MedicalRecordRepository extends BaseRepository<IMedicalRecord> {
-  constructor() {
-    super(getMedicalRecordModelSync());
-  }
+	constructor() {
+		super(getMedicalRecordModelSync());
+	}
 
-  /**
-   * Find all records for a specific user
-   */
-  async findByUserId(
-    userId: string | mongoose.Types.ObjectId
-  ): Promise<IMedicalRecord[]> {
-    try {
-      const objectId = typeof userId === "string"
-        ? new mongoose.Types.ObjectId(userId)
-        : userId;
+	/**
+	 * Find all records for a specific user
+	 */
+	async findByUserId(
+		userId: string | mongoose.Types.ObjectId
+	): Promise<IMedicalRecord[]> {
+		try {
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
-      return await this.findAll(
-        { userId: objectId },
-        { sort: { date: -1 } }
-      );
-    } catch (error) {
-      logger.error("Error finding medical records by user ID", error);
-      throw error;
-    }
-  }
+			return await this.findAll(
+				{ userId: objectId },
+				{ sort: { date: -1 } }
+			);
+		} catch (error) {
+			logger.error("Error finding medical records by user ID", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Find records by patient ID
-   */
-  async findByPatientId(patientId: string): Promise<IMedicalRecord[]> {
-    try {
-      return await this.findAll(
-        { patientId },
-        { sort: { date: -1 } }
-      );
-    } catch (error) {
-      logger.error("Error finding medical records by patient ID", error);
-      throw error;
-    }
-  }
+	/**
+	 * Find records by patient ID
+	 */
+	async findByPatientId(patientId: string): Promise<IMedicalRecord[]> {
+		try {
+			return await this.findAll({ patientId }, { sort: { date: -1 } });
+		} catch (error) {
+			logger.error("Error finding medical records by patient ID", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Find records by type
-   */
-  async findByType(
-    userId: string | mongoose.Types.ObjectId,
-    recordType: string
-  ): Promise<IMedicalRecord[]> {
-    try {
-      const objectId = typeof userId === "string"
-        ? new mongoose.Types.ObjectId(userId)
-        : userId;
+	/**
+	 * Find records by type
+	 */
+	async findByType(
+		userId: string | mongoose.Types.ObjectId,
+		recordType: string
+	): Promise<IMedicalRecord[]> {
+		try {
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
-      return await this.findAll(
-        { userId: objectId, recordType },
-        { sort: { date: -1 } }
-      );
-    } catch (error) {
-      logger.error("Error finding medical records by type", error);
-      throw error;
-    }
-  }
+			return await this.findAll(
+				{ userId: objectId, recordType },
+				{ sort: { date: -1 } }
+			);
+		} catch (error) {
+			logger.error("Error finding medical records by type", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Find records with date range
-   */
-  async findByDateRange(
-    userId: string | mongoose.Types.ObjectId,
-    startDate: Date,
-    endDate: Date
-  ): Promise<IMedicalRecord[]> {
-    try {
-      const objectId = typeof userId === "string"
-        ? new mongoose.Types.ObjectId(userId)
-        : userId;
+	/**
+	 * Find records with date range
+	 */
+	async findByDateRange(
+		userId: string | mongoose.Types.ObjectId,
+		startDate: Date,
+		endDate: Date
+	): Promise<IMedicalRecord[]> {
+		try {
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
-      return await this.findAll(
-        {
-          userId: objectId,
-          date: {
-            $gte: startDate,
-            $lte: endDate
-          }
-        },
-        { sort: { date: -1 } }
-      );
-    } catch (error) {
-      logger.error("Error finding medical records by date range", error);
-      throw error;
-    }
-  }
+			return await this.findAll(
+				{
+					userId: objectId,
+					date: {
+						$gte: startDate,
+						$lte: endDate,
+					},
+				},
+				{ sort: { date: -1 } }
+			);
+		} catch (error) {
+			logger.error("Error finding medical records by date range", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Search records by title or description
-   */
-  async searchRecords(
-    userId: string | mongoose.Types.ObjectId,
-    searchTerm: string
-  ): Promise<IMedicalRecord[]> {
-    try {
-      const objectId = typeof userId === "string"
-        ? new mongoose.Types.ObjectId(userId)
-        : userId;
+	/**
+	 * Search records by title or description
+	 */
+	async searchRecords(
+		userId: string | mongoose.Types.ObjectId,
+		searchTerm: string
+	): Promise<IMedicalRecord[]> {
+		try {
+			const objectId =
+				typeof userId === "string"
+					? new mongoose.Types.ObjectId(userId)
+					: userId;
 
-      return await this.findAll({
-        userId: objectId,
-        $or: [
-          { title: { $regex: searchTerm, $options: "i" } },
-          { description: { $regex: searchTerm, $options: "i" } }
-        ]
-      });
-    } catch (error) {
-      logger.error("Error searching medical records", error);
-      throw error;
-    }
-  }
+			return await this.findAll({
+				userId: objectId,
+				$or: [
+					{ title: { $regex: searchTerm, $options: "i" } },
+					{ description: { $regex: searchTerm, $options: "i" } },
+				],
+			});
+		} catch (error) {
+			logger.error("Error searching medical records", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Add attachment to record
-   */
-  async addAttachment(
-    recordId: string,
-    attachmentUrl: string
-  ): Promise<IMedicalRecord | null> {
-    try {
-      return await this.updateById(recordId, {
-        $push: { attachments: attachmentUrl }
-      });
-    } catch (error) {
-      logger.error("Error adding attachment", error);
-      throw error;
-    }
-  }
+	/**
+	 * Add attachment to record
+	 */
+	async addAttachment(
+		recordId: string,
+		attachmentUrl: string
+	): Promise<IMedicalRecord | null> {
+		try {
+			return await this.updateById(recordId, {
+				$push: { attachments: attachmentUrl },
+			});
+		} catch (error) {
+			logger.error("Error adding attachment", error);
+			throw error;
+		}
+	}
 
-  /**
-   * Remove attachment from record
-   */
-  async removeAttachment(
-    recordId: string,
-    attachmentUrl: string
-  ): Promise<IMedicalRecord | null> {
-    try {
-      return await this.updateById(recordId, {
-        $pull: { attachments: attachmentUrl }
-      });
-    } catch (error) {
-      logger.error("Error removing attachment", error);
-      throw error;
-    }
-  }
+	/**
+	 * Remove attachment from record
+	 */
+	async removeAttachment(
+		recordId: string,
+		attachmentUrl: string
+	): Promise<IMedicalRecord | null> {
+		try {
+			return await this.updateById(recordId, {
+				$pull: { attachments: attachmentUrl },
+			});
+		} catch (error) {
+			logger.error("Error removing attachment", error);
+			throw error;
+		}
+	}
 }
 
 export const medicalRecordRepository = new MedicalRecordRepository();
@@ -620,6 +629,7 @@ export const medicalRecordRepository = new MedicalRecordRepository();
 **Location:** `lib/services/[entity].service.ts`
 
 **Template:**
+
 ```typescript
 import { [entity]Repository } from "@/lib/repositories/[entity].repository";
 import { logger } from "@/lib/utils/logger";
@@ -641,12 +651,12 @@ class [EntityName]Service {
    */
   async create[EntityName](data: Partial<I[EntityName]>): Promise<I[EntityName]> {
     try {
-      // Validate input
+      console.logValidate input
       if (!data.requiredField) {
         throw new BadRequestError("Required field is missing");
       }
 
-      // Create entity
+      console.logCreate entity
       const entity = await [entity]Repository.create(data);
 
       logger.info("[EntityName] created", { entityId: entity._id });
@@ -694,8 +704,8 @@ class [EntityName]Service {
     data: Partial<I[EntityName]>
   ): Promise<I[EntityName]> {
     try {
-      // Validate update data
-      // Add your validation logic here
+      console.logValidate update data
+      console.logAdd your validation logic here
 
       const updated = await [entity]Repository.updateById(id, {
         $set: data
@@ -755,201 +765,202 @@ class [EntityName]Service {
   }
 }
 
-// Export singleton instance
+console.logExport singleton instance
 export const [entity]Service = new [EntityName]Service();
 ```
 
 **Example: Medical Record Service**
+
 ```typescript
 import { medicalRecordRepository } from "@/lib/repositories/medical-record.repository";
 import { logger } from "@/lib/utils/logger";
 import {
-  NotFoundError,
-  DatabaseError,
-  BadRequestError,
+	NotFoundError,
+	DatabaseError,
+	BadRequestError,
 } from "@/lib/utils/api-error";
 import { API_MESSAGES } from "@/lib/utils/constants";
 import type { IMedicalRecord } from "@/models/medical-record.model";
 
 class MedicalRecordService {
-  /**
-   * Create new medical record
-   */
-  async createRecord(data: Partial<IMedicalRecord>): Promise<IMedicalRecord> {
-    try {
-      // Validate required fields
-      if (!data.userId || !data.patientId || !data.title) {
-        throw new BadRequestError("Missing required fields");
-      }
+	/**
+	 * Create new medical record
+	 */
+	async createRecord(data: Partial<IMedicalRecord>): Promise<IMedicalRecord> {
+		try {
+			console.logValidate required fields
+			if (!data.userId || !data.patientId || !data.title) {
+				throw new BadRequestError("Missing required fields");
+			}
 
-      // Validate record type
-      const validTypes = ["consultation", "lab", "imaging", "prescription"];
-      if (data.recordType && !validTypes.includes(data.recordType)) {
-        throw new BadRequestError("Invalid record type");
-      }
+			console.logValidate record type
+			const validTypes = ["consultation", "lab", "imaging", "prescription"];
+			if (data.recordType && !validTypes.includes(data.recordType)) {
+				throw new BadRequestError("Invalid record type");
+			}
 
-      // Create record
-      const record = await medicalRecordRepository.create(data);
+			console.logCreate record
+			const record = await medicalRecordRepository.create(data);
 
-      logger.info("Medical record created", {
-        recordId: record._id,
-        userId: record.userId
-      });
+			logger.info("Medical record created", {
+				recordId: record._id,
+				userId: record.userId,
+			});
 
-      return record;
-    } catch (error) {
-      logger.error("Error creating medical record", error);
+			return record;
+		} catch (error) {
+			logger.error("Error creating medical record", error);
 
-      if (error instanceof BadRequestError) {
-        throw error;
-      }
+			if (error instanceof BadRequestError) {
+				throw error;
+			}
 
-      throw new DatabaseError("Failed to create medical record");
-    }
-  }
+			throw new DatabaseError("Failed to create medical record");
+		}
+	}
 
-  /**
-   * Get record by ID with authorization check
-   */
-  async getRecordById(
-    recordId: string,
-    userId: string
-  ): Promise<IMedicalRecord> {
-    try {
-      const record = await medicalRecordRepository.findById(recordId);
+	/**
+	 * Get record by ID with authorization check
+	 */
+	async getRecordById(
+		recordId: string,
+		userId: string
+	): Promise<IMedicalRecord> {
+		try {
+			const record = await medicalRecordRepository.findById(recordId);
 
-      if (!record) {
-        throw new NotFoundError("Medical record not found");
-      }
+			if (!record) {
+				throw new NotFoundError("Medical record not found");
+			}
 
-      // Authorization: Check if record belongs to user
-      if (record.userId.toString() !== userId) {
-        throw new NotFoundError("Medical record not found");
-      }
+			console.logAuthorization: Check if record belongs to user
+			if (record.userId.toString() !== userId) {
+				throw new NotFoundError("Medical record not found");
+			}
 
-      return record;
-    } catch (error) {
-      logger.error("Error getting medical record", error);
+			return record;
+		} catch (error) {
+			logger.error("Error getting medical record", error);
 
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
+			if (error instanceof NotFoundError) {
+				throw error;
+			}
 
-      throw new DatabaseError("Failed to get medical record");
-    }
-  }
+			throw new DatabaseError("Failed to get medical record");
+		}
+	}
 
-  /**
-   * Get all records for user
-   */
-  async getRecordsForUser(userId: string): Promise<IMedicalRecord[]> {
-    try {
-      return await medicalRecordRepository.findByUserId(userId);
-    } catch (error) {
-      logger.error("Error getting medical records for user", error);
-      throw new DatabaseError("Failed to get medical records");
-    }
-  }
+	/**
+	 * Get all records for user
+	 */
+	async getRecordsForUser(userId: string): Promise<IMedicalRecord[]> {
+		try {
+			return await medicalRecordRepository.findByUserId(userId);
+		} catch (error) {
+			logger.error("Error getting medical records for user", error);
+			throw new DatabaseError("Failed to get medical records");
+		}
+	}
 
-  /**
-   * Get records by type
-   */
-  async getRecordsByType(
-    userId: string,
-    recordType: string
-  ): Promise<IMedicalRecord[]> {
-    try {
-      return await medicalRecordRepository.findByType(userId, recordType);
-    } catch (error) {
-      logger.error("Error getting medical records by type", error);
-      throw new DatabaseError("Failed to get medical records");
-    }
-  }
+	/**
+	 * Get records by type
+	 */
+	async getRecordsByType(
+		userId: string,
+		recordType: string
+	): Promise<IMedicalRecord[]> {
+		try {
+			return await medicalRecordRepository.findByType(userId, recordType);
+		} catch (error) {
+			logger.error("Error getting medical records by type", error);
+			throw new DatabaseError("Failed to get medical records");
+		}
+	}
 
-  /**
-   * Update record
-   */
-  async updateRecord(
-    recordId: string,
-    userId: string,
-    data: Partial<IMedicalRecord>
-  ): Promise<IMedicalRecord> {
-    try {
-      // Check ownership
-      const record = await this.getRecordById(recordId, userId);
+	/**
+	 * Update record
+	 */
+	async updateRecord(
+		recordId: string,
+		userId: string,
+		data: Partial<IMedicalRecord>
+	): Promise<IMedicalRecord> {
+		try {
+			console.logCheck ownership
+			const record = await this.getRecordById(recordId, userId);
 
-      // Prevent changing userId
-      delete data.userId;
+			console.logPrevent changing userId
+			delete data.userId;
 
-      const updated = await medicalRecordRepository.updateById(recordId, {
-        $set: data
-      });
+			const updated = await medicalRecordRepository.updateById(recordId, {
+				$set: data,
+			});
 
-      if (!updated) {
-        throw new DatabaseError("Failed to update record");
-      }
+			if (!updated) {
+				throw new DatabaseError("Failed to update record");
+			}
 
-      logger.info("Medical record updated", { recordId });
+			logger.info("Medical record updated", { recordId });
 
-      return updated;
-    } catch (error) {
-      logger.error("Error updating medical record", error);
+			return updated;
+		} catch (error) {
+			logger.error("Error updating medical record", error);
 
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
+			if (error instanceof NotFoundError) {
+				throw error;
+			}
 
-      throw new DatabaseError("Failed to update medical record");
-    }
-  }
+			throw new DatabaseError("Failed to update medical record");
+		}
+	}
 
-  /**
-   * Delete record
-   */
-  async deleteRecord(recordId: string, userId: string): Promise<void> {
-    try {
-      // Check ownership
-      await this.getRecordById(recordId, userId);
+	/**
+	 * Delete record
+	 */
+	async deleteRecord(recordId: string, userId: string): Promise<void> {
+		try {
+			console.logCheck ownership
+			await this.getRecordById(recordId, userId);
 
-      const deleted = await medicalRecordRepository.deleteById(recordId);
+			const deleted = await medicalRecordRepository.deleteById(recordId);
 
-      if (!deleted) {
-        throw new DatabaseError("Failed to delete record");
-      }
+			if (!deleted) {
+				throw new DatabaseError("Failed to delete record");
+			}
 
-      logger.info("Medical record deleted", { recordId });
-    } catch (error) {
-      logger.error("Error deleting medical record", error);
+			logger.info("Medical record deleted", { recordId });
+		} catch (error) {
+			logger.error("Error deleting medical record", error);
 
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
+			if (error instanceof NotFoundError) {
+				throw error;
+			}
 
-      throw new DatabaseError("Failed to delete medical record");
-    }
-  }
+			throw new DatabaseError("Failed to delete medical record");
+		}
+	}
 
-  /**
-   * Search records
-   */
-  async searchRecords(
-    userId: string,
-    searchTerm: string
-  ): Promise<IMedicalRecord[]> {
-    try {
-      if (!searchTerm || searchTerm.trim() === "") {
-        return await this.getRecordsForUser(userId);
-      }
+	/**
+	 * Search records
+	 */
+	async searchRecords(
+		userId: string,
+		searchTerm: string
+	): Promise<IMedicalRecord[]> {
+		try {
+			if (!searchTerm || searchTerm.trim() === "") {
+				return await this.getRecordsForUser(userId);
+			}
 
-      return await medicalRecordRepository.searchRecords(
-        userId,
-        searchTerm.trim()
-      );
-    } catch (error) {
-      logger.error("Error searching medical records", error);
-      throw new DatabaseError("Failed to search medical records");
-    }
-  }
+			return await medicalRecordRepository.searchRecords(
+				userId,
+				searchTerm.trim()
+			);
+		} catch (error) {
+			logger.error("Error searching medical records", error);
+			throw new DatabaseError("Failed to search medical records");
+		}
+	}
 }
 
 export const medicalRecordService = new MedicalRecordService();
@@ -962,6 +973,7 @@ export const medicalRecordService = new MedicalRecordService();
 **Location:** `app/api/[entity]/route.ts`
 
 **Template:**
+
 ```typescript
 import { NextRequest } from "next/server";
 import { getAuth } from "@/lib/db/auth";
@@ -983,7 +995,7 @@ import { API_MESSAGES } from "@/lib/utils/constants";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Validate session
+    console.logValidate session
     const auth = await getAuth();
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -991,10 +1003,10 @@ export async function GET(request: NextRequest) {
       return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
     }
 
-    // Get user ID from session
+    console.logGet user ID from session
     const userId = session.user.id;
 
-    // Fetch entities
+    console.logFetch entities
     const entities = await [entity]Service.get[EntityName]sForUser(userId);
 
     return successResponse(entities, "[Entities] retrieved successfully");
@@ -1010,7 +1022,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Validate session
+    console.logValidate session
     const auth = await getAuth();
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -1018,19 +1030,19 @@ export async function POST(request: NextRequest) {
       return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
     }
 
-    // Get user ID from session
+    console.logGet user ID from session
     const userId = session.user.id;
 
-    // Parse request body
+    console.logParse request body
     const body = await request.json();
 
-    // Add userId to data
+    console.logAdd userId to data
     const data = {
       ...body,
       userId,
     };
 
-    // Create entity
+    console.logCreate entity
     const entity = await [entity]Service.create[EntityName](data);
 
     return createdResponse(entity, "[EntityName] created successfully");
@@ -1071,7 +1083,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate session
+    console.logValidate session
     const auth = await getAuth();
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -1082,7 +1094,7 @@ export async function GET(
     const userId = session.user.id;
     const entityId = params.id;
 
-    // Get entity
+    console.logGet entity
     const entity = await [entity]Service.get[EntityName]ById(entityId, userId);
 
     return successResponse(entity, "[EntityName] retrieved successfully");
@@ -1106,7 +1118,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate session
+    console.logValidate session
     const auth = await getAuth();
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -1117,10 +1129,10 @@ export async function PATCH(
     const userId = session.user.id;
     const entityId = params.id;
 
-    // Parse request body
+    console.logParse request body
     const body = await request.json();
 
-    // Update entity
+    console.logUpdate entity
     const updated = await [entity]Service.update[EntityName](
       entityId,
       userId,
@@ -1148,7 +1160,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate session
+    console.logValidate session
     const auth = await getAuth();
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -1159,7 +1171,7 @@ export async function DELETE(
     const userId = session.user.id;
     const entityId = params.id;
 
-    // Delete entity
+    console.logDelete entity
     await [entity]Service.delete[EntityName](entityId, userId);
 
     return successResponse(null, "[EntityName] deleted successfully");
@@ -1181,146 +1193,146 @@ export async function DELETE(
 
 ### 4.1 Field Type Options
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `String` | Text data | `name: { type: String }` |
-| `Number` | Numeric data | `age: { type: Number }` |
-| `Boolean` | True/false | `isActive: { type: Boolean }` |
-| `Date` | Date/time | `createdAt: { type: Date }` |
-| `ObjectId` | Reference | `userId: { type: Schema.Types.ObjectId }` |
-| `Array` | List of values | `tags: { type: [String] }` |
-| `Mixed` | Any type | `metadata: { type: Schema.Types.Mixed }` |
-| `Buffer` | Binary data | `file: { type: Buffer }` |
+| Type         | Description            | Example                                    |
+| ------------ | ---------------------- | ------------------------------------------ |
+| `String`     | Text data              | `name: { type: String }`                   |
+| `Number`     | Numeric data           | `age: { type: Number }`                    |
+| `Boolean`    | True/false             | `isActive: { type: Boolean }`              |
+| `Date`       | Date/time              | `createdAt: { type: Date }`                |
+| `ObjectId`   | Reference              | `userId: { type: Schema.Types.ObjectId }`  |
+| `Array`      | List of values         | `tags: { type: [String] }`                 |
+| `Mixed`      | Any type               | `metadata: { type: Schema.Types.Mixed }`   |
+| `Buffer`     | Binary data            | `file: { type: Buffer }`                   |
 | `Decimal128` | High precision decimal | `price: { type: Schema.Types.Decimal128 }` |
 
 ### 4.2 Common Field Options
 
-| Option | Type | Description | Example |
-|--------|------|-------------|---------|
-| `type` | SchemaType | Data type | `String`, `Number`, etc. |
-| `required` | Boolean/Function | Field is mandatory | `required: true` |
-| `default` | Any/Function | Default value | `default: 0` |
-| `unique` | Boolean | Must be unique | `unique: true` |
-| `index` | Boolean | Create index | `index: true` |
-| `sparse` | Boolean | Sparse index (allows nulls) | `sparse: true` |
-| `trim` | Boolean | Remove whitespace (String) | `trim: true` |
-| `lowercase` | Boolean | Convert to lowercase (String) | `lowercase: true` |
-| `uppercase` | Boolean | Convert to uppercase (String) | `uppercase: true` |
-| `minlength` | Number | Min string length | `minlength: 3` |
-| `maxlength` | Number | Max string length | `maxlength: 100` |
-| `min` | Number | Min numeric value | `min: 0` |
-| `max` | Number | Max numeric value | `max: 100` |
-| `enum` | Array | Allowed values | `enum: ['a', 'b', 'c']` |
-| `match` | RegExp | Regex validation | `match: /^[a-z]+$/` |
-| `validate` | Function | Custom validator | `validate: (v) => v > 0` |
-| `get` | Function | Transform on retrieval | `get: (v) => v.toFixed(2)` |
-| `set` | Function | Transform on save | `set: (v) => v.toLowerCase()` |
-| `ref` | String | Model reference | `ref: 'User'` |
-| `select` | Boolean | Include in queries | `select: false` |
-| `immutable` | Boolean | Cannot be changed | `immutable: true` |
+| Option      | Type             | Description                   | Example                       |
+| ----------- | ---------------- | ----------------------------- | ----------------------------- |
+| `type`      | SchemaType       | Data type                     | `String`, `Number`, etc.      |
+| `required`  | Boolean/Function | Field is mandatory            | `required: true`              |
+| `default`   | Any/Function     | Default value                 | `default: 0`                  |
+| `unique`    | Boolean          | Must be unique                | `unique: true`                |
+| `index`     | Boolean          | Create index                  | `index: true`                 |
+| `sparse`    | Boolean          | Sparse index (allows nulls)   | `sparse: true`                |
+| `trim`      | Boolean          | Remove whitespace (String)    | `trim: true`                  |
+| `lowercase` | Boolean          | Convert to lowercase (String) | `lowercase: true`             |
+| `uppercase` | Boolean          | Convert to uppercase (String) | `uppercase: true`             |
+| `minlength` | Number           | Min string length             | `minlength: 3`                |
+| `maxlength` | Number           | Max string length             | `maxlength: 100`              |
+| `min`       | Number           | Min numeric value             | `min: 0`                      |
+| `max`       | Number           | Max numeric value             | `max: 100`                    |
+| `enum`      | Array            | Allowed values                | `enum: ['a', 'b', 'c']`       |
+| `match`     | RegExp           | Regex validation              | `match: /^[a-z]+$/`           |
+| `validate`  | Function         | Custom validator              | `validate: (v) => v > 0`      |
+| `get`       | Function         | Transform on retrieval        | `get: (v) => v.toFixed(2)`    |
+| `set`       | Function         | Transform on save             | `set: (v) => v.toLowerCase()` |
+| `ref`       | String           | Model reference               | `ref: 'User'`                 |
+| `select`    | Boolean          | Include in queries            | `select: false`               |
+| `immutable` | Boolean          | Cannot be changed             | `immutable: true`             |
 
 ### 4.3 Schema Options
 
-| Option | Type | Description | Example |
-|--------|------|-------------|---------|
-| `timestamps` | Boolean | Add createdAt/updatedAt | `timestamps: true` |
-| `collection` | String | Collection name | `collection: 'users'` |
-| `strict` | Boolean/String | Strict mode | `strict: true` |
-| `versionKey` | String/Boolean | Version key name | `versionKey: false` |
-| `minimize` | Boolean | Remove empty objects | `minimize: false` |
-| `toJSON` | Object | JSON serialization options | `toJSON: { virtuals: true }` |
-| `toObject` | Object | Object conversion options | `toObject: { virtuals: true }` |
-| `id` | Boolean | Create virtual id | `id: false` |
-| `_id` | Boolean | Create _id field | `_id: true` |
+| Option       | Type           | Description                | Example                        |
+| ------------ | -------------- | -------------------------- | ------------------------------ |
+| `timestamps` | Boolean        | Add createdAt/updatedAt    | `timestamps: true`             |
+| `collection` | String         | Collection name            | `collection: 'users'`          |
+| `strict`     | Boolean/String | Strict mode                | `strict: true`                 |
+| `versionKey` | String/Boolean | Version key name           | `versionKey: false`            |
+| `minimize`   | Boolean        | Remove empty objects       | `minimize: false`              |
+| `toJSON`     | Object         | JSON serialization options | `toJSON: { virtuals: true }`   |
+| `toObject`   | Object         | Object conversion options  | `toObject: { virtuals: true }` |
+| `id`         | Boolean        | Create virtual id          | `id: false`                    |
+| `_id`        | Boolean        | Create \_id field          | `_id: true`                    |
 
 ### 4.4 Index Types
 
 ```typescript
-// Single field index
-Schema.index({ fieldName: 1 });  // Ascending
-Schema.index({ fieldName: -1 }); // Descending
+console.logSingle field index
+Schema.index({ fieldName: 1 }); console.logAscending
+Schema.index({ fieldName: -1 }); console.logDescending
 
-// Compound index
+console.logCompound index
 Schema.index({ field1: 1, field2: -1 });
 
-// Unique index
+console.logUnique index
 Schema.index({ email: 1 }, { unique: true });
 
-// Sparse index (ignores documents without field)
+console.logSparse index (ignores documents without field)
 Schema.index({ optionalField: 1 }, { sparse: true });
 
-// Text index (for full-text search)
+console.logText index (for full-text search)
 Schema.index({ title: "text", description: "text" });
 
-// TTL index (auto-delete after time)
+console.logTTL index (auto-delete after time)
 Schema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
-// Partial index (index subset of documents)
+console.logPartial index (index subset of documents)
 Schema.index(
-  { status: 1 },
-  { partialFilterExpression: { status: { $exists: true } } }
+	{ status: 1 },
+	{ partialFilterExpression: { status: { $exists: true } } }
 );
 ```
 
 ### 4.5 Virtual Fields
 
 ```typescript
-// Simple virtual
-Schema.virtual("fullName").get(function() {
-  return `${this.firstName} ${this.lastName}`;
+console.logSimple virtual
+Schema.virtual("fullName").get(function () {
+	return `${this.firstName} ${this.lastName}`;
 });
 
-// Virtual with setter
+console.logVirtual with setter
 Schema.virtual("fullName")
-  .get(function() {
-    return `${this.firstName} ${this.lastName}`;
-  })
-  .set(function(name: string) {
-    const parts = name.split(" ");
-    this.firstName = parts[0];
-    this.lastName = parts[1];
-  });
+	.get(function () {
+		return `${this.firstName} ${this.lastName}`;
+	})
+	.set(function (name: string) {
+		const parts = name.split(" ");
+		this.firstName = parts[0];
+		this.lastName = parts[1];
+	});
 
-// Virtual populate (relationship)
+console.logVirtual populate (relationship)
 Schema.virtual("posts", {
-  ref: "Post",
-  localField: "_id",
-  foreignField: "authorId",
-  justOne: false  // Returns array
+	ref: "Post",
+	localField: "_id",
+	foreignField: "authorId",
+	justOne: false, console.logReturns array
 });
 ```
 
 ### 4.6 Middleware (Hooks)
 
 ```typescript
-// Pre-save hook
-Schema.pre("save", async function(next) {
-  // Runs before saving
-  if (this.isModified("password")) {
-    this.password = await hash(this.password);
-  }
-  next();
+console.logPre-save hook
+Schema.pre("save", async function (next) {
+	console.logRuns before saving
+	if (this.isModified("password")) {
+		this.password = await hash(this.password);
+	}
+	next();
 });
 
-// Post-save hook
-Schema.post("save", function(doc, next) {
-  // Runs after saving
-  console.log("Document saved:", doc._id);
-  next();
+console.logPost-save hook
+Schema.post("save", function (doc, next) {
+	console.logRuns after saving
+	console.logconsole.log("Document saved:", doc._id);
+	next();
 });
 
-// Pre-remove hook
-Schema.pre("remove", async function(next) {
-  // Cascade delete related documents
-  await RelatedModel.deleteMany({ userId: this._id });
-  next();
+console.logPre-remove hook
+Schema.pre("remove", async function (next) {
+	console.logCascade delete related documents
+	await RelatedModel.deleteMany({ userId: this._id });
+	next();
 });
 
-// Query middleware
-Schema.pre(/^find/, function(next) {
-  // Runs before any find query
-  this.populate("author");
-  next();
+console.logQuery middleware
+Schema.pre(/^find/, function (next) {
+	console.logRuns before any find query
+	this.populate("author");
+	next();
 });
 ```
 
@@ -1337,130 +1349,130 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 
 export interface IMedicalRecord extends Document {
-  _id: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
-  patientId: string;
-  recordType: "consultation" | "lab" | "imaging" | "prescription";
-  title: string;
-  description: string;
-  date: Date;
-  attachments: string[];
-  metadata: {
-    doctor?: string;
-    facility?: string;
-    diagnosis?: string;
-    [key: string]: any;
-  };
-  createdAt: Date;
-  updatedAt: Date;
+	_id: mongoose.Types.ObjectId;
+	userId: mongoose.Types.ObjectId;
+	patientId: string;
+	recordType: "consultation" | "lab" | "imaging" | "prescription";
+	title: string;
+	description: string;
+	date: Date;
+	attachments: string[];
+	metadata: {
+		doctor?: string;
+		facility?: string;
+		diagnosis?: string;
+		[key: string]: any;
+	};
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 const MedicalRecordSchema = new Schema<IMedicalRecord>(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-      index: true,
-    },
-    patientId: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    recordType: {
-      type: String,
-      required: true,
-      enum: ["consultation", "lab", "imaging", "prescription"],
-      index: true,
-    },
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 200,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 2000,
-    },
-    date: {
-      type: Date,
-      required: true,
-      default: Date.now,
-      index: true,
-    },
-    attachments: {
-      type: [String],
-      default: [],
-      validate: {
-        validator: function(arr: string[]) {
-          return arr.length <= 10;
-        },
-        message: "Cannot have more than 10 attachments"
-      }
-    },
-    metadata: {
-      type: Schema.Types.Mixed,
-      default: {},
-    },
-  },
-  {
-    timestamps: true,
-    collection: "medical_records",
-  }
+	{
+		userId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: "User",
+			index: true,
+		},
+		patientId: {
+			type: String,
+			required: true,
+			trim: true,
+			index: true,
+		},
+		recordType: {
+			type: String,
+			required: true,
+			enum: ["consultation", "lab", "imaging", "prescription"],
+			index: true,
+		},
+		title: {
+			type: String,
+			required: true,
+			trim: true,
+			maxlength: 200,
+		},
+		description: {
+			type: String,
+			required: true,
+			trim: true,
+			maxlength: 2000,
+		},
+		date: {
+			type: Date,
+			required: true,
+			default: Date.now,
+			index: true,
+		},
+		attachments: {
+			type: [String],
+			default: [],
+			validate: {
+				validator: function (arr: string[]) {
+					return arr.length <= 10;
+				},
+				message: "Cannot have more than 10 attachments",
+			},
+		},
+		metadata: {
+			type: Schema.Types.Mixed,
+			default: {},
+		},
+	},
+	{
+		timestamps: true,
+		collection: "medical_records",
+	}
 );
 
-// Compound indexes for common queries
+console.logCompound indexes for common queries
 MedicalRecordSchema.index({ userId: 1, date: -1 });
 MedicalRecordSchema.index({ userId: 1, recordType: 1 });
 MedicalRecordSchema.index({ patientId: 1, date: -1 });
 
-// Text index for search
+console.logText index for search
 MedicalRecordSchema.index({ title: "text", description: "text" });
 
-// Virtual for user
+console.logVirtual for user
 MedicalRecordSchema.virtual("user", {
-  ref: "User",
-  localField: "userId",
-  foreignField: "_id",
-  justOne: true,
+	ref: "User",
+	localField: "userId",
+	foreignField: "_id",
+	justOne: true,
 });
 
-// Pre-save middleware
-MedicalRecordSchema.pre("save", function(next) {
-  // Ensure date is not in future
-  if (this.date > new Date()) {
-    const error = new Error("Record date cannot be in the future");
-    return next(error);
-  }
-  next();
+console.logPre-save middleware
+MedicalRecordSchema.pre("save", function (next) {
+	console.logEnsure date is not in future
+	if (this.date > new Date()) {
+		const error = new Error("Record date cannot be in the future");
+		return next(error);
+	}
+	next();
 });
 
 MedicalRecordSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    delete ret.__v;
-    return ret;
-  },
+	virtuals: true,
+	transform: function (doc, ret) {
+		delete ret.__v;
+		return ret;
+	},
 });
 
 export async function getMedicalRecordModel(): Promise<Model<IMedicalRecord>> {
-  await connectMongoose();
-  return (
-    (mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
-    mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
-  );
+	await connectMongoose();
+	return (
+		(mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
+		mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
+	);
 }
 
 export function getMedicalRecordModelSync(): Model<IMedicalRecord> {
-  return (
-    (mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
-    mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
-  );
+	return (
+		(mongoose.models.MedicalRecord as Model<IMedicalRecord>) ||
+		mongoose.model<IMedicalRecord>("MedicalRecord", MedicalRecordSchema)
+	);
 }
 ```
 
@@ -1475,6 +1487,7 @@ See earlier example in Step 3.
 ### 5.4 API Routes
 
 **File: app/api/medical-records/route.ts**
+
 ```typescript
 import { NextRequest } from "next/server";
 import { getAuth } from "@/lib/db/auth";
@@ -1482,11 +1495,11 @@ import { medicalRecordService } from "@/lib/services/medical-record.service";
 import { userService } from "@/lib/services/user.service";
 import { logger } from "@/lib/utils/logger";
 import {
-  successResponse,
-  createdResponse,
-  unauthorizedResponse,
-  badRequestResponse,
-  internalServerErrorResponse,
+	successResponse,
+	createdResponse,
+	unauthorizedResponse,
+	badRequestResponse,
+	internalServerErrorResponse,
 } from "@/lib/utils/api-response";
 import { API_MESSAGES } from "@/lib/utils/constants";
 import { BadRequestError } from "@/lib/utils/api-error";
@@ -1496,46 +1509,46 @@ import { BadRequestError } from "@/lib/utils/api-error";
  * Get all medical records for authenticated user
  */
 export async function GET(request: NextRequest) {
-  try {
-    // Validate session
-    const auth = await getAuth();
-    const session = await auth.api.getSession({ headers: request.headers });
+	try {
+		console.logValidate session
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || !session.user) {
-      return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
-    }
+		if (!session || !session.user) {
+			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
+		}
 
-    // Get Mongoose user
-    const { user } = await userService.getUserWithProfile(session.user.id);
+		console.logGet Mongoose user
+		const { user } = await userService.getUserWithProfile(session.user.id);
 
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const recordType = searchParams.get("type");
-    const searchTerm = searchParams.get("search");
+		console.logGet query parameters
+		const { searchParams } = new URL(request.url);
+		const recordType = searchParams.get("type");
+		const searchTerm = searchParams.get("search");
 
-    // Fetch records based on filters
-    let records;
-    if (searchTerm) {
-      records = await medicalRecordService.searchRecords(
-        user._id.toString(),
-        searchTerm
-      );
-    } else if (recordType) {
-      records = await medicalRecordService.getRecordsByType(
-        user._id.toString(),
-        recordType
-      );
-    } else {
-      records = await medicalRecordService.getRecordsForUser(
-        user._id.toString()
-      );
-    }
+		console.logFetch records based on filters
+		let records;
+		if (searchTerm) {
+			records = await medicalRecordService.searchRecords(
+				user._id.toString(),
+				searchTerm
+			);
+		} else if (recordType) {
+			records = await medicalRecordService.getRecordsByType(
+				user._id.toString(),
+				recordType
+			);
+		} else {
+			records = await medicalRecordService.getRecordsForUser(
+				user._id.toString()
+			);
+		}
 
-    return successResponse(records, "Medical records retrieved successfully");
-  } catch (error) {
-    logger.error("Error in GET /api/medical-records", error);
-    return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
-  }
+		return successResponse(records, "Medical records retrieved successfully");
+	} catch (error) {
+		logger.error("Error in GET /api/medical-records", error);
+		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
+	}
 }
 
 /**
@@ -1543,46 +1556,47 @@ export async function GET(request: NextRequest) {
  * Create new medical record
  */
 export async function POST(request: NextRequest) {
-  try {
-    // Validate session
-    const auth = await getAuth();
-    const session = await auth.api.getSession({ headers: request.headers });
+	try {
+		console.logValidate session
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || !session.user) {
-      return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
-    }
+		if (!session || !session.user) {
+			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
+		}
 
-    // Get Mongoose user
-    const { user } = await userService.getUserWithProfile(session.user.id);
+		console.logGet Mongoose user
+		const { user } = await userService.getUserWithProfile(session.user.id);
 
-    // Parse request body
-    const body = await request.json();
+		console.logParse request body
+		const body = await request.json();
 
-    // Validate required fields
-    if (!body.patientId || !body.title || !body.recordType) {
-      return badRequestResponse("Missing required fields");
-    }
+		console.logValidate required fields
+		if (!body.patientId || !body.title || !body.recordType) {
+			return badRequestResponse("Missing required fields");
+		}
 
-    // Create record
-    const record = await medicalRecordService.createRecord({
-      ...body,
-      userId: user._id,
-    });
+		console.logCreate record
+		const record = await medicalRecordService.createRecord({
+			...body,
+			userId: user._id,
+		});
 
-    return createdResponse(record, "Medical record created successfully");
-  } catch (error) {
-    logger.error("Error in POST /api/medical-records", error);
+		return createdResponse(record, "Medical record created successfully");
+	} catch (error) {
+		logger.error("Error in POST /api/medical-records", error);
 
-    if (error instanceof BadRequestError) {
-      return badRequestResponse(error.message);
-    }
+		if (error instanceof BadRequestError) {
+			return badRequestResponse(error.message);
+		}
 
-    return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
-  }
+		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
+	}
 }
 ```
 
 **File: app/api/medical-records/[id]/route.ts**
+
 ```typescript
 import { NextRequest } from "next/server";
 import { getAuth } from "@/lib/db/auth";
@@ -1590,10 +1604,10 @@ import { medicalRecordService } from "@/lib/services/medical-record.service";
 import { userService } from "@/lib/services/user.service";
 import { logger } from "@/lib/utils/logger";
 import {
-  successResponse,
-  unauthorizedResponse,
-  notFoundResponse,
-  internalServerErrorResponse,
+	successResponse,
+	unauthorizedResponse,
+	notFoundResponse,
+	internalServerErrorResponse,
 } from "@/lib/utils/api-response";
 import { API_MESSAGES } from "@/lib/utils/constants";
 import { NotFoundError } from "@/lib/utils/api-error";
@@ -1602,101 +1616,101 @@ import { NotFoundError } from "@/lib/utils/api-error";
  * GET /api/medical-records/[id]
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+	request: NextRequest,
+	{ params }: { params: { id: string } }
 ) {
-  try {
-    const auth = await getAuth();
-    const session = await auth.api.getSession({ headers: request.headers });
+	try {
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || !session.user) {
-      return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
-    }
+		if (!session || !session.user) {
+			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
+		}
 
-    const { user } = await userService.getUserWithProfile(session.user.id);
+		const { user } = await userService.getUserWithProfile(session.user.id);
 
-    const record = await medicalRecordService.getRecordById(
-      params.id,
-      user._id.toString()
-    );
+		const record = await medicalRecordService.getRecordById(
+			params.id,
+			user._id.toString()
+		);
 
-    return successResponse(record, "Medical record retrieved successfully");
-  } catch (error) {
-    logger.error("Error in GET /api/medical-records/[id]", error);
+		return successResponse(record, "Medical record retrieved successfully");
+	} catch (error) {
+		logger.error("Error in GET /api/medical-records/[id]", error);
 
-    if (error instanceof NotFoundError) {
-      return notFoundResponse(error.message);
-    }
+		if (error instanceof NotFoundError) {
+			return notFoundResponse(error.message);
+		}
 
-    return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
-  }
+		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
+	}
 }
 
 /**
  * PATCH /api/medical-records/[id]
  */
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+	request: NextRequest,
+	{ params }: { params: { id: string } }
 ) {
-  try {
-    const auth = await getAuth();
-    const session = await auth.api.getSession({ headers: request.headers });
+	try {
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || !session.user) {
-      return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
-    }
+		if (!session || !session.user) {
+			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
+		}
 
-    const { user } = await userService.getUserWithProfile(session.user.id);
-    const body = await request.json();
+		const { user } = await userService.getUserWithProfile(session.user.id);
+		const body = await request.json();
 
-    const updated = await medicalRecordService.updateRecord(
-      params.id,
-      user._id.toString(),
-      body
-    );
+		const updated = await medicalRecordService.updateRecord(
+			params.id,
+			user._id.toString(),
+			body
+		);
 
-    return successResponse(updated, "Medical record updated successfully");
-  } catch (error) {
-    logger.error("Error in PATCH /api/medical-records/[id]", error);
+		return successResponse(updated, "Medical record updated successfully");
+	} catch (error) {
+		logger.error("Error in PATCH /api/medical-records/[id]", error);
 
-    if (error instanceof NotFoundError) {
-      return notFoundResponse(error.message);
-    }
+		if (error instanceof NotFoundError) {
+			return notFoundResponse(error.message);
+		}
 
-    return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
-  }
+		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
+	}
 }
 
 /**
  * DELETE /api/medical-records/[id]
  */
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+	request: NextRequest,
+	{ params }: { params: { id: string } }
 ) {
-  try {
-    const auth = await getAuth();
-    const session = await auth.api.getSession({ headers: request.headers });
+	try {
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || !session.user) {
-      return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
-    }
+		if (!session || !session.user) {
+			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
+		}
 
-    const { user } = await userService.getUserWithProfile(session.user.id);
+		const { user } = await userService.getUserWithProfile(session.user.id);
 
-    await medicalRecordService.deleteRecord(params.id, user._id.toString());
+		await medicalRecordService.deleteRecord(params.id, user._id.toString());
 
-    return successResponse(null, "Medical record deleted successfully");
-  } catch (error) {
-    logger.error("Error in DELETE /api/medical-records/[id]", error);
+		return successResponse(null, "Medical record deleted successfully");
+	} catch (error) {
+		logger.error("Error in DELETE /api/medical-records/[id]", error);
 
-    if (error instanceof NotFoundError) {
-      return notFoundResponse(error.message);
-    }
+		if (error instanceof NotFoundError) {
+			return notFoundResponse(error.message);
+		}
 
-    return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
-  }
+		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
+	}
 }
 ```
 
@@ -1747,16 +1761,16 @@ curl -X DELETE http://localhost:3000/api/medical-records/[record-id] \
 ### 6.2 Database Verification
 
 ```javascript
-// Connect to MongoDB
+console.logConnect to MongoDB
 mongosh mongodb://127.0.0.1:27017/synos-db
 
-// Check collection
+console.logCheck collection
 db.medical_records.find().pretty()
 
-// Check indexes
+console.logCheck indexes
 db.medical_records.getIndexes()
 
-// Verify relationships
+console.logVerify relationships
 db.medical_records.aggregate([
   {
     $lookup: {
@@ -1781,52 +1795,58 @@ db.medical_records.aggregate([
 ## 7. Best Practices Checklist
 
 ### ✓ Model Layer
-- [ ] Interface defined with proper TypeScript types
-- [ ] All required fields marked with `required: true`
-- [ ] Appropriate indexes created for query performance
-- [ ] Virtual fields defined for relationships
-- [ ] Validation rules implemented (min, max, enum, custom)
-- [ ] Timestamps enabled (`timestamps: true`)
-- [ ] Explicit collection name set
-- [ ] Both async and sync model getters exported
+
+-  [ ] Interface defined with proper TypeScript types
+-  [ ] All required fields marked with `required: true`
+-  [ ] Appropriate indexes created for query performance
+-  [ ] Virtual fields defined for relationships
+-  [ ] Validation rules implemented (min, max, enum, custom)
+-  [ ] Timestamps enabled (`timestamps: true`)
+-  [ ] Explicit collection name set
+-  [ ] Both async and sync model getters exported
 
 ### ✓ Repository Layer
-- [ ] Extends BaseRepository for standard CRUD
-- [ ] Custom query methods for specific use cases
-- [ ] Error logging in all methods
-- [ ] ObjectId conversion handled properly
-- [ ] Singleton instance exported
-- [ ] Connection ensured before queries
+
+-  [ ] Extends BaseRepository for standard CRUD
+-  [ ] Custom query methods for specific use cases
+-  [ ] Error logging in all methods
+-  [ ] ObjectId conversion handled properly
+-  [ ] Singleton instance exported
+-  [ ] Connection ensured before queries
 
 ### ✓ Service Layer
-- [ ] Business logic centralized
-- [ ] Input validation before database operations
-- [ ] Custom error types thrown (NotFoundError, BadRequestError, etc.)
-- [ ] Comprehensive logging
-- [ ] Authorization checks where needed
-- [ ] Singleton instance exported
+
+-  [ ] Business logic centralized
+-  [ ] Input validation before database operations
+-  [ ] Custom error types thrown (NotFoundError, BadRequestError, etc.)
+-  [ ] Comprehensive logging
+-  [ ] Authorization checks where needed
+-  [ ] Singleton instance exported
 
 ### ✓ API Layer
-- [ ] Session validation in all protected routes
-- [ ] Proper HTTP status codes used
-- [ ] Error handling with try-catch
-- [ ] Request body validation
-- [ ] Consistent response format
-- [ ] Logging for all operations
+
+-  [ ] Session validation in all protected routes
+-  [ ] Proper HTTP status codes used
+-  [ ] Error handling with try-catch
+-  [ ] Request body validation
+-  [ ] Consistent response format
+-  [ ] Logging for all operations
 
 ### ✓ Security
-- [ ] User ID from session, not request body
-- [ ] Authorization checks (data belongs to user)
-- [ ] Input sanitization
-- [ ] No sensitive data in responses
-- [ ] HTTP-only cookies used
+
+-  [ ] User ID from session, not request body
+-  [ ] Authorization checks (data belongs to user)
+-  [ ] Input sanitization
+-  [ ] No sensitive data in responses
+-  [ ] HTTP-only cookies used
 
 ### ✓ Performance
-- [ ] Indexes on frequently queried fields
-- [ ] Compound indexes for common query combinations
-- [ ] Pagination for large datasets
-- [ ] Selective field projection when possible
-- [ ] Connection pooling configured
+
+-  [ ] Indexes on frequently queried fields
+-  [ ] Compound indexes for common query combinations
+-  [ ] Pagination for large datasets
+-  [ ] Selective field projection when possible
+-  [ ] Connection pooling configured
 
 ---
 

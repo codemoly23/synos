@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 		const auth = await getAuth();
 
 		const session = await auth.api.getSession({ headers: request.headers });
-		// console.log("Session:", {
+		// // console.log("Session:", {
 		// 	exists: !!session,
 		// 	hasUser: !!session?.user,
 		// 	userId: session?.user?.id,
@@ -31,27 +31,27 @@ export async function GET(request: NextRequest) {
 
 		// Check if user is authenticated
 		if (!session || !session.user) {
-			// console.log("❌ No session or user found");
+			// // console.log("❌ No session or user found");
 			// logger.warn("Unauthenticated access attempt to /api/user/me");
 			return unauthorizedResponse(API_MESSAGES.UNAUTHORIZED);
 		}
 
-		// console.log("✅ Session valid, userId:", session.user.id);
+		// // console.log("✅ Session valid, userId:", session.user.id);
 		logger.info("Fetching user data", { userId: session.user.id });
 
 		try {
-			// console.log("🔍 Calling userService.getUserWithProfile with userId:", session.user.id);
+			// // console.log("🔍 Calling userService.getUserWithProfile with userId:", session.user.id);
 
 			// Get user with profile from our database using Better Auth user._id
 			const { user, profile } = await userService.getUserWithProfile({
 				userId: session.user.id,
 			});
 
-			// console.log("✅ User and profile retrieved:", {
+			// // console.log("[API /user/me] User data retrieved:", {
 			// 	userId: user._id,
 			// 	userEmail: user.email,
-			// 	profileId: profile._id,
-			// 	hasProfile: !!profile
+			// 	userImage: user.image,
+			// 	profileAvatarUrl: profile.avatarUrl,
 			// });
 
 			logger.info("User profile retrieved", { userId: user._id });
@@ -83,11 +83,11 @@ export async function GET(request: NextRequest) {
 				"User data retrieved successfully"
 			);
 		} catch (error) {
-			// console.log("❌ Error fetching user:", error);
+			// // console.log("❌ Error fetching user:", error);
 
 			// If user not found, create profile (user should exist in Better Auth's collection)
 			if (error instanceof NotFoundError) {
-				// console.log("⚠️  User not found, attempting to create profile");
+				// // console.log("⚠️  User not found, attempting to create profile");
 
 				logger.warn(
 					"User or profile not found, attempting to create profile",

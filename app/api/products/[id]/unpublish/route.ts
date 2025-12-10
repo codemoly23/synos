@@ -19,10 +19,7 @@ interface RouteParams {
  * POST /api/products/[id]/unpublish
  * Unpublish a product (set to draft)
  */
-export async function POST(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -32,7 +29,9 @@ export async function POST(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to unpublish product");
-			return unauthorizedResponse("You must be logged in to unpublish products");
+			return unauthorizedResponse(
+				"You must be logged in to unpublish products"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -40,7 +39,10 @@ export async function POST(
 		}
 
 		// Unpublish product
-		const product = await productService.unpublishProduct(id, session.user.id);
+		const product = await productService.unpublishProduct(
+			id,
+			session.user.id
+		);
 
 		logger.info("Product unpublished", {
 			productId: id,
@@ -55,7 +57,8 @@ export async function POST(
 			return notFoundResponse(error.message);
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to unpublish product";
+		const message =
+			error instanceof Error ? error.message : "Failed to unpublish product";
 		return internalServerErrorResponse(message);
 	}
 }

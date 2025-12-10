@@ -149,37 +149,37 @@ export class ProfileRepository extends BaseRepository<IProfile> {
 		defaultData?: Partial<IProfile>
 	): Promise<IProfile> {
 		try {
-			// console.log("👤 [ProfileRepository] findOrCreateForUser called");
-			// console.log("👤 [ProfileRepository] userId:", userId);
-			// console.log("👤 [ProfileRepository] userId type:", typeof userId);
+			// // console.log("👤 [ProfileRepository] findOrCreateForUser called");
+			// // console.log("👤 [ProfileRepository] userId:", userId);
+			// // console.log("👤 [ProfileRepository] userId type:", typeof userId);
 
 			// Try to find existing profile
-			// console.log("👤 [ProfileRepository] Searching for existing profile...");
+			// // console.log("👤 [ProfileRepository] Searching for existing profile...");
 			let profile = await this.findByUserId(userId);
 
-			// console.log("👤 [ProfileRepository] Search result:", {
+			// // console.log("👤 [ProfileRepository] Search result:", {
 			// 	found: !!profile,
 			// 	profileId: profile?._id?.toString()
 			// });
 
 			// Create if doesn't exist
 			if (!profile) {
-				// console.log(
+				// // console.log(
 				// 	"👤 [ProfileRepository] Profile not found, creating new one..."
 				// );
 				profile = await this.createForUser(userId, defaultData);
-				// console.log("👤 [ProfileRepository] Profile created:", {
+				// // console.log("👤 [ProfileRepository] Profile created:", {
 				// 	profileId: profile._id.toString(),
 				// 	userId: profile.userId.toString(),
 				// });
 				logger.info("Created new profile for user", { userId });
 			} else {
-				console.log("👤 [ProfileRepository] Profile already exists");
+				// console.log("👤 [ProfileRepository] Profile already exists");
 			}
 
 			return profile;
 		} catch (error) {
-			// console.log(
+			// // console.log(
 			// 	"❌ [ProfileRepository] Error in findOrCreateForUser:",
 			// 	error
 			// );

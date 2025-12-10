@@ -8,6 +8,7 @@
 ## 🐛 THE ACTUAL BUG
 
 ### Root Cause
+
 **Mongoose was connecting to the WRONG database!**
 
 The `MONGODB_URI` was missing the database name in the connection string:
@@ -21,12 +22,14 @@ MONGODB_URI=mongodb://127.0.0.1:27017/synos-db?directConnection=true...
 ```
 
 ### What Was Happening
+
 1. ✅ Better Auth connected to `synos-db` correctly (using separate connection)
 2. ❌ Mongoose connected to default database (probably `test`)
 3. ✅ User registration created user in `synos-db`
 4. ❌ Mongoose queries looked in wrong database, found nothing
 
 ### Proof from Logs
+
 ```
 🗄️ [UserRepository] Collection name: user  ✅ Correct collection
 🗄️ [UserRepository] Query executed. Result: { found: false }  ❌ But nothing found!
@@ -39,6 +42,7 @@ The query was correct, but looking in the **wrong database**!
 ## ✅ THE FIX
 
 ### 1. Fixed .env File
+
 **File:** `.env`
 
 ```bash
@@ -50,12 +54,17 @@ MONGODB_URI=mongodb://127.0.0.1:27017/synos-db?directConnection=true&serverSelec
 ```
 
 ### 2. Added Connection Verification Logs
+
 **File:** `lib/db/db-connect.ts`
 
 Added logs to show which database Mongoose connects to:
+
 ```typescript
-console.log("🔌 [MongoDB] Connecting to:", MONGODB_URI);
-console.log("✅ [MongoDB] Database name:", mongooseInstance.connection.db?.databaseName);
+console.logconsole.log("🔌 [MongoDB] Connecting to:", MONGODB_URI);
+console.logconsole.log(
+	"✅ [MongoDB] Database name:",
+	mongooseInstance.connection.db?.databaseName
+);
 ```
 
 ---
@@ -63,6 +72,7 @@ console.log("✅ [MongoDB] Database name:", mongooseInstance.connection.db?.data
 ## 🎯 HOW TO VERIFY IT'S FIXED
 
 ### Step 1: Restart Dev Server
+
 ```bash
 # Stop the current server (Ctrl+C)
 # Start it again
@@ -70,6 +80,7 @@ pnpm dev
 ```
 
 **You should now see:**
+
 ```
 🔌 [MongoDB] Connecting to: mongodb://127.0.0.1:27017/synos-db?...
 ✅ [MongoDB] Connected successfully!
@@ -77,6 +88,7 @@ pnpm dev
 ```
 
 ### Step 2: Clear and Re-register
+
 ```bash
 # Clear database
 mongosh mongodb://127.0.0.1:27017/synos-db --eval "
@@ -89,7 +101,9 @@ mongosh mongodb://127.0.0.1:27017/synos-db --eval "
 ```
 
 ### Step 3: Check Logs
+
 After registration, you should see:
+
 ```
 🗄️ [UserRepository] Database name: synos-db  ← Correct!
 🗄️ [UserRepository] Query executed. Result: { found: true }  ← User found!
@@ -101,12 +115,14 @@ After registration, you should see:
 ## 📊 Summary of All Fixes
 
 ### Fixed Issues
+
 1. ✅ **Collection name:** `"users"` → `"user"`
 2. ✅ **Database connection:** Added `/synos-db` to MONGODB_URI
 3. ✅ **Logging:** Comprehensive logs throughout entire flow
 4. ✅ **Type safety:** Added virtual profile property to IUser interface
 
 ### Files Modified
+
 1. `.env` - Fixed MONGODB_URI
 2. `models/user.model.ts` - Collection name & TypeScript interface
 3. `lib/db/db-connect.ts` - Added connection verification
@@ -129,6 +145,7 @@ After registration, you should see:
 ## 🎉 WHY THIS FIXES EVERYTHING
 
 ### Before
+
 ```
 Better Auth → synos-db/user collection ✅
 Mongoose   → test/user collection ❌ (wrong DB!)
@@ -136,6 +153,7 @@ Query      → test database → finds nothing
 ```
 
 ### After
+
 ```
 Better Auth → synos-db/user collection ✅
 Mongoose   → synos-db/user collection ✅ (correct DB!)

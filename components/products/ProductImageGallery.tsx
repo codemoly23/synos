@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, X, ZoomIn, Pause, Play } from "lucide-react";
+import {
+	ChevronLeft,
+	ChevronRight,
+	X,
+	ZoomIn,
+	Pause,
+	Play,
+} from "lucide-react";
 import Image from "next/image";
 
 interface ProductImageGalleryProps {
@@ -118,7 +125,9 @@ export function ProductImageGallery({
 							<button
 								onClick={() => setIsPaused(!isPaused)}
 								className="p-2 sm:p-2.5 rounded-full bg-white/95 shadow-lg text-slate-700 hover:bg-white hover:scale-105 transition-all duration-200 cursor-pointer"
-								aria-label={isPaused ? "Play slideshow" : "Pause slideshow"}
+								aria-label={
+									isPaused ? "Play slideshow" : "Pause slideshow"
+								}
 							>
 								{isPaused ? (
 									<Play className="h-4 w-4 sm:h-5 sm:w-5" />

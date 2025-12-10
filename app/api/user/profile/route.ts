@@ -29,16 +29,16 @@ export async function PUT(request: NextRequest) {
 
 		// Parse request body
 		const body = await request.json();
-		// console.log("📦 Request body:", body);
+		// // console.log("📦 Request body:", body);
 
 		// Validate input
 		const validation = updateProfileSchema.safeParse(body);
 		if (!validation.success) {
-			// console.log("❌ Validation failed:", validation.error);
+			// // console.log("❌ Validation failed:", validation.error);
 			return badRequestResponse("Validation failed", validation.error);
 		}
 
-		// console.log("✅ Validation passed");
+		// // console.log("✅ Validation passed");
 
 		// Update profile
 		const updatedProfile = await userService.updateUserProfile(
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
 			validation.data
 		);
 
-		// console.log("✅ Profile updated:", updatedProfile._id);
+		// // console.log("✅ Profile updated:", updatedProfile._id);
 
 		logger.info("Profile updated successfully", {
 			userId: session.user.id,
@@ -69,7 +69,7 @@ export async function PUT(request: NextRequest) {
 			"Profile updated successfully"
 		);
 	} catch (error) {
-		// console.log("❌ Error updating profile:", error);
+		// // console.log("❌ Error updating profile:", error);
 		logger.error("Error in PUT /api/user/profile", error);
 		return internalServerErrorResponse(API_MESSAGES.INTERNAL_ERROR);
 	}

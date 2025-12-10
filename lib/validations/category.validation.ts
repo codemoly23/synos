@@ -13,7 +13,26 @@ const slugSchema = z
 	);
 
 /**
- * Optional URL validation
+ * Check if a string is a valid local path (starts with /)
+ */
+const isLocalPath = (str: string): boolean => {
+	return str.startsWith("/");
+};
+
+/**
+ * Check if a string is a valid external URL
+ */
+const isValidExternalUrl = (str: string): boolean => {
+	try {
+		const parsed = new URL(str);
+		return ["http:", "https:"].includes(parsed.protocol);
+	} catch {
+		return false;
+	}
+};
+
+/**
+ * Optional URL/path validation - accepts local paths, external URLs, or empty
  */
 const optionalUrlSchema = z
 	.string()
@@ -22,14 +41,12 @@ const optionalUrlSchema = z
 	.refine(
 		(url) => {
 			if (!url || url.trim() === "") return true;
-			try {
-				const parsed = new URL(url);
-				return ["http:", "https:"].includes(parsed.protocol);
-			} catch {
-				return false;
-			}
+			return isLocalPath(url) || isValidExternalUrl(url);
 		},
-		{ message: "URL must use http or https protocol" }
+		{
+			message:
+				"Must be a valid local path (starting with /) or URL (http/https)",
+		}
 	);
 
 /**

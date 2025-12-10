@@ -42,9 +42,11 @@ export async function GET(request: NextRequest) {
 
 		const queryResult = listRequestSchema.safeParse({
 			folder: searchParams.get("folder"),
-			page: searchParams.get("page") || STORAGE_CONFIG.DEFAULT_PAGE.toString(),
+			page:
+				searchParams.get("page") || STORAGE_CONFIG.DEFAULT_PAGE.toString(),
 			limit:
-				searchParams.get("limit") || STORAGE_CONFIG.DEFAULT_LIMIT.toString(),
+				searchParams.get("limit") ||
+				STORAGE_CONFIG.DEFAULT_LIMIT.toString(),
 			sort: searchParams.get("sort") || "desc",
 		});
 

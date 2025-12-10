@@ -253,7 +253,7 @@ export function ProductContent({ product }: ProductContentProps) {
 			{product.qa && product.qa.length > 0 && <ProductFAQ faqs={product.qa} />}
 
 			{/* Product Inquiry Form */}
-			<ProductInquiryForm productName={product.title} productId={product.id} />
+			<ProductInquiryForm productName={product.title} productId={product.id} productSlug={product.slug} />
 		</div>
 	);
 }

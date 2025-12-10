@@ -261,15 +261,24 @@ class AuthService {
 			await accountCollection.insertOne(accountDoc);
 
 			// Fetch the created user using our repository
-			const newUser = await userRepository.findByEmail(data.email.toLowerCase());
+			const newUser = await userRepository.findByEmail(
+				data.email.toLowerCase()
+			);
 			if (!newUser) {
 				throw new DatabaseError("User created but could not be retrieved");
 			}
 
 			// Create profile for the new user
-			await this.handlePostRegistration(newUser._id.toString(), data.email, data.name);
+			await this.handlePostRegistration(
+				newUser._id.toString(),
+				data.email,
+				data.name
+			);
 
-			logger.info("User created by admin", { userId: newUser._id.toString(), email: data.email });
+			logger.info("User created by admin", {
+				userId: newUser._id.toString(),
+				email: data.email,
+			});
 
 			return newUser;
 		} catch (error) {

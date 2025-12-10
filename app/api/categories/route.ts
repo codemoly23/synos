@@ -1,7 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getAuth } from "@/lib/db/auth";
 import { categoryService } from "@/lib/services/category.service";
-import { createCategorySchema, categoryListQuerySchema } from "@/lib/validations/category.validation";
+import {
+	createCategorySchema,
+	categoryListQuerySchema,
+} from "@/lib/validations/category.validation";
 import { logger } from "@/lib/utils/logger";
 import {
 	successResponse,
@@ -32,7 +35,10 @@ export async function GET(request: NextRequest) {
 		});
 
 		if (!queryResult.success) {
-			return badRequestResponse("Invalid query parameters", queryResult.error.issues);
+			return badRequestResponse(
+				"Invalid query parameters",
+				queryResult.error.issues
+			);
 		}
 
 		const { page, limit, parent, isActive, tree, search } = queryResult.data;
@@ -61,7 +67,8 @@ export async function GET(request: NextRequest) {
 		);
 	} catch (error: unknown) {
 		logger.error("Error fetching categories", error);
-		const message = error instanceof Error ? error.message : "Failed to fetch categories";
+		const message =
+			error instanceof Error ? error.message : "Failed to fetch categories";
 		return internalServerErrorResponse(message);
 	}
 }
@@ -78,7 +85,9 @@ export async function POST(request: NextRequest) {
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to create category");
-			return unauthorizedResponse("You must be logged in to create categories");
+			return unauthorizedResponse(
+				"You must be logged in to create categories"
+			);
 		}
 
 		// Parse and validate request body
@@ -89,11 +98,16 @@ export async function POST(request: NextRequest) {
 			logger.warn("Category creation validation failed", {
 				errors: validationResult.error.issues,
 			});
-			return badRequestResponse("Validation failed", validationResult.error.issues);
+			return badRequestResponse(
+				"Validation failed",
+				validationResult.error.issues
+			);
 		}
 
 		// Create category
-		const category = await categoryService.createCategory(validationResult.data);
+		const category = await categoryService.createCategory(
+			validationResult.data
+		);
 
 		logger.info("Category created", {
 			categoryId: category._id,
@@ -114,7 +128,8 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to create category";
+		const message =
+			error instanceof Error ? error.message : "Failed to create category";
 		return internalServerErrorResponse(message);
 	}
 }

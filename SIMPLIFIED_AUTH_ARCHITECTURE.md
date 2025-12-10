@@ -15,6 +15,7 @@ This document describes the **simplified authentication architecture** for Synos
 ## 🎯 Problem Statement
 
 ### Original Issue
+
 After user registration and login, the application was unable to fetch user data from MongoDB, returning null. This was caused by:
 
 1. **Better Auth uses MongoDB `_id` as the primary user identifier** (ObjectId)
@@ -23,10 +24,12 @@ After user registration and login, the application was unable to fetch user data
 4. **Sync mechanism failures** between the two systems
 
 ### Solution
+
 **Use Better Auth's `_id` directly** as the single source of truth. Better Auth already stores users in MongoDB with the same schema structure, so we only need to:
-- Query Better Auth's `user` collection directly using `_id`
-- Create profiles in a separate `profiles` collection
-- Eliminate the redundant `users` collection
+
+-  Query Better Auth's `user` collection directly using `_id`
+-  Create profiles in a separate `profiles` collection
+-  Eliminate the redundant `users` collection
 
 ---
 
@@ -202,7 +205,7 @@ Profiles Collection
    → Returns: { user: { id: "692fbcb9...", email: "...", name: "..." } }
 
 3. Extract user._id from session:
-   const userId = session.user.id  // This is the MongoDB ObjectId string
+   const userId = session.user.id  console.logThis is the MongoDB ObjectId string
 
 4. Query Better Auth 'user' collection:
    const user = await User.findById(userId)
@@ -238,14 +241,14 @@ Profiles Collection
  * No need for separate betterAuthUserId field
  */
 export interface IUser extends Document {
-  _id: mongoose.Types.ObjectId;
-  email: string;
-  name: string;
-  emailVerified: boolean;
-  image?: string;
-  lastLoginAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+	_id: mongoose.Types.ObjectId;
+	email: string;
+	name: string;
+	emailVerified: boolean;
+	image?: string;
+	lastLoginAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
 }
 ```
 
@@ -258,13 +261,15 @@ export interface IUser extends Document {
 **File:** [lib/repositories/user.repository.ts](lib/repositories/user.repository.ts)
 
 **Removed Methods:**
-- `findByBetterAuthId()` - No longer needed
-- `findByBetterAuthIdWithProfile()` - No longer needed
+
+-  `findByBetterAuthId()` - No longer needed
+-  `findByBetterAuthIdWithProfile()` - No longer needed
 
 **Existing Methods Still Used:**
-- `findByIdWithProfile(userId)` - Queries by MongoDB `_id`
-- `findByEmail(email)` - Queries by email
-- `findByEmailWithProfile(email)` - Queries by email with profile
+
+-  `findByIdWithProfile(userId)` - Queries by MongoDB `_id`
+-  `findByEmail(email)` - Queries by email
+-  `findByEmailWithProfile(email)` - Queries by email with profile
 
 ---
 
@@ -281,14 +286,14 @@ async getUserWithProfile(userId: string): Promise<{
   user: IUser;
   profile: IProfile;
 }> {
-  // Get user with populated profile using _id
+  console.logGet user with populated profile using _id
   const user = await userRepository.findByIdWithProfile(userId);
 
   if (!user) {
     throw new NotFoundError(API_MESSAGES.USER_NOT_FOUND);
   }
 
-  // Get or create profile
+  console.logGet or create profile
   const profile = await profileRepository.findOrCreateForUser(user._id);
 
   return { user, profile };
@@ -313,7 +318,7 @@ async handlePostRegistration(
   email: string,
   name: string
 ): Promise<{ userId: string; profileId: string }> {
-  // Create default profile for the user
+  console.logCreate default profile for the user
   const profile = await profileRepository.createForUser(userId, {
     bio: "",
     avatarUrl: undefined,
@@ -338,7 +343,7 @@ async syncUserFromBetterAuth(
   email: string,
   name: string
 ): Promise<void> {
-  // Check if profile exists, create if it doesn't
+  console.logCheck if profile exists, create if it doesn't
   const profileExists = await profileRepository.existsForUser(userId);
 
   if (!profileExists) {
@@ -362,16 +367,16 @@ async syncUserFromBetterAuth(
  * Create profile for Better Auth user
  */
 export async function POST(request: NextRequest) {
-  // Get session
+  console.logGet session
   const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session || !session.user) {
     return internalServerErrorResponse("No active session");
   }
 
-  // Create profile for the user
+  console.logCreate profile for the user
   await authService.syncUserFromBetterAuth(
-    session.user.id,    // This is Better Auth user._id
+    session.user.id,    console.logThis is Better Auth user._id
     session.user.email,
     session.user.name
   );
@@ -390,7 +395,7 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 export async function GET(request: NextRequest) {
-  // Get session
+  console.logGet session
   const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session || !session.user) {
@@ -398,22 +403,22 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get user with profile using Better Auth user._id
+    console.logGet user with profile using Better Auth user._id
     const { user, profile } = await userService.getUserWithProfile(
-      session.user.id  // This is Better Auth user._id
+      session.user.id  console.logThis is Better Auth user._id
     );
 
     return successResponse({ user, profile });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      // Create profile if missing
+      console.logCreate profile if missing
       await authService.syncUserFromBetterAuth(
         session.user.id,
         session.user.email,
         session.user.name
       );
 
-      // Retry
+      console.logRetry
       const { user, profile } = await userService.getUserWithProfile(
         session.user.id
       );
@@ -432,23 +437,23 @@ export async function GET(request: NextRequest) {
 
 ## 🔍 Database Queries
 
-### Query Better Auth User by _id
+### Query Better Auth User by \_id
 
 ```javascript
-// MongoDB Query
+console.logMongoDB Query
 db.user.findOne({ _id: ObjectId("692fbcb95a1c3f1b74798ae4") })
 
-// Mongoose Query
+console.logMongoose Query
 const user = await User.findById("692fbcb95a1c3f1b74798ae4");
 ```
 
 ### Query Profile by userId
 
 ```javascript
-// MongoDB Query
+console.logMongoDB Query
 db.profiles.findOne({ userId: ObjectId("692fbcb95a1c3f1b74798ae4") })
 
-// Mongoose Query
+console.logMongoose Query
 const profile = await Profile.findOne({
   userId: "692fbcb95a1c3f1b74798ae4"
 });
@@ -457,7 +462,7 @@ const profile = await Profile.findOne({
 ### Query User with Profile (Joined)
 
 ```javascript
-// MongoDB Aggregation
+console.logMongoDB Aggregation
 db.user.aggregate([
   { $match: { _id: ObjectId("692fbcb95a1c3f1b74798ae4") } },
   {
@@ -471,7 +476,7 @@ db.user.aggregate([
   { $unwind: "$profile" }
 ])
 
-// Mongoose Query with Virtual Population
+console.logMongoose Query with Virtual Population
 const user = await User.findById("692fbcb95a1c3f1b74798ae4")
   .populate("profile")
   .exec();
@@ -486,7 +491,7 @@ const user = await User.findById("692fbcb95a1c3f1b74798ae4")
 ```typescript
 Session {
   user: {
-    id: "692fbcb95a1c3f1b74798ae4",    // Better Auth user._id (ObjectId string)
+    id: "692fbcb95a1c3f1b74798ae4",    console.logBetter Auth user._id (ObjectId string)
     email: "user@example.com",
     name: "John Doe",
     emailVerified: false,
@@ -510,16 +515,16 @@ Session {
 
 ```typescript
 advanced: {
-  cookiePrefix: "synos",  // Creates "synos.session_token"
+  cookiePrefix: "synos",  console.logCreates "synos.session_token"
   useSecureCookies: process.env.NODE_ENV === "production"
 }
 
 session: {
-  expiresIn: 60 * 60 * 24 * 7,    // 7 days
-  updateAge: 60 * 60 * 24,         // Update every 24 hours
+  expiresIn: 60 * 60 * 24 * 7,    console.log7 days
+  updateAge: 60 * 60 * 24,         console.logUpdate every 24 hours
   cookieCache: {
     enabled: true,
-    maxAge: 60 * 5                 // 5 minutes cache
+    maxAge: 60 * 5                 console.log5 minutes cache
   }
 }
 ```
@@ -534,26 +539,30 @@ session: {
 ## ✅ Benefits of Simplified Architecture
 
 ### 1. Reduced Complexity
-- ❌ **Before:** Two user collections (Better Auth `user` + Mongoose `users`)
-- ✅ **After:** Single `user` collection (Better Auth managed)
-- ❌ **Before:** `betterAuthUserId` field for linking
-- ✅ **After:** Direct `_id` usage
+
+-  ❌ **Before:** Two user collections (Better Auth `user` + Mongoose `users`)
+-  ✅ **After:** Single `user` collection (Better Auth managed)
+-  ❌ **Before:** `betterAuthUserId` field for linking
+-  ✅ **After:** Direct `_id` usage
 
 ### 2. Better Performance
-- ✅ Fewer database queries (no need to sync users)
-- ✅ Single source of truth (Better Auth `user` collection)
-- ✅ No duplicate data storage
+
+-  ✅ Fewer database queries (no need to sync users)
+-  ✅ Single source of truth (Better Auth `user` collection)
+-  ✅ No duplicate data storage
 
 ### 3. Easier Maintenance
-- ✅ Simpler code (fewer methods, less logic)
-- ✅ Clearer data flow (one user record, one profile record)
-- ✅ Less error-prone (no sync failures)
+
+-  ✅ Simpler code (fewer methods, less logic)
+-  ✅ Clearer data flow (one user record, one profile record)
+-  ✅ Less error-prone (no sync failures)
 
 ### 4. Industrial Best Practice
-- ✅ **Single Source of Truth:** Better Auth manages authentication
-- ✅ **Separation of Concerns:** Profiles stored separately
-- ✅ **RESTful Design:** Clean API endpoints
-- ✅ **Type Safety:** Full TypeScript support
+
+-  ✅ **Single Source of Truth:** Better Auth manages authentication
+-  ✅ **Separation of Concerns:** Profiles stored separately
+-  ✅ **RESTful Design:** Clean API endpoints
+-  ✅ **Type Safety:** Full TypeScript support
 
 ---
 
@@ -664,11 +673,11 @@ mongosh mongodb://127.0.0.1:27017/synos-db --eval "
 **Solution:** Fallback sync automatically creates profile
 
 ```typescript
-// In /api/user/me
+console.logIn /api/user/me
 catch (error) {
   if (error instanceof NotFoundError) {
     await authService.syncUserFromBetterAuth(userId, email, name);
-    // Retry fetch
+    console.logRetry fetch
   }
 }
 ```
@@ -680,6 +689,7 @@ catch (error) {
 **Cause:** Profile was never created after registration
 
 **Solution:**
+
 1. Call `POST /api/auth/sync-user` manually
 2. Fallback in `/api/user/me` will auto-create it
 
@@ -690,26 +700,28 @@ catch (error) {
 **Cause:** Session cookies not being sent or expired
 
 **Solution:**
+
 1. Check cookies in browser DevTools
 2. Verify `synos.session_token` exists
 3. Check session expiry: `db.session.findOne({ token: "..." })`
 4. Re-login if session expired
 
-### Issue 4: Cannot Query by _id
+### Issue 4: Cannot Query by \_id
 
 **Error:** `Cast to ObjectId failed`
 
 **Cause:** Trying to query with invalid ObjectId string
 
 **Solution:**
+
 ```typescript
-// ✅ Correct
-const user = await User.findById(userId);  // Mongoose handles conversion
+console.log✅ Correct
+const user = await User.findById(userId);  console.logMongoose handles conversion
 
-// ❌ Wrong
-const user = await User.findById({ _id: userId });  // Don't wrap in object
+console.log❌ Wrong
+const user = await User.findById({ _id: userId });  console.logDon't wrap in object
 
-// ✅ If using MongoDB driver
+console.log✅ If using MongoDB driver
 const user = await db.user.findOne({ _id: ObjectId(userId) });
 ```
 
@@ -722,24 +734,24 @@ If you have existing users with `betterAuthUserId` field:
 ### Option 1: Keep Both Fields (Backward Compatible)
 
 ```typescript
-// User Model
+console.logUser Model
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
-  betterAuthUserId?: string;  // Keep for old users
-  // ... other fields
+  betterAuthUserId?: string;  console.logKeep for old users
+  console.log... other fields
 }
 
-// Query Logic
+console.logQuery Logic
 async getUserWithProfile(userId: string) {
-  // Try by _id first
+  console.logTry by _id first
   let user = await User.findById(userId);
 
-  // Fallback to betterAuthUserId for old users
+  console.logFallback to betterAuthUserId for old users
   if (!user) {
     user = await User.findOne({ betterAuthUserId: userId });
   }
 
-  // ...
+  console.log...
 }
 ```
 
@@ -749,24 +761,24 @@ async getUserWithProfile(userId: string) {
 # Run migration script
 mongosh mongodb://127.0.0.1:27017/synos-db
 
-// For each old user, copy betterAuthUserId to _id
+console.logFor each old user, copy betterAuthUserId to _id
 db.users.find({ betterAuthUserId: { $exists: true } }).forEach(user => {
-  // Better Auth user should have same _id
+  console.logBetter Auth user should have same _id
   const betterAuthUser = db.user.findOne({ id: user.betterAuthUserId });
 
   if (betterAuthUser) {
-    // Update profiles to point to Better Auth user._id
+    console.logUpdate profiles to point to Better Auth user._id
     db.profiles.updateOne(
       { userId: user._id },
       { $set: { userId: betterAuthUser._id } }
     );
 
-    // Delete Mongoose user (data is in Better Auth user collection)
+    console.logDelete Mongoose user (data is in Better Auth user collection)
     db.users.deleteOne({ _id: user._id });
   }
 });
 
-// Remove betterAuthUserId field from schema
+console.logRemove betterAuthUserId field from schema
 ```
 
 ---
@@ -784,10 +796,11 @@ Profile (userId: ObjectId("..."))
 ```
 
 **Problems:**
-- Duplicate user data
-- Sync failures
-- Extra complexity
-- More database queries
+
+-  Duplicate user data
+-  Sync failures
+-  Extra complexity
+-  More database queries
 
 ### After (Simplified)
 
@@ -798,10 +811,11 @@ Profile (userId: ObjectId("692fbcb9..."))
 ```
 
 **Benefits:**
-- Single user record
-- Direct relationship
-- Simpler code
-- Better performance
+
+-  Single user record
+-  Direct relationship
+-  Simpler code
+-  Better performance
 
 ---
 

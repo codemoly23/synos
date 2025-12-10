@@ -13,10 +13,13 @@ interface RelatedPostsProps {
 
 /**
  * RelatedPosts Component
- * 
+ *
  * Displays related blog posts based on categories or tags.
  */
-export function RelatedPosts({ articles, currentArticleId }: RelatedPostsProps) {
+export function RelatedPosts({
+	articles,
+	currentArticleId,
+}: RelatedPostsProps) {
 	// Filter out current article and limit to 3
 	const relatedArticles = articles
 		.filter((article) => article.id !== currentArticleId)
@@ -57,7 +60,11 @@ export function RelatedPosts({ articles, currentArticleId }: RelatedPostsProps) 
 					{/* Related Articles Grid */}
 					<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 						{relatedArticles.map((article, index) => (
-							<BlogCard key={article.id} article={article} index={index} />
+							<BlogCard
+								key={article.id}
+								article={article}
+								index={index}
+							/>
 						))}
 					</div>
 				</motion.div>
@@ -65,4 +72,3 @@ export function RelatedPosts({ articles, currentArticleId }: RelatedPostsProps) 
 		</section>
 	);
 }
-

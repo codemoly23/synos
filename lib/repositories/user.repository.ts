@@ -28,23 +28,23 @@ export class UserRepository extends BaseRepository<IUser> {
 	 */
 	async findByIdWithProfile(userId: string): Promise<IUser | null> {
 		try {
-			// console.log("🗄️  [UserRepository] findByIdWithProfile called");
-			// console.log("🗄️  [UserRepository] userId:", userId);
-			// console.log("🗄️  [UserRepository] Model name:", this.model.modelName);
-			// console.log("🗄️  [UserRepository] Collection name:", this.model.collection.name);
+			// // console.log("🗄️  [UserRepository] findByIdWithProfile called");
+			// // console.log("🗄️  [UserRepository] userId:", userId);
+			// // console.log("🗄️  [UserRepository] Model name:", this.model.modelName);
+			// // console.log("🗄️  [UserRepository] Collection name:", this.model.collection.name);
 
 			await this.ensureConnection();
-			// console.log("🗄️  [UserRepository] DB connection ensured");
+			// // console.log("🗄️  [UserRepository] DB connection ensured");
 
 			logger.info("Finding user by ID with profile", { userId });
 
-			// console.log("🗄️  [UserRepository] Executing query: findById with populate...");
+			// // console.log("🗄️  [UserRepository] Executing query: findById with populate...");
 			const user = await this.model
 				.findById(userId)
 				.populate("profile")
 				.exec();
 
-			// console.log("🗄️  [UserRepository] Query executed. Result:", {
+			// // console.log("🗄️  [UserRepository] Query executed. Result:", {
 			// 	found: !!user,
 			// 	userId: user?._id?.toString(),
 			// 	email: user?.email,
@@ -61,7 +61,7 @@ export class UserRepository extends BaseRepository<IUser> {
 
 			return user;
 		} catch (error) {
-			// console.log(
+			// // console.log(
 			// 	"❌ [UserRepository] Error in findByIdWithProfile:",
 			// 	error
 			// );
@@ -128,7 +128,7 @@ export class UserRepository extends BaseRepository<IUser> {
 							{ name: { $regex: searchTerm, $options: "i" } },
 							{ email: { $regex: searchTerm, $options: "i" } },
 						],
-					}
+				  }
 				: {};
 
 			if (page && limit) {

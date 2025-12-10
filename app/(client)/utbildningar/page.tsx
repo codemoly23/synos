@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ContactForm } from "@/components/forms/contact-form";
-import { BookOpen, CheckSquare, HeartPlus } from "lucide-react";
+import { TrainingInquiryForm } from "@/components/forms/TrainingInquiryForm";
+import { BookOpen, CheckSquare, HeartPlus, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
 	title: "Utbildningar",
@@ -227,21 +227,25 @@ export default function UtbildningarPage() {
 				</div>
 			</section>
 
-			{/* Contact Form Section */}
+			{/* Training Inquiry Form Section */}
 			<section className="mb-20">
-				<div className="mx-auto max-w-3xl">
-					<div className="mb-8 text-center">
-						<h2 className="mb-4 text-3xl font-bold">Kontakta oss</h2>
-						<p className="text-muted-foreground">
-							Har du frågor om våra utbildningar? Fyll i formuläret nedan
-							så hör vi av oss till dig.
+				<div className="mx-auto max-w-5xl">
+					<div className="mb-12 text-center">
+						<div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-4">
+							<Mail className="h-4 w-4" />
+							<span className="text-sm font-semibold">
+								Utbildningsförfrågan
+							</span>
+						</div>
+						<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+							Intresserad av våra utbildningar?
+						</h2>
+						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+							Fyll i formuläret så kontaktar vi dig för mer information
+							om våra utbildningar och certifieringsprogram
 						</p>
 					</div>
-					<Card>
-						<CardContent className="p-8">
-							<ContactForm />
-						</CardContent>
-					</Card>
+					<TrainingInquiryForm />
 				</div>
 			</section>
 

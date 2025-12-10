@@ -260,24 +260,40 @@ class UserService {
 	 * Supports both URL and base64-encoded images
 	 */
 	async updateUserImage(userId: string, image: string | null): Promise<IUser> {
+		console.log("[User Service] updateUserImage called:", {
+			userId,
+			image,
+			imageLength: image?.length,
+		});
+
 		try {
 			// Update user image
+			console.log("[User Service] Calling userRepository.updateById...");
 			const updatedUser = await userRepository.updateById(userId, {
 				$set: { image },
 			});
 
+			console.log("[User Service] updateById result:", {
+				success: !!updatedUser,
+				userId: updatedUser?._id,
+				newImage: updatedUser?.image,
+			});
+
 			if (!updatedUser) {
+				console.log("[User Service] User not found after update");
 				throw new NotFoundError(API_MESSAGES.USER_NOT_FOUND);
 			}
 
 			logger.info("User image updated", {
 				userId,
+				newImageUrl: image,
 				isBase64: image ? image.startsWith("data:image") : false,
 				removed: image === null,
 			});
 
 			return updatedUser;
 		} catch (error) {
+			console.error("[User Service] Error updating user image:", error);
 			logger.error("Error updating user image", error);
 
 			if (error instanceof NotFoundError) {

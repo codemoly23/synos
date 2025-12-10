@@ -93,11 +93,11 @@ Profiles Collection
 ### Get Current User
 
 ```typescript
-// In API route
+console.logIn API route
 const session = await auth.api.getSession({ headers });
-const userId = session.user.id;  // This is Better Auth user._id
+const userId = session.user.id;  console.logThis is Better Auth user._id
 
-// Fetch user and profile
+console.logFetch user and profile
 const { user, profile } = await userService.getUserWithProfile({
   userId
 });
@@ -106,8 +106,8 @@ const { user, profile } = await userService.getUserWithProfile({
 ### Create Profile
 
 ```typescript
-// Better Auth user already exists
-// Just create profile
+console.logBetter Auth user already exists
+console.logJust create profile
 await profileRepository.createForUser(userId, {
   bio: "",
   avatarUrl: null,
@@ -119,13 +119,13 @@ await profileRepository.createForUser(userId, {
 ### Query User
 
 ```typescript
-// By _id (recommended)
+console.logBy _id (recommended)
 const user = await User.findById(userId);
 
-// By email
+console.logBy email
 const user = await User.findOne({ email: "user@example.com" });
 
-// With profile (populated)
+console.logWith profile (populated)
 const user = await User.findById(userId).populate("profile");
 ```
 
@@ -166,18 +166,21 @@ curl -X POST http://localhost:3000/api/auth/sync-user \
 ### User Data Not Fetching
 
 **Solution 1: Check session exists**
+
 ```javascript
-// Browser console
-document.cookie  // Should include synos.session_token
+console.logBrowser console
+document.cookie  console.logShould include synos.session_token
 ```
 
 **Solution 2: Create profile manually**
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/sync-user \
   -H "Cookie: synos.session_token=..."
 ```
 
 **Solution 3: Check database**
+
 ```bash
 mongosh --eval "db.user.findOne(); db.profiles.findOne();"
 ```
@@ -185,6 +188,7 @@ mongosh --eval "db.user.findOne(); db.profiles.findOne();"
 ### Session Not Persisting
 
 **Check:**
+
 1. Cookies enabled in browser
 2. `BETTER_AUTH_URL` matches your domain
 3. In development: `useSecureCookies` is `false`
@@ -193,36 +197,41 @@ mongosh --eval "db.user.findOne(); db.profiles.findOne();"
 ### Profile Not Created
 
 **Fix:**
-- Fallback in `/api/user/me` auto-creates profiles
-- Call `/api/auth/sync-user` manually
-- Check server logs for errors
+
+-  Fallback in `/api/user/me` auto-creates profiles
+-  Call `/api/auth/sync-user` manually
+-  Check server logs for errors
 
 ---
 
 ## 📚 Documentation Files
 
 1. **[SIMPLIFIED_AUTH_ARCHITECTURE.md](SIMPLIFIED_AUTH_ARCHITECTURE.md)**
-   - Complete architecture guide
-   - Data flow diagrams
-   - Testing guide
+
+   -  Complete architecture guide
+   -  Data flow diagrams
+   -  Testing guide
 
 2. **[FIX_SUMMARY.md](FIX_SUMMARY.md)**
-   - Problem analysis
-   - Solution overview
-   - Changes made
+
+   -  Problem analysis
+   -  Solution overview
+   -  Changes made
 
 3. **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** (This file)
-   - Quick commands
-   - Code examples
-   - Troubleshooting
+
+   -  Quick commands
+   -  Code examples
+   -  Troubleshooting
 
 4. **[AUTH_IMPLEMENTATION_DOCS.md](AUTH_IMPLEMENTATION_DOCS.md)**
-   - Better Auth configuration
-   - API documentation
+
+   -  Better Auth configuration
+   -  API documentation
 
 5. **[DATABASE_MODEL_CRUD_GUIDE.md](DATABASE_MODEL_CRUD_GUIDE.md)**
-   - How to create new models
-   - CRUD operations guide
+   -  How to create new models
+   -  CRUD operations guide
 
 ---
 
@@ -238,13 +247,13 @@ mongosh --eval "db.user.findOne(); db.profiles.findOne();"
 
 ## 🔗 API Endpoints
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/auth/sign-up` | POST | Register new user |
-| `/api/auth/sign-in` | POST | Login user |
-| `/api/auth/sign-out` | POST | Logout user |
-| `/api/auth/sync-user` | POST | Create user profile |
-| `/api/user/me` | GET | Get current user data |
+| Endpoint              | Method | Purpose               |
+| --------------------- | ------ | --------------------- |
+| `/api/auth/sign-up`   | POST   | Register new user     |
+| `/api/auth/sign-in`   | POST   | Login user            |
+| `/api/auth/sign-out`  | POST   | Logout user           |
+| `/api/auth/sync-user` | POST   | Create user profile   |
+| `/api/user/me`        | GET    | Get current user data |
 
 ---
 
@@ -259,10 +268,11 @@ mongosh --eval "db.user.findOne(); db.profiles.findOne();"
 ---
 
 **Need Help?**
-- Check server console for errors
-- Review [SIMPLIFIED_AUTH_ARCHITECTURE.md](SIMPLIFIED_AUTH_ARCHITECTURE.md)
-- Review [FIX_SUMMARY.md](FIX_SUMMARY.md)
-- Check MongoDB collections directly
+
+-  Check server console for errors
+-  Review [SIMPLIFIED_AUTH_ARCHITECTURE.md](SIMPLIFIED_AUTH_ARCHITECTURE.md)
+-  Review [FIX_SUMMARY.md](FIX_SUMMARY.md)
+-  Check MongoDB collections directly
 
 ---
 

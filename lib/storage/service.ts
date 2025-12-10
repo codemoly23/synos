@@ -89,7 +89,13 @@ class StorageService {
 	async upload(request: UploadRequest): Promise<StorageFile> {
 		await this.ensureInitialized();
 
-		const { buffer, originalName, mimeType, size, folder: requestedFolder } = request;
+		const {
+			buffer,
+			originalName,
+			mimeType,
+			size,
+			folder: requestedFolder,
+		} = request;
 
 		// Sanitize original filename for logging
 		const safeOriginalName = sanitizeFilename(originalName);
@@ -252,7 +258,9 @@ class StorageService {
 						const filePath = path.join(folderPath, entry.name);
 						const stats = await fs.stat(filePath);
 						const extension = getExtensionFromFilename(entry.name);
-						const mimeType = getMimeFromExtension(extension) || "application/octet-stream";
+						const mimeType =
+							getMimeFromExtension(extension) ||
+							"application/octet-stream";
 
 						return {
 							filename: entry.name,
@@ -348,7 +356,8 @@ class StorageService {
 		try {
 			const stats = await fs.stat(filePath);
 			const extension = getExtensionFromFilename(filename);
-			const mimeType = getMimeFromExtension(extension) || "application/octet-stream";
+			const mimeType =
+				getMimeFromExtension(extension) || "application/octet-stream";
 
 			return {
 				filename,
@@ -380,7 +389,9 @@ class StorageService {
 	/**
 	 * Get total storage usage for a folder
 	 */
-	async getUsage(folder: StorageFolder): Promise<{ count: number; totalSize: number }> {
+	async getUsage(
+		folder: StorageFolder
+	): Promise<{ count: number; totalSize: number }> {
 		await this.ensureInitialized();
 
 		const result = await this.list(folder, 1, 10000); // Get all files
@@ -455,7 +466,10 @@ class StorageService {
 			for (const file of existingFiles) {
 				if (file.startsWith("avatar.")) {
 					await fs.unlink(path.join(userAvatarFolder, file));
-					logger.info("Deleted existing avatar", { userId, filename: file });
+					logger.info("Deleted existing avatar", {
+						userId,
+						filename: file,
+					});
 				}
 			}
 		} catch (error) {

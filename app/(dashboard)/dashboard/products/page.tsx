@@ -34,7 +34,9 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 	const session = await auth.api.getSession({ headers: headersList });
 
 	// Fetch initial products
-	let products: Awaited<ReturnType<typeof productService.getProducts>>["data"] = [];
+	let products: Awaited<
+		ReturnType<typeof productService.getProducts>
+	>["data"] = [];
 	let totalPages = 1;
 	let stats = null;
 
@@ -44,7 +46,9 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 				page,
 				limit: 10,
 				search: search || undefined,
-				publishType: status ? (status as "publish" | "draft" | "private") : undefined,
+				publishType: status
+					? (status as "publish" | "draft" | "private")
+					: undefined,
 				sort: "-createdAt",
 			});
 
@@ -62,7 +66,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 		<ProductsList
 			initialProducts={products.map((p) => {
 				// Categories are populated by Mongoose, cast to proper type
-				const populatedCategories = p.categories as unknown as PopulatedCategory[];
+				const populatedCategories =
+					p.categories as unknown as PopulatedCategory[];
 				return {
 					_id: p._id.toString(),
 					title: p.title,
@@ -75,8 +80,10 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 						name: c.name,
 						slug: c.slug,
 					})),
-					updatedAt: p.updatedAt?.toISOString() || new Date().toISOString(),
-					createdAt: p.createdAt?.toISOString() || new Date().toISOString(),
+					updatedAt:
+						p.updatedAt?.toISOString() || new Date().toISOString(),
+					createdAt:
+						p.createdAt?.toISOString() || new Date().toISOString(),
 				};
 			})}
 			initialStats={stats}

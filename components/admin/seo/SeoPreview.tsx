@@ -39,7 +39,13 @@ interface SeoPreviewProps {
 /**
  * Google Search Result Preview - Mobile
  */
-function GoogleMobilePreview({ data, defaultDomain }: { data: SeoPreviewData; defaultDomain: string }) {
+function GoogleMobilePreview({
+	data,
+	defaultDomain,
+}: {
+	data: SeoPreviewData;
+	defaultDomain: string;
+}) {
 	const displayTitle = data.title || data.productTitle || "Product Title";
 	const displayDescription =
 		data.description ||
@@ -104,7 +110,13 @@ function GoogleMobilePreview({ data, defaultDomain }: { data: SeoPreviewData; de
 /**
  * Google Search Result Preview - Desktop
  */
-function GoogleDesktopPreview({ data, defaultDomain }: { data: SeoPreviewData; defaultDomain: string }) {
+function GoogleDesktopPreview({
+	data,
+	defaultDomain,
+}: {
+	data: SeoPreviewData;
+	defaultDomain: string;
+}) {
 	const displayTitle = data.title || data.productTitle || "Product Title";
 	const displayDescription =
 		data.description ||
@@ -169,7 +181,13 @@ function GoogleDesktopPreview({ data, defaultDomain }: { data: SeoPreviewData; d
  * Facebook/Open Graph Share Preview
  * Recommended image size: 1200x630px (1.91:1 aspect ratio)
  */
-function FacebookPreview({ data, defaultDomain }: { data: SeoPreviewData; defaultDomain: string }) {
+function FacebookPreview({
+	data,
+	defaultDomain,
+}: {
+	data: SeoPreviewData;
+	defaultDomain: string;
+}) {
 	const displayTitle = data.title || data.productTitle || "Product Title";
 	const displayDescription =
 		data.description || "Add a meta description for better social sharing.";
@@ -178,7 +196,10 @@ function FacebookPreview({ data, defaultDomain }: { data: SeoPreviewData; defaul
 	return (
 		<div className="bg-white rounded-lg border border-slate-300 overflow-hidden max-w-[500px] w-full">
 			{/* OG Image - 1.91:1 aspect ratio (1200x630px recommended) */}
-			<div className="relative w-full bg-slate-100" style={{ aspectRatio: "1.91 / 1" }}>
+			<div
+				className="relative w-full bg-slate-100"
+				style={{ aspectRatio: "1.91 / 1" }}
+			>
 				{data.ogImage ? (
 					<Image
 						src={data.ogImage}
@@ -219,7 +240,13 @@ function FacebookPreview({ data, defaultDomain }: { data: SeoPreviewData; defaul
  * Recommended image size: 1200x628px (1.91:1 aspect ratio) for summary_large_image
  * Twitter also accepts 2:1 ratio images
  */
-function TwitterPreview({ data, defaultDomain }: { data: SeoPreviewData; defaultDomain: string }) {
+function TwitterPreview({
+	data,
+	defaultDomain,
+}: {
+	data: SeoPreviewData;
+	defaultDomain: string;
+}) {
 	const displayTitle = data.title || data.productTitle || "Product Title";
 	const displayDescription =
 		data.description || "Add a meta description for better social sharing.";
@@ -228,7 +255,10 @@ function TwitterPreview({ data, defaultDomain }: { data: SeoPreviewData; default
 	return (
 		<div className="bg-white rounded-2xl border border-slate-200 overflow-hidden max-w-[500px] w-full">
 			{/* Twitter Card Image - 1.91:1 aspect ratio (1200x628px recommended) */}
-			<div className="relative w-full bg-slate-100" style={{ aspectRatio: "1.91 / 1" }}>
+			<div
+				className="relative w-full bg-slate-100"
+				style={{ aspectRatio: "1.91 / 1" }}
+			>
 				{data.ogImage ? (
 					<Image
 						src={data.ogImage}
@@ -297,13 +327,19 @@ export function SeoPreview({ data, className }: SeoPreviewProps) {
 
 					<TabsContent value="mobile" className="mt-0">
 						<div className="bg-slate-50 rounded-lg p-4 flex justify-center">
-							<GoogleMobilePreview data={data} defaultDomain={defaultDomain} />
+							<GoogleMobilePreview
+								data={data}
+								defaultDomain={defaultDomain}
+							/>
 						</div>
 					</TabsContent>
 
 					<TabsContent value="desktop" className="mt-0">
 						<div className="bg-slate-50 rounded-lg p-4 overflow-x-auto">
-							<GoogleDesktopPreview data={data} defaultDomain={defaultDomain} />
+							<GoogleDesktopPreview
+								data={data}
+								defaultDomain={defaultDomain}
+							/>
 						</div>
 					</TabsContent>
 				</Tabs>
@@ -332,13 +368,19 @@ export function SeoPreview({ data, className }: SeoPreviewProps) {
 
 					<TabsContent value="facebook" className="mt-0">
 						<div className="bg-slate-50 rounded-lg p-4 flex justify-center">
-							<FacebookPreview data={data} defaultDomain={defaultDomain} />
+							<FacebookPreview
+								data={data}
+								defaultDomain={defaultDomain}
+							/>
 						</div>
 					</TabsContent>
 
 					<TabsContent value="twitter" className="mt-0">
 						<div className="bg-slate-50 rounded-lg p-4 flex justify-center">
-							<TwitterPreview data={data} defaultDomain={defaultDomain} />
+							<TwitterPreview
+								data={data}
+								defaultDomain={defaultDomain}
+							/>
 						</div>
 					</TabsContent>
 				</Tabs>

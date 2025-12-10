@@ -118,7 +118,8 @@ export const siteConfig: SiteConfigType = {
 		facebook:
 			process.env.SOCIAL_FACEBOOK || "https://www.facebook.com/synosmedical",
 		instagram:
-			process.env.SOCIAL_INSTAGRAM || "https://www.instagram.com/synosmedical",
+			process.env.SOCIAL_INSTAGRAM ||
+			"https://www.instagram.com/synosmedical",
 		linkedin:
 			process.env.SOCIAL_LINKEDIN ||
 			"https://www.linkedin.com/company/synos-medical",

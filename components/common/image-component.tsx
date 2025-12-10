@@ -16,6 +16,7 @@ const ImageComponent = ({
 	alt,
 	showLoader = true,
 	wrapperClasses = "",
+	fill,
 	...props
 }: IProps): JSX.Element => {
 	const [loading, setLoading] = useState(true);
@@ -30,6 +31,32 @@ const ImageComponent = ({
 		setLoading(false);
 	};
 
+	const imageElement = (
+		<NextImage
+			{...props}
+			fill={fill}
+			src={(onErrorSrc || src || props.fallback) ?? "/placeholder.jpeg"}
+			onLoad={() => setLoading(false)}
+			onError={handleOnError}
+			width={fill ? undefined : props.width}
+			height={fill ? undefined : props.height}
+			alt={alt || "img"}
+		/>
+	);
+
+	// When using fill, render directly without wrapper div
+	// The parent container must have position: relative
+	if (fill) {
+		return (
+			<>
+				{showLoader && loading && (
+					<Skeleton className="absolute inset-0 h-full w-full animate-bounce-down rounded-none motion-safe:animate-bounce-down z-10" />
+				)}
+				{imageElement}
+			</>
+		);
+	}
+
 	return (
 		<div className={`relative ${wrapperClasses}`}>
 			{showLoader && loading && (
@@ -37,15 +64,7 @@ const ImageComponent = ({
 					className={`absolute bottom-0 left-0 h-full w-full animate-bounce-down rounded-none! motion-safe:animate-bounce-down`}
 				/>
 			)}
-			<NextImage
-				{...props}
-				src={(onErrorSrc || src || props.fallback) ?? "/placeholder.jpeg"}
-				onLoad={() => setLoading(false)}
-				onError={handleOnError}
-				width={props.width}
-				height={props.height}
-				alt={alt || "img"}
-			/>
+			{imageElement}
 		</div>
 	);
 };

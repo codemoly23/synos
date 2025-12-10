@@ -161,8 +161,18 @@ export async function GET(request: NextRequest) {
 		// Handle both array and paginated responses
 		const users = Array.isArray(result) ? result : result.data;
 		const pagination = Array.isArray(result)
-			? { total: result.length, page: 1, limit: result.length, totalPages: 1 }
-			: { total: result.total, page: result.page, limit: result.limit, totalPages: result.totalPages };
+			? {
+					total: result.length,
+					page: 1,
+					limit: result.length,
+					totalPages: 1,
+			  }
+			: {
+					total: result.total,
+					page: result.page,
+					limit: result.limit,
+					totalPages: result.totalPages,
+			  };
 
 		logger.info("Users list retrieved", {
 			requestedBy: session.user.id,

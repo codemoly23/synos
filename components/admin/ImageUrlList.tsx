@@ -5,6 +5,7 @@ import { Plus, Trash2, GripVertical, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageComponent } from "../common/image-component";
 
 interface ImageUrlListProps {
 	value: string[];
@@ -94,16 +95,18 @@ export function ImageUrlList({
 					</div>
 
 					{/* Image preview */}
-					<div className="flex-shrink-0 w-16 h-16 bg-slate-100 rounded overflow-hidden">
+					<div className="shrink-0 w-16 h-16 bg-slate-100 rounded overflow-hidden">
 						{url ? (
-							// eslint-disable-next-line @next/next/no-img-element
-							<img
+							<ImageComponent
 								src={url}
 								alt={`Image ${index + 1}`}
 								className="w-full h-full object-cover"
 								onError={(e) => {
-									(e.target as HTMLImageElement).style.display = "none";
+									(e.target as HTMLImageElement).style.display =
+										"none";
 								}}
+								height={1000}
+								width={1000}
 							/>
 						) : (
 							<div className="w-full h-full flex items-center justify-center">

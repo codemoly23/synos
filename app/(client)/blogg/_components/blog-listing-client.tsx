@@ -16,7 +16,7 @@ interface BlogListingClientProps {
 
 /**
  * BlogListingClient Component
- * 
+ *
  * Client-side component for blog listing with filtering and search.
  */
 export function BlogListingClient({
@@ -24,7 +24,9 @@ export function BlogListingClient({
 	categories,
 }: BlogListingClientProps) {
 	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+	const [selectedCategory, setSelectedCategory] = useState<string | null>(
+		null
+	);
 
 	// Filter articles based on search and category
 	const filteredArticles = useMemo(() => {
@@ -65,8 +67,10 @@ export function BlogListingClient({
 						<div>
 							{/* Results Count */}
 							<div className="mb-6 text-sm text-muted-foreground">
-								Visar {filteredArticles.length} av {articles.length} artiklar
-								{selectedCategory && ` i kategorin "${selectedCategory}"`}
+								Visar {filteredArticles.length} av {articles.length}{" "}
+								artiklar
+								{selectedCategory &&
+									` i kategorin "${selectedCategory}"`}
 								{searchQuery && ` för "${searchQuery}"`}
 							</div>
 
@@ -79,7 +83,11 @@ export function BlogListingClient({
 									className="grid gap-8 md:grid-cols-2"
 								>
 									{filteredArticles.map((article, index) => (
-										<BlogCard key={article.id} article={article} index={index} />
+										<BlogCard
+											key={article.id}
+											article={article}
+											index={index}
+										/>
 									))}
 								</motion.div>
 							) : (
@@ -88,8 +96,8 @@ export function BlogListingClient({
 										Inga artiklar hittades.
 									</p>
 									<p className="mt-2 text-sm text-muted-foreground">
-										Prova att ändra dina sökkriterier eller filtrera efter en annan
-										kategori.
+										Prova att ändra dina sökkriterier eller filtrera
+										efter en annan kategori.
 									</p>
 								</div>
 							)}
@@ -109,4 +117,3 @@ export function BlogListingClient({
 		</>
 	);
 }
-

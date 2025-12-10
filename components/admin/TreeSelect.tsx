@@ -205,13 +205,19 @@ export function TreeSelect({
 						)}
 					</div>
 					{value.length > 0 && (
-						<button
-							type="button"
+						<span
+							role="button"
+							tabIndex={0}
 							onClick={clearSelection}
-							className="ml-2 p-1 hover:bg-slate-200 rounded"
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									clearSelection(e as unknown as React.MouseEvent);
+								}
+							}}
+							className="ml-2 p-1 hover:bg-slate-200 rounded cursor-pointer"
 						>
 							<span className="sr-only">Clear</span>×
-						</button>
+						</span>
 					)}
 				</Button>
 			</PopoverTrigger>

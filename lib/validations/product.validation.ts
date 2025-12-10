@@ -27,7 +27,10 @@ const urlSchema = z.string().refine(
 		if (!url || url.trim() === "") return false;
 		return isLocalPath(url) || isValidExternalUrl(url);
 	},
-	{ message: "Must be a valid local path (starting with /) or URL (http/https)" }
+	{
+		message:
+			"Must be a valid local path (starting with /) or URL (http/https)",
+	}
 );
 
 /**
@@ -41,7 +44,10 @@ const optionalUrlSchema = z
 			if (!url || url.trim() === "") return true;
 			return isLocalPath(url) || isValidExternalUrl(url);
 		},
-		{ message: "Must be a valid local path (starting with /) or URL (http/https)" }
+		{
+			message:
+				"Must be a valid local path (starting with /) or URL (http/https)",
+		}
 	);
 
 /**

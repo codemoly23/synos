@@ -109,7 +109,11 @@ export function validateFileForUpload(
 	const errors: string[] = [];
 
 	// Validate MIME type
-	if (!ALLOWED_MIME_TYPES.includes(mimeType as (typeof ALLOWED_MIME_TYPES)[number])) {
+	if (
+		!ALLOWED_MIME_TYPES.includes(
+			mimeType as (typeof ALLOWED_MIME_TYPES)[number]
+		)
+	) {
 		errors.push(`File type '${mimeType}' is not allowed`);
 	}
 

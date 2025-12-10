@@ -19,10 +19,7 @@ interface RouteParams {
  * GET /api/products/[id]/validate
  * Preview validation results without publishing
  */
-export async function GET(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -32,7 +29,9 @@ export async function GET(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to validate product");
-			return unauthorizedResponse("You must be logged in to validate products");
+			return unauthorizedResponse(
+				"You must be logged in to validate products"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -62,7 +61,8 @@ export async function GET(
 			return notFoundResponse(error.message);
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to validate product";
+		const message =
+			error instanceof Error ? error.message : "Failed to validate product";
 		return internalServerErrorResponse(message);
 	}
 }

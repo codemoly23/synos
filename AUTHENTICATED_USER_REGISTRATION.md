@@ -15,25 +15,28 @@ This document describes the **authenticated user registration system** where onl
 ## 🎯 Key Features
 
 ### 1. Restricted Registration
-- ✅ Public `/register` page disabled
-- ✅ Only authenticated users can create accounts
-- ✅ User creation through admin dashboard
-- ✅ Immediate account activation (no email verification required)
+
+-  ✅ Public `/register` page disabled
+-  ✅ Only authenticated users can create accounts
+-  ✅ User creation through admin dashboard
+-  ✅ Immediate account activation (no email verification required)
 
 ### 2. User Management Dashboard
-- ✅ Located at `/dashboard/users`
-- ✅ Create new users with name, email, and password
-- ✅ View all registered users in a table
-- ✅ Display user status (verified/pending)
-- ✅ Show creation date and last login
-- ✅ Real-time user list updates
+
+-  ✅ Located at `/dashboard/users`
+-  ✅ Create new users with name, email, and password
+-  ✅ View all registered users in a table
+-  ✅ Display user status (verified/pending)
+-  ✅ Show creation date and last login
+-  ✅ Real-time user list updates
 
 ### 3. Security Features
-- ✅ Session-based authentication required
-- ✅ Password validation (8+ chars, uppercase, lowercase, numbers)
-- ✅ Email uniqueness validation
-- ✅ Passwords hashed with bcrypt via Better Auth
-- ✅ Audit trail (creator tracking)
+
+-  ✅ Session-based authentication required
+-  ✅ Password validation (8+ chars, uppercase, lowercase, numbers)
+-  ✅ Email uniqueness validation
+-  ✅ Passwords hashed with bcrypt via Better Auth
+-  ✅ Audit trail (creator tracking)
 
 ---
 
@@ -46,58 +49,63 @@ This document describes the **authenticated user registration system** where onl
 **Authentication:** Required (must be logged in)
 
 **Request Body:**
+
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "SecurePass123"
+	"name": "John Doe",
+	"email": "john@example.com",
+	"password": "SecurePass123"
 }
 ```
 
 **Response (Success):**
+
 ```json
 {
-  "success": true,
-  "message": "User created successfully",
-  "data": {
-    "user": {
-      "_id": "...",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "emailVerified": false,
-      "createdAt": "2025-12-03T..."
-    }
-  }
+	"success": true,
+	"message": "User created successfully",
+	"data": {
+		"user": {
+			"_id": "...",
+			"name": "John Doe",
+			"email": "john@example.com",
+			"emailVerified": false,
+			"createdAt": "2025-12-03T..."
+		}
+	}
 }
 ```
 
 **Response (Email Exists):**
+
 ```json
 {
-  "success": false,
-  "message": "Email already exists"
+	"success": false,
+	"message": "Email already exists"
 }
 ```
 
 **Response (Unauthorized):**
+
 ```json
 {
-  "success": false,
-  "message": "Unauthorized. You must be logged in to create users."
+	"success": false,
+	"message": "Unauthorized. You must be logged in to create users."
 }
 ```
 
 **Response (Validation Error):**
+
 ```json
 {
-  "success": false,
-  "message": "Validation failed",
-  "errors": [
-    {
-      "path": ["password"],
-      "message": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    }
-  ]
+	"success": false,
+	"message": "Validation failed",
+	"errors": [
+		{
+			"path": ["password"],
+			"message": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+		}
+	]
 }
 ```
 
@@ -110,35 +118,38 @@ This document describes the **authenticated user registration system** where onl
 **Authentication:** Required (must be logged in)
 
 **Query Parameters:**
-- `page` (optional): Page number for pagination (default: 1)
-- `limit` (optional): Number of users per page (default: 10)
-- `search` (optional): Search term for filtering users
+
+-  `page` (optional): Page number for pagination (default: 1)
+-  `limit` (optional): Number of users per page (default: 10)
+-  `search` (optional): Search term for filtering users
 
 **Example Request:**
+
 ```
 GET /api/admin/users?page=1&limit=20&search=john
 ```
 
 **Response (Success):**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "users": [
-      {
-        "_id": "...",
-        "name": "John Doe",
-        "email": "john@example.com",
-        "emailVerified": true,
-        "createdAt": "2025-12-03T...",
-        "lastLoginAt": "2025-12-03T..."
-      }
-    ],
-    "total": 50,
-    "page": 1,
-    "limit": 20,
-    "totalPages": 3
-  }
+	"success": true,
+	"data": {
+		"users": [
+			{
+				"_id": "...",
+				"name": "John Doe",
+				"email": "john@example.com",
+				"emailVerified": true,
+				"createdAt": "2025-12-03T...",
+				"lastLoginAt": "2025-12-03T..."
+			}
+		],
+		"total": 50,
+		"page": 1,
+		"limit": 20,
+		"totalPages": 3
+	}
 }
 ```
 
@@ -147,27 +158,30 @@ GET /api/admin/users?page=1&limit=20&search=john
 ## 🔐 Validation Rules
 
 ### Name Validation
-- **Required**
-- **Min length:** 2 characters
-- **Max length:** 100 characters
-- **Trimmed:** Leading/trailing spaces removed
+
+-  **Required**
+-  **Min length:** 2 characters
+-  **Max length:** 100 characters
+-  **Trimmed:** Leading/trailing spaces removed
 
 ### Email Validation
-- **Required**
-- **Format:** Valid email format
-- **Unique:** Email must not already exist
-- **Lowercase:** Automatically converted to lowercase
-- **Trimmed:** Leading/trailing spaces removed
+
+-  **Required**
+-  **Format:** Valid email format
+-  **Unique:** Email must not already exist
+-  **Lowercase:** Automatically converted to lowercase
+-  **Trimmed:** Leading/trailing spaces removed
 
 ### Password Validation
-- **Required**
-- **Min length:** 8 characters
-- **Max length:** 128 characters
-- **Complexity:** Must contain:
-  - At least one uppercase letter (A-Z)
-  - At least one lowercase letter (a-z)
-  - At least one number (0-9)
-- **Regex:** `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/`
+
+-  **Required**
+-  **Min length:** 8 characters
+-  **Max length:** 128 characters
+-  **Complexity:** Must contain:
+   -  At least one uppercase letter (A-Z)
+   -  At least one lowercase letter (a-z)
+   -  At least one number (0-9)
+-  **Regex:** `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/`
 
 ---
 
@@ -178,21 +192,24 @@ GET /api/admin/users?page=1&limit=20&search=john
 **Location:** `/dashboard/users`
 
 **Features:**
+
 1. **Create User Form**
-   - Toggle button to show/hide form
-   - Name, email, and password fields
-   - Real-time validation
-   - Success/error notifications
+
+   -  Toggle button to show/hide form
+   -  Name, email, and password fields
+   -  Real-time validation
+   -  Success/error notifications
 
 2. **Users Table**
-   - Displays all registered users
-   - Shows name, email, status, created date, last login
-   - Responsive design
-   - Auto-refreshes after creating a user
+
+   -  Displays all registered users
+   -  Shows name, email, status, created date, last login
+   -  Responsive design
+   -  Auto-refreshes after creating a user
 
 3. **Navigation**
-   - Accessible from navbar "Users" link
-   - Protected by authentication (dashboard layout)
+   -  Accessible from navbar "Users" link
+   -  Protected by authentication (dashboard layout)
 
 ---
 
@@ -334,32 +351,37 @@ curl -X POST http://localhost:3000/api/admin/users \
 ## 🔐 Security Considerations
 
 ### 1. Authentication Required
-- ✅ All user management endpoints require valid session
-- ✅ Unauthenticated requests return 401 Unauthorized
-- ✅ Session validated on every request
+
+-  ✅ All user management endpoints require valid session
+-  ✅ Unauthenticated requests return 401 Unauthorized
+-  ✅ Session validated on every request
 
 ### 2. Password Security
-- ✅ Passwords hashed with scrypt (Better Auth standard)
-- ✅ 64-byte derived key with random salt
-- ✅ Password stored in separate 'account' collection
-- ✅ Passwords never logged or exposed
-- ✅ Strong password policy enforced
-- ✅ Password complexity validated on client and server
+
+-  ✅ Passwords hashed with scrypt (Better Auth standard)
+-  ✅ 64-byte derived key with random salt
+-  ✅ Password stored in separate 'account' collection
+-  ✅ Passwords never logged or exposed
+-  ✅ Strong password policy enforced
+-  ✅ Password complexity validated on client and server
 
 ### 3. Email Validation
-- ✅ Email uniqueness checked before creation
-- ✅ Prevents duplicate accounts
-- ✅ Case-insensitive email matching
+
+-  ✅ Email uniqueness checked before creation
+-  ✅ Prevents duplicate accounts
+-  ✅ Case-insensitive email matching
 
 ### 4. Audit Trail
-- ✅ Creator ID logged when user is created
-- ✅ All operations logged for security audit
-- ✅ User creation tracked in logs
+
+-  ✅ Creator ID logged when user is created
+-  ✅ All operations logged for security audit
+-  ✅ User creation tracked in logs
 
 ### 5. Input Validation
-- ✅ Zod schema validation on client and server
-- ✅ XSS prevention through input sanitization
-- ✅ SQL injection prevention via Mongoose ODM
+
+-  ✅ Zod schema validation on client and server
+-  ✅ XSS prevention through input sanitization
+-  ✅ SQL injection prevention via Mongoose ODM
 
 ---
 
@@ -369,14 +391,14 @@ curl -X POST http://localhost:3000/api/admin/users \
 
 ```javascript
 {
-  id: String,                    // Better Auth ID (hex string)
-  _id: ObjectId,                 // MongoDB ID (same as 'id')
-  email: String,                 // Unique, lowercase, indexed
-  name: String,                  // User's display name
-  emailVerified: Boolean,        // Email verification status
-  image: String,                 // Profile image (base64 or URL)
-  lastLoginAt: Date,            // Last login timestamp
-  createdAt: Date,              // Account creation date
+  id: String,                    console.logBetter Auth ID (hex string)
+  _id: ObjectId,                 console.logMongoDB ID (same as 'id')
+  email: String,                 console.logUnique, lowercase, indexed
+  name: String,                  console.logUser's display name
+  emailVerified: Boolean,        console.logEmail verification status
+  image: String,                 console.logProfile image (base64 or URL)
+  lastLoginAt: Date,            console.logLast login timestamp
+  createdAt: Date,              console.logAccount creation date
   updatedAt: Date
 }
 ```
@@ -385,17 +407,17 @@ curl -X POST http://localhost:3000/api/admin/users \
 
 ```javascript
 {
-  id: String,                    // Unique account ID
-  userId: String,                // Reference to user.id
-  accountId: String,             // Equals userId for credential accounts
-  providerId: String,            // "credential" for email/password
-  password: String,              // Hashed password (scrypt format)
-  accessToken: String,           // OAuth access token (null for credentials)
-  refreshToken: String,          // OAuth refresh token (null for credentials)
-  accessTokenExpiresAt: Date,    // Token expiration (null for credentials)
-  refreshTokenExpiresAt: Date,   // Token expiration (null for credentials)
-  scope: String,                 // OAuth scope (null for credentials)
-  idToken: String,               // OAuth ID token (null for credentials)
+  id: String,                    console.logUnique account ID
+  userId: String,                console.logReference to user.id
+  accountId: String,             console.logEquals userId for credential accounts
+  providerId: String,            console.log"credential" for email/password
+  password: String,              console.logHashed password (scrypt format)
+  accessToken: String,           console.logOAuth access token (null for credentials)
+  refreshToken: String,          console.logOAuth refresh token (null for credentials)
+  accessTokenExpiresAt: Date,    console.logToken expiration (null for credentials)
+  refreshTokenExpiresAt: Date,   console.logToken expiration (null for credentials)
+  scope: String,                 console.logOAuth scope (null for credentials)
+  idToken: String,               console.logOAuth ID token (null for credentials)
   createdAt: Date,
   updatedAt: Date
 }
@@ -408,10 +430,10 @@ curl -X POST http://localhost:3000/api/admin/users \
 ```javascript
 {
   _id: ObjectId,
-  userId: ObjectId,              // Reference to user._id
-  bio: String,                   // Optional bio
-  avatarUrl: String,             // Optional avatar URL
-  phoneNumber: String,           // Optional phone
+  userId: ObjectId,              console.logReference to user._id
+  bio: String,                   console.logOptional bio
+  avatarUrl: String,             console.logOptional avatar URL
+  phoneNumber: String,           console.logOptional phone
   address: {
     street: String,
     city: String,
@@ -430,6 +452,7 @@ curl -X POST http://localhost:3000/api/admin/users \
 ### User Management Dashboard
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │ User Management                    [Add New User]   │
@@ -452,51 +475,55 @@ curl -X POST http://localhost:3000/api/admin/users \
 ```
 
 **Features:**
-- Toggle form visibility
-- Real-time validation feedback
-- Success/error notifications
-- Sortable table columns
-- Responsive design for mobile
+
+-  Toggle form visibility
+-  Real-time validation feedback
+-  Success/error notifications
+-  Sortable table columns
+-  Responsive design for mobile
 
 ---
 
 ## 🚫 Disabled Public Registration
 
 ### Old Flow (Disabled):
+
 ```
 User → /register → Fill form → Create account
 ```
 
 ### New Flow (Active):
+
 ```
 User → /register → "Registration Unavailable" page → Redirect to login
 ```
 
 **Register Page Content:**
-- Clear message that public registration is disabled
-- Explanation that only authenticated users can create accounts
-- Link to login page for existing users
-- Link back to home page
+
+-  Clear message that public registration is disabled
+-  Explanation that only authenticated users can create accounts
+-  Link to login page for existing users
+-  Link back to home page
 
 ---
 
 ## ✅ Implementation Checklist
 
-- [x] API endpoint for creating users (POST /api/admin/users)
-- [x] API endpoint for listing users (GET /api/admin/users)
-- [x] createUserByAdmin method in auth service
-- [x] User management dashboard page
-- [x] User creation form with validation
-- [x] Users table with all user data
-- [x] Navbar updated with Users link
-- [x] Public registration page disabled
-- [x] Session authentication on all endpoints
-- [x] Password validation and hashing
-- [x] Email uniqueness validation
-- [x] Audit trail logging
-- [x] Error handling and user feedback
-- [x] Responsive design
-- [x] Documentation
+-  [x] API endpoint for creating users (POST /api/admin/users)
+-  [x] API endpoint for listing users (GET /api/admin/users)
+-  [x] createUserByAdmin method in auth service
+-  [x] User management dashboard page
+-  [x] User creation form with validation
+-  [x] Users table with all user data
+-  [x] Navbar updated with Users link
+-  [x] Public registration page disabled
+-  [x] Session authentication on all endpoints
+-  [x] Password validation and hashing
+-  [x] Email uniqueness validation
+-  [x] Audit trail logging
+-  [x] Error handling and user feedback
+-  [x] Responsive design
+-  [x] Documentation
 
 ---
 
@@ -505,69 +532,80 @@ User → /register → "Registration Unavailable" page → Redirect to login
 ### For Administrators/Authenticated Users
 
 **Step 1: Login**
-- Navigate to `/login`
-- Enter your credentials
-- Access the dashboard
+
+-  Navigate to `/login`
+-  Enter your credentials
+-  Access the dashboard
 
 **Step 2: Navigate to User Management**
-- Click "Users" in the navbar
-- Or go to `/dashboard/users`
+
+-  Click "Users" in the navbar
+-  Or go to `/dashboard/users`
 
 **Step 3: Create New User**
-- Click "Add New User" button
-- Fill in the form:
-  - Full Name (e.g., "Jane Doe")
-  - Email (e.g., "jane@example.com")
-  - Password (must meet complexity requirements)
-- Click "Create User"
+
+-  Click "Add New User" button
+-  Fill in the form:
+   -  Full Name (e.g., "Jane Doe")
+   -  Email (e.g., "jane@example.com")
+   -  Password (must meet complexity requirements)
+-  Click "Create User"
 
 **Step 4: View Users**
-- All users displayed in table
-- See user status, creation date, last login
-- Users list updates automatically
+
+-  All users displayed in table
+-  See user status, creation date, last login
+-  Users list updates automatically
 
 **Step 5: New User Can Login**
-- The newly created user can immediately log in
-- They use the email and password you set
-- They can update their profile and password after login
+
+-  The newly created user can immediately log in
+-  They use the email and password you set
+-  They can update their profile and password after login
 
 ---
 
 ## 🔮 Future Enhancements
 
 ### Potential Features
-- [ ] Role-based access control (only admins can create users)
-- [ ] User invitation via email
-- [ ] Bulk user import from CSV
-- [ ] User deactivation/deletion
-- [ ] User role management (admin, user, viewer)
-- [ ] Password reset by admin
-- [ ] User activity logs
-- [ ] Export users to CSV
-- [ ] Advanced user filtering and sorting
-- [ ] User groups/teams
+
+-  [ ] Role-based access control (only admins can create users)
+-  [ ] User invitation via email
+-  [ ] Bulk user import from CSV
+-  [ ] User deactivation/deletion
+-  [ ] User role management (admin, user, viewer)
+-  [ ] Password reset by admin
+-  [ ] User activity logs
+-  [ ] Export users to CSV
+-  [ ] Advanced user filtering and sorting
+-  [ ] User groups/teams
 
 ---
 
 ## 🐛 Common Issues & Solutions
 
 ### Issue 1: "Unauthorized" Error When Creating User
+
 **Cause:** Not logged in or session expired
 **Solution:** Log in again and try creating the user
 
 ### Issue 2: "Email Already Exists"
+
 **Cause:** Email is already registered
 **Solution:** Use a different email address
 
 ### Issue 3: Password Validation Fails
+
 **Cause:** Password doesn't meet complexity requirements
 **Solution:** Ensure password has:
-- At least 8 characters
-- One uppercase letter
-- One lowercase letter
-- One number
+
+-  At least 8 characters
+-  One uppercase letter
+-  One lowercase letter
+-  One number
 
 ### Issue 4: Can't Access /dashboard/users
+
 **Cause:** Not authenticated
 **Solution:** Log in first, then navigate to the page
 
@@ -575,9 +613,9 @@ User → /register → "Registration Unavailable" page → Redirect to login
 
 ## 📚 Related Documentation
 
-- [PROFILE_PASSWORD_UPDATE_DOCS.md](PROFILE_PASSWORD_UPDATE_DOCS.md) - User profile management
-- [USER_DATA_FETCHING_DOCUMENTATION.md](USER_DATA_FETCHING_DOCUMENTATION.md) - User data flow
-- [DATABASE_MODEL_CRUD_GUIDE.md](DATABASE_MODEL_CRUD_GUIDE.md) - Database models
+-  [PROFILE_PASSWORD_UPDATE_DOCS.md](PROFILE_PASSWORD_UPDATE_DOCS.md) - User profile management
+-  [USER_DATA_FETCHING_DOCUMENTATION.md](USER_DATA_FETCHING_DOCUMENTATION.md) - User data flow
+-  [DATABASE_MODEL_CRUD_GUIDE.md](DATABASE_MODEL_CRUD_GUIDE.md) - Database models
 
 ---
 
@@ -585,13 +623,13 @@ User → /register → "Registration Unavailable" page → Redirect to login
 
 This implementation provides a **secure, controlled user registration system** where:
 
-- ✅ **Only authenticated users can create new accounts**
-- ✅ **Public registration is disabled**
-- ✅ **User management dashboard for easy account creation**
-- ✅ **Full validation and security measures**
-- ✅ **Audit trail for accountability**
-- ✅ **Immediate account activation**
-- ✅ **Professional UI with error handling**
+-  ✅ **Only authenticated users can create new accounts**
+-  ✅ **Public registration is disabled**
+-  ✅ **User management dashboard for easy account creation**
+-  ✅ **Full validation and security measures**
+-  ✅ **Audit trail for accountability**
+-  ✅ **Immediate account activation**
+-  ✅ **Professional UI with error handling**
 
 The system ensures that user creation is controlled and audited, preventing unauthorized account creation while maintaining ease of use for authorized personnel.
 

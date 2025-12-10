@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations";
 import { MessageSquare, User } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { useState } from "react";
 
 /**
  * BlogComments Component
- * 
+ *
  * Comments/reviews section for blog posts with form and sample comments.
  */
 
@@ -28,19 +29,22 @@ const sampleComments: Comment[] = [
 		id: "1",
 		author: "Anna Svensson",
 		date: "2025-11-15",
-		content: "Mycket informativ artikel! Jag har funderat på att investera i en CO2-laser till min klinik och detta hjälpte verkligen att förstå skillnaderna mellan teknologierna.",
+		content:
+			"Mycket informativ artikel! Jag har funderat på att investera i en CO2-laser till min klinik och detta hjälpte verkligen att förstå skillnaderna mellan teknologierna.",
 	},
 	{
 		id: "2",
 		author: "Erik Johansson",
 		date: "2025-11-10",
-		content: "Tack för den detaljerade jämförelsen. RF-teknologin verkar verkligen vara framtiden. Skulle gärna vilja se en demo av Tetra PRO.",
+		content:
+			"Tack för den detaljerade jämförelsen. RF-teknologin verkar verkligen vara framtiden. Skulle gärna vilja se en demo av Tetra PRO.",
 	},
 	{
 		id: "3",
 		author: "Maria Andersson",
 		date: "2025-11-05",
-		content: "Vi har använt RF-stimulerad CO2-laser i vår klinik i 6 månader nu och resultaten är fantastiska. Patienterna är mycket nöjda med CoolPeel-behandlingarna!",
+		content:
+			"Vi har använt RF-stimulerad CO2-laser i vår klinik i 6 månader nu och resultaten är fantastiska. Patienterna är mycket nöjda med CoolPeel-behandlingarna!",
 	},
 ];
 
@@ -64,7 +68,9 @@ export function BlogComments() {
 		setIsSubmitting(false);
 
 		// In production, this would send data to an API
-		alert("Tack för din kommentar! Den kommer att granskas innan publicering.");
+		toast.success(
+			"Tack för din kommentar! Den kommer att granskas innan publicering."
+		);
 	};
 
 	return (
@@ -110,11 +116,14 @@ export function BlogComments() {
 											{comment.author}
 										</h4>
 										<time className="text-sm text-muted-foreground">
-											{new Date(comment.date).toLocaleDateString("sv-SE", {
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											})}
+											{new Date(comment.date).toLocaleDateString(
+												"sv-SE",
+												{
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												}
+											)}
 										</time>
 									</div>
 								</div>
@@ -198,4 +207,3 @@ export function BlogComments() {
 		</section>
 	);
 }
-

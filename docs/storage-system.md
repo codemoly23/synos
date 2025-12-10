@@ -4,16 +4,16 @@ A complete local file storage system for Next.js 16 with public file access and 
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Configuration](#configuration)
-- [API Routes](#api-routes)
-- [Components](#components)
-- [Server-Side Usage](#server-side-usage)
-- [Client-Side Usage](#client-side-usage)
-- [Types Reference](#types-reference)
-- [Security](#security)
-- [Examples](#examples)
+-  [Overview](#overview)
+-  [Architecture](#architecture)
+-  [Configuration](#configuration)
+-  [API Routes](#api-routes)
+-  [Components](#components)
+-  [Server-Side Usage](#server-side-usage)
+-  [Client-Side Usage](#client-side-usage)
+-  [Types Reference](#types-reference)
+-  [Security](#security)
+-  [Examples](#examples)
 
 ---
 
@@ -21,32 +21,32 @@ A complete local file storage system for Next.js 16 with public file access and 
 
 The storage system provides:
 
-- **Public file access**: Files served statically via `/storage/images/*` and `/storage/documents/*`
-- **Protected operations**: Upload, delete, and list operations require Better Auth session
-- **WordPress-like media gallery**: UI components for browsing and selecting files
-- **File validation**: MIME type checking with magic bytes verification
-- **Automatic folder routing**: Files auto-sorted to `images/` or `documents/` based on type
+-  **Public file access**: Files served statically via `/storage/images/*` and `/storage/documents/*`
+-  **Protected operations**: Upload, delete, and list operations require Better Auth session
+-  **WordPress-like media gallery**: UI components for browsing and selecting files
+-  **File validation**: MIME type checking with magic bytes verification
+-  **Automatic folder routing**: Files auto-sorted to `images/` or `documents/` based on type
 
 ### Supported File Types
 
-| Type | Extensions | Max Size |
-|------|------------|----------|
-| Images | JPG, PNG, WebP, GIF | 5MB |
-| Documents | PDF, DOC, DOCX | 20MB |
+| Type      | Extensions          | Max Size |
+| --------- | ------------------- | -------- |
+| Images    | JPG, PNG, WebP, GIF | 5MB      |
+| Documents | PDF, DOC, DOCX      | 20MB     |
 
 ### Filename Handling
 
 Files are stored using **slugified original filenames**:
 
-- `My Product Image.jpg` → `my-product-image.jpg`
-- `Café Menu (2024).pdf` → `cafe-menu-2024.pdf`
-- Special characters and accents are removed/normalized
+-  `My Product Image.jpg` → `my-product-image.jpg`
+-  `Café Menu (2024).pdf` → `cafe-menu-2024.pdf`
+-  Special characters and accents are removed/normalized
 
 **Duplicate handling**: If a file with the same name exists, a number suffix is added:
 
-- `product-image.jpg` (first upload)
-- `product-image-1.jpg` (second upload with same name)
-- `product-image-2.jpg` (third upload with same name)
+-  `product-image.jpg` (first upload)
+-  `product-image-1.jpg` (second upload with same name)
+-  `product-image-2.jpg` (third upload with same name)
 
 ---
 
@@ -87,18 +87,18 @@ public/storage/
 Configuration is in `lib/storage/constants.ts`:
 
 ```typescript
-// Storage paths
-STORAGE_CONFIG.BASE_PATH      // "public/storage"
-STORAGE_CONFIG.FOLDERS.IMAGES // "images"
-STORAGE_CONFIG.FOLDERS.DOCUMENTS // "documents"
+console.logStorage paths
+STORAGE_CONFIG.BASE_PATH; console.log"public/storage"
+STORAGE_CONFIG.FOLDERS.IMAGES; console.log"images"
+STORAGE_CONFIG.FOLDERS.DOCUMENTS; console.log"documents"
 
-// File size limits
-FILE_SIZE_LIMITS.IMAGE     // 5MB
-FILE_SIZE_LIMITS.DOCUMENT  // 20MB
+console.logFile size limits
+FILE_SIZE_LIMITS.IMAGE; console.log5MB
+FILE_SIZE_LIMITS.DOCUMENT; console.log20MB
 
-// Allowed MIME types
-ALLOWED_IMAGE_TYPES    // ["image/jpeg", "image/png", "image/webp", "image/gif"]
-ALLOWED_DOCUMENT_TYPES // ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+console.logAllowed MIME types
+ALLOWED_IMAGE_TYPES; console.log["image/jpeg", "image/png", "image/webp", "image/gif"]
+ALLOWED_DOCUMENT_TYPES; console.log["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
 ```
 
 ---
@@ -123,18 +123,18 @@ FormData:
 
 ```json
 {
-  "success": true,
-  "message": "File uploaded successfully",
-  "data": {
-    "id": "my-product-image",
-    "filename": "my-product-image.jpg",
-    "originalName": "My Product Image.jpg",
-    "mimeType": "image/jpeg",
-    "size": 245760,
-    "folder": "images",
-    "url": "/storage/images/my-product-image.jpg",
-    "createdAt": "2025-12-08T10:30:00.000Z"
-  }
+	"success": true,
+	"message": "File uploaded successfully",
+	"data": {
+		"id": "my-product-image",
+		"filename": "my-product-image.jpg",
+		"originalName": "My Product Image.jpg",
+		"mimeType": "image/jpeg",
+		"size": 245760,
+		"folder": "images",
+		"url": "/storage/images/my-product-image.jpg",
+		"createdAt": "2025-12-08T10:30:00.000Z"
+	}
 }
 ```
 
@@ -155,8 +155,8 @@ Cookie: synos.session_token=...
 
 ```json
 {
-  "success": true,
-  "message": "File deleted successfully"
+	"success": true,
+	"message": "File deleted successfully"
 }
 ```
 
@@ -171,25 +171,25 @@ Cookie: synos.session_token=...
 
 ```json
 {
-  "success": true,
-  "message": "Files retrieved successfully",
-  "data": [
-    {
-      "filename": "my-product-image.jpg",
-      "mimeType": "image/jpeg",
-      "size": 245760,
-      "folder": "images",
-      "url": "/storage/images/my-product-image.jpg",
-      "modifiedAt": "2025-12-08T10:30:00.000Z",
-      "createdAt": "2025-12-08T10:30:00.000Z"
-    }
-  ],
-  "meta": {
-    "page": 1,
-    "limit": 20,
-    "total": 45,
-    "totalPages": 3
-  }
+	"success": true,
+	"message": "Files retrieved successfully",
+	"data": [
+		{
+			"filename": "my-product-image.jpg",
+			"mimeType": "image/jpeg",
+			"size": 245760,
+			"folder": "images",
+			"url": "/storage/images/my-product-image.jpg",
+			"modifiedAt": "2025-12-08T10:30:00.000Z",
+			"createdAt": "2025-12-08T10:30:00.000Z"
+		}
+	],
+	"meta": {
+		"page": 1,
+		"limit": 20,
+		"total": 45,
+		"totalPages": 3
+	}
 }
 ```
 
@@ -205,50 +205,50 @@ The easiest way to add file selection to forms. Provides a button with preview t
 import { MediaPicker } from "@/components/storage";
 
 function ProductForm() {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
+	const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  return (
-    <form>
-      {/* Image picker */}
-      <div>
-        <label>Product Image</label>
-        <MediaPicker
-          type="image"
-          value={imageUrl}
-          onChange={setImageUrl}
-          placeholder="Select product image"
-        />
-      </div>
+	return (
+		<form>
+			{/* Image picker */}
+			<div>
+				<label>Product Image</label>
+				<MediaPicker
+					type="image"
+					value={imageUrl}
+					onChange={setImageUrl}
+					placeholder="Select product image"
+				/>
+			</div>
 
-      {/* Document picker */}
-      <div>
-        <label>Product Manual (PDF)</label>
-        <MediaPicker
-          type="document"
-          value={pdfUrl}
-          onChange={setPdfUrl}
-          placeholder="Select PDF manual"
-          galleryTitle="Select Product Manual"
-        />
-      </div>
-    </form>
-  );
+			{/* Document picker */}
+			<div>
+				<label>Product Manual (PDF)</label>
+				<MediaPicker
+					type="document"
+					value={pdfUrl}
+					onChange={setPdfUrl}
+					placeholder="Select PDF manual"
+					galleryTitle="Select Product Manual"
+				/>
+			</div>
+		</form>
+	);
 }
 ```
 
 **Props:**
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `type` | `"image" \| "document"` | required | Type of media to pick |
-| `value` | `string \| null` | - | Current file URL |
-| `onChange` | `(url: string \| null) => void` | required | Callback when value changes |
-| `placeholder` | `string` | "Select image/document" | Placeholder text |
-| `disabled` | `boolean` | `false` | Disable the picker |
-| `showPreview` | `boolean` | `true` | Show preview of selected file |
-| `galleryTitle` | `string` | - | Custom gallery dialog title |
-| `className` | `string` | - | Additional CSS classes |
+| Prop           | Type                            | Default                 | Description                   |
+| -------------- | ------------------------------- | ----------------------- | ----------------------------- |
+| `type`         | `"image" \| "document"`         | required                | Type of media to pick         |
+| `value`        | `string \| null`                | -                       | Current file URL              |
+| `onChange`     | `(url: string \| null) => void` | required                | Callback when value changes   |
+| `placeholder`  | `string`                        | "Select image/document" | Placeholder text              |
+| `disabled`     | `boolean`                       | `false`                 | Disable the picker            |
+| `showPreview`  | `boolean`                       | `true`                  | Show preview of selected file |
+| `galleryTitle` | `string`                        | -                       | Custom gallery dialog title   |
+| `className`    | `string`                        | -                       | Additional CSS classes        |
 
 ---
 
@@ -261,43 +261,43 @@ import { MediaGallery, type MediaType } from "@/components/storage";
 import type { FileMetadata } from "@/lib/storage/client";
 
 function CustomGallery() {
-  const [open, setOpen] = useState(false);
-  const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
+	const [open, setOpen] = useState(false);
+	const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
 
-  const handleSelect = (file: FileMetadata) => {
-    setSelectedUrl(file.url);
-    setOpen(false);
-  };
+	const handleSelect = (file: FileMetadata) => {
+		setSelectedUrl(file.url);
+		setOpen(false);
+	};
 
-  return (
-    <>
-      <button onClick={() => setOpen(true)}>Open Gallery</button>
+	return (
+		<>
+			<button onClick={() => setOpen(true)}>Open Gallery</button>
 
-      <MediaGallery
-        open={open}
-        onOpenChange={setOpen}
-        type="image"
-        onSelect={handleSelect}
-        selectedUrl={selectedUrl}
-        title="Select Featured Image"
-        pageSize={20}
-      />
-    </>
-  );
+			<MediaGallery
+				open={open}
+				onOpenChange={setOpen}
+				type="image"
+				onSelect={handleSelect}
+				selectedUrl={selectedUrl}
+				title="Select Featured Image"
+				pageSize={20}
+			/>
+		</>
+	);
 }
 ```
 
 **Props:**
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `open` | `boolean` | required | Control dialog visibility |
-| `onOpenChange` | `(open: boolean) => void` | required | Callback when visibility changes |
-| `type` | `"image" \| "document"` | required | Type of files to show |
-| `onSelect` | `(file: FileMetadata) => void` | - | Callback when file is selected |
-| `selectedUrl` | `string \| null` | - | Currently selected file URL |
-| `title` | `string` | "Select Image/Document" | Dialog title |
-| `pageSize` | `number` | `20` | Files per page |
+| Prop           | Type                           | Default                 | Description                      |
+| -------------- | ------------------------------ | ----------------------- | -------------------------------- |
+| `open`         | `boolean`                      | required                | Control dialog visibility        |
+| `onOpenChange` | `(open: boolean) => void`      | required                | Callback when visibility changes |
+| `type`         | `"image" \| "document"`        | required                | Type of files to show            |
+| `onSelect`     | `(file: FileMetadata) => void` | -                       | Callback when file is selected   |
+| `selectedUrl`  | `string \| null`               | -                       | Currently selected file URL      |
+| `title`        | `string`                       | "Select Image/Document" | Dialog title                     |
+| `pageSize`     | `number`                       | `20`                    | Files per page                   |
 
 ---
 
@@ -310,36 +310,36 @@ import { FileUploader } from "@/components/storage";
 import type { StorageFile } from "@/lib/storage/client";
 
 function UploadSection() {
-  const handleUpload = (file: StorageFile) => {
-    console.log("Uploaded:", file.url);
-  };
+	const handleUpload = (file: StorageFile) => {
+		console.logconsole.log("Uploaded:", file.url);
+	};
 
-  const handleError = (error: string) => {
-    console.error("Upload failed:", error);
-  };
+	const handleError = (error: string) => {
+		console.error("Upload failed:", error);
+	};
 
-  return (
-    <FileUploader
-      folder="images"
-      onUpload={handleUpload}
-      onError={handleError}
-      multiple={false}
-    />
-  );
+	return (
+		<FileUploader
+			folder="images"
+			onUpload={handleUpload}
+			onError={handleError}
+			multiple={false}
+		/>
+	);
 }
 ```
 
 **Props:**
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `folder` | `"images" \| "documents"` | - | Target folder (auto-detected if not set) |
-| `onUpload` | `(file: StorageFile) => void` | - | Callback on successful upload |
-| `onError` | `(error: string) => void` | - | Callback on upload error |
-| `multiple` | `boolean` | `false` | Allow multiple file selection |
-| `accept` | `string` | - | Custom accepted file types |
-| `disabled` | `boolean` | `false` | Disable the uploader |
-| `className` | `string` | - | Additional CSS classes |
+| Prop        | Type                          | Default | Description                              |
+| ----------- | ----------------------------- | ------- | ---------------------------------------- |
+| `folder`    | `"images" \| "documents"`     | -       | Target folder (auto-detected if not set) |
+| `onUpload`  | `(file: StorageFile) => void` | -       | Callback on successful upload            |
+| `onError`   | `(error: string) => void`     | -       | Callback on upload error                 |
+| `multiple`  | `boolean`                     | `false` | Allow multiple file selection            |
+| `accept`    | `string`                      | -       | Custom accepted file types               |
+| `disabled`  | `boolean`                     | `false` | Disable the uploader                     |
+| `className` | `string`                      | -       | Additional CSS classes                   |
 
 ---
 
@@ -352,40 +352,40 @@ import { FileList } from "@/components/storage";
 import type { FileMetadata } from "@/lib/storage/client";
 
 function ImageBrowser() {
-  const handleDelete = (filename: string) => {
-    console.log("Deleted:", filename);
-  };
+	const handleDelete = (filename: string) => {
+		console.logconsole.log("Deleted:", filename);
+	};
 
-  const handleSelect = (file: FileMetadata) => {
-    console.log("Selected:", file.url);
-  };
+	const handleSelect = (file: FileMetadata) => {
+		console.logconsole.log("Selected:", file.url);
+	};
 
-  return (
-    <FileList
-      folder="images"
-      title="Image Library"
-      description="All uploaded images"
-      pageSize={12}
-      selectable={true}
-      onSelect={handleSelect}
-      onDelete={handleDelete}
-    />
-  );
+	return (
+		<FileList
+			folder="images"
+			title="Image Library"
+			description="All uploaded images"
+			pageSize={12}
+			selectable={true}
+			onSelect={handleSelect}
+			onDelete={handleDelete}
+		/>
+	);
 }
 ```
 
 **Props:**
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `folder` | `"images" \| "documents"` | required | Folder to display |
-| `title` | `string` | "{folder} Files" | Card title |
-| `description` | `string` | - | Card description |
-| `pageSize` | `number` | `12` | Items per page |
-| `selectable` | `boolean` | `false` | Enable file selection mode |
-| `onSelect` | `(file: FileMetadata) => void` | - | Callback when file is selected |
-| `onDelete` | `(filename: string) => void` | - | Callback when file is deleted |
-| `className` | `string` | - | Additional CSS classes |
+| Prop          | Type                           | Default          | Description                    |
+| ------------- | ------------------------------ | ---------------- | ------------------------------ |
+| `folder`      | `"images" \| "documents"`      | required         | Folder to display              |
+| `title`       | `string`                       | "{folder} Files" | Card title                     |
+| `description` | `string`                       | -                | Card description               |
+| `pageSize`    | `number`                       | `12`             | Items per page                 |
+| `selectable`  | `boolean`                      | `false`          | Enable file selection mode     |
+| `onSelect`    | `(file: FileMetadata) => void` | -                | Callback when file is selected |
+| `onDelete`    | `(filename: string) => void`   | -                | Callback when file is deleted  |
+| `className`   | `string`                       | -                | Additional CSS classes         |
 
 ---
 
@@ -397,13 +397,15 @@ Combined view with tabs for images and documents.
 import { StorageManager } from "@/components/storage";
 
 function AdminPage() {
-  return (
-    <StorageManager
-      defaultTab="images"
-      onUpload={(file) => console.log("Uploaded:", file)}
-      onDelete={(filename, folder) => console.log("Deleted:", filename)}
-    />
-  );
+	return (
+		<StorageManager
+			defaultTab="images"
+			onUpload={(file) => console.logconsole.log("Uploaded:", file)}
+			onDelete={(filename, folder) =>
+				console.logconsole.log("Deleted:", filename)
+			}
+		/>
+	);
 }
 ```
 
@@ -414,7 +416,7 @@ function AdminPage() {
 ### Import (Server Components / API Routes)
 
 ```typescript
-// Server-side imports (uses Node.js fs)
+console.logServer-side imports (uses Node.js fs)
 import { storageService, StorageError } from "@/lib/storage";
 ```
 
@@ -423,33 +425,36 @@ import { storageService, StorageError } from "@/lib/storage";
 ```typescript
 import { storageService } from "@/lib/storage";
 
-// Upload a file
+console.logUpload a file
 const result = await storageService.upload({
-  buffer: fileBuffer,
-  originalName: "photo.jpg",
-  mimeType: "image/jpeg",
-  size: 245760,
-  folder: "images", // optional, auto-detected
+	buffer: fileBuffer,
+	originalName: "photo.jpg",
+	mimeType: "image/jpeg",
+	size: 245760,
+	folder: "images", console.logoptional, auto-detected
 });
 
-// Delete a file
-await storageService.delete("550e8400-e29b-41d4-a716-446655440000.jpg", "images");
-
-// List files
-const { files, page, total, totalPages } = await storageService.list(
-  "images",  // folder
-  1,         // page
-  20,        // limit
-  "desc"     // sort order
+console.logDelete a file
+await storageService.delete(
+	"550e8400-e29b-41d4-a716-446655440000.jpg",
+	"images"
 );
 
-// Check if file exists
+console.logList files
+const { files, page, total, totalPages } = await storageService.list(
+	"images", console.logfolder
+	1, console.logpage
+	20, console.loglimit
+	"desc" console.logsort order
+);
+
+console.logCheck if file exists
 const exists = await storageService.exists("filename.jpg", "images");
 
-// Get file metadata
+console.logGet file metadata
 const metadata = await storageService.getMetadata("filename.jpg", "images");
 
-// Get storage usage
+console.logGet storage usage
 const { count, totalSize } = await storageService.getUsage("images");
 ```
 
@@ -459,14 +464,14 @@ const { count, totalSize } = await storageService.getUsage("images");
 import { storageService, StorageError } from "@/lib/storage";
 
 try {
-  await storageService.upload(request);
+	await storageService.upload(request);
 } catch (error) {
-  if (error instanceof StorageError) {
-    console.log(error.code);     // "FILE_TOO_LARGE"
-    console.log(error.message);  // "File size exceeds the maximum allowed limit"
-    console.log(error.statusCode); // 400
-    console.log(error.details);  // { field: "size", value: 10485760 }
-  }
+	if (error instanceof StorageError) {
+		console.logconsole.log(error.code);     console.log"FILE_TOO_LARGE"
+		console.logconsole.log(error.message);  console.log"File size exceeds the maximum allowed limit"
+		console.logconsole.log(error.statusCode); console.log400
+		console.logconsole.log(error.details);  console.log{ field: "size", value: 10485760 }
+	}
 }
 ```
 
@@ -477,15 +482,15 @@ try {
 ### Import (Client Components)
 
 ```typescript
-// Client-safe imports (no Node.js dependencies)
+console.logClient-safe imports (no Node.js dependencies)
 import {
-  type StorageFile,
-  type FileMetadata,
-  type StorageFolder,
-  FILE_SIZE_LIMITS,
-  ALLOWED_IMAGE_TYPES,
-  STORAGE_API_ROUTES,
-  formatFileSize,
+	type StorageFile,
+	type FileMetadata,
+	type StorageFolder,
+	FILE_SIZE_LIMITS,
+	ALLOWED_IMAGE_TYPES,
+	STORAGE_API_ROUTES,
+	formatFileSize,
 } from "@/lib/storage/client";
 ```
 
@@ -494,29 +499,29 @@ import {
 ```typescript
 import { STORAGE_API_ROUTES } from "@/lib/storage/client";
 
-// Upload
+console.logUpload;
 const formData = new FormData();
 formData.append("file", file);
 formData.append("folder", "images");
 
 const response = await fetch(STORAGE_API_ROUTES.UPLOAD, {
-  method: "POST",
-  body: formData,
+	method: "POST",
+	body: formData,
 });
 
-// List
+console.logList;
 const params = new URLSearchParams({
-  folder: "images",
-  page: "1",
-  limit: "20",
+	folder: "images",
+	page: "1",
+	limit: "20",
 });
 const response = await fetch(`${STORAGE_API_ROUTES.LIST}?${params}`);
 
-// Delete
+console.logDelete;
 const response = await fetch(STORAGE_API_ROUTES.DELETE, {
-  method: "DELETE",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ filename: "uuid.jpg", folder: "images" }),
+	method: "DELETE",
+	headers: { "Content-Type": "application/json" },
+	body: JSON.stringify({ filename: "uuid.jpg", folder: "images" }),
 });
 ```
 
@@ -530,14 +535,14 @@ Returned after successful upload.
 
 ```typescript
 interface StorageFile {
-  id: string;           // UUID
-  filename: string;     // "uuid.jpg"
-  originalName: string; // "photo.jpg"
-  mimeType: string;     // "image/jpeg"
-  size: number;         // bytes
-  folder: StorageFolder;
-  url: string;          // "/storage/images/uuid.jpg"
-  createdAt: Date;
+	id: string; console.logUUID
+	filename: string; console.log"uuid.jpg"
+	originalName: string; console.log"photo.jpg"
+	mimeType: string; console.log"image/jpeg"
+	size: number; console.logbytes
+	folder: StorageFolder;
+	url: string; console.log"/storage/images/uuid.jpg"
+	createdAt: Date;
 }
 ```
 
@@ -547,13 +552,13 @@ Returned when listing files.
 
 ```typescript
 interface FileMetadata {
-  filename: string;
-  mimeType: string;
-  size: number;
-  folder: StorageFolder;
-  url: string;
-  modifiedAt: Date;
-  createdAt: Date;
+	filename: string;
+	mimeType: string;
+	size: number;
+	folder: StorageFolder;
+	url: string;
+	modifiedAt: Date;
+	createdAt: Date;
 }
 ```
 
@@ -573,14 +578,14 @@ type MediaType = "image" | "document";
 
 ```typescript
 type StorageErrorCode =
-  | "FILE_REQUIRED"
-  | "INVALID_MIME_TYPE"
-  | "MIME_MISMATCH"
-  | "FILE_TOO_LARGE"
-  | "INVALID_FOLDER"
-  | "FILE_NOT_FOUND"
-  | "STORAGE_ERROR"
-  | "PATH_TRAVERSAL";
+	| "FILE_REQUIRED"
+	| "INVALID_MIME_TYPE"
+	| "MIME_MISMATCH"
+	| "FILE_TOO_LARGE"
+	| "INVALID_FOLDER"
+	| "FILE_NOT_FOUND"
+	| "STORAGE_ERROR"
+	| "PATH_TRAVERSAL";
 ```
 
 ---
@@ -600,15 +605,15 @@ type StorageErrorCode =
 
 The system verifies file content matches the declared MIME type by checking magic bytes:
 
-| Format | Magic Bytes |
-|--------|-------------|
-| JPEG | `FF D8 FF` |
-| PNG | `89 50 4E 47 0D 0A 1A 0A` |
-| GIF | `47 49 46 38` (GIF8) |
-| WebP | `52 49 46 46` (RIFF) |
-| PDF | `25 50 44 46` (%PDF) |
-| DOC | `D0 CF 11 E0` (OLE) |
-| DOCX | `50 4B 03 04` (ZIP/PK) |
+| Format | Magic Bytes               |
+| ------ | ------------------------- |
+| JPEG   | `FF D8 FF`                |
+| PNG    | `89 50 4E 47 0D 0A 1A 0A` |
+| GIF    | `47 49 46 38` (GIF8)      |
+| WebP   | `52 49 46 46` (RIFF)      |
+| PDF    | `25 50 44 46` (%PDF)      |
+| DOC    | `D0 CF 11 E0` (OLE)       |
+| DOCX   | `50 4B 03 04` (ZIP/PK)    |
 
 ---
 
@@ -626,56 +631,56 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface ProductFormData {
-  name: string;
-  imageUrl: string | null;
-  manualUrl: string | null;
+	name: string;
+	imageUrl: string | null;
+	manualUrl: string | null;
 }
 
 export function ProductForm() {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [manualUrl, setManualUrl] = useState<string | null>(null);
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
+	const [manualUrl, setManualUrl] = useState<string | null>(null);
 
-  const { register, handleSubmit } = useForm<ProductFormData>();
+	const { register, handleSubmit } = useForm<ProductFormData>();
 
-  const onSubmit = (data: ProductFormData) => {
-    const product = {
-      ...data,
-      imageUrl,
-      manualUrl,
-    };
-    console.log("Submit:", product);
-  };
+	const onSubmit = (data: ProductFormData) => {
+		const product = {
+			...data,
+			imageUrl,
+			manualUrl,
+		};
+		console.logconsole.log("Submit:", product);
+	};
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
-        <label className="text-sm font-medium">Product Name</label>
-        <Input {...register("name")} placeholder="Enter product name" />
-      </div>
+	return (
+		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+			<div>
+				<label className="text-sm font-medium">Product Name</label>
+				<Input {...register("name")} placeholder="Enter product name" />
+			</div>
 
-      <div>
-        <label className="text-sm font-medium">Product Image</label>
-        <MediaPicker
-          type="image"
-          value={imageUrl}
-          onChange={setImageUrl}
-          placeholder="Click to select product image"
-        />
-      </div>
+			<div>
+				<label className="text-sm font-medium">Product Image</label>
+				<MediaPicker
+					type="image"
+					value={imageUrl}
+					onChange={setImageUrl}
+					placeholder="Click to select product image"
+				/>
+			</div>
 
-      <div>
-        <label className="text-sm font-medium">User Manual (PDF)</label>
-        <MediaPicker
-          type="document"
-          value={manualUrl}
-          onChange={setManualUrl}
-          placeholder="Click to select PDF manual"
-        />
-      </div>
+			<div>
+				<label className="text-sm font-medium">User Manual (PDF)</label>
+				<MediaPicker
+					type="document"
+					value={manualUrl}
+					onChange={setManualUrl}
+					placeholder="Click to select PDF manual"
+				/>
+			</div>
 
-      <Button type="submit">Save Product</Button>
-    </form>
-  );
+			<Button type="submit">Save Product</Button>
+		</form>
+	);
 }
 ```
 
@@ -687,20 +692,20 @@ export function ProductForm() {
 import { StorageManager } from "@/components/storage";
 
 export default function StorageAdminPage() {
-  return (
-    <div className="container py-8">
-      <h1 className="text-2xl font-bold mb-6">Media Library</h1>
-      <StorageManager
-        defaultTab="images"
-        onUpload={(file) => {
-          console.log("File uploaded:", file.filename);
-        }}
-        onDelete={(filename, folder) => {
-          console.log(`Deleted ${filename} from ${folder}`);
-        }}
-      />
-    </div>
-  );
+	return (
+		<div className="container py-8">
+			<h1 className="text-2xl font-bold mb-6">Media Library</h1>
+			<StorageManager
+				defaultTab="images"
+				onUpload={(file) => {
+					console.logconsole.log("File uploaded:", file.filename);
+				}}
+				onDelete={(filename, folder) => {
+					console.logconsole.log(`Deleted ${filename} from ${folder}`);
+				}}
+			/>
+		</div>
+	);
 }
 ```
 
@@ -715,51 +720,51 @@ import type { FileMetadata } from "@/lib/storage/client";
 import { Button } from "@/components/ui/button";
 
 export function GallerySection() {
-  const [open, setOpen] = useState(false);
-  const [type, setType] = useState<MediaType>("image");
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+	const [open, setOpen] = useState(false);
+	const [type, setType] = useState<MediaType>("image");
+	const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
-  const handleSelect = (file: FileMetadata) => {
-    setSelectedFiles((prev) => [...prev, file.url]);
-    // Keep gallery open for multiple selection
-  };
+	const handleSelect = (file: FileMetadata) => {
+		setSelectedFiles((prev) => [...prev, file.url]);
+		console.logKeep gallery open for multiple selection
+	};
 
-  return (
-    <div>
-      <div className="flex gap-2 mb-4">
-        <Button
-          onClick={() => {
-            setType("image");
-            setOpen(true);
-          }}
-        >
-          Add Images
-        </Button>
-        <Button
-          onClick={() => {
-            setType("document");
-            setOpen(true);
-          }}
-        >
-          Add Documents
-        </Button>
-      </div>
+	return (
+		<div>
+			<div className="flex gap-2 mb-4">
+				<Button
+					onClick={() => {
+						setType("image");
+						setOpen(true);
+					}}
+				>
+					Add Images
+				</Button>
+				<Button
+					onClick={() => {
+						setType("document");
+						setOpen(true);
+					}}
+				>
+					Add Documents
+				</Button>
+			</div>
 
-      <div className="grid grid-cols-4 gap-2">
-        {selectedFiles.map((url, i) => (
-          <img key={i} src={url} alt="" className="rounded" />
-        ))}
-      </div>
+			<div className="grid grid-cols-4 gap-2">
+				{selectedFiles.map((url, i) => (
+					<img key={i} src={url} alt="" className="rounded" />
+				))}
+			</div>
 
-      <MediaGallery
-        open={open}
-        onOpenChange={setOpen}
-        type={type}
-        onSelect={handleSelect}
-        title={`Select ${type === "image" ? "Images" : "Documents"}`}
-      />
-    </div>
-  );
+			<MediaGallery
+				open={open}
+				onOpenChange={setOpen}
+				type={type}
+				onSelect={handleSelect}
+				title={`Select ${type === "image" ? "Images" : "Documents"}`}
+			/>
+		</div>
+	);
 }
 ```
 
@@ -772,10 +777,10 @@ export function GallerySection() {
 You're importing server-side code in a client component. Use:
 
 ```typescript
-// Client components
+console.logClient components
 import { ... } from "@/lib/storage/client";
 
-// Server components / API routes
+console.logServer components / API routes
 import { ... } from "@/lib/storage";
 ```
 

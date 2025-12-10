@@ -12,14 +12,14 @@ export function generateProductJsonLd(product: ProductType) {
 	const images = product.productImages?.length
 		? product.productImages.map((img) =>
 				img.startsWith("http") ? img : `${BASE_URL}${img}`
-			)
+		  )
 		: product.overviewImage
-			? [
-					product.overviewImage.startsWith("http")
-						? product.overviewImage
-						: `${BASE_URL}${product.overviewImage}`,
-				]
-			: [];
+		? [
+				product.overviewImage.startsWith("http")
+					? product.overviewImage
+					: `${BASE_URL}${product.overviewImage}`,
+		  ]
+		: [];
 
 	return {
 		"@context": "https://schema.org",
@@ -32,7 +32,9 @@ export function generateProductJsonLd(product: ProductType) {
 			"@type": "Brand",
 			name: siteConfig.name,
 		},
-		category: product.categories?.map((cat) => cat.name).join(", ") || "Medical Equipment",
+		category:
+			product.categories?.map((cat) => cat.name).join(", ") ||
+			"Medical Equipment",
 		url: productUrl,
 		...(product.certifications &&
 			product.certifications.length > 0 && {
@@ -162,7 +164,9 @@ type JsonLdSchema = Record<string, any>;
 /**
  * Generate all product page JSON-LD schemas combined
  */
-export function generateProductPageJsonLd(product: ProductType): JsonLdSchema[] {
+export function generateProductPageJsonLd(
+	product: ProductType
+): JsonLdSchema[] {
 	const schemas: JsonLdSchema[] = [
 		generateProductJsonLd(product),
 		generateBreadcrumbJsonLd(product, product.categories?.[0]?.name),

@@ -18,8 +18,8 @@
 7. [Authentication Flow](#authentication-flow)
 8. [File Structure](#file-structure)
 9. [Implementation Steps](#implementation-steps)
-10. [Testing Guide](#testing-guide)
-11. [Deployment Checklist](#deployment-checklist)
+10.   [Testing Guide](#testing-guide)
+11.   [Deployment Checklist](#deployment-checklist)
 
 ---
 
@@ -29,40 +29,40 @@
 
 Implement a complete authentication system for Synos Medical's web application using:
 
-- **MongoDB** as the database
-- **Mongoose** for ODM (Object Document Mapping)
-- **Better Auth** for authentication framework
-- **Next.js 16** App Router for the frontend/backend
+-  **MongoDB** as the database
+-  **Mongoose** for ODM (Object Document Mapping)
+-  **Better Auth** for authentication framework
+-  **Next.js 16** App Router for the frontend/backend
 
 ### 1.2 Goals
 
-- ✅ Secure user registration and login
-- ✅ Session management (7-day expiration)
-- ✅ User profile management
-- ✅ Protected routes and API endpoints
-- ✅ Clean, maintainable, reusable code (DRY, KISS principles)
-- ✅ Industrial-grade architecture patterns
+-  ✅ Secure user registration and login
+-  ✅ Session management (7-day expiration)
+-  ✅ User profile management
+-  ✅ Protected routes and API endpoints
+-  ✅ Clean, maintainable, reusable code (DRY, KISS principles)
+-  ✅ Industrial-grade architecture patterns
 
 ### 1.3 Scope
 
 **In Scope:**
 
-- Email/password authentication
-- User registration and login
-- User profile with bio, avatar, phone, address
-- Dashboard for authenticated users
-- Profile editing
-- Session management
-- Protected routes
+-  Email/password authentication
+-  User registration and login
+-  User profile with bio, avatar, phone, address
+-  Dashboard for authenticated users
+-  Profile editing
+-  Session management
+-  Protected routes
 
 **Out of Scope (for now):**
 
-- Email verification
-- Social login (Google, GitHub, etc.)
-- Two-factor authentication (2FA)
-- Role-based access control (RBAC)
-- Password reset via email
-- Rate limiting
+-  Email verification
+-  Social login (Google, GitHub, etc.)
+-  Two-factor authentication (2FA)
+-  Role-based access control (RBAC)
+-  Password reset via email
+-  Rate limiting
 
 ---
 
@@ -72,85 +72,85 @@ Implement a complete authentication system for Synos Medical's web application u
 
 #### FR-1: User Registration
 
-- **Description:** Users can create an account with email, name, and password
-- **Input:** Email (valid format), Name (min 2 chars), Password (min 8 chars)
-- **Output:** User account created, session started
-- **Validation:**
-  - Email must be unique
-  - Email must be valid format
-  - Password must be at least 8 characters
-  - Name required
+-  **Description:** Users can create an account with email, name, and password
+-  **Input:** Email (valid format), Name (min 2 chars), Password (min 8 chars)
+-  **Output:** User account created, session started
+-  **Validation:**
+   -  Email must be unique
+   -  Email must be valid format
+   -  Password must be at least 8 characters
+   -  Name required
 
 #### FR-2: User Login
 
-- **Description:** Users can log in with email and password
-- **Input:** Email, Password
-- **Output:** Session created, redirect to dashboard
-- **Validation:**
-  - Credentials must match existing user
-  - Account must exist
+-  **Description:** Users can log in with email and password
+-  **Input:** Email, Password
+-  **Output:** Session created, redirect to dashboard
+-  **Validation:**
+   -  Credentials must match existing user
+   -  Account must exist
 
 #### FR-3: User Logout
 
-- **Description:** Users can log out and end their session
-- **Input:** User action (button click)
-- **Output:** Session destroyed, redirect to homepage
+-  **Description:** Users can log out and end their session
+-  **Input:** User action (button click)
+-  **Output:** Session destroyed, redirect to homepage
 
 #### FR-4: Session Management
 
-- **Description:** User sessions persist across page refreshes
-- **Duration:** 7 days
-- **Storage:** HTTP-only cookies
-- **Security:** CSRF protection, secure cookies in production
+-  **Description:** User sessions persist across page refreshes
+-  **Duration:** 7 days
+-  **Storage:** HTTP-only cookies
+-  **Security:** CSRF protection, secure cookies in production
 
 #### FR-5: Profile Management
 
-- **Description:** Users can view and edit their profile
-- **Fields:** Name, Email, Bio, Avatar, Phone Number, Address
-- **Operations:** View, Update, Upload avatar
+-  **Description:** Users can view and edit their profile
+-  **Fields:** Name, Email, Bio, Avatar, Phone Number, Address
+-  **Operations:** View, Update, Upload avatar
 
 #### FR-6: Protected Routes
 
-- **Description:** Certain pages require authentication
-- **Protected Pages:** `/dashboard`, `/dashboard/profile`
-- **Behavior:** Redirect to `/login` if not authenticated
+-  **Description:** Certain pages require authentication
+-  **Protected Pages:** `/dashboard`, `/dashboard/profile`
+-  **Behavior:** Redirect to `/login` if not authenticated
 
 ### 2.2 Non-Functional Requirements
 
 #### NFR-1: Security
 
-- Passwords hashed with bcrypt (handled by Better Auth)
-- HTTPS enforced in production
-- HTTP-only secure cookies
-- CSRF protection
-- SQL injection prevention (Mongoose parameterized queries)
+-  Passwords hashed with bcrypt (handled by Better Auth)
+-  HTTPS enforced in production
+-  HTTP-only secure cookies
+-  CSRF protection
+-  SQL injection prevention (Mongoose parameterized queries)
 
 #### NFR-2: Performance
 
-- Page load time < 3 seconds or lower
-- API response time < 500ms or lower
-- Database queries optimized with indexes
-- Connection pooling for MongoDB
+-  Page load time < 3 seconds or lower
+-  API response time < 500ms or lower
+-  Database queries optimized with indexes
+-  Connection pooling for MongoDB
 
 #### NFR-3: Scalability
 
-- Repository pattern allows easy database migration
-- Service layer separates business logic
-- Stateless authentication (session in database)
+-  Repository pattern allows easy database migration
+-  Service layer separates business logic
+-  Stateless authentication (session in database)
 
 #### NFR-4: Maintainability
 
-- TypeScript for type safety
-- Clean code principles (DRY, KISS, SOLID)
-- Comprehensive documentation
-- Consistent code style
+-  TypeScript for type safety
+-  Clean code principles (DRY, KISS, SOLID)
+-  Comprehensive documentation
+-  Consistent code style
 
 #### NFR-5: Usability
 
-- Clear error messages
-- Form validation feedback
-- Loading states
-- Responsive design
+-  Clear error messages
+-  Form validation feedback
+-  Loading states
+-  Responsive design
 
 ---
 
@@ -158,32 +158,32 @@ Implement a complete authentication system for Synos Medical's web application u
 
 ### 3.1 Core Technologies
 
-| Layer | Technology | Version | Purpose |
-|-------|-----------|---------|---------|
-| **Framework** | Next.js | 16.0.0 | Full-stack React framework |
-| **Language** | TypeScript | 5.x | Type-safe JavaScript |
-| **Database** | MongoDB | 7.0+ | Document database |
-| **ODM** | Mongoose | 9.0.0 | MongoDB object modeling |
-| **Auth** | Better Auth | 1.4.4 | Authentication framework |
-| **Validation** | Zod | 4.1.12 | Schema validation |
-| **Forms** | React Hook Form | 7.65.0 | Form state management |
-| **UI** | Shadcn/UI + Radix UI | Latest | Component library |
-| **Styling** | Tailwind CSS | 4.x | Utility-first CSS |
+| Layer          | Technology           | Version | Purpose                    |
+| -------------- | -------------------- | ------- | -------------------------- |
+| **Framework**  | Next.js              | 16.0.0  | Full-stack React framework |
+| **Language**   | TypeScript           | 5.x     | Type-safe JavaScript       |
+| **Database**   | MongoDB              | 7.0+    | Document database          |
+| **ODM**        | Mongoose             | 9.0.0   | MongoDB object modeling    |
+| **Auth**       | Better Auth          | 1.4.4   | Authentication framework   |
+| **Validation** | Zod                  | 4.1.12  | Schema validation          |
+| **Forms**      | React Hook Form      | 7.65.0  | Form state management      |
+| **UI**         | Shadcn/UI + Radix UI | Latest  | Component library          |
+| **Styling**    | Tailwind CSS         | 4.x     | Utility-first CSS          |
 
 ### 3.2 Dependencies
 
 ```json
 {
-  "dependencies": {
-    "next": "16.0.0",
-    "react": "19.2.0",
-    "mongoose": "9.0.0",
-    "mongodb": "7.0.0",
-    "better-auth": "1.4.4",
-    "zod": "4.1.12",
-    "react-hook-form": "7.65.0",
-    "@hookform/resolvers": "5.2.2"
-  }
+	"dependencies": {
+		"next": "16.0.0",
+		"react": "19.2.0",
+		"mongoose": "9.0.0",
+		"mongodb": "7.0.0",
+		"better-auth": "1.4.4",
+		"zod": "4.1.12",
+		"react-hook-form": "7.65.0",
+		"@hookform/resolvers": "5.2.2"
+	}
 }
 ```
 
@@ -200,8 +200,8 @@ Implement a complete authentication system for Synos Medical's web application u
 ```javascript
 {
   _id: ObjectId,
-  id: String,              // Better Auth user ID
-  email: String,           // Unique, indexed
+  id: String,              console.logBetter Auth user ID
+  email: String,           console.logUnique, indexed
   emailVerified: Boolean,
   name: String,
   image: String,
@@ -216,7 +216,7 @@ Implement a complete authentication system for Synos Medical's web application u
 {
   _id: ObjectId,
   id: String,
-  userId: String,          // Reference to user.id
+  userId: String,          console.logReference to user.id
   expiresAt: Date,
   token: String,
   ipAddress: String,
@@ -232,7 +232,7 @@ Implement a complete authentication system for Synos Medical's web application u
   id: String,
   userId: String,
   accountId: String,
-  providerId: String,      // 'credential' for email/password
+  providerId: String,      console.log'credential' for email/password
   accessToken: String,
   refreshToken: String,
   expiresAt: Date
@@ -246,11 +246,11 @@ Implement a complete authentication system for Synos Medical's web application u
 ```typescript
 {
   _id: ObjectId,
-  email: String,           // Indexed, unique, lowercase
+  email: String,           console.logIndexed, unique, lowercase
   name: String,
   emailVerified: Boolean,
   image: String,
-  betterAuthUserId: String, // Reference to Better Auth user.id, indexed
+  betterAuthUserId: String, console.logReference to Better Auth user.id, indexed
   lastLoginAt: Date,
   createdAt: Date,
   updatedAt: Date
@@ -262,8 +262,8 @@ Implement a complete authentication system for Synos Medical's web application u
 ```typescript
 {
   _id: ObjectId,
-  userId: ObjectId,        // Reference to users._id, indexed, unique
-  bio: String,             // Max 500 chars
+  userId: ObjectId,        console.logReference to users._id, indexed, unique
+  bio: String,             console.logMax 500 chars
   avatarUrl: String,
   phoneNumber: String,
   address: {
@@ -280,12 +280,12 @@ Implement a complete authentication system for Synos Medical's web application u
 ### 4.2 Database Indexes
 
 ```javascript
-// users collection
+console.logusers collection
 db.users.createIndex({ email: 1 }, { unique: true });
 db.users.createIndex({ betterAuthUserId: 1 });
 db.users.createIndex({ createdAt: -1 });
 
-// profiles collection
+console.logprofiles collection
 db.profiles.createIndex({ userId: 1 }, { unique: true });
 ```
 
@@ -431,19 +431,19 @@ Login Flow:
 **Example:**
 
 ```typescript
-// Instead of this in your API route:
+console.logInstead of this in your API route:
 const User = await getUserModel();
 const user = await User.findOne({ email });
 
-// Use this:
+console.logUse this:
 const user = await userRepository.findByEmail(email);
 ```
 
 **Benefits:**
 
-- DRY: Write query once, reuse everywhere
-- Testable: Mock repositories easily
-- Flexible: Switch databases without changing business logic
+-  DRY: Write query once, reuse everywhere
+-  Testable: Mock repositories easily
+-  Flexible: Switch databases without changing business logic
 
 #### 5.2.2 Service Layer Pattern
 
@@ -452,17 +452,17 @@ const user = await userRepository.findByEmail(email);
 **Example:**
 
 ```typescript
-// Service handles complex operations
+console.logService handles complex operations
 class AuthService {
-  async register(data) {
-    // 1. Validate data
-    // 2. Check if email exists
-    // 3. Create Better Auth user
-    // 4. Create Mongoose user record
-    // 5. Create default profile
-    // 6. Send welcome email
-    return user;
-  }
+	async register(data) {
+		console.log1. Validate data
+		console.log2. Check if email exists
+		console.log3. Create Better Auth user
+		console.log4. Create Mongoose user record
+		console.log5. Create default profile
+		console.log6. Send welcome email
+		return user;
+	}
 }
 ```
 
@@ -476,9 +476,9 @@ class AuthService {
 let connection = null;
 
 export async function connectMongoose() {
-  if (connection) return connection;
-  connection = await mongoose.connect(URI);
-  return connection;
+	if (connection) return connection;
+	connection = await mongoose.connect(URI);
+	return connection;
 }
 ```
 
@@ -490,7 +490,7 @@ export async function connectMongoose() {
 
 ```typescript
 export function getUserModelSync() {
-  return mongoose.models.User || mongoose.model('User', UserSchema);
+	return mongoose.models.User || mongoose.model("User", UserSchema);
 }
 ```
 
@@ -596,9 +596,9 @@ synos/
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "SecurePass123!",
-  "name": "John Doe"
+	"email": "user@example.com",
+	"password": "SecurePass123!",
+	"name": "John Doe"
 }
 ```
 
@@ -606,28 +606,28 @@ synos/
 
 ```json
 {
-  "success": true,
-  "message": "Registration successful",
-  "data": {
-    "user": {
-      "id": "user_123",
-      "email": "user@example.com",
-      "name": "John Doe",
-      "emailVerified": false
-    },
-    "session": {
-      "token": "session_token",
-      "expiresAt": "2025-12-09T00:00:00.000Z"
-    }
-  }
+	"success": true,
+	"message": "Registration successful",
+	"data": {
+		"user": {
+			"id": "user_123",
+			"email": "user@example.com",
+			"name": "John Doe",
+			"emailVerified": false
+		},
+		"session": {
+			"token": "session_token",
+			"expiresAt": "2025-12-09T00:00:00.000Z"
+		}
+	}
 }
 ```
 
 **Error Responses:**
 
-- `400 Bad Request` - Invalid input
-- `409 Conflict` - Email already exists
-- `500 Internal Server Error` - Server error
+-  `400 Bad Request` - Invalid input
+-  `409 Conflict` - Email already exists
+-  `500 Internal Server Error` - Server error
 
 ---
 
@@ -639,8 +639,8 @@ synos/
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "SecurePass123!"
+	"email": "user@example.com",
+	"password": "SecurePass123!"
 }
 ```
 
@@ -648,26 +648,26 @@ synos/
 
 ```json
 {
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "user": {
-      "id": "user_123",
-      "email": "user@example.com",
-      "name": "John Doe"
-    },
-    "session": {
-      "token": "session_token",
-      "expiresAt": "2025-12-09T00:00:00.000Z"
-    }
-  }
+	"success": true,
+	"message": "Login successful",
+	"data": {
+		"user": {
+			"id": "user_123",
+			"email": "user@example.com",
+			"name": "John Doe"
+		},
+		"session": {
+			"token": "session_token",
+			"expiresAt": "2025-12-09T00:00:00.000Z"
+		}
+	}
 }
 ```
 
 **Error Responses:**
 
-- `401 Unauthorized` - Invalid credentials
-- `500 Internal Server Error` - Server error
+-  `401 Unauthorized` - Invalid credentials
+-  `500 Internal Server Error` - Server error
 
 ---
 
@@ -685,8 +685,8 @@ Cookie: synos_session=session_token
 
 ```json
 {
-  "success": true,
-  "message": "Logout successful"
+	"success": true,
+	"message": "Logout successful"
 }
 ```
 
@@ -706,23 +706,23 @@ Cookie: synos_session=session_token
 
 ```json
 {
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user_123",
-      "email": "user@example.com",
-      "name": "John Doe"
-    },
-    "session": {
-      "expiresAt": "2025-12-09T00:00:00.000Z"
-    }
-  }
+	"success": true,
+	"data": {
+		"user": {
+			"id": "user_123",
+			"email": "user@example.com",
+			"name": "John Doe"
+		},
+		"session": {
+			"expiresAt": "2025-12-09T00:00:00.000Z"
+		}
+	}
 }
 ```
 
 **Error Responses:**
 
-- `401 Unauthorized` - No active session
+-  `401 Unauthorized` - No active session
 
 ---
 
@@ -742,40 +742,40 @@ Cookie: synos_session=session_token
 
 ```json
 {
-  "success": true,
-  "data": {
-    "_id": "507f1f77bcf86cd799439011",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "emailVerified": false,
-    "image": null,
-    "betterAuthUserId": "user_123",
-    "lastLoginAt": "2025-12-02T10:30:00.000Z",
-    "createdAt": "2025-12-01T00:00:00.000Z",
-    "updatedAt": "2025-12-02T10:30:00.000Z",
-    "profile": {
-      "_id": "507f1f77bcf86cd799439012",
-      "userId": "507f1f77bcf86cd799439011",
-      "bio": "Medical professional",
-      "avatarUrl": "https://example.com/avatar.jpg",
-      "phoneNumber": "+46701234567",
-      "address": {
-        "street": "Storgatan 1",
-        "city": "Stockholm",
-        "postalCode": "111 22",
-        "country": "Sweden"
-      },
-      "createdAt": "2025-12-01T00:00:00.000Z",
-      "updatedAt": "2025-12-02T10:30:00.000Z"
-    }
-  }
+	"success": true,
+	"data": {
+		"_id": "507f1f77bcf86cd799439011",
+		"email": "user@example.com",
+		"name": "John Doe",
+		"emailVerified": false,
+		"image": null,
+		"betterAuthUserId": "user_123",
+		"lastLoginAt": "2025-12-02T10:30:00.000Z",
+		"createdAt": "2025-12-01T00:00:00.000Z",
+		"updatedAt": "2025-12-02T10:30:00.000Z",
+		"profile": {
+			"_id": "507f1f77bcf86cd799439012",
+			"userId": "507f1f77bcf86cd799439011",
+			"bio": "Medical professional",
+			"avatarUrl": "https://example.com/avatar.jpg",
+			"phoneNumber": "+46701234567",
+			"address": {
+				"street": "Storgatan 1",
+				"city": "Stockholm",
+				"postalCode": "111 22",
+				"country": "Sweden"
+			},
+			"createdAt": "2025-12-01T00:00:00.000Z",
+			"updatedAt": "2025-12-02T10:30:00.000Z"
+		}
+	}
 }
 ```
 
 **Error Responses:**
 
-- `401 Unauthorized` - Not authenticated
-- `404 Not Found` - User not found
+-  `401 Unauthorized` - Not authenticated
+-  `404 Not Found` - User not found
 
 ---
 
@@ -793,22 +793,22 @@ Cookie: synos_session=session_token
 
 ```json
 {
-  "success": true,
-  "data": {
-    "_id": "507f1f77bcf86cd799439012",
-    "userId": "507f1f77bcf86cd799439011",
-    "bio": "Medical professional",
-    "avatarUrl": "https://example.com/avatar.jpg",
-    "phoneNumber": "+46701234567",
-    "address": {
-      "street": "Storgatan 1",
-      "city": "Stockholm",
-      "postalCode": "111 22",
-      "country": "Sweden"
-    },
-    "createdAt": "2025-12-01T00:00:00.000Z",
-    "updatedAt": "2025-12-02T10:30:00.000Z"
-  }
+	"success": true,
+	"data": {
+		"_id": "507f1f77bcf86cd799439012",
+		"userId": "507f1f77bcf86cd799439011",
+		"bio": "Medical professional",
+		"avatarUrl": "https://example.com/avatar.jpg",
+		"phoneNumber": "+46701234567",
+		"address": {
+			"street": "Storgatan 1",
+			"city": "Stockholm",
+			"postalCode": "111 22",
+			"country": "Sweden"
+		},
+		"createdAt": "2025-12-01T00:00:00.000Z",
+		"updatedAt": "2025-12-02T10:30:00.000Z"
+	}
 }
 ```
 
@@ -829,14 +829,14 @@ Content-Type: application/json
 
 ```json
 {
-  "bio": "Updated bio",
-  "phoneNumber": "+46709876543",
-  "address": {
-    "street": "Nygatan 5",
-    "city": "Gothenburg",
-    "postalCode": "411 05",
-    "country": "Sweden"
-  }
+	"bio": "Updated bio",
+	"phoneNumber": "+46709876543",
+	"address": {
+		"street": "Nygatan 5",
+		"city": "Gothenburg",
+		"postalCode": "411 05",
+		"country": "Sweden"
+	}
 }
 ```
 
@@ -844,28 +844,28 @@ Content-Type: application/json
 
 ```json
 {
-  "success": true,
-  "message": "Profile updated successfully",
-  "data": {
-    "_id": "507f1f77bcf86cd799439012",
-    "userId": "507f1f77bcf86cd799439011",
-    "bio": "Updated bio",
-    "phoneNumber": "+46709876543",
-    "address": {
-      "street": "Nygatan 5",
-      "city": "Gothenburg",
-      "postalCode": "411 05",
-      "country": "Sweden"
-    },
-    "updatedAt": "2025-12-02T11:00:00.000Z"
-  }
+	"success": true,
+	"message": "Profile updated successfully",
+	"data": {
+		"_id": "507f1f77bcf86cd799439012",
+		"userId": "507f1f77bcf86cd799439011",
+		"bio": "Updated bio",
+		"phoneNumber": "+46709876543",
+		"address": {
+			"street": "Nygatan 5",
+			"city": "Gothenburg",
+			"postalCode": "411 05",
+			"country": "Sweden"
+		},
+		"updatedAt": "2025-12-02T11:00:00.000Z"
+	}
 }
 ```
 
 **Error Responses:**
 
-- `401 Unauthorized` - Not authenticated
-- `422 Unprocessable Entity` - Validation error
+-  `401 Unauthorized` - Not authenticated
+-  `422 Unprocessable Entity` - Validation error
 
 ---
 
@@ -879,15 +879,15 @@ Content-Type: application/json
 
 ```json
 {
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "timestamp": "2025-12-02T12:00:00.000Z",
-    "database": {
-      "connected": true,
-      "name": "synos-db"
-    }
-  }
+	"success": true,
+	"data": {
+		"status": "healthy",
+		"timestamp": "2025-12-02T12:00:00.000Z",
+		"database": {
+			"connected": true,
+			"name": "synos-db"
+		}
+	}
 }
 ```
 
@@ -1125,38 +1125,38 @@ Session Lifecycle:
 
 #### Step 1.1: Configure Better Auth
 
-- [x] Create `lib/db/auth.ts`
-- [x] Set up MongoDB adapter
-- [x] Configure email/password plugin
-- [x] Set session duration to 7 days
-- [x] Configure secure cookies
+-  [x] Create `lib/db/auth.ts`
+-  [x] Set up MongoDB adapter
+-  [x] Configure email/password plugin
+-  [x] Set session duration to 7 days
+-  [x] Configure secure cookies
 
 #### Step 1.2: Update Environment Variables
 
-- [x] Add `MONGODB_URI`
-- [x] Add `MONGODB_DB`
-- [x] Add `BETTER_AUTH_SECRET`
-- [x] Add `BETTER_AUTH_URL`
-- [x] Add `NODE_ENV`
+-  [x] Add `MONGODB_URI`
+-  [x] Add `MONGODB_DB`
+-  [x] Add `BETTER_AUTH_SECRET`
+-  [x] Add `BETTER_AUTH_URL`
+-  [x] Add `NODE_ENV`
 
 #### Step 1.3: Create Utility Functions
 
-- [x] Create `lib/utils/constants.ts` - App constants
-- [x] Create `lib/utils/api-error.ts` - Custom error classes
-- [x] Create `lib/utils/api-response.ts` - Response helpers
-- [x] Create `lib/utils/logger.ts` - Logging utility
+-  [x] Create `lib/utils/constants.ts` - App constants
+-  [x] Create `lib/utils/api-error.ts` - Custom error classes
+-  [x] Create `lib/utils/api-response.ts` - Response helpers
+-  [x] Create `lib/utils/logger.ts` - Logging utility
 
 #### Step 1.4: Create Database Models
 
-- [x] Create `models/user.model.ts` - User schema
-- [x] Create `models/profile.model.ts` - Profile schema
-- [x] Simplify models (remove role, status, preferences, socialLinks)
+-  [x] Create `models/user.model.ts` - User schema
+-  [x] Create `models/profile.model.ts` - Profile schema
+-  [x] Simplify models (remove role, status, preferences, socialLinks)
 
 #### Step 1.5: Create Repository Layer
 
-- [x] Create `lib/repositories/base.repository.ts` - Generic CRUD
-- [x] Create `lib/repositories/user.repository.ts` - User operations
-- [x] Create `lib/repositories/profile.repository.ts` - Profile operations
+-  [x] Create `lib/repositories/base.repository.ts` - Generic CRUD
+-  [x] Create `lib/repositories/user.repository.ts` - User operations
+-  [x] Create `lib/repositories/profile.repository.ts` - Profile operations
 
 ---
 
@@ -1164,24 +1164,24 @@ Session Lifecycle:
 
 #### Step 2.1: Create Validation Schemas
 
-- [ ] Create `lib/validations/auth.validation.ts`
-  - Register schema (email, password, name)
-  - Login schema (email, password)
-  - Update password schema
-- [ ] Create `lib/validations/user.validation.ts`
-  - Update profile schema
-  - Update address schema
+-  [ ] Create `lib/validations/auth.validation.ts`
+   -  Register schema (email, password, name)
+   -  Login schema (email, password)
+   -  Update password schema
+-  [ ] Create `lib/validations/user.validation.ts`
+   -  Update profile schema
+   -  Update address schema
 
 #### Step 2.2: Create Service Layer
 
-- [ ] Create `lib/services/auth.service.ts`
-  - `register(data)` - Handle user registration
-  - `login(data)` - Handle user login
-  - `logout()` - Handle logout
-- [ ] Create `lib/services/user.service.ts`
-  - `getUserProfile(userId)` - Get user with profile
-  - `updateProfile(userId, data)` - Update profile
-  - `updateAvatar(userId, url)` - Update avatar
+-  [ ] Create `lib/services/auth.service.ts`
+   -  `register(data)` - Handle user registration
+   -  `login(data)` - Handle user login
+   -  `logout()` - Handle logout
+-  [ ] Create `lib/services/user.service.ts`
+   -  `getUserProfile(userId)` - Get user with profile
+   -  `updateProfile(userId, data)` - Update profile
+   -  `updateAvatar(userId, url)` - Update avatar
 
 ---
 
@@ -1189,23 +1189,23 @@ Session Lifecycle:
 
 #### Step 3.1: Complete Auth API Handler
 
-- [ ] Update `app/api/auth/[...all]/route.ts`
-  - Initialize Better Auth properly
-  - Handle all Better Auth routes
+-  [ ] Update `app/api/auth/[...all]/route.ts`
+   -  Initialize Better Auth properly
+   -  Handle all Better Auth routes
 
 #### Step 3.2: Create User Endpoints
 
-- [ ] Create `app/api/user/me/route.ts`
-  - GET: Return current user with profile
-- [ ] Create `app/api/user/profile/route.ts`
-  - GET: Return user profile
-  - PATCH: Update user profile
+-  [ ] Create `app/api/user/me/route.ts`
+   -  GET: Return current user with profile
+-  [ ] Create `app/api/user/profile/route.ts`
+   -  GET: Return user profile
+   -  PATCH: Update user profile
 
 #### Step 3.3: Create Health Check
 
-- [ ] Create `app/api/health/route.ts`
-  - Check MongoDB connection
-  - Return status
+-  [ ] Create `app/api/health/route.ts`
+   -  Check MongoDB connection
+   -  Return status
 
 ---
 
@@ -1213,16 +1213,16 @@ Session Lifecycle:
 
 #### Step 4.1: Create Auth Middleware
 
-- [ ] Create `lib/middleware/auth.middleware.ts`
-  - `requireAuth()` - Protect API routes
-  - Helper functions for session validation
+-  [ ] Create `lib/middleware/auth.middleware.ts`
+   -  `requireAuth()` - Protect API routes
+   -  Helper functions for session validation
 
 #### Step 4.2: Create Next.js Middleware
 
-- [ ] Create `middleware.ts` at root
-  - Protect `/dashboard` routes
-  - Redirect unauthenticated users to `/login`
-  - Redirect authenticated users away from `/login`, `/register`
+-  [ ] Create `middleware.ts` at root
+   -  Protect `/dashboard` routes
+   -  Redirect unauthenticated users to `/login`
+   -  Redirect authenticated users away from `/login`, `/register`
 
 ---
 
@@ -1230,34 +1230,34 @@ Session Lifecycle:
 
 #### Step 5.1: Create Login Page
 
-- [ ] Create `app/(auth)/login/page.tsx`
-  - Email/password form
-  - Form validation with Zod
-  - Error handling
-  - Link to register
+-  [ ] Create `app/(auth)/login/page.tsx`
+   -  Email/password form
+   -  Form validation with Zod
+   -  Error handling
+   -  Link to register
 
 #### Step 5.2: Update Register Page
 
-- [ ] Update `app/(auth)/register/page.tsx`
-  - Add proper error handling
-  - Add success feedback
-  - Redirect after registration
+-  [ ] Update `app/(auth)/register/page.tsx`
+   -  Add proper error handling
+   -  Add success feedback
+   -  Redirect after registration
 
 #### Step 5.3: Create Dashboard
 
-- [ ] Create `app/(dashboard)/layout.tsx`
-  - Dashboard layout with sidebar
-  - User menu with logout
-- [ ] Create `app/(dashboard)/dashboard/page.tsx`
-  - Welcome message
-  - User stats
+-  [ ] Create `app/(dashboard)/layout.tsx`
+   -  Dashboard layout with sidebar
+   -  User menu with logout
+-  [ ] Create `app/(dashboard)/dashboard/page.tsx`
+   -  Welcome message
+   -  User stats
 
 #### Step 5.4: Create Profile Page
 
-- [ ] Create `app/(dashboard)/profile/page.tsx`
-  - View profile
-  - Edit profile form
-  - Update avatar
+-  [ ] Create `app/(dashboard)/profile/page.tsx`
+   -  View profile
+   -  Edit profile form
+   -  Update avatar
 
 ---
 
@@ -1265,18 +1265,18 @@ Session Lifecycle:
 
 #### Step 6.1: Manual Testing
 
-- [ ] Test registration flow
-- [ ] Test login flow
-- [ ] Test logout flow
-- [ ] Test protected routes
-- [ ] Test profile updates
+-  [ ] Test registration flow
+-  [ ] Test login flow
+-  [ ] Test logout flow
+-  [ ] Test protected routes
+-  [ ] Test profile updates
 
 #### Step 6.2: Error Handling
 
-- [ ] Test invalid credentials
-- [ ] Test duplicate email
-- [ ] Test expired session
-- [ ] Test network errors
+-  [ ] Test invalid credentials
+-  [ ] Test duplicate email
+-  [ ] Test expired session
+-  [ ] Test network errors
 
 ---
 
@@ -1286,45 +1286,45 @@ Session Lifecycle:
 
 #### Registration Testing
 
-- [ ] Can register with valid email, password, name
-- [ ] Cannot register with existing email
-- [ ] Cannot register with invalid email format
-- [ ] Cannot register with password < 8 characters
-- [ ] Cannot register without name
-- [ ] Session created after registration
-- [ ] Redirected to dashboard after registration
+-  [ ] Can register with valid email, password, name
+-  [ ] Cannot register with existing email
+-  [ ] Cannot register with invalid email format
+-  [ ] Cannot register with password < 8 characters
+-  [ ] Cannot register without name
+-  [ ] Session created after registration
+-  [ ] Redirected to dashboard after registration
 
 #### Login Testing
 
-- [ ] Can login with correct credentials
-- [ ] Cannot login with wrong password
-- [ ] Cannot login with non-existent email
-- [ ] Session created after login
-- [ ] `lastLoginAt` updated in database
-- [ ] Redirected to dashboard after login
+-  [ ] Can login with correct credentials
+-  [ ] Cannot login with wrong password
+-  [ ] Cannot login with non-existent email
+-  [ ] Session created after login
+-  [ ] `lastLoginAt` updated in database
+-  [ ] Redirected to dashboard after login
 
 #### Logout Testing
 
-- [ ] Can logout successfully
-- [ ] Session destroyed in database
-- [ ] Cookie cleared
-- [ ] Redirected to homepage
+-  [ ] Can logout successfully
+-  [ ] Session destroyed in database
+-  [ ] Cookie cleared
+-  [ ] Redirected to homepage
 
 #### Protected Routes Testing
 
-- [ ] Cannot access `/dashboard` without login
-- [ ] Redirected to `/login` when accessing `/dashboard` unauthenticated
-- [ ] Can access `/dashboard` when authenticated
-- [ ] Session persists across page refreshes
+-  [ ] Cannot access `/dashboard` without login
+-  [ ] Redirected to `/login` when accessing `/dashboard` unauthenticated
+-  [ ] Can access `/dashboard` when authenticated
+-  [ ] Session persists across page refreshes
 
 #### Profile Testing
 
-- [ ] Can view profile data
-- [ ] Can update bio
-- [ ] Can update phone number
-- [ ] Can update address
-- [ ] Profile updates reflected in database
-- [ ] Validation errors shown for invalid data
+-  [ ] Can view profile data
+-  [ ] Can update bio
+-  [ ] Can update phone number
+-  [ ] Can update address
+-  [ ] Profile updates reflected in database
+-  [ ] Validation errors shown for invalid data
 
 ### 9.2 Database Testing
 
@@ -1399,36 +1399,36 @@ curl -X POST http://localhost:3000/api/auth/sign-out \
 
 ### 10.1 Pre-Deployment
 
-- [ ] Set `NODE_ENV=production`
-- [ ] Generate new `BETTER_AUTH_SECRET` for production
-- [ ] Update `BETTER_AUTH_URL` to production domain
-- [ ] Update `MONGODB_URI` to production MongoDB (MongoDB Atlas)
-- [ ] Remove all `console.log` statements
-- [ ] Test in production-like environment
+-  [ ] Set `NODE_ENV=production`
+-  [ ] Generate new `BETTER_AUTH_SECRET` for production
+-  [ ] Update `BETTER_AUTH_URL` to production domain
+-  [ ] Update `MONGODB_URI` to production MongoDB (MongoDB Atlas)
+-  [ ] Remove all `console.logconsole.log` statements
+-  [ ] Test in production-like environment
 
 ### 10.2 Security Checklist
 
-- [ ] HTTPS enabled (SSL certificate)
-- [ ] Environment variables secured (not in git)
-- [ ] Database credentials rotated
-- [ ] Secure cookies enabled (`useSecureCookies: true`)
-- [ ] CORS configured correctly
-- [ ] Rate limiting enabled (future)
+-  [ ] HTTPS enabled (SSL certificate)
+-  [ ] Environment variables secured (not in git)
+-  [ ] Database credentials rotated
+-  [ ] Secure cookies enabled (`useSecureCookies: true`)
+-  [ ] CORS configured correctly
+-  [ ] Rate limiting enabled (future)
 
 ### 10.3 Database Setup
 
-- [ ] Create MongoDB Atlas cluster (or production MongoDB)
-- [ ] Configure IP whitelist
-- [ ] Create database user with appropriate permissions
-- [ ] Set up database backups
-- [ ] Create indexes (automatically created by Mongoose)
+-  [ ] Create MongoDB Atlas cluster (or production MongoDB)
+-  [ ] Configure IP whitelist
+-  [ ] Create database user with appropriate permissions
+-  [ ] Set up database backups
+-  [ ] Create indexes (automatically created by Mongoose)
 
 ### 10.4 Monitoring
 
-- [ ] Set up error logging (Sentry, LogRocket, etc.)
-- [ ] Monitor database performance
-- [ ] Set up uptime monitoring
-- [ ] Configure alerts for errors
+-  [ ] Set up error logging (Sentry, LogRocket, etc.)
+-  [ ] Monitor database performance
+-  [ ] Set up uptime monitoring
+-  [ ] Configure alerts for errors
 
 ---
 
@@ -1438,19 +1438,19 @@ curl -X POST http://localhost:3000/api/auth/sign-out \
 
 **Issue:** "Cannot connect to MongoDB"
 
-- **Solution:** Check `MONGODB_URI` is correct, MongoDB server is running
+-  **Solution:** Check `MONGODB_URI` is correct, MongoDB server is running
 
 **Issue:** "Session not persisting"
 
-- **Solution:** Check cookies are being set, verify `BETTER_AUTH_URL` matches your domain
+-  **Solution:** Check cookies are being set, verify `BETTER_AUTH_URL` matches your domain
 
 **Issue:** "User created in Better Auth but not in Mongoose"
 
-- **Solution:** Check service layer is being called, verify database connection
+-  **Solution:** Check service layer is being called, verify database connection
 
 **Issue:** "TypeScript errors in repositories"
 
-- **Solution:** Ensure `connectMongoose()` is called, check model exports
+-  **Solution:** Ensure `connectMongoose()` is called, check model exports
 
 ### 11.2 Environment Variables Reference
 

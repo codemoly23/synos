@@ -9,14 +9,16 @@
 ## 🐛 Bug Description
 
 ### Issue
+
 When creating a new user through the authenticated user registration system (`/dashboard/users`), the user was being created in the database but could not log in. The newly created user would receive an "Invalid credentials" error when attempting to log in with their email and password.
 
 ### Root Cause
+
 Better Auth stores passwords in a separate **account** collection, not in the user collection. Our previous implementation only created a user record without creating the corresponding account record. According to Better Auth's architecture:
 
-- **User collection**: Stores user profile data (email, name, image, etc.)
-- **Account collection**: Stores authentication credentials and provider information
-- For email/password authentication, an account record with `providerId: "credential"` is **REQUIRED**
+-  **User collection**: Stores user profile data (email, name, image, etc.)
+-  **Account collection**: Stores authentication credentials and provider information
+-  For email/password authentication, an account record with `providerId: "credential"` is **REQUIRED**
 
 Without the account record, Better Auth has no way to authenticate the user, even though the user exists in the database.
 
@@ -28,18 +30,20 @@ Without the account record, Better Auth has no way to authenticate the user, eve
 
 For email/password authentication, Better Auth requires:
 
-| Field | Value | Description |
-|-------|-------|-------------|
-| `id` | Unique string | Account identifier |
-| `userId` | String | Reference to user.id |
-| `accountId` | String | Equals userId for credential accounts |
+| Field        | Value          | Description                                           |
+| ------------ | -------------- | ----------------------------------------------------- |
+| `id`         | Unique string  | Account identifier                                    |
+| `userId`     | String         | Reference to user.id                                  |
+| `accountId`  | String         | Equals userId for credential accounts                 |
 | `providerId` | `"credential"` | **CRITICAL**: Must be "credential" for email/password |
-| `password` | String | Hashed password in scrypt format |
-| `createdAt` | Date | Creation timestamp |
-| `updatedAt` | Date | Update timestamp |
+| `password`   | String         | Hashed password in scrypt format                      |
+| `createdAt`  | Date           | Creation timestamp                                    |
+| `updatedAt`  | Date           | Update timestamp                                      |
 
 ### Password Hashing
+
 Better Auth uses **scrypt** (not bcrypt) for password hashing with the format:
+
 ```
 {salt_hex}:{derived_key_hex}
 ```
@@ -47,14 +51,15 @@ Better Auth uses **scrypt** (not bcrypt) for password hashing with the format:
 **CRITICAL:** The format is `salt:hash` with NO "scrypt:" prefix!
 
 Parameters:
-- Salt: 16 random bytes (hex-encoded)
-- Derived key: 64 bytes (hex-encoded)
-- Password normalization: NFKC
-- Scrypt parameters:
-  - N: 16384 (CPU/memory cost)
-  - r: 16 (block size)
-  - p: 1 (parallelization)
-  - dkLen: 64 (derived key length)
+
+-  Salt: 16 random bytes (hex-encoded)
+-  Derived key: 64 bytes (hex-encoded)
+-  Password normalization: NFKC
+-  Scrypt parameters:
+   -  N: 16384 (CPU/memory cost)
+   -  r: 16 (block size)
+   -  p: 1 (parallelization)
+   -  dkLen: 64 (derived key length)
 
 ---
 
@@ -67,8 +72,9 @@ Parameters:
 ### Changes Made
 
 #### Before (Incorrect):
+
 ```typescript
-// Only created user record with password in user document
+console.logOnly created user record with password in user document
 const newUser = await userRepository.create({
   email: data.email.toLowerCase(),
   name: data.name,
@@ -83,34 +89,35 @@ await userRepository.updateById(newUser._id.toString(), {
 **Problem:** Password stored in user collection, no account record created.
 
 #### After (Correct):
+
 ```typescript
-// 1. Generate unique user ID
+console.log1. Generate unique user ID
 const userId = crypto.randomBytes(16).toString('hex');
 
-// 2. Hash password using scrypt (EXACTLY as Better Auth does)
-const salt = crypto.randomBytes(16).toString('hex'); // Hex-encoded salt
-const normalizedPassword = data.password.normalize('NFKC'); // NFKC normalization
+console.log2. Hash password using scrypt (EXACTLY as Better Auth does)
+const salt = crypto.randomBytes(16).toString('hex'); console.logHex-encoded salt
+const normalizedPassword = data.password.normalize('NFKC'); console.logNFKC normalization
 
 const hashedPassword = await new Promise<string>((resolve, reject) => {
   crypto.scrypt(
     normalizedPassword,
     salt,
-    64, // dkLen
+    64, console.logdkLen
     {
-      N: 16384,  // CPU/memory cost
-      r: 16,     // Block size
-      p: 1,      // Parallelization
+      N: 16384,  console.logCPU/memory cost
+      r: 16,     console.logBlock size
+      p: 1,      console.logParallelization
       maxmem: 128 * 16384 * 16 * 2
     },
     (err, derivedKey) => {
       if (err) reject(err);
-      // Format: salt:hash (NO "scrypt:" prefix!)
+      console.logFormat: salt:hash (NO "scrypt:" prefix!)
       resolve(`${salt}:${derivedKey.toString('hex')}`);
     }
   );
 });
 
-// 3. Create user in Better Auth user collection
+console.log3. Create user in Better Auth user collection
 const userCollection = db.collection('user');
 await userCollection.insertOne({
   id: userId,
@@ -122,13 +129,13 @@ await userCollection.insertOne({
   updatedAt: new Date(),
 });
 
-// 4. Create account record (CRITICAL FIX)
+console.log4. Create account record (CRITICAL FIX)
 const accountCollection = db.collection('account');
 await accountCollection.insertOne({
   id: crypto.randomBytes(16).toString('hex'),
   userId: userId,
-  accountId: userId, // For credential accounts, equals userId
-  providerId: "credential", // MUST be "credential" for email/password
+  accountId: userId, console.logFor credential accounts, equals userId
+  providerId: "credential", console.logMUST be "credential" for email/password
   password: hashedPassword,
   accessToken: null,
   refreshToken: null,
@@ -146,6 +153,7 @@ await accountCollection.insertOne({
 ## ✅ Verification Steps
 
 ### 1. Create Test User
+
 ```bash
 # Login as admin
 curl -X POST http://localhost:3000/api/auth/sign-in/email \
@@ -165,19 +173,21 @@ curl -X POST http://localhost:3000/api/admin/users \
 ```
 
 ### 2. Verify Database Records
+
 ```javascript
-// MongoDB queries
+console.logMongoDB queries
 db.user.findOne({ email: "test@example.com" });
-// Should return user with id, email, name, etc.
+console.logShould return user with id, email, name, etc.
 
 db.account.findOne({ userId: "<user_id>" });
-// Should return account with:
-// - providerId: "credential"
-// - password: "scrypt:..."
-// - accountId: equals userId
+console.logShould return account with:
+console.log- providerId: "credential"
+console.log- password: "scrypt:..."
+console.log- accountId: equals userId
 ```
 
 ### 3. Test Login
+
 ```bash
 # Try to login as newly created user
 curl -X POST http://localhost:3000/api/auth/sign-in/email \
@@ -195,43 +205,47 @@ curl -X POST http://localhost:3000/api/auth/sign-in/email \
 ## 📚 Key Learnings
 
 ### 1. Better Auth Architecture
-- User data and authentication credentials are stored separately
-- The account collection is the source of truth for authentication
-- Multiple authentication methods can be linked to one user
+
+-  User data and authentication credentials are stored separately
+-  The account collection is the source of truth for authentication
+-  Multiple authentication methods can be linked to one user
 
 ### 2. Provider Types
-- `"credential"` - Email/password authentication
-- `"google"`, `"github"`, etc. - OAuth providers
-- One user can have multiple accounts (different providers)
+
+-  `"credential"` - Email/password authentication
+-  `"google"`, `"github"`, etc. - OAuth providers
+-  One user can have multiple accounts (different providers)
 
 ### 3. Password Storage
-- Better Auth uses scrypt (memory-hard algorithm)
-- Format: `algorithm:salt:hash`
-- Never stored in plain text
-- Salt is randomly generated for each password
+
+-  Better Auth uses scrypt (memory-hard algorithm)
+-  Format: `algorithm:salt:hash`
+-  Never stored in plain text
+-  Salt is randomly generated for each password
 
 ### 4. Why This Matters
-- Security: Separates authentication from user data
-- Flexibility: Supports multiple auth methods per user
-- Scalability: Can add OAuth without schema changes
-- Standards: Follows industry best practices
+
+-  Security: Separates authentication from user data
+-  Flexibility: Supports multiple auth methods per user
+-  Scalability: Can add OAuth without schema changes
+-  Standards: Follows industry best practices
 
 ---
 
 ## 🔗 Related Files
 
-- [lib/services/auth.service.ts:177-272](lib/services/auth.service.ts#L177-L272) - Fixed method
-- [AUTHENTICATED_USER_REGISTRATION.md](AUTHENTICATED_USER_REGISTRATION.md) - Updated documentation
-- [app/api/admin/users/route.ts](app/api/admin/users/route.ts) - API endpoint
+-  [lib/services/auth.service.ts:177-272](lib/services/auth.service.ts#L177-L272) - Fixed method
+-  [AUTHENTICATED_USER_REGISTRATION.md](AUTHENTICATED_USER_REGISTRATION.md) - Updated documentation
+-  [app/api/admin/users/route.ts](app/api/admin/users/route.ts) - API endpoint
 
 ---
 
 ## 📖 References
 
-- [Better Auth - User & Accounts](https://www.better-auth.com/docs/concepts/users-accounts)
-- [Better Auth - Database Schema](https://www.better-auth.com/docs/concepts/database)
-- [Better Auth - Email & Password Authentication](https://www.better-auth.com/docs/authentication/email-password)
-- [Better Auth - MongoDB Adapter](https://www.better-auth.com/docs/adapters/mongo)
+-  [Better Auth - User & Accounts](https://www.better-auth.com/docs/concepts/users-accounts)
+-  [Better Auth - Database Schema](https://www.better-auth.com/docs/concepts/database)
+-  [Better Auth - Email & Password Authentication](https://www.better-auth.com/docs/authentication/email-password)
+-  [Better Auth - MongoDB Adapter](https://www.better-auth.com/docs/adapters/mongo)
 
 ---
 

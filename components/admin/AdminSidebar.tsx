@@ -16,6 +16,7 @@ import {
 	Home,
 	Menu,
 	X,
+	MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -44,6 +45,11 @@ const navItems: NavItem[] = [
 		title: "Categories",
 		href: "/dashboard/categories",
 		icon: FolderTree,
+	},
+	{
+		title: "Inquiries",
+		href: "/dashboard/inquiries",
+		icon: MessageSquare,
 	},
 	{
 		title: "Users",
@@ -133,7 +139,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 							<span className="text-white font-bold text-sm">S</span>
 						</div>
 					) : (
-						<Logo />
+						<Logo asLink={false} />
 					)}
 				</Link>
 			</div>

@@ -13,7 +13,11 @@ import {
 	ALLOWED_MIME_TYPES,
 	FILE_SIZE_LIMITS,
 } from "./constants";
-import type { StorageFolder, StorageErrorCode, StorageErrorDetails } from "./types";
+import type {
+	StorageFolder,
+	StorageErrorCode,
+	StorageErrorDetails,
+} from "./types";
 
 /**
  * Custom storage error class
@@ -52,21 +56,23 @@ export function generateUUID(): string {
  * @returns URL-safe slug
  */
 export function slugify(text: string): string {
-	return text
-		.toString()
-		.toLowerCase()
-		.trim()
-		// Replace spaces with hyphens
-		.replace(/\s+/g, "-")
-		// Remove accents/diacritics
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		// Remove non-alphanumeric characters except hyphens
-		.replace(/[^a-z0-9-]/g, "")
-		// Replace multiple hyphens with single hyphen
-		.replace(/-+/g, "-")
-		// Remove leading/trailing hyphens
-		.replace(/^-+|-+$/g, "");
+	return (
+		text
+			.toString()
+			.toLowerCase()
+			.trim()
+			// Replace spaces with hyphens
+			.replace(/\s+/g, "-")
+			// Remove accents/diacritics
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			// Remove non-alphanumeric characters except hyphens
+			.replace(/[^a-z0-9-]/g, "")
+			// Replace multiple hyphens with single hyphen
+			.replace(/-+/g, "-")
+			// Remove leading/trailing hyphens
+			.replace(/^-+|-+$/g, "")
+	);
 }
 
 /**
@@ -75,7 +81,10 @@ export function slugify(text: string): string {
  * @param mimeType - File MIME type
  * @returns Slugified filename with appropriate extension
  */
-export function generateFilename(originalName: string, mimeType: string): string {
+export function generateFilename(
+	originalName: string,
+	mimeType: string
+): string {
 	// Get base name without extension
 	const ext = path.extname(originalName);
 	const baseName = path.basename(originalName, ext);
@@ -150,7 +159,9 @@ export function getExtensionFromFilename(filename: string): string {
  * Get MIME type from file extension
  */
 export function getMimeFromExtension(extension: string): string | null {
-	const normalizedExt = extension.startsWith(".") ? extension : `.${extension}`;
+	const normalizedExt = extension.startsWith(".")
+		? extension
+		: `.${extension}`;
 	return EXTENSION_TO_MIME[normalizedExt.toLowerCase()] || null;
 }
 
@@ -177,9 +188,10 @@ export function getUserAvatarFolderPath(userId: string): string {
 
 /**
  * Get the public URL for a user's avatar
+ * Uses API route for dynamic serving (files uploaded after build)
  */
 export function getUserAvatarUrl(userId: string, filename: string): string {
-	return `/storage/avatars/${userId}/${filename}`;
+	return `/api/storage/files/avatars/${userId}/${filename}`;
 }
 
 /**
@@ -191,12 +203,10 @@ export function getFilePath(folder: StorageFolder, filename: string): string {
 
 	// Security: Prevent path traversal
 	if (!filePath.startsWith(folderPath)) {
-		throw new StorageError(
-			"Invalid file path",
-			"PATH_TRAVERSAL",
-			400,
-			{ field: "filename", value: filename }
-		);
+		throw new StorageError("Invalid file path", "PATH_TRAVERSAL", 400, {
+			field: "filename",
+			value: filename,
+		});
 	}
 
 	return filePath;
@@ -204,16 +214,19 @@ export function getFilePath(folder: StorageFolder, filename: string): string {
 
 /**
  * Get the public URL for a file
+ * Uses API route for dynamic serving (files uploaded after build)
  */
 export function getFileUrl(folder: StorageFolder, filename: string): string {
-	return `/storage/${folder}/${filename}`;
+	return `/api/storage/files/${folder}/${filename}`;
 }
 
 /**
  * Validate MIME type against whitelist
  */
 export function isAllowedMimeType(mimeType: string): boolean {
-	return ALLOWED_MIME_TYPES.includes(mimeType as typeof ALLOWED_MIME_TYPES[number]);
+	return ALLOWED_MIME_TYPES.includes(
+		mimeType as (typeof ALLOWED_MIME_TYPES)[number]
+	);
 }
 
 /**

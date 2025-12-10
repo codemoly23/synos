@@ -44,7 +44,9 @@ class CategoryService {
 
 			// Validate parent exists if provided
 			if (data.parent) {
-				const parentCategory = await categoryRepository.findById(data.parent);
+				const parentCategory = await categoryRepository.findById(
+					data.parent
+				);
 				if (!parentCategory) {
 					throw new BadRequestError("Parent category not found");
 				}
@@ -124,16 +126,19 @@ class CategoryService {
 			}
 
 			// If parent is being changed, validate no cycle would be created
-			if (data.parent !== undefined && data.parent !== category.parent?.toString()) {
-				await validateNoParentCycle(
-					id,
-					data.parent,
-					async (catId) => categoryRepository.findById(catId)
+			if (
+				data.parent !== undefined &&
+				data.parent !== category.parent?.toString()
+			) {
+				await validateNoParentCycle(id, data.parent, async (catId) =>
+					categoryRepository.findById(catId)
 				);
 
 				// Validate new parent exists
 				if (data.parent) {
-					const parentCategory = await categoryRepository.findById(data.parent);
+					const parentCategory = await categoryRepository.findById(
+						data.parent
+					);
 					if (!parentCategory) {
 						throw new BadRequestError("Parent category not found");
 					}
@@ -143,7 +148,10 @@ class CategoryService {
 			const updatedCategory = await categoryRepository.updateById(id, {
 				$set: {
 					...data,
-					parent: data.parent === undefined ? category.parent : (data.parent || null),
+					parent:
+						data.parent === undefined
+							? category.parent
+							: data.parent || null,
 				},
 			});
 
@@ -212,7 +220,8 @@ class CategoryService {
 			}
 
 			// Remove this category from any products
-			const productsUpdated = await productRepository.removeCategoryFromProducts(id);
+			const productsUpdated =
+				await productRepository.removeCategoryFromProducts(id);
 			if (productsUpdated > 0) {
 				logger.info("Category removed from products", {
 					categoryId: id,
@@ -240,7 +249,9 @@ class CategoryService {
 	/**
 	 * Get category tree
 	 */
-	async getCategoryTree(activeOnly: boolean = false): Promise<ICategoryTreeNode[]> {
+	async getCategoryTree(
+		activeOnly: boolean = false
+	): Promise<ICategoryTreeNode[]> {
 		return categoryRepository.getTree(activeOnly);
 	}
 
@@ -299,8 +310,14 @@ class CategoryService {
 	/**
 	 * Update category order (for drag-and-drop)
 	 */
-	async updateCategoryOrder(categoryId: string, newOrder: number): Promise<ICategory> {
-		const category = await categoryRepository.updateOrder(categoryId, newOrder);
+	async updateCategoryOrder(
+		categoryId: string,
+		newOrder: number
+	): Promise<ICategory> {
+		const category = await categoryRepository.updateOrder(
+			categoryId,
+			newOrder
+		);
 
 		if (!category) {
 			throw new NotFoundError("Category not found");
@@ -348,7 +365,10 @@ class CategoryService {
 	/**
 	 * Search categories by name
 	 */
-	async searchCategories(query: string, limit: number = 10): Promise<ICategory[]> {
+	async searchCategories(
+		query: string,
+		limit: number = 10
+	): Promise<ICategory[]> {
 		return categoryRepository.searchByName(query, limit);
 	}
 

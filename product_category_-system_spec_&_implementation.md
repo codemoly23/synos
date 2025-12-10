@@ -23,19 +23,19 @@ Category model
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICategory extends Document {
-  name: string;
-  slug: string;
-  parent?: mongoose.Types.ObjectId | null;
-  image?: string | null; // URL
-  createdAt: Date;
-  updatedAt: Date;
+name: string;
+slug: string;
+parent?: mongoose.Types.ObjectId | null;
+image?: string | null; console.logURL
+createdAt: Date;
+updatedAt: Date;
 }
 
 const CategorySchema = new Schema<ICategory>({
-  name: { type: String, required: true, trim: true },
-  slug: { type: String, required: true, trim: true, lowercase: true, index: true },
-  parent: { type: Schema.Types.ObjectId, ref: "Category", default: null },
-  image: { type: String, default: null }, // store URL
+name: { type: String, required: true, trim: true },
+slug: { type: String, required: true, trim: true, lowercase: true, index: true },
+parent: { type: Schema.Types.ObjectId, ref: "Category", default: null },
+image: { type: String, default: null }, console.logstore URL
 }, { timestamps: true });
 
 export const Category = mongoose.models.Category || mongoose.model<ICategory>("Category", CategorySchema);
@@ -57,81 +57,81 @@ export interface ITechSpec { title: string; description: string; }
 export interface IDocument { title: string; url: string; }
 
 export interface IProduct extends Document {
-  title: string;
-  slug: string;
-  description: string; // rich HTML
-  certifications: string[]; // tags
-  shortDescription?: string;
-  benefits?: string[]; // array of paragraphs or simple text blocks
-  productImages: string[]; // URLs
-  productDescription?: string; // second rich HTML block
-  techSpecifications: ITechSpec[];
-  documentation: IDocument[];
-  purchaseInfo?: { title?: string; description?: string }; // description rich html
-  overviewImage?: string; // URL
-  seo: {
-    title?: string;
-    description?: string;
-    ogImage?: string;
-    canonicalUrl?: string;
-    noindex?: boolean;
-  };
-  categories: mongoose.Types.ObjectId[]; // multiple categories
-  treatments: string[]; // tags
-  publishType: PublishType;
-  visibility: Visibility;
-  lastEditedBy?: mongoose.Types.ObjectId; // user id
-  youtubeUrl?: string;
-  rubric?: string;
-  qa: IQna[]; // actual QnA with visibility
-  createdAt: Date;
-  updatedAt: Date;
+title: string;
+slug: string;
+description: string; console.logrich HTML
+certifications: string[]; console.logtags
+shortDescription?: string;
+benefits?: string[]; console.logarray of paragraphs or simple text blocks
+productImages: string[]; console.logURLs
+productDescription?: string; console.logsecond rich HTML block
+techSpecifications: ITechSpec[];
+documentation: IDocument[];
+purchaseInfo?: { title?: string; description?: string }; console.logdescription rich html
+overviewImage?: string; console.logURL
+seo: {
+title?: string;
+description?: string;
+ogImage?: string;
+canonicalUrl?: string;
+noindex?: boolean;
+};
+categories: mongoose.Types.ObjectId[]; console.logmultiple categories
+treatments: string[]; console.logtags
+publishType: PublishType;
+visibility: Visibility;
+lastEditedBy?: mongoose.Types.ObjectId; console.loguser id
+youtubeUrl?: string;
+rubric?: string;
+qa: IQna[]; console.logactual QnA with visibility
+createdAt: Date;
+updatedAt: Date;
 }
 
 const QnaSchema = new Schema<IQna>({
-  question: { type: String, required: true },
-  answer: { type: String, required: true },
-  visible: { type: Boolean, default: true },
+question: { type: String, required: true },
+answer: { type: String, required: true },
+visible: { type: Boolean, default: true },
 });
 
 const TechSpecSchema = new Schema<ITechSpec>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
+title: { type: String, required: true },
+description: { type: String, required: true },
 });
 
 const DocumentSchema = new Schema<IDocument>({
-  title: { type: String, required: true },
-  url: { type: String, required: true },
+title: { type: String, required: true },
+url: { type: String, required: true },
 });
 
 const ProductSchema = new Schema<IProduct>({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, index: true },
-  description: { type: String, default: "" }, // store rich HTML
-  certifications: [{ type: String }],
-  shortDescription: { type: String, default: "" },
-  benefits: [{ type: String }],
-  productImages: [{ type: String }], // URLs
-  productDescription: { type: String, default: "" },
-  techSpecifications: [TechSpecSchema],
-  documentation: [DocumentSchema],
-  purchaseInfo: { title: String, description: String },
-  overviewImage: { type: String },
-  seo: {
-    title: String,
-    description: String,
-    ogImage: String,
-    canonicalUrl: String,
-    noindex: { type: Boolean, default: false },
-  },
-  categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
-  treatments: [{ type: String }],
-  publishType: { type: String, enum: ["publish", "draft", "private"], default: "draft" },
-  visibility: { type: String, enum: ["public", "hidden"], default: "public" },
-  lastEditedBy: { type: Schema.Types.ObjectId, ref: "User" },
-  youtubeUrl: { type: String },
-  rubric: { type: String },
-  qa: [QnaSchema],
+title: { type: String, required: true },
+slug: { type: String, required: true, index: true },
+description: { type: String, default: "" }, console.logstore rich HTML
+certifications: [{ type: String }],
+shortDescription: { type: String, default: "" },
+benefits: [{ type: String }],
+productImages: [{ type: String }], console.logURLs
+productDescription: { type: String, default: "" },
+techSpecifications: [TechSpecSchema],
+documentation: [DocumentSchema],
+purchaseInfo: { title: String, description: String },
+overviewImage: { type: String },
+seo: {
+title: String,
+description: String,
+ogImage: String,
+canonicalUrl: String,
+noindex: { type: Boolean, default: false },
+},
+categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
+treatments: [{ type: String }],
+publishType: { type: String, enum: ["publish", "draft", "private"], default: "draft" },
+visibility: { type: String, enum: ["public", "hidden"], default: "public" },
+lastEditedBy: { type: Schema.Types.ObjectId, ref: "User" },
+youtubeUrl: { type: String },
+rubric: { type: String },
+qa: [QnaSchema],
 }, { timestamps: true });
 
 export const Product = mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
@@ -182,7 +182,7 @@ Implementation tip: Implement a validateForPublish(product) function used in the
 
 Auth: Every API route must check Better Auth session (server-side). Pseudocode:
 
-import { getSessionFromRequest } from "@/lib/better-auth"; // example API
+import { getSessionFromRequest } from "@/lib/better-auth"; console.logexample API
 if (!session?.user) return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
 
 Endpoints (examples)
@@ -212,29 +212,29 @@ POST /api/products/:id/publish — publish action (runs publish validation)
 POST /api/products/:id/unpublish — set to draft/private
 
 Example create product route (simplified)
-// app/api/products/route.ts
+console.logapp/api/products/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { Product } from "@/lib/models/product";
 import { getSession } from "@/lib/better-auth";
 
 export async function POST(req: NextRequest) {
-  const session = await getSession(req);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+const session = await getSession(req);
+if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await connectDB();
-  const body = await req.json();
+await connectDB();
+const body = await req.json();
 
-  // Set lastEditedBy
-  body.lastEditedBy = session.user.id;
+console.logSet lastEditedBy
+body.lastEditedBy = session.user.id;
 
-  // generate slug if missing
-  if (!body.slug) body.slug = generateSlug(body.title);
+console.loggenerate slug if missing
+if (!body.slug) body.slug = generateSlug(body.title);
 
-  const product = new Product(body);
-  await product.save();
+const product = new Product(body);
+await product.save();
 
-  return NextResponse.json(product, { status: 201 });
+return NextResponse.json(product, { status: 201 });
 }
 
 Publish endpoint will call validateForPublish and only allow status change if validation passes.
@@ -260,36 +260,36 @@ Return for listing: Provide both flat list and tree structure. Example tree buil
 6 — Admin frontend (React components, pages & behaviors)
 Folder structure (suggested)
 /app
-  /api
-    /products
-    /categories
-  /(dashboard)
-  /dashboard
-    /products
-      page.tsx
-      [id]/edit.tsx
-      create.tsx
-    /categories
-      page.tsx
-      create.tsx
-      [id]/edit.tsx
+/api
+/products
+/categories
+/(dashboard)
+/dashboard
+/products
+page.tsx
+[id]/edit.tsx
+create.tsx
+/categories
+page.tsx
+create.tsx
+[id]/edit.tsx
 /lib
-  /models
-    product.ts
-    category.ts
-  /db
-    connect.ts
-  /better-auth
-    server.ts
+/models
+product.ts
+category.ts
+/db
+connect.ts
+/better-auth
+server.ts
 /components
-  /ui
-    Input.tsx
-    RichTextEditor.tsx
-    ImageList.tsx
-    TagInput.tsx
-  /admin
-    ProductForm.tsx
-    CategoryForm.tsx
+/ui
+Input.tsx
+RichTextEditor.tsx
+ImageList.tsx
+TagInput.tsx
+/admin
+ProductForm.tsx
+CategoryForm.tsx
 
 Key Admin components
 
@@ -347,36 +347,36 @@ Provide admin option to override slug.
 
 9 — Example validateForPublish (pseudo)
 function validateForPublish(product) {
-  const errors = [];
+const errors = [];
 
-  if (!product.title?.trim()) errors.push("title required");
-  if (!product.slug?.trim()) errors.push("slug required");
-  if (!isValidSlug(product.slug)) errors.push("slug invalid");
-  if (!product.productImages || product.productImages.length === 0) {
-    errors.push("At least one product image required");
-  }
-  if (product.documentation) {
-    product.documentation.forEach((d, i) => {
-      if (!d.title || !d.url) errors.push(`documentation[${i}] requires title and url`);
-    });
-  }
-  product.techSpecifications?.forEach((t, i) => {
-    if (!t.title || !t.description) errors.push(`techSpecifications[${i}] requires title and description`);
-  });
-  // validate urls
-  // etc.
+if (!product.title?.trim()) errors.push("title required");
+if (!product.slug?.trim()) errors.push("slug required");
+if (!isValidSlug(product.slug)) errors.push("slug invalid");
+if (!product.productImages || product.productImages.length === 0) {
+errors.push("At least one product image required");
+}
+if (product.documentation) {
+product.documentation.forEach((d, i) => {
+if (!d.title || !d.url) errors.push(`documentation[${i}] requires title and url`);
+});
+}
+product.techSpecifications?.forEach((t, i) => {
+if (!t.title || !t.description) errors.push(`techSpecifications[${i}] requires title and description`);
+});
+console.logvalidate urls
+console.logetc.
 
-  return errors;
+return errors;
 }
 
 10 — Sample payloads
 Create product (draft)
 {
-  "title":"My Product",
-  "description":"<p>long html</p>",
-  "publishType":"draft",
-  "productImages": ["https://cdn.example.com/prod1.jpg"],
-  "categories": []
+"title":"My Product",
+"description":"<p>long html</p>",
+"publishType":"draft",
+"productImages": ["https://cdn.example.com/prod1.jpg"],
+"categories": []
 }
 
 Publish action (server checks)
@@ -448,25 +448,25 @@ Tests, docs, and deployment checklist.
 16 — Example code snippets (helpers & utilities)
 Slug generator
 export function generateSlug(text: string) {
-  return text
-    .toString()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 120);
+return text
+.toString()
+.normalize("NFKD")
+.replace(/[\u0300-\u036f]/g, "")
+.toLowerCase()
+.trim()
+.replace(/[^a-z0-9]+/g, "-")
+.replace(/^-+|-+$/g, "")
+.slice(0, 120);
 }
 
 isValidUrl (simple)
 export function isValidUrl(url: string) {
-  try {
-    const u = new URL(url);
-    return ["http:", "https:"].includes(u.protocol);
-  } catch {
-    return false;
-  }
+try {
+const u = new URL(url);
+return ["http:", "https:"].includes(u.protocol);
+} catch {
+return false;
+}
 }
 
 17 — Edge cases & decisions to make (document for team)
@@ -491,25 +491,25 @@ If future: support file uploads (S3/Cloudinary) — DB will store URLs; current 
 
 ## Models
 
-- Product: /lib/models/product.ts
-- Category: /lib/models/category.ts
+-  Product: /lib/models/product.ts
+-  Category: /lib/models/category.ts
 
 ## API
 
-- POST /api/products (auth required)
-- GET /api/products
-- POST /api/products/:id/publish
+-  POST /api/products (auth required)
+-  GET /api/products
+-  POST /api/products/:id/publish
 
 ## Validation
 
-- Draft saved with minimal checks.
-- Full validation enforced on publish.
+-  Draft saved with minimal checks.
+-  Full validation enforced on publish.
 
 ## Admin
 
-- /admin/products
-- /admin/categories
+-  /admin/products
+-  /admin/categories
 
 ## Tests
 
-- pnpm run test
+-  pnpm run test

@@ -31,11 +31,7 @@ export async function POST(request: NextRequest) {
 		});
 
 		// Create profile for the user
-		await authService.syncUserFromBetterAuth(
-			user.id,
-			user.email,
-			user.name
-		);
+		await authService.syncUserFromBetterAuth(user.id, user.email, user.name);
 
 		return successResponse(
 			{ success: true },

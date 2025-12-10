@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,9 @@ export default function EditCategoryPage() {
 	const { data: session, isPending } = authClient.useSession();
 
 	const [category, setCategory] = React.useState<ICategory | null>(null);
-	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>([]);
+	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>(
+		[]
+	);
 	const [isLoading, setIsLoading] = React.useState(true);
 	const [isSaving, setIsSaving] = React.useState(false);
 
@@ -48,7 +51,7 @@ export default function EditCategoryPage() {
 				if (categoryData.success) {
 					setCategory(categoryData.data);
 				} else {
-					alert("Category not found");
+					toast.error("Category not found");
 					router.push("/dashboard/categories");
 				}
 
@@ -57,7 +60,7 @@ export default function EditCategoryPage() {
 				}
 			} catch (error) {
 				console.error("Failed to fetch data:", error);
-				alert("Failed to load category");
+				toast.error("Failed to load category");
 				router.push("/dashboard/categories");
 			} finally {
 				setIsLoading(false);
@@ -83,13 +86,13 @@ export default function EditCategoryPage() {
 
 			if (result.success) {
 				setCategory(result.data);
-				alert("Category updated successfully");
+				toast.success("Category updated successfully");
 			} else {
-				alert(result.message || "Failed to update category");
+				toast.error(result.message || "Failed to update category");
 			}
 		} catch (error) {
 			console.error("Failed to update category:", error);
-			alert("Failed to update category");
+			toast.error("Failed to update category");
 		} finally {
 			setIsSaving(false);
 		}

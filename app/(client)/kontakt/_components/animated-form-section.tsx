@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
-import { ContactForm } from "@/components/forms/contact-form";
+import { ContactInquiryForm } from "@/components/forms/ContactInquiryForm";
 
 export function AnimatedFormSection() {
 	return (
@@ -12,7 +12,7 @@ export function AnimatedFormSection() {
 			viewport={{ once: true }}
 			transition={{ duration: 0.6 }}
 		>
-			<div className="mb-8">
+			<div className="mb-8 text-center">
 				<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-1.5">
 					<Send className="h-4 w-4 text-secondary" />
 					<span className="text-sm font-semibold text-secondary">
@@ -26,9 +26,7 @@ export function AnimatedFormSection() {
 					Fyll i formuläret så återkommer vi till dig så snart som möjligt.
 				</p>
 			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-4 sm:p-8 shadow-lg">
-				<ContactForm />
-			</div>
+			<ContactInquiryForm />
 		</motion.div>
 	);
 }

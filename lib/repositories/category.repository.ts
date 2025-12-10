@@ -65,7 +65,11 @@ class CategoryRepository extends BaseRepository<ICategory> {
 				.sort({ order: 1, name: 1 })
 				.exec();
 
-			logger.db("findRootCategories", this.modelName, Date.now() - startTime);
+			logger.db(
+				"findRootCategories",
+				this.modelName,
+				Date.now() - startTime
+			);
 			return categories;
 		} catch (error) {
 			logger.error("Error finding root categories", error);
@@ -155,19 +159,14 @@ class CategoryRepository extends BaseRepository<ICategory> {
 			await this.ensureConnection();
 			const startTime = Date.now();
 
-			const {
-				page = 1,
-				limit = 50,
-				parent,
-				isActive,
-				search,
-			} = options;
+			const { page = 1, limit = 50, parent, isActive, search } = options;
 
 			const filter: Record<string, unknown> = {};
 
 			// Filter by parent (null means root categories)
 			if (parent !== undefined) {
-				filter.parent = parent === "null" || parent === null ? null : parent;
+				filter.parent =
+					parent === "null" || parent === null ? null : parent;
 			}
 
 			// Filter by active status
@@ -212,7 +211,10 @@ class CategoryRepository extends BaseRepository<ICategory> {
 	/**
 	 * Update category order (for drag-and-drop reordering)
 	 */
-	async updateOrder(categoryId: string, newOrder: number): Promise<ICategory | null> {
+	async updateOrder(
+		categoryId: string,
+		newOrder: number
+	): Promise<ICategory | null> {
 		return this.updateById(categoryId, { $set: { order: newOrder } });
 	}
 
@@ -289,7 +291,11 @@ class CategoryRepository extends BaseRepository<ICategory> {
 				.sort({ order: 1, name: 1 })
 				.exec();
 
-			logger.db("findActiveCategories", this.modelName, Date.now() - startTime);
+			logger.db(
+				"findActiveCategories",
+				this.modelName,
+				Date.now() - startTime
+			);
 			return categories;
 		} catch (error) {
 			logger.error("Error finding active categories", error);
@@ -300,10 +306,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 	/**
 	 * Search categories by name
 	 */
-	async searchByName(
-		query: string,
-		limit: number = 10
-	): Promise<ICategory[]> {
+	async searchByName(query: string, limit: number = 10): Promise<ICategory[]> {
 		try {
 			await this.ensureConnection();
 			const startTime = Date.now();

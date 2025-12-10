@@ -27,17 +27,17 @@ export async function connectMongoose() {
 			bufferCommands: false,
 		};
 
-		// console.log("🔌 [MongoDB] Connecting to:", MONGODB_URI);
+		// // console.log("🔌 [MongoDB] Connecting to:", MONGODB_URI);
 
 		global.__mongoose.promise = mongoose
 			.connect(MONGODB_URI!, opts)
 			.then((mongooseInstance) => {
-				// console.log("✅ [MongoDB] Connected successfully!");
-				// console.log(
+				// // console.log("✅ [MongoDB] Connected successfully!");
+				// // console.log(
 				// 	"✅ [MongoDB] Database name:",
 				// 	mongooseInstance.connection.db?.databaseName || "unknown"
 				// );
-				// console.log("✅ [MongoDB] Host:", mongooseInstance.connection.host);
+				// // console.log("✅ [MongoDB] Host:", mongooseInstance.connection.host);
 				return mongooseInstance;
 			})
 			.catch((error) => {

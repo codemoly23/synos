@@ -19,10 +19,7 @@ interface RouteParams {
  * POST /api/products/[id]/duplicate
  * Duplicate a product
  */
-export async function POST(
-	request: NextRequest,
-	{ params }: RouteParams
-) {
+export async function POST(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id } = await params;
 
@@ -32,7 +29,9 @@ export async function POST(
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to duplicate product");
-			return unauthorizedResponse("You must be logged in to duplicate products");
+			return unauthorizedResponse(
+				"You must be logged in to duplicate products"
+			);
 		}
 
 		if (!isValidObjectId(id)) {
@@ -40,7 +39,10 @@ export async function POST(
 		}
 
 		// Duplicate product
-		const product = await productService.duplicateProduct(id, session.user.id);
+		const product = await productService.duplicateProduct(
+			id,
+			session.user.id
+		);
 
 		logger.info("Product duplicated", {
 			originalProductId: id,
@@ -56,7 +58,8 @@ export async function POST(
 			return notFoundResponse(error.message);
 		}
 
-		const message = error instanceof Error ? error.message : "Failed to duplicate product";
+		const message =
+			error instanceof Error ? error.message : "Failed to duplicate product";
 		return internalServerErrorResponse(message);
 	}
 }

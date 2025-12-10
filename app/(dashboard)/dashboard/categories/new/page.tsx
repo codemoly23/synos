@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,9 @@ export default function NewCategoryPage() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
 
-	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>([]);
+	const [categoryTree, setCategoryTree] = React.useState<ICategoryTreeNode[]>(
+		[]
+	);
 	const [isLoading, setIsLoading] = React.useState(false);
 
 	// Redirect if not authenticated
@@ -59,13 +62,14 @@ export default function NewCategoryPage() {
 			const result = await response.json();
 
 			if (result.success) {
+				toast.success("Category created successfully");
 				router.push("/dashboard/categories");
 			} else {
-				alert(result.message || "Failed to create category");
+				toast.error(result.message || "Failed to create category");
 			}
 		} catch (error) {
 			console.error("Failed to create category:", error);
-			alert("Failed to create category");
+			toast.error("Failed to create category");
 		} finally {
 			setIsLoading(false);
 		}
@@ -95,7 +99,9 @@ export default function NewCategoryPage() {
 					</Link>
 					<div>
 						<h1 className="text-3xl font-bold">Create Category</h1>
-						<p className="text-slate-600">Add a new category to your catalog</p>
+						<p className="text-slate-600">
+							Add a new category to your catalog
+						</p>
 					</div>
 				</div>
 

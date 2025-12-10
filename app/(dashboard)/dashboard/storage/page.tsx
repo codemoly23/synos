@@ -5,11 +5,11 @@ import type { StorageFile, StorageFolder } from "@/lib/storage/client";
 
 export default function StoragePage() {
 	const handleUpload = (file: StorageFile) => {
-		console.log("File uploaded:", file);
+		// console.log("File uploaded:", file);
 	};
 
 	const handleDelete = (filename: string, folder: StorageFolder) => {
-		console.log("File deleted:", filename, "from", folder);
+		// console.log("File deleted:", filename, "from", folder);
 	};
 
 	return (

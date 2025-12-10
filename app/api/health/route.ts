@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
 import { connectMongoose } from "@/lib/db/db-connect";
 import { logger } from "@/lib/utils/logger";
-import { successResponse, internalServerErrorResponse } from "@/lib/utils/api-response";
+import {
+	successResponse,
+	internalServerErrorResponse,
+} from "@/lib/utils/api-response";
 import mongoose from "mongoose";
 
 /**
@@ -33,7 +36,9 @@ export async function GET(request: NextRequest) {
 			return successResponse(healthData, "Service is healthy");
 		} else {
 			logger.error("Health check failed - database not connected");
-			return internalServerErrorResponse("Service unhealthy - database not connected");
+			return internalServerErrorResponse(
+				"Service unhealthy - database not connected"
+			);
 		}
 	} catch (error) {
 		logger.error("Health check error", error);

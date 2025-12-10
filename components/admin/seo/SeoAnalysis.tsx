@@ -58,7 +58,10 @@ function ProgressBar({
 	return (
 		<div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
 			<div
-				className={cn("h-full rounded-full transition-all duration-300", colorClass)}
+				className={cn(
+					"h-full rounded-full transition-all duration-300",
+					colorClass
+				)}
 				style={{ width: `${percentage}%` }}
 			/>
 		</div>
@@ -145,7 +148,8 @@ function analyzeSeo(data: SeoAnalysisData): {
 			id: "desc-missing",
 			label: "Meta description",
 			status: "problem",
-			message: "No meta description set. Add a description between 120-160 characters.",
+			message:
+				"No meta description set. Add a description between 120-160 characters.",
 		});
 	} else if (descLength < 120) {
 		checks.push({
@@ -183,7 +187,8 @@ function analyzeSeo(data: SeoAnalysisData): {
 			id: "slug-long",
 			label: "URL slug",
 			status: "improvement",
-			message: "Slug is quite long. Consider shortening it for better readability.",
+			message:
+				"Slug is quite long. Consider shortening it for better readability.",
 		});
 	} else {
 		checks.push({
@@ -200,7 +205,8 @@ function analyzeSeo(data: SeoAnalysisData): {
 			id: "og-missing",
 			label: "Social image",
 			status: "improvement",
-			message: "No Open Graph image set. Add an image for better social sharing.",
+			message:
+				"No Open Graph image set. Add an image for better social sharing.",
 		});
 	} else {
 		checks.push({
@@ -284,7 +290,12 @@ export function SeoAnalysis({ data, className }: SeoAnalysisProps) {
 	}
 
 	return (
-		<div className={cn("rounded-lg border border-slate-200 bg-white", className)}>
+		<div
+			className={cn(
+				"rounded-lg border border-slate-200 bg-white",
+				className
+			)}
+		>
 			{/* Header with score */}
 			<button
 				type="button"
@@ -305,7 +316,8 @@ export function SeoAnalysis({ data, className }: SeoAnalysisProps) {
 							SEO Analysis
 						</h4>
 						<p className="text-xs text-slate-500">
-							{goodChecks.length} good • {improvementChecks.length} improvements • {problemChecks.length} problems
+							{goodChecks.length} good • {improvementChecks.length}{" "}
+							improvements • {problemChecks.length} problems
 						</p>
 					</div>
 				</div>
@@ -377,7 +389,13 @@ interface CharacterCountProps {
 	label: string;
 }
 
-export function CharacterCount({ value, min, max, optimal, label }: CharacterCountProps) {
+export function CharacterCount({
+	value,
+	min,
+	max,
+	optimal,
+	label,
+}: CharacterCountProps) {
 	const length = value?.length || 0;
 
 	let statusColor = "text-green-600";

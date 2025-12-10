@@ -98,7 +98,10 @@ export function Footer({ config }: FooterProps) {
 							<li className="flex items-center gap-3">
 								<Phone className="h-5 w-5 text-primary shrink-0" />
 								<a
-									href={`tel:${config.company.phone.replace(/\s/g, "")}`}
+									href={`tel:${config.company.phone.replace(
+										/\s/g,
+										""
+									)}`}
 									className="hover:text-primary transition-colors"
 								>
 									{config.company.phone}
@@ -118,10 +121,12 @@ export function Footer({ config }: FooterProps) {
 
 					{/* Newsletter */}
 					<div>
-						<h4 className="font-bold text-lg mb-6">Håll dig uppdaterad</h4>
+						<h4 className="font-bold text-lg mb-6">
+							Håll dig uppdaterad
+						</h4>
 						<p className="text-sm text-primary-foreground/70 mb-4">
-							Prenumerera på vårt nyhetsbrev för de senaste produktuppdateringarna
-							och branschnyheter.
+							Prenumerera på vårt nyhetsbrev för de senaste
+							produktuppdateringarna och branschnyheter.
 						</p>
 						<div className="flex flex-col gap-3">
 							<Input

@@ -47,7 +47,10 @@ export function RichTextEditor({
 		}
 	};
 
-	const execCommand = (command: string, value: string | undefined = undefined) => {
+	const execCommand = (
+		command: string,
+		value: string | undefined = undefined
+	) => {
 		document.execCommand(command, false, value);
 		editorRef.current?.focus();
 		handleInput();

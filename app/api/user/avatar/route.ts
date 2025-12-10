@@ -14,6 +14,8 @@ import { logger } from "@/lib/utils/logger";
  */
 export async function POST(request: NextRequest) {
 	try {
+		// console.log("[Avatar API] POST request received");
+
 		// 1. Validate session
 		const auth = await getAuth();
 		const session = await auth.api.getSession({ headers: request.headers });
@@ -27,17 +29,25 @@ export async function POST(request: NextRequest) {
 		}
 
 		const userId = session.user.id;
+		// console.log("[Avatar API] User authenticated:", userId);
 
 		// 2. Parse multipart form data
 		const formData = await request.formData();
 		const file = formData.get("file") as File | null;
 
 		if (!file) {
+			// console.log("[Avatar API] No file provided in request");
 			return NextResponse.json(
 				{ success: false, message: "No file provided" },
 				{ status: 400 }
 			);
 		}
+
+		// console.log("[Avatar API] File received:", {
+		// 	name: file.name,
+		// 	type: file.type,
+		// 	size: file.size,
+		// });
 
 		// 3. Validate file type
 		if (!file.type.startsWith("image/")) {
@@ -50,26 +60,38 @@ export async function POST(request: NextRequest) {
 		// 4. Convert to buffer
 		const arrayBuffer = await file.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
+		// console.log("[Avatar API] Buffer created, size:", buffer.length);
 
 		// 5. Upload avatar (this automatically deletes old one)
+		// console.log("[Avatar API] Uploading to storage service...");
 		const { url } = await storageService.uploadUserAvatar(
 			userId,
 			buffer,
 			file.type,
 			file.size
 		);
+		// console.log("[Avatar API] Storage upload complete, URL:", url);
 
 		// 6. Update user's image field in database with the new URL
-		await userService.updateUserImage(userId, url);
+		// console.log("[Avatar API] Updating user image in database...");
+		const updatedUser = await userService.updateUserImage(userId, url);
+		// console.log("[Avatar API] Database update complete:", {
+		// 	userId,
+		// 	newImageUrl: updatedUser?.image,
+		// });
 
 		logger.info("Avatar uploaded and user updated", { userId, url });
 
-		return NextResponse.json({
+		const response = {
 			success: true,
 			message: "Avatar uploaded successfully",
 			data: { url },
-		});
+		};
+		// console.log("[Avatar API] Sending response:", response);
+
+		return NextResponse.json(response);
 	} catch (error: any) {
+		// console.error("[Avatar API] Error:", error);
 		logger.error("Error uploading avatar", error);
 
 		return NextResponse.json(

@@ -135,9 +135,7 @@ export async function generateUniqueSlug(
 /**
  * Parse sort string into MongoDB sort object
  */
-export function parseSortString(
-	sortString: string
-): Record<string, 1 | -1> {
+export function parseSortString(sortString: string): Record<string, 1 | -1> {
 	const sortMap: Record<string, Record<string, 1 | -1>> = {
 		createdAt: { createdAt: 1 },
 		"-createdAt": { createdAt: -1 },

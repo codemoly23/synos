@@ -39,9 +39,9 @@ class Logger {
 		const log = this.formatLog("info", message, data);
 
 		if (this.isDevelopment) {
-			console.log(`[INFO] ${log.timestamp} - ${message}`, data || "");
+			// console.log(`[INFO] ${log.timestamp} - ${message}`, data || "");
 		} else {
-			console.log(JSON.stringify(log));
+			// console.log(JSON.stringify(log));
 		}
 	}
 

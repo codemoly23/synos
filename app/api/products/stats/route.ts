@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
 
 		if (!session?.user?.id) {
 			logger.warn("Unauthorized access attempt to product stats");
-			return unauthorizedResponse("You must be logged in to view product stats");
+			return unauthorizedResponse(
+				"You must be logged in to view product stats"
+			);
 		}
 
 		const stats = await productService.getProductStats();
@@ -28,7 +30,10 @@ export async function GET(request: NextRequest) {
 		return successResponse(stats, "Product stats retrieved successfully");
 	} catch (error: unknown) {
 		logger.error("Error fetching product stats", error);
-		const message = error instanceof Error ? error.message : "Failed to fetch product stats";
+		const message =
+			error instanceof Error
+				? error.message
+				: "Failed to fetch product stats";
 		return internalServerErrorResponse(message);
 	}
 }

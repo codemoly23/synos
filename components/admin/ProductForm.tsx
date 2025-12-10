@@ -45,6 +45,7 @@ import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
 import type { PublishValidationError } from "@/lib/services/product.service";
 import TextEditor from "../common/TextEditor";
+import { ImageComponent } from "../common/image-component";
 
 /**
  * ProductImageGallery Component
@@ -114,11 +115,12 @@ function ProductImageGallery({
 								dragIndex === index && "opacity-50 border-primary"
 							)}
 						>
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
+							<ImageComponent
 								src={url}
 								alt={`Product image ${index + 1}`}
 								className="h-full w-full object-cover"
+								height={1000}
+								width={1000}
 							/>
 							{/* Drag Handle */}
 							<div className="absolute top-1 left-1 p-1 rounded bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
@@ -295,7 +297,10 @@ export interface ProductFormResult {
  * Helper to extract category ID from various formats
  * Handles: string, ObjectId, populated category object
  */
-type CategoryInput = string | { _id?: unknown; id?: string; value?: string } | unknown;
+type CategoryInput =
+	| string
+	| { _id?: unknown; id?: string; value?: string }
+	| unknown;
 export function normalizeCategoryId(category: CategoryInput): string {
 	if (typeof category === "string") return category;
 	if (category && typeof category === "object") {
@@ -310,7 +315,9 @@ export function normalizeCategoryId(category: CategoryInput): string {
 /**
  * Normalize an array of categories to string IDs
  */
-export function normalizeCategories(categories: CategoryInput[] | undefined): string[] {
+export function normalizeCategories(
+	categories: CategoryInput[] | undefined
+): string[] {
 	if (!categories || !Array.isArray(categories)) return [];
 	return categories.map(normalizeCategoryId);
 }
@@ -353,13 +360,17 @@ export function ProductForm({
 		errors: PublishValidationError[];
 		warnings: PublishValidationError[];
 	} | null>(null);
-	const [serverErrors, setServerErrors] = React.useState<Record<string, string>>({});
+	const [serverErrors, setServerErrors] = React.useState<
+		Record<string, string>
+	>({});
 	const [generalError, setGeneralError] = React.useState<string | null>(null);
 	const [isSaving, setIsSaving] = React.useState(false);
 	const [isPublishing, setIsPublishing] = React.useState(false);
 
 	// Helper to convert server errors to field-level errors
-	const processServerErrors = (errors?: ServerFieldError[]): PublishValidationError[] => {
+	const processServerErrors = (
+		errors?: ServerFieldError[]
+	): PublishValidationError[] => {
 		if (!errors || errors.length === 0) return [];
 
 		const fieldErrors: Record<string, string> = {};
@@ -392,11 +403,17 @@ export function ProductForm({
 	// Get combined error for a field (form validation + server)
 	const getFieldError = (fieldName: string): string | undefined => {
 		// Check form validation errors first
-		const formError = fieldName.split(".").reduce((obj: Record<string, unknown> | undefined, key) => {
-			return obj?.[key] as Record<string, unknown> | undefined;
-		}, errors as Record<string, unknown>);
+		const formError = fieldName
+			.split(".")
+			.reduce((obj: Record<string, unknown> | undefined, key) => {
+				return obj?.[key] as Record<string, unknown> | undefined;
+			}, errors as Record<string, unknown>);
 
-		if (formError && typeof formError === "object" && "message" in formError) {
+		if (
+			formError &&
+			typeof formError === "object" &&
+			"message" in formError
+		) {
 			return formError.message as string;
 		}
 
@@ -447,7 +464,9 @@ export function ProductForm({
 				canonicalUrl: product?.seo?.canonicalUrl || "",
 				noindex: product?.seo?.noindex || false,
 			},
-			categories: normalizeCategories(product?.categories as CategoryInput[]),
+			categories: normalizeCategories(
+				product?.categories as CategoryInput[]
+			),
 			qa:
 				product?.qa?.map((q) => ({
 					question: q.question,
@@ -1287,7 +1306,8 @@ export function ProductForm({
 										<div className="space-y-2">
 											<Label>Open Graph Image</Label>
 											<p className="text-sm text-muted-foreground">
-												Image shown when sharing on social media (recommended 1200x630px)
+												Image shown when sharing on social media
+												(recommended 1200x630px)
 											</p>
 											<MediaPicker
 												type="image"
@@ -1336,7 +1356,8 @@ export function ProductForm({
 												No Index
 											</Label>
 											<p className="text-xs text-slate-500">
-												Prevent search engines from indexing this product
+												Prevent search engines from indexing this
+												product
 											</p>
 										</div>
 									</CardContent>
@@ -1349,7 +1370,7 @@ export function ProductForm({
 										description: watch("seo.description") || "",
 										slug: watch("slug") || "",
 										productTitle: watch("title") || "",
-										hasOgImage: !!(watch("seo.ogImage")),
+										hasOgImage: !!watch("seo.ogImage"),
 									}}
 								/>
 							</div>
@@ -1360,7 +1381,8 @@ export function ProductForm({
 									<CardHeader>
 										<CardTitle>Preview</CardTitle>
 										<CardDescription>
-											See how your product will appear in search results and social media
+											See how your product will appear in search
+											results and social media
 										</CardDescription>
 									</CardHeader>
 									<CardContent>
@@ -1369,7 +1391,11 @@ export function ProductForm({
 												title: watch("seo.title") || "",
 												description: watch("seo.description") || "",
 												slug: watch("slug") || "",
-												ogImage: watch("seo.ogImage") || watch("overviewImage") || (watch("productImages")?.[0]) || null,
+												ogImage:
+													watch("seo.ogImage") ||
+													watch("overviewImage") ||
+													watch("productImages")?.[0] ||
+													null,
 												siteUrl: "synos.se",
 												siteName: "Synos",
 												productTitle: watch("title") || "",

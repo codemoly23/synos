@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
 /**
  * FAQ Page Component
- * 
+ *
  * Main FAQ page with:
  * - Hero section
  * - FAQ accordion with search
@@ -99,4 +99,3 @@ export default function FAQPage() {
 		</div>
 	);
 }
-

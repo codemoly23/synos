@@ -13,13 +13,13 @@ let initPromise: Promise<ReturnType<typeof betterAuth>> | null = null;
 export async function getAuth() {
 	// Return cached instance if available
 	if (authInstance) {
-		// console.log("auth instance : ", authInstance);
+		// // console.log("auth instance : ", authInstance);
 		return authInstance;
 	}
 
 	// Return pending initialization promise if in progress
 	if (initPromise) {
-		// console.log("init promise ", initPromise);
+		// // console.log("init promise ", initPromise);
 		return initPromise;
 	}
 
@@ -70,12 +70,13 @@ export async function getAuth() {
 				// Add additional trusted origins via BETTER_AUTH_TRUSTED_ORIGINS env var (comma-separated)
 				trustedOrigins: [
 					process.env.BETTER_AUTH_URL || "http://localhost:3000",
-					process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+					process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+						"http://localhost:3000",
 					// Parse additional origins from env if provided
 					...(process.env.BETTER_AUTH_TRUSTED_ORIGINS
-						? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map((o) =>
-								o.trim()
-							)
+						? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map(
+								(o) => o.trim()
+						  )
 						: []),
 				].filter(Boolean),
 
@@ -85,7 +86,7 @@ export async function getAuth() {
 					nextCookies(),
 				],
 			});
-			// console.log("auth instance ", authInstance);
+			// // console.log("auth instance ", authInstance);
 			return authInstance;
 		} catch (error) {
 			console.error("Failed to initialize Better Auth:", error);
@@ -94,7 +95,7 @@ export async function getAuth() {
 		}
 	})();
 
-	// console.log("init promise ", initPromise);
+	// // console.log("init promise ", initPromise);
 	return initPromise;
 }
 
