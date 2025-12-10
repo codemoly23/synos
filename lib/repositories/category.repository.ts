@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { BaseRepository } from "./base.repository";
 import {
 	getCategoryModelSync,
@@ -230,7 +231,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 
 			const bulkOps = updates.map((update) => ({
 				updateOne: {
-					filter: { _id: update.id },
+					filter: { _id: new Types.ObjectId(update.id) },
 					update: { $set: { order: update.order } },
 				},
 			}));

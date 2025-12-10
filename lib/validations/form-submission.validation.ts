@@ -50,8 +50,12 @@ export const trainingInterestTypes = [
 /**
  * Training interest type labels (Swedish)
  */
-export const trainingInterestTypeLabels: Record<(typeof trainingInterestTypes)[number], string> = {
-	machine_purchase: "Jag planerar att köpa maskin och vill veta mer om utbildningen",
+export const trainingInterestTypeLabels: Record<
+	(typeof trainingInterestTypes)[number],
+	string
+> = {
+	machine_purchase:
+		"Jag planerar att köpa maskin och vill veta mer om utbildningen",
 	already_customer: "Jag är redan kund och vill boka utbildning",
 	certification_info: "Jag vill veta mer om certifiering som Synos terapeut",
 	general_info: "Jag vill ha allmän information om era utbildningar",
