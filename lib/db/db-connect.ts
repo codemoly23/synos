@@ -1,24 +1,36 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
-	throw new Error("Please define the MONGODB_URI environment variable");
-}
-
 declare global {
 	var __mongoose:
 		| {
 				conn: typeof mongoose | null;
 				promise: Promise<typeof mongoose> | null;
+				uri: string | null;
 		  }
 		| undefined;
 }
 
 export async function connectMongoose() {
-	if (global.__mongoose?.conn) {
+	const MONGODB_URI = process.env.MONGODB_URI;
+
+	if (!MONGODB_URI) {
+		throw new Error("Please define the MONGODB_URI environment variable");
+	}
+
+	// Return cached connection if available and URI hasn't changed
+	if (global.__mongoose?.conn && global.__mongoose.uri === MONGODB_URI) {
 		return global.__mongoose.conn;
 	}
-	if (!global.__mongoose) global.__mongoose = { conn: null, promise: null };
+
+	if (!global.__mongoose) {
+		global.__mongoose = { conn: null, promise: null, uri: null };
+	}
+
+	// Check if URI changed - need to reconnect
+	if (global.__mongoose.uri !== MONGODB_URI) {
+		global.__mongoose.conn = null;
+		global.__mongoose.promise = null;
+	}
 
 	if (!global.__mongoose.promise) {
 		const opts = {
@@ -27,21 +39,16 @@ export async function connectMongoose() {
 			bufferCommands: false,
 		};
 
-		// // console.log("🔌 [MongoDB] Connecting to:", MONGODB_URI);
-
+		global.__mongoose.uri = MONGODB_URI;
 		global.__mongoose.promise = mongoose
-			.connect(MONGODB_URI!, opts)
+			.connect(MONGODB_URI, opts)
 			.then((mongooseInstance) => {
-				// // console.log("✅ [MongoDB] Connected successfully!");
-				// // console.log(
-				// 	"✅ [MongoDB] Database name:",
-				// 	mongooseInstance.connection.db?.databaseName || "unknown"
-				// );
-				// // console.log("✅ [MongoDB] Host:", mongooseInstance.connection.host);
 				return mongooseInstance;
 			})
 			.catch((error) => {
 				console.error("❌ [MongoDB] Connection failed:", error);
+				global.__mongoose!.uri = null;
+				global.__mongoose!.promise = null;
 				throw error;
 			});
 	}

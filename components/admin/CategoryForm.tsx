@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TreeSelect } from "./TreeSelect";
+import { MediaPicker } from "@/components/storage";
 import {
 	createCategorySchema,
 	updateCategorySchema,
@@ -175,15 +176,21 @@ export function CategoryForm({
 				</p>
 			</div>
 
-			{/* Image URL */}
+			{/* Category Image */}
 			<div className="space-y-2">
-				<Label htmlFor="image">Image URL</Label>
-				<Input
-					id="image"
-					type="url"
-					{...register("image")}
-					placeholder="https://example.com/image.jpg"
+				<Label>Category Image</Label>
+				<p className="text-xs text-slate-500">
+					Select an image from the media library or upload a new one.
+				</p>
+				<MediaPicker
+					type="image"
+					value={watch("image") || null}
+					onChange={(url) =>
+						setValue("image", url || "", { shouldDirty: true })
+					}
+					placeholder="Select category image"
 					disabled={isLoading}
+					galleryTitle="Select Category Image"
 				/>
 				{errors.image && (
 					<p className="text-sm text-red-500">{errors.image.message}</p>
