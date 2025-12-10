@@ -5,7 +5,7 @@ import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
 import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
-import { Toaster } from "@/components/ui/sonner";
+import { ToasterProvider } from "@/components/providers/toaster-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -137,7 +137,7 @@ export default function RootLayout({
 				</noscript>
 
 				{children}
-				<Toaster richColors={true} expand />
+				<ToasterProvider />
 			</body>
 		</html>
 	);

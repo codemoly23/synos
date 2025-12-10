@@ -17,20 +17,16 @@ import { BlogComments } from "../_components/blog-comments";
  * Blog Detail Page
  *
  * Dynamic route for individual blog posts.
+ * Using force-dynamic to avoid SSG issues with framer-motion context
  */
+
+// Force dynamic rendering to avoid SSG issues with client components
+export const dynamic = "force-dynamic";
 
 interface BlogDetailPageProps {
 	params: Promise<{
 		slug: string;
 	}>;
-}
-
-// Generate static params for all blog posts
-export async function generateStaticParams() {
-	const articles = getAllArticles();
-	return articles.map((article) => ({
-		slug: article.slug,
-	}));
 }
 
 // Generate metadata for SEO
