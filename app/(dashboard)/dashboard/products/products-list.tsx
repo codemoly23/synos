@@ -32,6 +32,10 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { ImageComponent } from "@/components/common/image-component";
+import {
+	StatsGridSkeleton,
+	ProductListSkeleton,
+} from "@/components/ui/skeletons";
 
 interface Product {
 	_id: string;
@@ -265,8 +269,8 @@ export function ProductsList({
 				</div>
 
 				{/* Stats Cards */}
-				{stats && (
-					<div className="grid grid-cols-4 gap-4">
+				{stats ? (
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 						<Card>
 							<CardContent className="pt-6">
 								<div className="text-2xl font-bold">{stats.total}</div>
@@ -298,6 +302,8 @@ export function ProductsList({
 							</CardContent>
 						</Card>
 					</div>
+				) : (
+					<StatsGridSkeleton count={4} />
 				)}
 
 				{/* Filters */}
@@ -336,7 +342,7 @@ export function ProductsList({
 					</CardHeader>
 					<CardContent>
 						{isLoading ? (
-							<div className="text-center py-8">Loading...</div>
+							<ProductListSkeleton count={5} />
 						) : products.length === 0 ? (
 							<div className="text-center py-8 text-slate-500">
 								No products found

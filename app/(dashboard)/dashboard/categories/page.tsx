@@ -32,6 +32,10 @@ import {
 } from "@/components/ui/popover";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 import { toast } from "sonner";
+import {
+	StatsCardSkeleton,
+	CategoryTreeSkeleton,
+} from "@/components/ui/skeletons";
 import type { ICategoryTreeNode } from "@/models/category.model";
 
 interface TreeNodeProps {
@@ -292,8 +296,24 @@ export default function CategoriesPage() {
 
 	if (isPending) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<p>Loading...</p>
+			<div className="space-y-6">
+				<div className="flex justify-between items-center">
+					<div>
+						<div className="h-9 w-40 bg-accent animate-pulse rounded-md mb-2" />
+						<div className="h-5 w-56 bg-accent animate-pulse rounded-md" />
+					</div>
+					<div className="h-10 w-36 bg-accent animate-pulse rounded-md" />
+				</div>
+				<StatsCardSkeleton />
+				<div className="rounded-xl border bg-card shadow-sm">
+					<div className="p-6 border-b">
+						<div className="h-6 w-32 bg-accent animate-pulse rounded-md mb-1" />
+						<div className="h-4 w-64 bg-accent animate-pulse rounded-md" />
+					</div>
+					<div className="p-6">
+						<CategoryTreeSkeleton />
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -342,7 +362,7 @@ export default function CategoriesPage() {
 					</CardHeader>
 					<CardContent>
 						{isLoading ? (
-							<div className="text-center py-8">Loading...</div>
+							<CategoryTreeSkeleton />
 						) : categoryTree.length === 0 ? (
 							<div className="text-center py-8 text-slate-500">
 								<p>No categories yet</p>

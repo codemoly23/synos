@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading-button";
 import {
 	Form,
 	FormControl,
@@ -16,6 +17,7 @@ import {
 	FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UsersPageSkeleton } from "@/components/ui/skeletons";
 
 // ============================================================================
 // Validation Schema
@@ -155,14 +157,7 @@ export default function UsersPage() {
 	// Loading state
 	// ========================================================================
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center py-12">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading users...</p>
-				</div>
-			</div>
-		);
+		return <UsersPageSkeleton />;
 	}
 
 	// ========================================================================
@@ -290,9 +285,13 @@ export default function UsersPage() {
 										>
 											Cancel
 										</Button>
-										<Button type="submit" disabled={creating}>
-											{creating ? "Creating..." : "Create User"}
-										</Button>
+										<LoadingButton
+										type="submit"
+										loading={creating}
+										loadingText="Creating..."
+									>
+										Create User
+									</LoadingButton>
 									</div>
 								</form>
 							</Form>

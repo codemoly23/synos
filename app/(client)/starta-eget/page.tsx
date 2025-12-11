@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ContactFormSection } from "./_components/contact-form-section";
 
 export const metadata: Metadata = {
 	title: "Starta eget",
@@ -252,32 +253,8 @@ export default function StartaEgetPage() {
 				</div>
 			</section>
 
-			{/* CTA Section */}
-			<section className="mb-20 rounded-lg bg-gradient-to-r from-primary to-primary-hover p-12 text-center text-white">
-				<h2 className="mb-4 text-3xl font-bold">
-					Hör av dig till oss så berättar vi mer
-				</h2>
-				<p className="mb-8 text-lg opacity-90">
-					Vill du veta mer om hur man startar en hudvårdssalong eller
-					klinik ska du höra av dig till oss på Synos. Allra smidigast är
-					att boka ett förutsättningslöst möte med någon av våra
-					produktspecialister, som då snabbt kan få en tydligare bild av
-					dina behov och önskemål.
-				</p>
-				<div className="flex flex-wrap justify-center gap-4">
-					<Button asChild size="lg" variant="secondary">
-						<Link href="/kontakt">Kontakta oss</Link>
-					</Button>
-					<Button
-						asChild
-						size="lg"
-						variant="outline"
-						className="border-white bg-white/10 text-white hover:bg-white/20"
-					>
-						<a href="tel:010-205 15 01">010-205 15 01</a>
-					</Button>
-				</div>
-			</section>
+			{/* Contact Form Section */}
+			<ContactFormSection />
 
 			{/* Resources Grid */}
 			<section>

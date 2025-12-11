@@ -26,7 +26,7 @@ const ImageComponent = ({
 		e: React.SyntheticEvent<HTMLImageElement, Event>
 	): void => {
 		if (e?.currentTarget?.src !== props.fallback)
-			setOnErrorSrc("/placeholder.jpeg");
+			setOnErrorSrc("/placeholder.avif");
 
 		setLoading(false);
 	};
@@ -35,7 +35,7 @@ const ImageComponent = ({
 		<NextImage
 			{...props}
 			fill={fill}
-			src={(onErrorSrc || src || props.fallback) ?? "/placeholder.jpeg"}
+			src={(onErrorSrc || src || props.fallback) ?? "/placeholder.avif"}
 			onLoad={() => setLoading(false)}
 			onError={handleOnError}
 			width={fill ? undefined : props.width}

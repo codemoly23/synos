@@ -1,23 +1,12 @@
 import { z } from "zod";
-
-/**
- * Check if a string is a valid local path (starts with /)
- */
-const isLocalPath = (str: string): boolean => {
-	return str.startsWith("/");
-};
-
-/**
- * Check if a string is a valid external URL
- */
-const isValidExternalUrl = (str: string): boolean => {
-	try {
-		const parsed = new URL(str);
-		return ["http:", "https:"].includes(parsed.protocol);
-	} catch {
-		return false;
-	}
-};
+import {
+	isLocalPath,
+	isValidExternalUrl,
+	isValidUrl,
+	imageUrlSchema,
+	optionalImageUrlSchema,
+	productImagesSchema,
+} from "./media.validation";
 
 /**
  * URL validation helper - accepts both local paths and external URLs
@@ -42,37 +31,12 @@ const optionalUrlSchema = z
 	.refine(
 		(url) => {
 			if (!url || url.trim() === "") return true;
-			return isLocalPath(url) || isValidExternalUrl(url);
+			return isValidUrl(url);
 		},
 		{
 			message:
 				"Must be a valid local path (starting with /) or URL (http/https)",
 		}
-	);
-
-/**
- * Image URL schema - same as urlSchema but with image-specific message
- */
-const imageUrlSchema = z.string().refine(
-	(url) => {
-		if (!url || url.trim() === "") return false;
-		return isLocalPath(url) || isValidExternalUrl(url);
-	},
-	{ message: "Must be a valid image path (local or URL)" }
-);
-
-/**
- * Optional image URL schema
- */
-const optionalImageUrlSchema = z
-	.string()
-	.optional()
-	.refine(
-		(url) => {
-			if (!url || url.trim() === "") return true;
-			return isLocalPath(url) || isValidExternalUrl(url);
-		},
-		{ message: "Must be a valid image path (local or URL)" }
 	);
 
 /**
@@ -151,7 +115,7 @@ export const createProductDraftSchema = z.object({
 	benefits: z.array(z.string().max(500)).optional().default([]),
 	certifications: z.array(z.string().max(100)).optional().default([]),
 	treatments: z.array(z.string().max(100)).optional().default([]),
-	productImages: z.array(z.string()).optional().default([]),
+	productImages: z.array(z.string()).optional().default([]), // Draft allows any images
 	overviewImage: z.string().optional(),
 	techSpecifications: z.array(techSpecSchema).optional().default([]),
 	documentation: z.array(documentEntrySchema).optional().default([]),
@@ -199,9 +163,7 @@ export const publishProductSchema = z.object({
 	title: z.string().min(1, "Title is required for publishing").max(200),
 	slug: slugSchema,
 	description: z.string().min(1, "Description is required for publishing"),
-	productImages: z
-		.array(imageUrlSchema)
-		.min(1, "At least one product image is required for publishing"),
+	productImages: productImagesSchema, // At least 1, max 10 images
 	techSpecifications: z.array(
 		z.object({
 			title: z.string().min(1, "Tech spec title is required"),

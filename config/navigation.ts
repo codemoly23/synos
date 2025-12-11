@@ -220,7 +220,7 @@ export const mainNav: NavItem[] = [
 			},
 			{
 				title: "FAQ",
-				href: "/om-oss/faq",
+				href: "/faq",
 			},
 			{
 				title: "Lediga Tjänster",

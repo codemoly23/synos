@@ -54,7 +54,7 @@ export function StorageManager({
 				</TabsList>
 
 				<TabsContent value="images" className="space-y-6">
-					<FileUploader folder="images" onUpload={handleUpload} />
+					<FileUploader folder="images" onUpload={handleUpload} multiple />
 					<FileList
 						key={`images-${refreshKey}`}
 						folder="images"
@@ -65,7 +65,7 @@ export function StorageManager({
 				</TabsContent>
 
 				<TabsContent value="documents" className="space-y-6">
-					<FileUploader folder="documents" onUpload={handleUpload} />
+					<FileUploader folder="documents" onUpload={handleUpload} multiple />
 					<FileList
 						key={`documents-${refreshKey}`}
 						folder="documents"

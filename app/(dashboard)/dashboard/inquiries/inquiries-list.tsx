@@ -33,6 +33,10 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+	StatsGridSkeleton,
+	InquiryListSkeleton,
+} from "@/components/ui/skeletons";
 import type {
 	FormSubmissionType,
 	FormSubmissionStatus,
@@ -404,8 +408,8 @@ export function InquiriesList({
 				</div>
 
 				{/* Stats Cards */}
-				{stats && (
-					<div className="grid grid-cols-4 gap-4">
+				{stats ? (
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 						<Card>
 							<CardContent className="pt-6">
 								<div className="text-2xl font-bold">{stats.total}</div>
@@ -437,6 +441,8 @@ export function InquiriesList({
 							</CardContent>
 						</Card>
 					</div>
+				) : (
+					<StatsGridSkeleton count={4} />
 				)}
 
 				{/* Filters */}
@@ -523,7 +529,7 @@ export function InquiriesList({
 					</CardHeader>
 					<CardContent>
 						{isLoading ? (
-							<div className="text-center py-8">Loading...</div>
+							<InquiryListSkeleton count={5} />
 						) : submissions.length === 0 ? (
 							<div className="text-center py-8 text-slate-500">
 								No submissions found

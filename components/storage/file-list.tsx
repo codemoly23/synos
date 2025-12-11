@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils/cn";
 import type { FileMetadata, StorageFolder } from "@/lib/storage/client";
 import { STORAGE_API_ROUTES, formatFileSize } from "@/lib/storage/client";
 import { ImageComponent } from "../common/image-component";
+import { FileListSkeleton } from "../ui/skeletons";
 
 interface FileListProps {
 	/** Storage folder to display */
@@ -287,9 +288,7 @@ export function FileList({
 				</CardHeader>
 				<CardContent>
 					{isLoading ? (
-						<div className="flex items-center justify-center py-12">
-							<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-						</div>
+						<FileListSkeleton count={pageSize} />
 					) : files.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
 							<FileIcon className="h-12 w-12 mb-4" />

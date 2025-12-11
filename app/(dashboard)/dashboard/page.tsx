@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { DashboardPageSkeleton } from "@/components/ui/skeletons";
 
 interface UserData {
 	user: {
@@ -52,14 +53,7 @@ export default function DashboardPage() {
 	}, [session]);
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center py-12">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading your dashboard...</p>
-				</div>
-			</div>
-		);
+		return <DashboardPageSkeleton />;
 	}
 
 	if (error) {

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading-button";
 import {
 	Form,
 	FormControl,
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email format"),
@@ -123,9 +124,14 @@ function LoginForm() {
 							)}
 						/>
 
-						<Button type="submit" className="w-full" disabled={isLoading}>
-							{isLoading ? "Signing In..." : "Sign In"}
-						</Button>
+						<LoadingButton
+							type="submit"
+							className="w-full"
+							loading={isLoading}
+							loadingText="Signing In..."
+						>
+							Sign In
+						</LoadingButton>
 					</form>
 				</Form>
 
@@ -140,15 +146,31 @@ function LoginForm() {
 	);
 }
 
+function LoginFormSkeleton() {
+	return (
+		<div className="_container padding-top">
+			<div className="max-w-sm mx-auto space-y-6">
+				<Skeleton className="h-9 w-32" />
+				<div className="space-y-6">
+					<div className="space-y-2">
+						<Skeleton className="h-4 w-12" />
+						<Skeleton className="h-10 w-full" />
+					</div>
+					<div className="space-y-2">
+						<Skeleton className="h-4 w-16" />
+						<Skeleton className="h-10 w-full" />
+					</div>
+					<Skeleton className="h-11 w-full" />
+				</div>
+				<Skeleton className="h-4 w-48 mx-auto" />
+			</div>
+		</div>
+	);
+}
+
 export default function Login() {
 	return (
-		<Suspense
-			fallback={
-				<div className="_container padding-top">
-					<div className="max-w-sm mx-auto text-center">Loading...</div>
-				</div>
-			}
-		>
+		<Suspense fallback={<LoginFormSkeleton />}>
 			<LoginForm />
 		</Suspense>
 	);
