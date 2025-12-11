@@ -2,6 +2,174 @@ import type { Product } from "@/types/product";
 
 export const featuredProducts: Product[] = [
 	{
+		id: "pico",
+		brochureUrl:
+			"https://www.synos.se/wp-content/uploads/2024/04/Toro-Brochyr-svenska.pdf",
+		videoUrl: "https://www.youtube.com/watch?v=example",
+		slug: "pico",
+		name: "TORO Pico Laser",
+		description:
+			"TORO laser for professional tattoo removal. Market-leading technology with three wavelengths. Invest in the in-demand treatment of the future.",
+		longDescription: `<h1 style="line-height: 1.05"><strong>TORO Advanced Pico Laser – Sweden&apos;s Smartest Investment for Tattoo Removal</strong></h1>
+
+<h2 style="line-height: 1.25"><strong>Why Do Leading Swedish Clinics Choose TORO?</strong></h2>
+
+<div>TORO is the only machine that combines the wavelengths 785nm, 1064nm and 532nm in one system. This means faster results, fewer treatments and significantly higher profitability for your clinic.</div>
+
+<h2 style="line-height: 1.25"><strong>Three Wavelengths – A Complete Solution for All Tattoo Colors</strong></h2>
+
+<div><strong>Advanced triple-wavelength technology:</strong></div>
+
+<ul>
+  <li><strong>1064nm</strong> &nbsp;– Optimal for black and dark blue tattoos</li>
+  <li><strong>532nm</strong> &nbsp;– Perfect for red, orange and purple pigments</li>
+  <li><strong>785nm</strong> &nbsp;– Groundbreaking technology for difficult colors like green and blue</li>
+</ul>
+
+<h2 style="line-height: 1.25"><strong>Documented Business Benefits for Your Clinic</strong></h2>
+
+<h3 style="line-height: 1.25"><strong>Faster ROI and Higher Profitability</strong></h3>
+
+<div><strong>Concrete results:</strong></div>
+
+<ul>
+  <li>50% fewer treatments than traditional Q-switch systems</li>
+  <li>Shorter processing times = more customers per day</li>
+  <li>Average price per session: 2000-4000 SEK</li>
+  <li>Fast payback time: Typically 8-12 months</li>
+</ul>
+
+<div><strong>Broader target audience:</strong></div>
+
+<ul>
+  <li>Safely treats all skin types (Fitzpatrick I-VI)</li>
+  <li>Effective on both new and old tattoos</li>
+  <li>Minimal pain attracts more customers</li>
+</ul>
+
+<h2 style="line-height: 1.25"><strong>Medical Safety and Quality</strong></h2>
+
+<div><strong>MDR certified equipment:</strong></div>
+
+<ul>
+  <li>MDR-marked for medical use</li>
+  <li>Intelligent cooling system minimizes discomfort</li>
+  <li>Ultra-short pulses (6-8 ns) reduce scarring</li>
+  <li>Documented safe for all skin types</li>
+</ul>
+
+<div><strong>User-friendly design:</strong></div>
+
+<ul>
+  <li>Preset treatment protocols for different tattoo types</li>
+  <li>Intuitive navigation that reduces training time</li>
+</ul>
+
+<h2 style="line-height: 1.25"><strong>Complete Support from Sweden&apos;s Most Experienced Partner</strong></h2>
+
+<h3 style="line-height: 1.25"><strong>18 Years of Expertise Included</strong></h3>
+
+<div><strong>Comprehensive support package:</strong></div>
+
+<ul>
+  <li>Thorough training and certification</li>
+  <li>Swedish technical support and 1 year warranty</li>
+  <li>Flexible service agreements for continuous operation</li>
+  <li>Business development support for optimal profitability</li>
+</ul>
+
+<div><strong>Safe investment:</strong></div>
+
+<ul>
+  <li>Established distributor since 2008</li>
+  <li>Several hundred installed machines in the Nordic region</li>
+  <li>70% customer retention shows our reliability</li>
+</ul>
+
+<h2 style="line-height: 1.25"><strong>Flexible Financing for All Clinics</strong></h2>
+
+<div><strong>Customized payment solutions:</strong></div>
+
+<ul>
+  <li>Operational and financial leasing</li>
+  <li>Seasonal payments</li>
+  <li>3 payment-free months at start</li>
+</ul>
+
+<h2 style="line-height: 1.25"><strong>Start Your Profitable Tattoo Removal Business Today</strong></h2>
+
+<div>TORO is more than a machine – it&apos;s your partner for long-term growth in the rapidly growing tattoo removal market.</div>
+
+<div>Book a free demonstration and discover why TORO is Sweden&apos;s most complete tattoo removal solution.</div>
+`,
+		categories: ["tattoo-removal", "skin-rejuvenation", "pigmentation"],
+		treatments: ["Tatueringsborttagning", "Hudföryngring", "Pigmentfläckar"],
+		features: [
+			{
+				title: "Picosekund-teknologi",
+				description: "Ultrakort pulsenergi för optimal fragmentering",
+			},
+			{
+				title: "Alla färger",
+				description: "Effektiv på alla tatueringsfärger",
+			},
+			{
+				title: "Minimal skada",
+				description: "Skonsam mot omgivande vävnad",
+			},
+			{
+				title: "Snabb läkning",
+				description: "Kortare återhämtningstid",
+			},
+		],
+		specifications: [
+			{ label: "Våglängder", value: "532 nm, 1064 nm" },
+			{ label: "Pulslängd", value: "450-750 ps" },
+			{ label: "Energi", value: "Upp till 800 mJ" },
+			{ label: "Repetitionsfrekvens", value: "1-10 Hz" },
+		],
+		images: [
+			{
+				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-1.png",
+				alt: "TORO Pico Laser",
+				width: 800,
+				height: 600,
+				isPrimary: true,
+			},
+		],
+		gallery: [
+			{
+				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-1.png",
+				alt: "MOTUS PRO Laser - Huvudbild",
+				width: 1200,
+				height: 900,
+				isPrimary: true,
+			},
+			{
+				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-2.png",
+				alt: "MOTUS PRO Laser - Huvudbild",
+				width: 1200,
+				height: 900,
+				isPrimary: true,
+			},
+			{
+				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-3.png",
+				alt: "MOTUS PRO Laser - Huvudbild",
+				width: 1200,
+				height: 900,
+				isPrimary: true,
+			},
+		],
+		seo: {
+			title: "TORO Pico Laser - Tatueringsborttagning | Synos Medical",
+			description:
+				"TORO Pico Laser med picosekund-teknologi för effektiv tatueringsborttagning och hudföryngring. Minimal vävnadsskada.",
+			keywords: ["TORO", "picolaser", "tatueringsborttagning", "picosekund"],
+		},
+		createdAt: "2024-01-01",
+		updatedAt: "2024-01-01",
+	},
+	{
 		id: "motus-pro",
 		slug: "motus-pro",
 		name: "MOTUS PRO",
@@ -461,174 +629,6 @@ export const featuredProducts: Product[] = [
 		updatedAt: "2024-01-01",
 	},
 	{
-		id: "toro-pico",
-		brochureUrl:
-			"https://www.synos.se/wp-content/uploads/2024/04/Toro-Brochyr-svenska.pdf",
-		videoUrl: "https://www.youtube.com/watch?v=example",
-		slug: "toro-pico-laser",
-		name: "TORO Pico Laser",
-		description:
-			"TORO laser for professional tattoo removal. Market-leading technology with three wavelengths. Invest in the in-demand treatment of the future.",
-		longDescription: `<h1 style="line-height: 1.05"><strong>TORO Advanced Pico Laser – Sweden&apos;s Smartest Investment for Tattoo Removal</strong></h1>
-
-<h2 style="line-height: 1.25"><strong>Why Do Leading Swedish Clinics Choose TORO?</strong></h2>
-
-<div>TORO is the only machine that combines the wavelengths 785nm, 1064nm and 532nm in one system. This means faster results, fewer treatments and significantly higher profitability for your clinic.</div>
-
-<h2 style="line-height: 1.25"><strong>Three Wavelengths – A Complete Solution for All Tattoo Colors</strong></h2>
-
-<div><strong>Advanced triple-wavelength technology:</strong></div>
-
-<ul>
-  <li><strong>1064nm</strong> &nbsp;– Optimal for black and dark blue tattoos</li>
-  <li><strong>532nm</strong> &nbsp;– Perfect for red, orange and purple pigments</li>
-  <li><strong>785nm</strong> &nbsp;– Groundbreaking technology for difficult colors like green and blue</li>
-</ul>
-
-<h2 style="line-height: 1.25"><strong>Documented Business Benefits for Your Clinic</strong></h2>
-
-<h3 style="line-height: 1.25"><strong>Faster ROI and Higher Profitability</strong></h3>
-
-<div><strong>Concrete results:</strong></div>
-
-<ul>
-  <li>50% fewer treatments than traditional Q-switch systems</li>
-  <li>Shorter processing times = more customers per day</li>
-  <li>Average price per session: 2000-4000 SEK</li>
-  <li>Fast payback time: Typically 8-12 months</li>
-</ul>
-
-<div><strong>Broader target audience:</strong></div>
-
-<ul>
-  <li>Safely treats all skin types (Fitzpatrick I-VI)</li>
-  <li>Effective on both new and old tattoos</li>
-  <li>Minimal pain attracts more customers</li>
-</ul>
-
-<h2 style="line-height: 1.25"><strong>Medical Safety and Quality</strong></h2>
-
-<div><strong>MDR certified equipment:</strong></div>
-
-<ul>
-  <li>MDR-marked for medical use</li>
-  <li>Intelligent cooling system minimizes discomfort</li>
-  <li>Ultra-short pulses (6-8 ns) reduce scarring</li>
-  <li>Documented safe for all skin types</li>
-</ul>
-
-<div><strong>User-friendly design:</strong></div>
-
-<ul>
-  <li>Preset treatment protocols for different tattoo types</li>
-  <li>Intuitive navigation that reduces training time</li>
-</ul>
-
-<h2 style="line-height: 1.25"><strong>Complete Support from Sweden&apos;s Most Experienced Partner</strong></h2>
-
-<h3 style="line-height: 1.25"><strong>18 Years of Expertise Included</strong></h3>
-
-<div><strong>Comprehensive support package:</strong></div>
-
-<ul>
-  <li>Thorough training and certification</li>
-  <li>Swedish technical support and 1 year warranty</li>
-  <li>Flexible service agreements for continuous operation</li>
-  <li>Business development support for optimal profitability</li>
-</ul>
-
-<div><strong>Safe investment:</strong></div>
-
-<ul>
-  <li>Established distributor since 2008</li>
-  <li>Several hundred installed machines in the Nordic region</li>
-  <li>70% customer retention shows our reliability</li>
-</ul>
-
-<h2 style="line-height: 1.25"><strong>Flexible Financing for All Clinics</strong></h2>
-
-<div><strong>Customized payment solutions:</strong></div>
-
-<ul>
-  <li>Operational and financial leasing</li>
-  <li>Seasonal payments</li>
-  <li>3 payment-free months at start</li>
-</ul>
-
-<h2 style="line-height: 1.25"><strong>Start Your Profitable Tattoo Removal Business Today</strong></h2>
-
-<div>TORO is more than a machine – it&apos;s your partner for long-term growth in the rapidly growing tattoo removal market.</div>
-
-<div>Book a free demonstration and discover why TORO is Sweden&apos;s most complete tattoo removal solution.</div>
-`,
-		categories: ["tattoo-removal", "skin-rejuvenation", "pigmentation"],
-		treatments: ["Tatueringsborttagning", "Hudföryngring", "Pigmentfläckar"],
-		features: [
-			{
-				title: "Picosekund-teknologi",
-				description: "Ultrakort pulsenergi för optimal fragmentering",
-			},
-			{
-				title: "Alla färger",
-				description: "Effektiv på alla tatueringsfärger",
-			},
-			{
-				title: "Minimal skada",
-				description: "Skonsam mot omgivande vävnad",
-			},
-			{
-				title: "Snabb läkning",
-				description: "Kortare återhämtningstid",
-			},
-		],
-		specifications: [
-			{ label: "Våglängder", value: "532 nm, 1064 nm" },
-			{ label: "Pulslängd", value: "450-750 ps" },
-			{ label: "Energi", value: "Upp till 800 mJ" },
-			{ label: "Repetitionsfrekvens", value: "1-10 Hz" },
-		],
-		images: [
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-1.png",
-				alt: "TORO Pico Laser",
-				width: 800,
-				height: 600,
-				isPrimary: true,
-			},
-		],
-		gallery: [
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-1.png",
-				alt: "MOTUS PRO Laser - Huvudbild",
-				width: 1200,
-				height: 900,
-				isPrimary: true,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-2.png",
-				alt: "MOTUS PRO Laser - Huvudbild",
-				width: 1200,
-				height: 900,
-				isPrimary: true,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/04/Toro-3.png",
-				alt: "MOTUS PRO Laser - Huvudbild",
-				width: 1200,
-				height: 900,
-				isPrimary: true,
-			},
-		],
-		seo: {
-			title: "TORO Pico Laser - Tatueringsborttagning | Synos Medical",
-			description:
-				"TORO Pico Laser med picosekund-teknologi för effektiv tatueringsborttagning och hudföryngring. Minimal vävnadsskada.",
-			keywords: ["TORO", "picolaser", "tatueringsborttagning", "picosekund"],
-		},
-		createdAt: "2024-01-01",
-		updatedAt: "2024-01-01",
-	},
-	{
 		id: "tetra-pro-co2",
 		slug: "tetra-pro-co2-laser",
 		name: "Tetra PRO CO₂ Laser",
@@ -763,133 +763,133 @@ Uppgradera din klinik med marknadens mest avancerade CO2-laser. Kontakta oss ida
 		createdAt: "2024-01-01",
 		updatedAt: "2024-01-01",
 	},
-	{
-		id: "jovena",
-		slug: "jovena",
-		name: "Jovena",
-		description:
-			"Jovena är all around-maskinen för dig som vill kunna erbjuda dina kunder effektiv hudföryngring eller muskeltoning med minimal återhämtningstid",
-		longDescription: `<p><strong>JOVENA – Komplett System för Hudföryngring och Muskeltoning</strong></p>
+	// 	{
+	// 		id: "jovena",
+	// 		slug: "jovena",
+	// 		name: "Jovena",
+	// 		description:
+	// 			"Jovena är all around-maskinen för dig som vill kunna erbjuda dina kunder effektiv hudföryngring eller muskeltoning med minimal återhämtningstid",
+	// 		longDescription: `<p><strong>JOVENA – Komplett System för Hudföryngring och Muskeltoning</strong></p>
 
-<p><strong>Revolutionerande Dual-Energy Teknologi</strong>&nbsp;JOVENA kombinerar Fractional Plasma och FACESTIM-teknologi i ett komplett behandlingssystem. Med fyra specialiserade handtag erbjuder systemet maximal flexibilitet för moderna kliniker.</p>
+	// <p><strong>Revolutionerande Dual-Energy Teknologi</strong>&nbsp;JOVENA kombinerar Fractional Plasma och FACESTIM-teknologi i ett komplett behandlingssystem. Med fyra specialiserade handtag erbjuder systemet maximal flexibilitet för moderna kliniker.</p>
 
-<p><strong>Fyra Innovativa Handtag:</strong></p>
+	// <p><strong>Fyra Innovativa Handtag:</strong></p>
 
-<ol>
-  <li>
-<p><strong>FACESTIM:</strong>&nbsp;• Kombinerar RF-diatermi och muskelstimulering • Effektiv ansiktslyft utan injektioner • Naturliga resultat • Minimal återhämtningstid • Perfekt komplement till fillers</p>
-  </li>
-  <li>
-<p><strong>plasmaROLL:</strong>&nbsp;• Skonsam hudföryngring • Behandlar ansikte, hals och dekolletage • Främjar naturlig celltillväxt • Effektiv uppstramning • Jämna resultat</p>
-  </li>
-  <li>
-<p><strong>plasmaTIP:</strong>&nbsp;• Precis behandling av ärr och bristningar • Kontrollerad energileverans • Behandling av fina linjer • Säker rynkreducering • Engångsspets för optimal hygien</p>
-  </li>
-  <li>
-<p><strong>plasmaPRO:</strong>&nbsp;• Avancerad plasmapenna • Fraktionerad plasmabehandling • Precis kontroll • Mångsidiga användningsområden • Ledande Plasmage®-teknologi</p>
-  </li>
-</ol>
+	// <ol>
+	//   <li>
+	// <p><strong>FACESTIM:</strong>&nbsp;• Kombinerar RF-diatermi och muskelstimulering • Effektiv ansiktslyft utan injektioner • Naturliga resultat • Minimal återhämtningstid • Perfekt komplement till fillers</p>
+	//   </li>
+	//   <li>
+	// <p><strong>plasmaROLL:</strong>&nbsp;• Skonsam hudföryngring • Behandlar ansikte, hals och dekolletage • Främjar naturlig celltillväxt • Effektiv uppstramning • Jämna resultat</p>
+	//   </li>
+	//   <li>
+	// <p><strong>plasmaTIP:</strong>&nbsp;• Precis behandling av ärr och bristningar • Kontrollerad energileverans • Behandling av fina linjer • Säker rynkreducering • Engångsspets för optimal hygien</p>
+	//   </li>
+	//   <li>
+	// <p><strong>plasmaPRO:</strong>&nbsp;• Avancerad plasmapenna • Fraktionerad plasmabehandling • Precis kontroll • Mångsidiga användningsområden • Ledande Plasmage®-teknologi</p>
+	//   </li>
+	// </ol>
 
-<p><strong>Fördelar för Din Klinik:</strong></p>
+	// <p><strong>Fördelar för Din Klinik:</strong></p>
 
-<ul>
-  <li>Ett system för alla behandlingar</li>
-  <li>Minimala förbrukningskostnader</li>
-  <li>Snabb avkastning på investering</li>
-  <li>Utökat behandlingsutbud</li>
-  <li>Nöjdare kunder</li>
-</ul>
-`,
-		categories: [
-			"skin-rejuvenation",
-			"body-sculpting",
-			"facial-treatments",
-			"pigmentation",
-		],
-		treatments: [
-			"Hudföryngring",
-			"Kroppsskulptering",
-			"Ansiktsbehandlingar",
-			"Pigmentfläckar",
-		],
-		features: [
-			{
-				title: "Multifunktionell",
-				description: "Flera behandlingar i ett system",
-			},
-			{
-				title: "Icke-invasiv",
-				description: "Säkra behandlingar utan kirurgi",
-			},
-			{
-				title: "Synliga resultat",
-				description: "Dokumenterade resultat efter behandling",
-			},
-			{
-				title: "Flexibel",
-				description: "Anpassningsbar för olika behandlingsområden",
-			},
-		],
-		specifications: [
-			{ label: "Teknologier", value: "RF, LED, Ultraljud" },
-			{ label: "Behandlingsområden", value: "Ansikte och kropp" },
-			{ label: "Handstycken", value: "Flera specialiserade handstycken" },
-		],
-		images: [
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-small7-scaled-e1704880128119.jpg",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: true,
-			},
-		],
-		gallery: [
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-small7-scaled-e1704880128119.jpg",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: true,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-2-scaled-e1704880512279.jpg",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: false,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_PlasmaRoll_Scontornato-e1704880576644.png",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: false,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_BQUAD_small-e1704880628565.png",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: false,
-			},
-			{
-				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_PlasmaPro_2_bianco_ok-e1704880756822.png",
-				alt: "Jovena",
-				width: 800,
-				height: 600,
-				isPrimary: false,
-			},
-		],
-		seo: {
-			title: "Jovena - Multifunktionell hudföryngring | Synos Medical",
-			description:
-				"Jovena multifunktionell plattform för hudföryngring, kroppsskulptering och ansiktsbehandlingar. Flera teknologier i ett system.",
-			keywords: ["Jovena", "hudföryngring", "kroppsskulptering", "RF"],
-		},
-		createdAt: "2024-01-01",
-		updatedAt: "2024-01-01",
-	},
+	// <ul>
+	//   <li>Ett system för alla behandlingar</li>
+	//   <li>Minimala förbrukningskostnader</li>
+	//   <li>Snabb avkastning på investering</li>
+	//   <li>Utökat behandlingsutbud</li>
+	//   <li>Nöjdare kunder</li>
+	// </ul>
+	// `,
+	// 		categories: [
+	// 			"skin-rejuvenation",
+	// 			"body-sculpting",
+	// 			"facial-treatments",
+	// 			"pigmentation",
+	// 		],
+	// 		treatments: [
+	// 			"Hudföryngring",
+	// 			"Kroppsskulptering",
+	// 			"Ansiktsbehandlingar",
+	// 			"Pigmentfläckar",
+	// 		],
+	// 		features: [
+	// 			{
+	// 				title: "Multifunktionell",
+	// 				description: "Flera behandlingar i ett system",
+	// 			},
+	// 			{
+	// 				title: "Icke-invasiv",
+	// 				description: "Säkra behandlingar utan kirurgi",
+	// 			},
+	// 			{
+	// 				title: "Synliga resultat",
+	// 				description: "Dokumenterade resultat efter behandling",
+	// 			},
+	// 			{
+	// 				title: "Flexibel",
+	// 				description: "Anpassningsbar för olika behandlingsområden",
+	// 			},
+	// 		],
+	// 		specifications: [
+	// 			{ label: "Teknologier", value: "RF, LED, Ultraljud" },
+	// 			{ label: "Behandlingsområden", value: "Ansikte och kropp" },
+	// 			{ label: "Handstycken", value: "Flera specialiserade handstycken" },
+	// 		],
+	// 		images: [
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-small7-scaled-e1704880128119.jpg",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: true,
+	// 			},
+	// 		],
+	// 		gallery: [
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-small7-scaled-e1704880128119.jpg",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: true,
+	// 			},
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Jovena-pic-2-scaled-e1704880512279.jpg",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: false,
+	// 			},
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_PlasmaRoll_Scontornato-e1704880576644.png",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: false,
+	// 			},
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_BQUAD_small-e1704880628565.png",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: false,
+	// 			},
+	// 			{
+	// 				url: "https://www.synos.se/wp-content/uploads/2024/01/Manipolo_PlasmaPro_2_bianco_ok-e1704880756822.png",
+	// 				alt: "Jovena",
+	// 				width: 800,
+	// 				height: 600,
+	// 				isPrimary: false,
+	// 			},
+	// 		],
+	// 		seo: {
+	// 			title: "Jovena - Multifunktionell hudföryngring | Synos Medical",
+	// 			description:
+	// 				"Jovena multifunktionell plattform för hudföryngring, kroppsskulptering och ansiktsbehandlingar. Flera teknologier i ett system.",
+	// 			keywords: ["Jovena", "hudföryngring", "kroppsskulptering", "RF"],
+	// 		},
+	// 		createdAt: "2024-01-01",
+	// 		updatedAt: "2024-01-01",
+	// 	},
 	{
 		id: "onda-coolwaves-pro",
 		slug: "onda-coolwaves-pro",

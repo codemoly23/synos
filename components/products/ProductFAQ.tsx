@@ -6,7 +6,12 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 import { FAQ } from "@/types/product";
 
 interface ProductFAQProps {
-	faqs: FAQ[];
+	faqs: Array<{
+		question: string;
+		answer: string;
+		visible: boolean;
+		_id: string;
+	}>;
 }
 
 /**
@@ -52,16 +57,18 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 
 				{/* FAQ Accordion */}
 				<div className="max-w-3xl mx-auto space-y-4">
-					{faqs.map((faq, index) => (
-						<motion.div
-							key={faq.id}
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.5, delay: index * 0.1 }}
-						>
-							<div
-								className={`
+					{faqs
+						.filter((faq) => faq.visible)
+						.map((faq, index) => (
+							<motion.div
+								key={faq._id}
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ duration: 0.5, delay: index * 0.1 }}
+							>
+								<div
+									className={`
 									rounded-2xl border transition-all duration-300
 									${
 										openIndex === index
@@ -69,56 +76,56 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 											: "border-primary bg-card/50 backdrop-blur-sm hover:border-primary/50"
 									}
 								`}
-							>
-								{/* Question Button */}
-								<button
-									onClick={() => toggleFAQ(index)}
-									className="w-full px-6 py-5 flex items-start justify-between gap-4 text-left"
-									aria-expanded={openIndex === index}
-									aria-controls={`faq-answer-${faq.id}`}
 								>
-									<span className="font-semibold text-foreground text-lg flex-1 cursor-pointer">
-										{faq.question}
-									</span>
-									<motion.div
-										animate={{
-											rotate: openIndex === index ? 180 : 0,
-										}}
-										transition={{ duration: 0.3 }}
-										className="shrink-0 mt-1"
+									{/* Question Button */}
+									<button
+										onClick={() => toggleFAQ(index)}
+										className="w-full px-6 py-5 flex items-start justify-between gap-4 text-left"
+										aria-expanded={openIndex === index}
+										aria-controls={`faq-answer-${faq._id}`}
 									>
-										<ChevronDown
-											className={`h-5 w-5 transition-colors ${
-												openIndex === index
-													? "text-primary"
-													: "text-muted-foreground"
-											}`}
-										/>
-									</motion.div>
-								</button>
-
-								{/* Answer */}
-								<AnimatePresence>
-									{openIndex === index && (
+										<span className="font-semibold text-foreground text-lg flex-1 cursor-pointer">
+											{faq.question}
+										</span>
 										<motion.div
-											id={`faq-answer-${faq.id}`}
-											initial={{ height: 0, opacity: 0 }}
-											animate={{ height: "auto", opacity: 1 }}
-											exit={{ height: 0, opacity: 0 }}
+											animate={{
+												rotate: openIndex === index ? 180 : 0,
+											}}
 											transition={{ duration: 0.3 }}
-											className="overflow-hidden"
+											className="shrink-0 mt-1"
 										>
-											<div className="px-6 pb-5 pt-0">
-												<div className="prose prose-sm max-w-none text-muted-foreground border-t border-slate-300 pt-4">
-													<p>{faq.answer}</p>
-												</div>
-											</div>
+											<ChevronDown
+												className={`h-5 w-5 transition-colors ${
+													openIndex === index
+														? "text-primary"
+														: "text-muted-foreground"
+												}`}
+											/>
 										</motion.div>
-									)}
-								</AnimatePresence>
-							</div>
-						</motion.div>
-					))}
+									</button>
+
+									{/* Answer */}
+									<AnimatePresence>
+										{openIndex === index && (
+											<motion.div
+												id={`faq-answer-${faq._id}`}
+												initial={{ height: 0, opacity: 0 }}
+												animate={{ height: "auto", opacity: 1 }}
+												exit={{ height: 0, opacity: 0 }}
+												transition={{ duration: 0.3 }}
+												className="overflow-hidden"
+											>
+												<div className="px-6 pb-5 pt-0">
+													<div className="prose prose-sm max-w-none text-muted-foreground border-t border-slate-300 pt-4">
+														<p>{faq.answer}</p>
+													</div>
+												</div>
+											</motion.div>
+										)}
+									</AnimatePresence>
+								</div>
+							</motion.div>
+						))}
 				</div>
 
 				{/* Contact CTA */}

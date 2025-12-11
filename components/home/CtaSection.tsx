@@ -1,5 +1,6 @@
-import { Phone } from "lucide-react";
-import { ContactForm } from "@/components/home/ContactForm";
+import { Phone, Mail, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const CtaSection = () => {
 	return (
@@ -13,12 +14,12 @@ const CtaSection = () => {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 					<div className="max-w-2xl">
 						<h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-secondary">
-							Ready to Upgrade Your Facility?
+							Redo att uppgradera din verksamhet?
 						</h2>
 						<p className="text-slate-600 text-xl mb-8 leading-relaxed">
-							Get in touch with our specialists today for a custom quote
-							and discover how Synos Medical can transform your practice
-							with state-of-the-art technology.
+							Kontakta oss idag för en kostnadsfri konsultation och
+							upptäck hur Synos Medical kan förvandla din verksamhet med
+							toppmodern teknik.
 						</p>
 
 						<div className="space-y-6">
@@ -27,42 +28,57 @@ const CtaSection = () => {
 									<Phone className="h-6 w-6" />
 								</div>
 								<div>
-									<h4 className="text-lg font-bold">
-										Call Us Directly
-									</h4>
+									<h4 className="text-lg font-bold">Ring oss direkt</h4>
 									<p className="text-slate-600">
-										Available 24/7 for emergency support
+										Vi finns tillgängliga för att hjälpa dig
 									</p>
 									<a
-										href="tel:+18005550123"
+										href="tel:010-205 15 01"
 										className="text-primary font-semibold hover:underline mt-1 block"
 									>
-										(800) 555-0123
+										010-205 15 01
 									</a>
 								</div>
 							</div>
 
 							<div className="flex items-start gap-4">
 								<div className="h-12 w-12 rounded-full bg-white text-slate-600 shadow-sm flex items-center justify-center shrink-0">
-									<div className="h-6 w-6 rounded-full border-2 border-current" />
+									<Mail className="h-6 w-6" />
 								</div>
 								<div>
 									<h4 className="text-lg font-bold text-secondary">
-										Visit Our Showroom
+										E-post
 									</h4>
 									<p className="text-slate-600">
-										Experience our equipment firsthand
+										Skicka oss ett meddelande
 									</p>
-									<p className="text-primary font-medium mt-1">
-										123 Medical Plaza, Tech City, CA
-									</p>
+									<a
+										href="mailto:info@synos.se"
+										className="text-primary font-medium mt-1 block hover:underline"
+									>
+										info@synos.se
+									</a>
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<div className="w-full">
-						<ContactForm />
+						<div className="bg-white rounded-2xl shadow-xl border border-border/50 p-8 text-center">
+							<h3 className="text-2xl font-bold text-secondary mb-4">
+								Har du frågor?
+							</h3>
+							<p className="text-slate-600 mb-8">
+								Fyll i vårt kontaktformulär så återkommer vi till dig
+								inom 24 timmar.
+							</p>
+							<Button asChild size="lg" className="w-full">
+								<Link href="/kontakt">
+									Gå till kontaktformuläret
+									<ArrowRight className="ml-2 h-5 w-5" />
+								</Link>
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -7,7 +7,7 @@ import { ImageComponent } from "../common/image-component";
 
 export function Hero() {
 	return (
-		<section className="relative w-full overflow-hidden bg-slate-100 page-padding-top pb-16 lg:pb-32">
+		<section className="relative w-full overflow-hidden bg-slate-100 padding-top pb-16 lg:pb-32">
 			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 			{/* Background Gradients */}
 			{/* <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
@@ -24,9 +24,9 @@ export function Hero() {
 					className="flex flex-col gap-6 lg:gap-8 max-w-2xl"
 				>
 					{/* Trust Badge */}
-					<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200">
-						<span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-						<span className="text-[10px] font-semibold text-primary uppercase leading-relaxed animate-pulse tracking-widest">
+					<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200 animate-pulse tracking-widest">
+						<span className="flex h-2 w-2 rounded-full bg-primary" />
+						<span className="text-[9px] font-semibold text-primary uppercase leading-relaxed">
 							Sveriges ledande leverantör av MDR-certifierad
 							klinikutrustning
 						</span>

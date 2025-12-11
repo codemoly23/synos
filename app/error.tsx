@@ -37,7 +37,7 @@ export default function Error({
 	}, [error]);
 
 	return (
-		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 page-padding-top overflow-hidden">
+		<main className="min-h-screen relative flex items-center justify-center px-4 pt-32 pb-12 padding-top overflow-hidden">
 			{/* Gradient Background */}
 			<div
 				className="absolute inset-0"

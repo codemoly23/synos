@@ -19,6 +19,7 @@ import {
 import { mainNav } from "@/config/navigation";
 import Logo from "../common/logo";
 import { useState } from "react";
+import ProtectedNavbar from "./ProtectedNavbar";
 const MobileNavbar = () => {
 	const [open, setOpen] = useState(false);
 	return (
@@ -125,10 +126,13 @@ const MobileNavbar = () => {
 
 					{/* Fixed Footer - Action Buttons */}
 					<div className="shrink-0 p-6 pt-4 border-t border-white/20 bg-white/50 backdrop-blur-sm">
-						<div className="flex flex-col gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<Button className="w-full bg-secondary hover:bg-primary text-white h-12">
 								Get Quote
 							</Button>
+							<div className="block lg:hidden">
+								<ProtectedNavbar />
+							</div>
 						</div>
 					</div>
 				</div>
