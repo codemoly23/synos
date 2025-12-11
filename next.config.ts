@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
 				hostname: "images.pexels.com",
 			},
 		],
+		// Allow query strings for local images (needed for cache-busting avatars)
+		// Omitting 'search' property allows any query string (e.g., ?t=timestamp)
+		localPatterns: [
+			{
+				pathname: "/api/storage/files/**",
+			},
+		],
 	},
 };
 

@@ -16,7 +16,7 @@ const VALID_FOLDERS = ["images", "documents", "avatars"];
 const CACHE_CONTROL = {
 	images: "public, max-age=31536000, immutable", // 1 year for images
 	documents: "public, max-age=86400", // 1 day for documents
-	avatars: "public, max-age=3600", // 1 hour for avatars (can change)
+	avatars: "public, max-age=0, must-revalidate", // No cache for avatars (use query param for cache busting)
 };
 
 export async function GET(
@@ -74,6 +74,21 @@ export async function GET(
 			);
 		}
 
+		// Get file stats for ETag
+		const stats = await fs.stat(absolutePath);
+		const etag = `"${stats.mtime.getTime().toString(16)}-${stats.size.toString(16)}"`;
+
+		// Check If-None-Match header for conditional requests
+		const ifNoneMatch = request.headers.get("If-None-Match");
+		if (ifNoneMatch === etag) {
+			return new NextResponse(null, {
+				status: 304,
+				headers: {
+					ETag: etag,
+				},
+			});
+		}
+
 		// Read the file
 		const fileBuffer = await fs.readFile(absolutePath);
 
@@ -93,6 +108,7 @@ export async function GET(
 				"Content-Type": mimeType,
 				"Content-Length": fileBuffer.length.toString(),
 				"Cache-Control": cacheControl,
+				ETag: etag,
 				"X-Content-Type-Options": "nosniff",
 			},
 		});

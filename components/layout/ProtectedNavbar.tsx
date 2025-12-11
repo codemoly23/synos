@@ -34,6 +34,7 @@ interface UserData {
 const ProtectedNavbar = () => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [userData, setUserData] = useState<UserData | null>(null);
+	const [imageKey, setImageKey] = useState(() => Date.now());
 	const { data: session } = authClient.useSession();
 
 	// Fetch user data to get the current profile image
@@ -51,6 +52,8 @@ const ProtectedNavbar = () => {
 							email: data.data.user.email,
 							image: data.data.user.image,
 						});
+						// Update imageKey to bust cache when new image is fetched
+						setImageKey(Date.now());
 					}
 				} catch (error) {
 					console.error("Error fetching user data:", error);
@@ -71,6 +74,31 @@ const ProtectedNavbar = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [session?.user?.id]); // Only depend on user ID to avoid unnecessary refetches
+
+	// Listen for avatar updates from other parts of the app
+	useEffect(() => {
+		const handleAvatarUpdate = () => {
+			setImageKey(Date.now());
+			// Re-fetch user data to get new avatar URL
+			if (session?.user?.id) {
+				fetch(API_ROUTES.USER.ME)
+					.then((res) => res.json())
+					.then((data) => {
+						if (data.data?.user) {
+							setUserData({
+								name: data.data.user.name,
+								email: data.data.user.email,
+								image: data.data.user.image,
+							});
+						}
+					})
+					.catch(console.error);
+			}
+		};
+
+		window.addEventListener("avatar-updated", handleAvatarUpdate);
+		return () => window.removeEventListener("avatar-updated", handleAvatarUpdate);
+	}, [session?.user?.id]);
 
 	const handleLogout = async () => {
 		try {
@@ -97,9 +125,13 @@ const ProtectedNavbar = () => {
 		<div className="flex flex-row flex-wrap items-center gap-12">
 			<Popover>
 				<PopoverTrigger asChild className="cursor-pointer">
-					<Avatar>
+					<Avatar key={imageKey}>
 						<AvatarImage
-							src={displayImage || undefined}
+							src={
+								displayImage
+									? `${displayImage}${displayImage.includes("?") ? "&" : "?"}t=${imageKey}`
+									: undefined
+							}
 							alt={displayName}
 						/>
 						<AvatarFallback>

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils/cn";
 interface NavItem {
 	label: string;
 	href: string;
-	icon: React.ComponentType<{ className?: string }>;
+	icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 }
 
 const navItems: NavItem[] = [
@@ -44,58 +44,88 @@ export function MobileBottomNav() {
 		return pathname.startsWith(href);
 	};
 
-	{
-		/* Spacer to prevent content from being hidden behind the fixed nav */
-	}
-	{
-		/* <div className="h-14 md:hidden bg-primary" aria-hidden="true" /> */
-	}
+	// Find active index for indicator positioning
+	const activeIndex = navItems.findIndex((item) => isActive(item.href));
 
-	{
-		/* Fixed Bottom Navigation - Mobile Only */
-	}
 	return (
-		<nav
-			className="sticky w-full overflow-hidden bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-t border-primary/50 rounded-t-md shadow-lg  h-14 px-2"
-			aria-label="Mobile navigation"
-		>
-			<div className="flex items-center justify-around w-full">
-				{navItems.map((item) => {
-					const Icon = item.icon;
-					const active = isActive(item.href);
+		<>
+			{/* Floating Bottom Navigation - Mobile Only */}
+			<nav
+				className="fixed bottom-4 left-4 right-4 z-50 md:hidden"
+				aria-label="Mobile navigation"
+			>
+				{/* Outer container with glass effect */}
+				<div className="relative bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden">
+					{/* Subtle gradient overlay for depth */}
+					<div className="absolute inset-0 bg-gradient-to-t from-gray-50/50 to-transparent pointer-events-none" />
 
-					return (
-						<Link
-							key={item.href}
-							href={item.href}
-							className={cn(
-								"flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all duration-200",
-								active
-									? "text-primary bg-primary/10"
-									: "text-muted-foreground hover:text-primary hover:bg-primary/5"
-							)}
-							// aria-current={active ? "page" : undefined}
-						>
-							<Icon
-								className={cn(
-									"w-4 h-4 transition-transform duration-200",
-									active && ""
-								)}
-								aria-hidden="true"
-							/>
-							<span
-								className={cn(
-									"text-xs font-medium transition-all duration-200",
-									active && "font-semibold"
-								)}
-							>
-								{item.label}
-							</span>
-							{/* sdf */}
-						</Link>
-					);
-				})}
-			</div>
-		</nav>
+					{/* Navigation items container */}
+					<div className="relative flex items-center justify-around px-2 py-2">
+						{/* Animated active indicator */}
+						<div
+							className="absolute top-2 bottom-2 bg-primary/10 rounded-xl transition-all duration-300 ease-out"
+							style={{
+								width: `calc(${100 / navItems.length}% - 8px)`,
+								left: `calc(${(activeIndex * 100) / navItems.length}% + 4px)`,
+								opacity: activeIndex >= 0 ? 1 : 0,
+							}}
+						/>
+
+						{navItems.map((item) => {
+							const Icon = item.icon;
+							const active = isActive(item.href);
+
+							return (
+								<Link
+									key={item.href}
+									href={item.href}
+									className={cn(
+										"relative flex flex-col items-center justify-center flex-1 py-2.5 px-1 rounded-xl transition-all duration-300 group",
+										active ? "text-primary" : "text-gray-500"
+									)}
+									aria-current={active ? "page" : undefined}
+								>
+									{/* Icon with scale animation */}
+									<div
+										className={cn(
+											"relative transition-all duration-300",
+											active ? "scale-110" : "group-hover:scale-105"
+										)}
+									>
+										<Icon
+											className={cn(
+												"w-5 h-5 transition-all duration-300",
+												active ? "text-primary" : "text-gray-500 group-hover:text-primary/70"
+											)}
+											strokeWidth={active ? 2.5 : 1.5}
+											aria-hidden="true"
+										/>
+										{/* Active dot indicator */}
+										{active && (
+											<span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full animate-in fade-in zoom-in duration-300" />
+										)}
+									</div>
+
+									{/* Label with fade effect */}
+									<span
+										className={cn(
+											"text-[11px] mt-1 font-medium transition-all duration-300 truncate max-w-full",
+											active
+												? "text-primary font-semibold"
+												: "text-gray-500 group-hover:text-primary/70"
+										)}
+									>
+										{item.label}
+									</span>
+								</Link>
+							);
+						})}
+					</div>
+
+					{/* Bottom accent line */}
+					<div className="absolute bottom-0 left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+				</div>
+			</nav>
+		</>
 	);
 }
