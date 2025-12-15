@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import { BookOpen, TrendingUp } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 
+interface BlogHeroProps {
+	pageTitle?: string;
+}
+
 /**
  * BlogHero Component
  *
  * Hero section for the blog listing page with title, description, and decorative elements.
+ * Supports custom pageTitle for different routes (e.g., "Nyheter", "Blogg")
  */
-export function BlogHero() {
+export function BlogHero({ pageTitle = "Blogg" }: BlogHeroProps) {
 	return (
 		<section className="relative overflow-hidden bg-linear-to-br from-slate-100 to-primary/20 pt-32 pb-16 md:pb-24">
 			{/* Background Pattern */}
@@ -36,7 +41,7 @@ export function BlogHero() {
 					>
 						<BookOpen className="h-4 w-4 text-primary" />
 						<span className="text-sm font-semibold text-primary">
-							Nyheter & Artiklar
+							{pageTitle === "Nyheter" ? "Nyheter" : "Nyheter & Artiklar"}
 						</span>
 					</motion.div>
 

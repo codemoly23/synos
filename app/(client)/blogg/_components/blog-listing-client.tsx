@@ -12,16 +12,21 @@ import { getRecentArticles } from "@/data/blog/blog-data";
 interface BlogListingClientProps {
 	articles: Article[];
 	categories: string[];
+	basePath?: string; // e.g., "/nyheter" or "/blogg"
+	pageTitle?: string; // e.g., "Nyheter" or "Blogg"
 }
 
 /**
  * BlogListingClient Component
  *
  * Client-side component for blog listing with filtering and search.
+ * Supports custom basePath for different routes (e.g., /nyheter, /blogg)
  */
 export function BlogListingClient({
 	articles,
 	categories,
+	basePath = "/blogg",
+	pageTitle = "Blogg",
 }: BlogListingClientProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -58,7 +63,7 @@ export function BlogListingClient({
 
 	return (
 		<>
-			<BlogHero />
+			<BlogHero pageTitle={pageTitle} />
 
 			<section className="section-padding bg-slate-50">
 				<div className="_container">
@@ -87,6 +92,7 @@ export function BlogListingClient({
 											key={article.id}
 											article={article}
 											index={index}
+											basePath={basePath}
 										/>
 									))}
 								</motion.div>
@@ -110,6 +116,7 @@ export function BlogListingClient({
 							onSearch={setSearchQuery}
 							onCategoryFilter={setSelectedCategory}
 							selectedCategory={selectedCategory}
+							basePath={basePath}
 						/>
 					</div>
 				</div>

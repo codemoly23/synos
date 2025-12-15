@@ -16,12 +16,14 @@ interface BlogSidebarProps {
 	onSearch?: (query: string) => void;
 	onCategoryFilter?: (category: string | null) => void;
 	selectedCategory?: string | null;
+	basePath?: string;
 }
 
 /**
  * BlogSidebar Component
  *
  * Sidebar for blog listing page with search, categories, and recent posts.
+ * Supports custom basePath for different routes (e.g., /nyheter, /blogg)
  */
 export function BlogSidebar({
 	categories,
@@ -29,6 +31,7 @@ export function BlogSidebar({
 	onSearch,
 	onCategoryFilter,
 	selectedCategory,
+	basePath = "/blogg",
 }: BlogSidebarProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 
@@ -122,7 +125,7 @@ export function BlogSidebar({
 					{recentArticles.map((article) => (
 						<Link
 							key={article.id}
-							href={`/blogg/${article.slug}`}
+							href={`${basePath}/${article.slug}`}
 							className="group block"
 						>
 							<h4 className="mb-1 text-sm font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">

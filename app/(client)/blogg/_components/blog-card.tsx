@@ -11,6 +11,7 @@ import { ImageComponent } from "@/components/common/image-component";
 interface BlogCardProps {
 	article: Article;
 	index?: number;
+	basePath?: string;
 }
 
 /**
@@ -18,8 +19,9 @@ interface BlogCardProps {
  *
  * Displays a blog article card with image, title, excerpt, metadata, and categories.
  * Features hover animations and responsive design.
+ * Supports custom basePath for different routes (e.g., /nyheter, /blogg)
  */
-export function BlogCard({ article, index = 0 }: BlogCardProps) {
+export function BlogCard({ article, index = 0, basePath = "/blogg" }: BlogCardProps) {
 	// Format date
 	const publishedDate = new Date(article.publishedAt).toLocaleDateString(
 		"sv-SE",
@@ -44,7 +46,7 @@ export function BlogCard({ article, index = 0 }: BlogCardProps) {
 			{...hoverLift}
 			className="group h-full"
 		>
-			<Link href={`/blogg/${article.slug}`} className="block h-full">
+			<Link href={`${basePath}/${article.slug}`} className="block h-full">
 				<div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/30">
 					{/* Featured Image */}
 					{article.featuredImage && (
