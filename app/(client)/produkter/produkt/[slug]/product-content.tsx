@@ -17,13 +17,21 @@ import Link from "next/link";
 
 interface ProductContentProps {
 	product: ProductType;
+	/** Base path for navigation (e.g., "/produkter" or "/klinikutrustning/category") */
+	basePath?: string;
+	/** Label for the back button breadcrumb */
+	baseLabel?: string;
 }
 
 /**
  * Client component for interactive product page elements
  * Receives all data as props from server component
  */
-export function ProductContent({ product }: ProductContentProps) {
+export function ProductContent({
+	product,
+	basePath = "/produkter",
+	baseLabel = "Produkter",
+}: ProductContentProps) {
 	const primaryImage = product.overviewImage;
 
 	return (
@@ -34,7 +42,7 @@ export function ProductContent({ product }: ProductContentProps) {
 					{/* Breadcrumb */}
 					<Breadcrumb
 						items={[
-							{ label: "Produkter", href: "/produkter" },
+							{ label: baseLabel, href: basePath },
 							{ label: product.title },
 						]}
 					/>
@@ -49,9 +57,9 @@ export function ProductContent({ product }: ProductContentProps) {
 						className="mb-6"
 					>
 						<Button asChild variant="ghost" size="sm">
-							<Link href="/produkter" className="gap-2">
+							<Link href={basePath} className="gap-2">
 								<ArrowLeft className="h-4 w-4" />
-								Tillbaka till produkter
+								Tillbaka till {baseLabel.toLowerCase()}
 							</Link>
 						</Button>
 					</motion.div>
