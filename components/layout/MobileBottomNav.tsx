@@ -19,18 +19,18 @@ const navItems: NavItem[] = [
 	},
 	{
 		label: "Utrustning",
-		href: "/produkter",
+		href: "/utrustning",
 		icon: Package,
-	},
-	{
-		label: "Kontakt",
-		href: "/kontakt",
-		icon: Phone,
 	},
 	{
 		label: "Utbildning",
 		href: "/utbildningar",
 		icon: GraduationCap,
+	},
+	{
+		label: "Kontakt",
+		href: "/kontakt",
+		icon: Phone,
 	},
 ];
 
@@ -57,7 +57,7 @@ export function MobileBottomNav() {
 				{/* Outer container with glass effect */}
 				<div className="relative bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden">
 					{/* Subtle gradient overlay for depth */}
-					<div className="absolute inset-0 bg-gradient-to-t from-gray-50/50 to-transparent pointer-events-none" />
+					<div className="absolute inset-0 bg-linear-to-t from-gray-50/50 to-transparent pointer-events-none" />
 
 					{/* Navigation items container */}
 					<div className="relative flex items-center justify-around px-2 py-2">
@@ -66,7 +66,9 @@ export function MobileBottomNav() {
 							className="absolute top-2 bottom-2 bg-primary/10 rounded-xl transition-all duration-300 ease-out"
 							style={{
 								width: `calc(${100 / navItems.length}% - 8px)`,
-								left: `calc(${(activeIndex * 100) / navItems.length}% + 4px)`,
+								left: `calc(${
+									(activeIndex * 100) / navItems.length
+								}% + 4px)`,
 								opacity: activeIndex >= 0 ? 1 : 0,
 							}}
 						/>
@@ -95,7 +97,9 @@ export function MobileBottomNav() {
 										<Icon
 											className={cn(
 												"w-5 h-5 transition-all duration-300",
-												active ? "text-primary" : "text-gray-500 group-hover:text-primary/70"
+												active
+													? "text-primary"
+													: "text-gray-500 group-hover:text-primary/70"
 											)}
 											strokeWidth={active ? 2.5 : 1.5}
 											aria-hidden="true"
@@ -123,7 +127,7 @@ export function MobileBottomNav() {
 					</div>
 
 					{/* Bottom accent line */}
-					<div className="absolute bottom-0 left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+					<div className="absolute bottom-0 left-4 right-4 h-0.5 bg-linear-to-r from-transparent via-primary/20 to-transparent" />
 				</div>
 			</nav>
 		</>
