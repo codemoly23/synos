@@ -1065,3 +1065,882 @@ export function BlogDetailPageSkeleton() {
 		</div>
 	);
 }
+
+// ============================================================================
+// KLINIKUTRUSTNING PAGE SKELETONS
+// ============================================================================
+
+/**
+ * Klinikutrustning Product Card Skeleton
+ * Modern card with shimmer effect matching ProductCardDB component
+ */
+export function KlinikutrustningCardSkeleton() {
+	return (
+		<div className="group h-full overflow-hidden rounded-lg border border-primary/10 bg-card">
+			{/* Image placeholder with gradient overlay */}
+			<div className="relative h-56 overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-slate-100">
+				<Skeleton className="absolute inset-0 rounded-none" />
+				{/* Decorative shimmer overlay */}
+				<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+			</div>
+
+			{/* Content */}
+			<div className="p-3 space-y-2">
+				{/* Title */}
+				<Skeleton className="h-5 w-4/5" />
+
+				{/* Description */}
+				<div className="space-y-1">
+					<Skeleton className="h-3 w-full" />
+					<Skeleton className="h-3 w-3/4" />
+				</div>
+
+				{/* Treatment badges */}
+				<div className="flex flex-wrap gap-1 pt-1">
+					<Skeleton className="h-5 w-16 rounded-full" />
+					<Skeleton className="h-5 w-20 rounded-full" />
+					<Skeleton className="h-5 w-14 rounded-full" />
+				</div>
+
+				{/* Button */}
+				<Skeleton className="h-8 w-full rounded-md mt-2" />
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Klinikutrustning Sidebar Skeleton
+ * Matches KlinikutrustningaSidebar component
+ */
+export function KlinikutrustningaSidebarSkeleton() {
+	return (
+		<aside className="space-y-6">
+			{/* Categories Filter Card */}
+			<div className="rounded-lg border border-primary/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+				<div className="px-3 py-3">
+					<Skeleton className="h-6 w-44 mb-3" />
+					<Skeleton className="h-9 w-full rounded-lg" />
+				</div>
+				<div className="h-px bg-primary/50 my-2" />
+				<div className="px-3 pb-3 space-y-2">
+					{Array.from({ length: 5 }).map((_, i) => (
+						<Skeleton key={i} className="h-8 w-full rounded-lg" />
+					))}
+				</div>
+			</div>
+
+			{/* Help Card */}
+			<div className="rounded-lg border border-primary/50 bg-gradient-to-br from-primary/20 to-slate-100 p-4">
+				<Skeleton className="h-5 w-32 mb-3" />
+				<Skeleton className="h-4 w-full mb-1" />
+				<Skeleton className="h-4 w-4/5 mb-4" />
+				<Skeleton className="h-10 w-28 rounded-lg" />
+			</div>
+
+			{/* Features Card */}
+			<div className="rounded-lg border border-primary/50 bg-card/80 backdrop-blur-sm p-4">
+				<Skeleton className="h-5 w-36 mb-4" />
+				<div className="space-y-4">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="flex items-start gap-3">
+							<Skeleton className="h-8 w-8 rounded-full shrink-0" />
+							<div className="flex-1 space-y-1">
+								<Skeleton className="h-4 w-28" />
+								<Skeleton className="h-3 w-full" />
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</aside>
+	);
+}
+
+/**
+ * Klinikutrustning Page Skeleton
+ * Full page skeleton for /klinikutrustning/ route
+ */
+export function KlinikutrustningPageSkeleton() {
+	return (
+		<div className="min-h-screen bg-gradient-to-b from-slate-100 to-primary/10">
+			<div className="max-w-7xl mx-auto px-4 py-8 pt-24 md:pt-28">
+				{/* Breadcrumb */}
+				<div className="flex items-center gap-2 mb-6">
+					<Skeleton className="h-4 w-16" />
+					<Skeleton className="h-4 w-4" />
+					<Skeleton className="h-4 w-28" />
+				</div>
+
+				{/* Page Header */}
+				<div className="mb-8">
+					<Skeleton className="h-12 w-72 mb-3 md:h-14" />
+					<Skeleton className="h-6 w-full max-w-3xl mb-1" />
+					<Skeleton className="h-6 w-2/3 max-w-2xl" />
+				</div>
+
+				{/* Main Layout */}
+				<div className="flex flex-col gap-8 lg:flex-row">
+					{/* Sidebar - Hidden on mobile */}
+					<div className="w-full lg:w-80 lg:shrink-0 hidden sm:block">
+						<div className="lg:sticky lg:top-28">
+							<KlinikutrustningaSidebarSkeleton />
+						</div>
+					</div>
+
+					{/* Mobile Filter Button */}
+					<div className="flex justify-end sm:hidden">
+						<Skeleton className="h-9 w-10 rounded-md" />
+					</div>
+
+					{/* Main Content */}
+					<div className="flex-1">
+						{/* Toolbar */}
+						<div className="mb-6">
+							<Skeleton className="h-5 w-32" />
+						</div>
+
+						{/* Products Grid */}
+						<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<KlinikutrustningCardSkeleton key={i} />
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Klinikutrustning Category Page Skeleton
+ * For /klinikutrustning/[category]/ route
+ */
+export function KlinikutrustningCategoryPageSkeleton() {
+	return (
+		<div className="min-h-screen bg-gradient-to-b from-slate-100 to-primary/10">
+			<div className="max-w-7xl mx-auto px-4 py-8 pt-24 md:pt-28">
+				{/* Breadcrumb */}
+				<div className="flex items-center gap-2 mb-6">
+					<Skeleton className="h-4 w-16" />
+					<Skeleton className="h-4 w-4" />
+					<Skeleton className="h-4 w-28" />
+					<Skeleton className="h-4 w-4" />
+					<Skeleton className="h-4 w-24" />
+				</div>
+
+				{/* Page Header */}
+				<div className="mb-8">
+					<Skeleton className="h-12 w-56 mb-3 md:h-14" />
+					<Skeleton className="h-6 w-full max-w-2xl" />
+				</div>
+
+				{/* Main Layout */}
+				<div className="flex flex-col gap-8 lg:flex-row">
+					{/* Sidebar - Hidden on mobile */}
+					<div className="w-full lg:w-80 lg:shrink-0 hidden sm:block">
+						<div className="lg:sticky lg:top-28">
+							<KlinikutrustningaSidebarSkeleton />
+						</div>
+					</div>
+
+					{/* Mobile Filter Button */}
+					<div className="flex justify-end sm:hidden">
+						<Skeleton className="h-9 w-10 rounded-md" />
+					</div>
+
+					{/* Main Content */}
+					<div className="flex-1">
+						{/* Toolbar */}
+						<div className="mb-6">
+							<Skeleton className="h-5 w-44" />
+						</div>
+
+						{/* Products Grid */}
+						<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<KlinikutrustningCardSkeleton key={i} />
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Klinikutrustning Product Detail Page Skeleton
+ * For /klinikutrustning/[category]/[slug]/ route
+ */
+export function KlinikutrustningDetailPageSkeleton() {
+	return (
+		<div className="min-h-screen">
+			{/* Hero Section */}
+			<section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-primary/10 pt-24 md:pt-28 pb-8">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					{/* Breadcrumb */}
+					<div className="flex items-center gap-2 mb-6">
+						<Skeleton className="h-4 w-16" />
+						<Skeleton className="h-4 w-4" />
+						<Skeleton className="h-4 w-28" />
+						<Skeleton className="h-4 w-4" />
+						<Skeleton className="h-4 w-24" />
+						<Skeleton className="h-4 w-4" />
+						<Skeleton className="h-4 w-32" />
+					</div>
+
+					{/* Back button */}
+					<Skeleton className="h-9 w-44 rounded-md mb-6" />
+
+					{/* Treatment badges */}
+					<div className="flex gap-2 mb-4">
+						<Skeleton className="h-6 w-28 rounded-full" />
+						<Skeleton className="h-6 w-32 rounded-full" />
+					</div>
+
+					{/* Title */}
+					<Skeleton className="h-12 w-3/4 max-w-2xl mb-6" />
+
+					{/* Short description */}
+					<Skeleton className="h-6 w-full max-w-3xl mb-2" />
+					<Skeleton className="h-6 w-2/3 max-w-2xl mb-8" />
+
+					{/* Certifications */}
+					<div className="flex flex-wrap items-center gap-4 mb-8">
+						<Skeleton className="h-8 w-32 rounded-full" />
+						<Skeleton className="h-8 w-28 rounded-full" />
+					</div>
+
+					{/* Main image */}
+					<Skeleton className="w-full aspect-video md:aspect-[21/9] rounded-2xl" />
+				</div>
+			</section>
+
+			{/* Content Section */}
+			<section className="py-12 md:py-16">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+						{/* Main Content */}
+						<div>
+							{/* Description */}
+							<div className="mb-12">
+								<Skeleton className="h-8 w-48 mb-6" />
+								<div className="space-y-4">
+									<Skeleton className="h-5 w-full" />
+									<Skeleton className="h-5 w-full" />
+									<Skeleton className="h-5 w-3/4" />
+									<Skeleton className="h-5 w-full" />
+									<Skeleton className="h-5 w-5/6" />
+								</div>
+							</div>
+
+							{/* Specifications */}
+							<ProductSpecificationsSkeleton />
+						</div>
+
+						{/* Sidebar */}
+						<aside>
+							<div className="sticky top-24">
+								<ProductDetailSidebarSkeleton />
+							</div>
+						</aside>
+					</div>
+				</div>
+			</section>
+
+			{/* FAQ Section */}
+			<ProductFAQSkeleton />
+
+			{/* Inquiry Form */}
+			<ProductInquiryFormSkeleton />
+		</div>
+	);
+}
+
+// ============================================================================
+// FAQ PAGE SKELETON
+// ============================================================================
+
+/**
+ * FAQ Hero Skeleton
+ */
+export function FAQHeroSkeleton() {
+	return (
+		<section className="relative bg-gradient-to-b from-slate-50 to-white pt-24 md:pt-32 pb-16">
+			<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+				<Skeleton className="h-6 w-20 rounded-full mx-auto mb-4" />
+				<Skeleton className="h-12 w-80 mx-auto mb-4" />
+				<Skeleton className="h-6 w-full max-w-2xl mx-auto mb-2" />
+				<Skeleton className="h-6 w-3/4 max-w-xl mx-auto" />
+			</div>
+		</section>
+	);
+}
+
+/**
+ * FAQ Accordion Skeleton
+ */
+export function FAQAccordionSkeleton() {
+	return (
+		<div className="space-y-4">
+			{/* Search bar */}
+			<Skeleton className="h-12 w-full rounded-lg mb-6" />
+
+			{/* FAQ Items */}
+			{Array.from({ length: 6 }).map((_, i) => (
+				<div key={i} className="rounded-lg border bg-white p-4">
+					<div className="flex justify-between items-center">
+						<Skeleton className="h-5 w-3/4" />
+						<Skeleton className="h-5 w-5 rounded" />
+					</div>
+				</div>
+			))}
+		</div>
+	);
+}
+
+/**
+ * FAQ Sidebar Skeleton
+ */
+export function FAQSidebarSkeleton() {
+	return (
+		<div className="space-y-6">
+			{/* Contact Card */}
+			<div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-white p-6">
+				<Skeleton className="h-12 w-12 rounded-full mb-4" />
+				<Skeleton className="h-6 w-36 mb-2" />
+				<Skeleton className="h-4 w-full mb-1" />
+				<Skeleton className="h-4 w-4/5 mb-4" />
+				<Skeleton className="h-10 w-full rounded-lg" />
+			</div>
+
+			{/* Quick Links Card */}
+			<div className="rounded-2xl border bg-white p-6">
+				<Skeleton className="h-5 w-28 mb-4" />
+				<div className="space-y-3">
+					{Array.from({ length: 4 }).map((_, i) => (
+						<div key={i} className="flex items-center gap-3">
+							<Skeleton className="h-5 w-5 rounded" />
+							<Skeleton className="h-4 w-32" />
+						</div>
+					))}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * FAQ Page Skeleton
+ */
+export function FAQPageSkeleton() {
+	return (
+		<div className="min-h-screen bg-slate-100">
+			<FAQHeroSkeleton />
+
+			<section className="py-16 md:py-24">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+						{/* FAQ Accordion */}
+						<div className="lg:col-span-2 order-2 lg:order-1">
+							<FAQAccordionSkeleton />
+						</div>
+
+						{/* Sidebar */}
+						<div className="lg:col-span-1 order-1 lg:order-2">
+							<div className="lg:sticky lg:top-24">
+								<FAQSidebarSkeleton />
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Newsletter Section */}
+			<section className="py-16 bg-secondary">
+				<div className="max-w-2xl mx-auto px-4 text-center">
+					<Skeleton className="h-8 w-48 mx-auto mb-4 bg-white/20" />
+					<Skeleton className="h-5 w-full max-w-md mx-auto mb-6 bg-white/20" />
+					<div className="flex gap-3 max-w-md mx-auto">
+						<Skeleton className="h-12 flex-1 rounded-lg bg-white/20" />
+						<Skeleton className="h-12 w-28 rounded-lg bg-white/20" />
+					</div>
+				</div>
+			</section>
+		</div>
+	);
+}
+
+// ============================================================================
+// CONTACT PAGE SKELETON
+// ============================================================================
+
+/**
+ * Contact Hero Skeleton
+ */
+export function ContactHeroSkeleton() {
+	return (
+		<section className="relative bg-gradient-to-b from-primary/30 to-primary/10 pt-24 md:pt-32 pb-20">
+			<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+				<Skeleton className="h-6 w-28 rounded-full mx-auto mb-6" />
+				<Skeleton className="h-14 w-72 mx-auto mb-4 md:h-16" />
+				<Skeleton className="h-6 w-full max-w-2xl mx-auto mb-2" />
+				<Skeleton className="h-6 w-3/4 max-w-xl mx-auto mb-8" />
+				<div className="flex flex-wrap justify-center gap-4">
+					<Skeleton className="h-12 w-40 rounded-lg" />
+					<Skeleton className="h-12 w-44 rounded-lg" />
+				</div>
+			</div>
+		</section>
+	);
+}
+
+/**
+ * Contact Cards Skeleton
+ */
+export function ContactCardsSkeleton() {
+	return (
+		<section className="py-16 -mt-12">
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div className="grid gap-6 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="rounded-2xl bg-white border shadow-lg p-6 text-center">
+							<Skeleton className="h-14 w-14 rounded-full mx-auto mb-4" />
+							<Skeleton className="h-6 w-28 mx-auto mb-2" />
+							<Skeleton className="h-5 w-36 mx-auto mb-4" />
+							<Skeleton className="h-10 w-32 rounded-lg mx-auto" />
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+	);
+}
+
+/**
+ * Contact Form Section Skeleton
+ */
+export function ContactFormSectionSkeleton() {
+	return (
+		<div className="rounded-2xl bg-white border shadow-lg p-8">
+			<Skeleton className="h-8 w-48 mb-2" />
+			<Skeleton className="h-5 w-72 mb-8" />
+			<div className="grid gap-6 md:grid-cols-2">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="space-y-2">
+						<Skeleton className="h-4 w-20" />
+						<Skeleton className="h-11 w-full rounded-md" />
+					</div>
+				))}
+			</div>
+			<div className="mt-6 space-y-2">
+				<Skeleton className="h-4 w-24" />
+				<Skeleton className="h-32 w-full rounded-md" />
+			</div>
+			<Skeleton className="h-12 w-full rounded-md mt-6" />
+		</div>
+	);
+}
+
+/**
+ * Office Locations Skeleton
+ */
+export function OfficeLocationsSkeleton() {
+	return (
+		<div>
+			<div className="text-center mb-12">
+				<Skeleton className="h-8 w-40 mx-auto mb-4" />
+				<Skeleton className="h-5 w-64 mx-auto" />
+			</div>
+			<div className="grid gap-8 md:grid-cols-2">
+				{Array.from({ length: 2 }).map((_, i) => (
+					<div key={i} className="rounded-2xl bg-white border p-6">
+						<Skeleton className="h-6 w-32 mb-2" />
+						<Skeleton className="h-5 w-48 mb-1" />
+						<Skeleton className="h-5 w-40 mb-4" />
+						<Skeleton className="h-48 w-full rounded-lg" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Contact Page Skeleton
+ */
+export function ContactPageSkeleton() {
+	return (
+		<div className="bg-primary/50 w-full min-h-screen">
+			<ContactHeroSkeleton />
+			<ContactCardsSkeleton />
+
+			{/* Form Section */}
+			<section className="py-16 bg-white">
+				<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+					<ContactFormSectionSkeleton />
+				</div>
+			</section>
+
+			{/* Office Locations */}
+			<section className="py-16 bg-slate-50">
+				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+					<OfficeLocationsSkeleton />
+				</div>
+			</section>
+
+			{/* FAQ Section */}
+			<section className="py-16 bg-white">
+				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="text-center mb-8">
+						<Skeleton className="h-8 w-44 mx-auto mb-4" />
+						<Skeleton className="h-5 w-56 mx-auto" />
+					</div>
+					<div className="space-y-4">
+						{Array.from({ length: 4 }).map((_, i) => (
+							<div key={i} className="rounded-lg border bg-white p-4">
+								<div className="flex justify-between items-center">
+									<Skeleton className="h-5 w-3/4" />
+									<Skeleton className="h-5 w-5 rounded" />
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+		</div>
+	);
+}
+
+// ============================================================================
+// ABOUT PAGE SKELETON
+// ============================================================================
+
+/**
+ * About Page Skeleton
+ */
+export function AboutPageSkeleton() {
+	return (
+		<div className="max-w-7xl mx-auto px-4 py-8 pt-24 md:pt-28">
+			{/* Hero Section */}
+			<div className="mb-16 text-center">
+				<Skeleton className="h-12 w-72 mx-auto mb-4 md:h-14" />
+				<Skeleton className="h-6 w-full max-w-xl mx-auto" />
+			</div>
+
+			{/* Content Sections */}
+			<div className="space-y-12">
+				{/* Section 1 */}
+				<section>
+					<Skeleton className="h-9 w-56 mb-4" />
+					<div className="space-y-4">
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-3/4" />
+					</div>
+				</section>
+
+				{/* Section 2 - Highlighted */}
+				<section className="rounded-lg bg-muted/50 p-8">
+					<Skeleton className="h-9 w-48 mb-4" />
+					<div className="space-y-4">
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-5/6" />
+					</div>
+				</section>
+
+				{/* Section 3 */}
+				<section>
+					<Skeleton className="h-9 w-52 mb-4" />
+					<div className="space-y-4">
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-4/5" />
+					</div>
+				</section>
+
+				{/* CTA Section */}
+				<section className="rounded-lg bg-secondary/5 p-8 text-center">
+					<Skeleton className="h-9 w-40 mx-auto mb-4" />
+					<Skeleton className="h-5 w-full max-w-2xl mx-auto mb-6" />
+					<div className="flex flex-wrap justify-center gap-4">
+						<Skeleton className="h-12 w-36 rounded-lg" />
+						<Skeleton className="h-12 w-36 rounded-lg" />
+					</div>
+				</section>
+			</div>
+
+			{/* Feature Cards */}
+			<div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div key={i} className="rounded-lg border border-primary/20 p-6">
+						<Skeleton className="h-12 w-12 rounded-lg mb-4" />
+						<Skeleton className="h-5 w-36 mb-2" />
+						<Skeleton className="h-4 w-full mb-1" />
+						<Skeleton className="h-4 w-4/5 mb-4" />
+						<Skeleton className="h-8 w-20 rounded-md" />
+					</div>
+				))}
+			</div>
+
+			{/* Company Info */}
+			<div className="mt-16 rounded-lg bg-muted/30 p-8 text-center">
+				<Skeleton className="h-6 w-40 mx-auto mb-4" />
+				<Skeleton className="h-5 w-48 mx-auto mb-4" />
+				<div className="space-y-2">
+					<Skeleton className="h-4 w-64 mx-auto" />
+					<Skeleton className="h-4 w-56 mx-auto" />
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ============================================================================
+// STARTA EGET PAGE SKELETON
+// ============================================================================
+
+/**
+ * Starta Eget Page Skeleton
+ */
+export function StartaEgetPageSkeleton() {
+	return (
+		<div className="max-w-7xl mx-auto px-4 py-12 pt-24 md:pt-28">
+			{/* Hero Section */}
+			<div className="mb-16 text-center">
+				<Skeleton className="h-12 w-full max-w-xl mx-auto mb-3 md:h-14" />
+				<Skeleton className="h-12 w-72 mx-auto mb-6" />
+				<Skeleton className="h-6 w-full max-w-3xl mx-auto mb-2" />
+				<Skeleton className="h-6 w-4/5 max-w-2xl mx-auto mb-4" />
+				<Skeleton className="h-6 w-64 mx-auto" />
+			</div>
+
+			{/* Main Content */}
+			<section className="mb-20">
+				{/* Highlighted section */}
+				<div className="mb-12 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
+					<Skeleton className="h-9 w-64 mb-4" />
+					<Skeleton className="h-6 w-48 mb-4" />
+					<div className="space-y-4">
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-3/4" />
+					</div>
+				</div>
+
+				{/* Benefits Cards */}
+				<div className="mb-12 grid gap-8 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="rounded-lg border border-primary/20 p-8">
+							<Skeleton className="h-16 w-16 rounded-lg mb-4" />
+							<Skeleton className="h-6 w-40 mb-3" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-3/4" />
+						</div>
+					))}
+				</div>
+			</section>
+
+			{/* Info Section */}
+			<section className="mb-20">
+				<div className="rounded-lg border border-primary/20 bg-card p-8 md:p-12">
+					<Skeleton className="h-9 w-80 mb-6" />
+					<Skeleton className="h-5 w-full max-w-2xl mb-6" />
+					<div className="space-y-6">
+						{Array.from({ length: 3 }).map((_, i) => (
+							<div key={i} className="flex gap-4">
+								<Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+								<div className="flex-1">
+									<Skeleton className="h-5 w-44 mb-2" />
+									<Skeleton className="h-4 w-full" />
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* Form Section */}
+			<section className="mb-20">
+				<div className="max-w-3xl mx-auto">
+					<div className="text-center mb-8">
+						<Skeleton className="h-8 w-56 mx-auto mb-4" />
+						<Skeleton className="h-5 w-72 mx-auto" />
+					</div>
+					<div className="rounded-2xl border bg-white shadow-lg p-8">
+						<div className="grid gap-6 md:grid-cols-2">
+							{Array.from({ length: 4 }).map((_, i) => (
+								<div key={i} className="space-y-2">
+									<Skeleton className="h-4 w-20" />
+									<Skeleton className="h-11 w-full rounded-md" />
+								</div>
+							))}
+						</div>
+						<div className="mt-6 space-y-2">
+							<Skeleton className="h-4 w-24" />
+							<Skeleton className="h-24 w-full rounded-md" />
+						</div>
+						<Skeleton className="h-12 w-full rounded-md mt-6" />
+					</div>
+				</div>
+			</section>
+
+			{/* Resources Grid */}
+			<section>
+				<div className="mb-8 text-center">
+					<Skeleton className="h-9 w-48 mx-auto mb-3" />
+					<Skeleton className="h-5 w-64 mx-auto" />
+				</div>
+				<div className="grid gap-8 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="rounded-lg border border-primary/20 p-8">
+							<Skeleton className="h-16 w-16 rounded-lg mb-4" />
+							<Skeleton className="h-6 w-48 mb-3" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-3/4 mb-6" />
+							<Skeleton className="h-10 w-full rounded-md" />
+						</div>
+					))}
+				</div>
+			</section>
+		</div>
+	);
+}
+
+// ============================================================================
+// UTBILDNINGAR PAGE SKELETON
+// ============================================================================
+
+/**
+ * Utbildningar Page Skeleton
+ */
+export function UtbildningarPageSkeleton() {
+	return (
+		<div className="max-w-7xl mx-auto px-4 pt-24 md:pt-28 pb-16">
+			{/* Hero Section */}
+			<div className="mb-16 text-center">
+				<Skeleton className="h-12 w-full max-w-2xl mx-auto mb-3 md:h-14" />
+				<Skeleton className="h-12 w-48 mx-auto mb-6" />
+				<Skeleton className="h-6 w-full max-w-3xl mx-auto mb-2" />
+				<Skeleton className="h-6 w-4/5 max-w-2xl mx-auto" />
+			</div>
+
+			{/* Main Content */}
+			<section className="mb-20">
+				{/* Highlighted Section */}
+				<div className="mb-12 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
+					<Skeleton className="h-9 w-56 mb-6" />
+					<div className="space-y-4">
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-full" />
+						<Skeleton className="h-5 w-3/4" />
+					</div>
+				</div>
+
+				{/* Benefits Cards */}
+				<div className="mb-12 grid gap-8 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="rounded-lg border border-primary/20 p-8">
+							<Skeleton className="h-16 w-16 rounded-lg mb-4" />
+							<Skeleton className="h-6 w-48 mb-3" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-3/4" />
+						</div>
+					))}
+				</div>
+			</section>
+
+			{/* Training Process */}
+			<section className="mb-20">
+				<div className="mb-12 text-center">
+					<Skeleton className="h-9 w-52 mx-auto mb-4" />
+					<Skeleton className="h-5 w-full max-w-xl mx-auto" />
+				</div>
+
+				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+					{Array.from({ length: 4 }).map((_, i) => (
+						<div key={i}>
+							<Skeleton className="h-12 w-12 rounded-full mb-4" />
+							<Skeleton className="h-5 w-36 mb-2" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-4/5" />
+						</div>
+					))}
+				</div>
+			</section>
+
+			{/* Support Section */}
+			<section className="mb-20">
+				<div className="rounded-lg border border-primary/20 bg-card p-8 md:p-12">
+					<div className="grid gap-8 md:grid-cols-2">
+						<div>
+							<Skeleton className="h-8 w-64 mb-4" />
+							<Skeleton className="h-5 w-full mb-2" />
+							<Skeleton className="h-5 w-full mb-2" />
+							<Skeleton className="h-5 w-3/4 mb-6" />
+							<div className="flex flex-wrap gap-4">
+								<Skeleton className="h-10 w-32 rounded-md" />
+								<Skeleton className="h-10 w-36 rounded-md" />
+							</div>
+						</div>
+						<div className="flex items-center justify-center">
+							<Skeleton className="h-48 w-48 rounded-lg" />
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Form Section */}
+			<section className="mb-20">
+				<div className="max-w-5xl mx-auto">
+					<div className="mb-12 text-center">
+						<Skeleton className="h-6 w-40 rounded-full mx-auto mb-4" />
+						<Skeleton className="h-10 w-72 mx-auto mb-4" />
+						<Skeleton className="h-5 w-full max-w-xl mx-auto" />
+					</div>
+					<div className="rounded-2xl border bg-white shadow-lg p-8">
+						<div className="grid gap-6 md:grid-cols-2">
+							{Array.from({ length: 6 }).map((_, i) => (
+								<div key={i} className="space-y-2">
+									<Skeleton className="h-4 w-24" />
+									<Skeleton className="h-11 w-full rounded-md" />
+								</div>
+							))}
+						</div>
+						<div className="mt-6 space-y-2">
+							<Skeleton className="h-4 w-28" />
+							<Skeleton className="h-24 w-full rounded-md" />
+						</div>
+						<Skeleton className="h-12 w-full rounded-md mt-6" />
+					</div>
+				</div>
+			</section>
+
+			{/* Resources Grid */}
+			<section>
+				<div className="mb-8 text-center">
+					<Skeleton className="h-9 w-52 mx-auto mb-3" />
+					<Skeleton className="h-5 w-56 mx-auto" />
+				</div>
+				<div className="grid gap-8 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<div key={i} className="rounded-lg border border-primary/20 p-8">
+							<Skeleton className="h-16 w-16 rounded-lg mb-4" />
+							<Skeleton className="h-6 w-40 mb-3" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-full mb-1" />
+							<Skeleton className="h-4 w-3/4 mb-6" />
+							<Skeleton className="h-10 w-full rounded-md" />
+						</div>
+					))}
+				</div>
+			</section>
+		</div>
+	);
+}
