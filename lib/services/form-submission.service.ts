@@ -10,9 +10,13 @@ import {
 	productInquirySchema,
 	trainingInquirySchema,
 	contactInquirySchema,
+	callbackRequestSchema,
+	tourRequestSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
+	type CallbackRequestInput,
+	type TourRequestInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -241,6 +245,111 @@ class FormSubmissionService {
 	}
 
 	/**
+	 * Create a callback request submission
+	 */
+	async createCallbackRequest(
+		data: CallbackRequestInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = callbackRequestSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "callback_request" as FormSubmissionType,
+			fullName: "Callback Request",
+			email: "callback@synos.se",
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: validData.countryCode,
+			countryName: "Sweden",
+			gdprConsent: validData.gdprConsent,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			preferredDate: new Date(validData.preferredDate),
+			preferredTime: validData.preferredTime,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Callback request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a tour request submission
+	 */
+	async createTourRequest(
+		data: TourRequestInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = tourRequestSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "tour_request" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: validData.countryCode,
+			countryName: "Sweden",
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: validData.gdprConsent,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Tour request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
 	 * Get submissions with filters (admin only)
 	 */
 	async getSubmissions(query: FormSubmissionListQuery): Promise<{
@@ -350,7 +459,9 @@ class FormSubmissionService {
 	/**
 	 * Get submissions for export (admin only)
 	 */
-	async getForExport(options: Omit<BulkExportInput, "format">): Promise<IFormSubmission[]> {
+	async getForExport(
+		options: Omit<BulkExportInput, "format">
+	): Promise<IFormSubmission[]> {
 		return formSubmissionRepository.getForExport({
 			ids: options.ids,
 			type: options.type,

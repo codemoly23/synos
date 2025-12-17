@@ -1,10 +1,8 @@
 /**
- * Blog Categories Sitemap
+ * Blog/News Categories Sitemap
  *
- * Generates sitemap for all blog categories.
- * URL Pattern: /blogg/category/[slug]/
- *
- * Matches WordPress: category-sitemap.xml
+ * Generates sitemap for all news/blog categories.
+ * URL Pattern: /nyheter/category/[slug]/
  */
 
 import { NextResponse } from "next/server";

@@ -17,6 +17,9 @@ import {
 	Menu,
 	X,
 	MessageSquare,
+	FileText,
+	Tags,
+	MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -45,6 +48,21 @@ const navItems: NavItem[] = [
 		title: "Categories",
 		href: "/dashboard/categories",
 		icon: FolderTree,
+	},
+	{
+		title: "Blog Posts",
+		href: "/dashboard/blog",
+		icon: FileText,
+	},
+	{
+		title: "Blog Categories",
+		href: "/dashboard/blog/categories",
+		icon: Tags,
+	},
+	{
+		title: "Comments",
+		href: "/dashboard/comments",
+		icon: MessageCircle,
 	},
 	{
 		title: "Inquiries",
@@ -83,6 +101,10 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 	const isActive = (href: string) => {
 		if (href === "/dashboard") {
 			return pathname === "/dashboard";
+		}
+		// For /dashboard/blog, only match exact path to avoid matching /dashboard/blog/categories
+		if (href === "/dashboard/blog") {
+			return pathname === "/dashboard/blog" || pathname.startsWith("/dashboard/blog/posts");
 		}
 		return pathname.startsWith(href);
 	};

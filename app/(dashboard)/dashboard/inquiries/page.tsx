@@ -78,6 +78,8 @@ export default async function InquiriesPage({ searchParams }: PageProps) {
 				helpType: s.helpType || null,
 				trainingInterestType: s.trainingInterestType || null,
 				subject: s.subject || null,
+				preferredDate: s.preferredDate?.toISOString() || null,
+				preferredTime: s.preferredTime || null,
 				createdAt: s.createdAt.toISOString(),
 			}))}
 			initialStats={stats}

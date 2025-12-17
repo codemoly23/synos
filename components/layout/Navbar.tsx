@@ -17,6 +17,7 @@ import {
 
 import { mainNav } from "@/config/navigation";
 import { useNavigation } from "@/lib/hooks/use-navigation";
+import { useNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { cn } from "@/lib/utils";
 import type { SiteConfigType } from "@/config/site";
 import Logo from "../common/logo";
@@ -30,6 +31,10 @@ interface NavbarProps {
 export function Navbar({ config }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const { data: navigationData } = useNavigation();
+	const { variant } = useNavbarVariant();
+
+	// Check if we should use light text (dark hero background and not scrolled)
+	const useLightText = variant === "dark-hero" && !isScrolled;
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -63,7 +68,14 @@ export function Navbar({ config }: NavbarProps) {
 												{/* Dynamic Kategori menu */}
 												{item.isDynamic ? (
 													<>
-														<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-secondary! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-secondary! active:bg-secondary/20! active:text-primary! data-[state=open]:bg-secondary/10! data-[state=open]:text-secondary! text-sm font-medium transition-colors">
+														<NavigationMenuTrigger
+																className={cn(
+																	"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																	useLightText
+																		? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
+																		: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
+																)}
+															>
 															<Link href={item.href}>
 																{item.title}
 															</Link>
@@ -133,7 +145,14 @@ export function Navbar({ config }: NavbarProps) {
 												) : item.items ? (
 													// Static menu items with subitems
 													<>
-														<NavigationMenuTrigger className="bg-transparent! text-secondary! hover:text-secondary! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-secondary! active:bg-secondary/20! active:text-primary! data-[state=open]:bg-secondary/10! data-[state=open]:text-secondary! text-sm font-medium transition-colors">
+														<NavigationMenuTrigger
+																className={cn(
+																	"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																	useLightText
+																		? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
+																		: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
+																)}
+															>
 															<Link href={item.href}>
 																{item.title}
 															</Link>
@@ -162,7 +181,10 @@ export function Navbar({ config }: NavbarProps) {
 														href={item.href}
 														className={cn(
 															navigationMenuTriggerStyle(),
-															"bg-transparent! text-secondary! hover:text-primary! hover:bg-secondary/10! focus:bg-secondary/10! focus:text-primary! active:bg-secondary/20! active:text-primary! transition-colors"
+															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors",
+															useLightText
+																? "text-white/90! hover:text-white! focus:text-white! active:text-white!"
+																: "text-secondary! hover:text-primary! focus:text-primary! active:text-primary!"
 														)}
 													>
 														{item.title}
@@ -179,7 +201,10 @@ export function Navbar({ config }: NavbarProps) {
 								<div className="space-y-2">
 									<a
 										href={`mailto:${config.company.email}`}
-										className="flex items-center gap-2 text-xs font-medium text-primary hover:underline transition-colors whitespace-nowrap"
+										className={cn(
+											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
+											useLightText ? "text-white/90 hover:text-white" : "text-primary"
+										)}
 									>
 										<Mail className="h-4 w-4" />
 										<span>{config.company.email}</span>
@@ -189,13 +214,21 @@ export function Navbar({ config }: NavbarProps) {
 											/\s/g,
 											""
 										)}`}
-										className="flex items-center gap-2 text-xs font-medium text-primary hover:text-primary hover:underline transition-colors whitespace-nowrap"
+										className={cn(
+											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
+											useLightText ? "text-white/90 hover:text-white" : "text-primary hover:text-primary"
+										)}
 									>
 										<Phone className="h-4 w-4" />
 										<span>{config.company.phone}</span>
 									</a>
 								</div>
-								<Button className="bg-primary hover:bg-primary text-white rounded-full px-6 shadow-md shadow-secondary/20">
+								<Button className={cn(
+									"rounded-full px-6 shadow-md",
+									useLightText
+										? "bg-white text-secondary hover:bg-white/90 shadow-black/10"
+										: "bg-primary hover:bg-primary text-white shadow-secondary/20"
+								)}>
 									Begär offert
 								</Button>
 							</div>

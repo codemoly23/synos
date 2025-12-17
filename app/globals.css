@@ -3529,3 +3529,26 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-300;
 }
+/* ============================================
+   REACT DAY PICKER STYLES
+   ============================================ */
+
+.rdp-root {
+  --rdp-accent-color: var(--color-primary);
+  --rdp-accent-background-color: var(--color-primary);
+}
+
+/* Navigation buttons */
+.rdp-root button[name="previous-month"],
+.rdp-root button[name="next-month"] {
+  cursor: pointer;
+}
+
+.rdp-day_button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rdp-day_button:disabled:hover {
+  background: transparent !important;
+}

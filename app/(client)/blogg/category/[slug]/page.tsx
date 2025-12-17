@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { blogArticles } from "@/data/blog/blog-data";
+import { getArticlesByCategory } from "@/lib/data/blog";
+import { blogCategoryService } from "@/lib/services/blog-category.service";
 import { BlogCard } from "../../_components/blog-card";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 
@@ -11,6 +12,7 @@ import { Breadcrumb } from "@/components/shared/Breadcrumb";
  *
  * URL: /blogg/category/[slug]/
  * Shows all blog posts in a specific category
+ * Now fetches from database
  */
 
 interface CategoryPageProps {
@@ -19,52 +21,21 @@ interface CategoryPageProps {
 	}>;
 }
 
-// Blog categories with Swedish names
-const CATEGORY_NAMES: Record<string, string> = {
-	artikelserier: "Artikelserier",
-	behandlingar: "Behandlingar",
-	eftervard: "Eftervård",
-	gynekologi: "Gynekologi",
-	harborttagning: "Hårborttagning",
-	hudatstramning: "Hudåtstramning",
-	hudforyngring: "Hudföryngring",
-	inkontinens: "Inkontinens",
-	klinikutrustning: "Klinikutrustning",
-	muskelatstramning: "Muskelatstramning",
-	nyheter: "Nyheter",
-	okategoriserade: "Okategoriserade",
-	produkter: "Produkter",
-	tatueringsborttagning: "Tatueringsborttagning",
-};
-
-function createSlug(str: string): string {
-	return str
-		.toLowerCase()
-		.replace(/\s+/g, "-")
-		.replace(/[åä]/g, "a")
-		.replace(/ö/g, "o")
-		.replace(/[^a-z0-9-]/g, "")
-		.replace(/-+/g, "-");
-}
-
-function getArticlesByCategory(categorySlug: string) {
-	return blogArticles.filter((article) =>
-		article.categories.some((cat) => createSlug(cat) === categorySlug)
-	);
-}
-
-function getCategoryName(slug: string): string {
-	return CATEGORY_NAMES[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
+async function getCategoryBySlug(slug: string) {
+	try {
+		return await blogCategoryService.getCategoryBySlug(slug);
+	} catch {
+		return null;
+	}
 }
 
 export async function generateMetadata({
 	params,
 }: CategoryPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const categoryName = getCategoryName(slug);
-	const articles = getArticlesByCategory(slug);
+	const category = await getCategoryBySlug(slug);
 
-	if (articles.length === 0) {
+	if (!category) {
 		return {
 			title: `Kategori hittades inte | ${siteConfig.name}`,
 			robots: { index: false, follow: false },
@@ -72,11 +43,11 @@ export async function generateMetadata({
 	}
 
 	return {
-		title: `${categoryName} | Blogg | ${siteConfig.name}`,
-		description: `Läs våra artiklar om ${categoryName.toLowerCase()}. Tips, guider och nyheter från Synos Medical.`,
+		title: `${category.name} | Blogg | ${siteConfig.name}`,
+		description: `Läs våra artiklar om ${category.name.toLowerCase()}. Tips, guider och nyheter från Synos Medical.`,
 		openGraph: {
-			title: `${categoryName} | Blogg | ${siteConfig.name}`,
-			description: `Läs våra artiklar om ${categoryName.toLowerCase()}.`,
+			title: `${category.name} | Blogg | ${siteConfig.name}`,
+			description: `Läs våra artiklar om ${category.name.toLowerCase()}.`,
 			url: `${siteConfig.url}/blogg/category/${slug}`,
 			siteName: siteConfig.name,
 			locale: "sv_SE",
@@ -90,10 +61,12 @@ export async function generateMetadata({
 
 export default async function BlogCategoryPage({ params }: CategoryPageProps) {
 	const { slug } = await params;
-	const categoryName = getCategoryName(slug);
-	const articles = getArticlesByCategory(slug);
+	const [category, articles] = await Promise.all([
+		getCategoryBySlug(slug),
+		getArticlesByCategory(slug),
+	]);
 
-	if (articles.length === 0) {
+	if (!category || articles.length === 0) {
 		notFound();
 	}
 
@@ -103,7 +76,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
 				<Breadcrumb
 					items={[
 						{ label: "Blogg", href: "/blogg" },
-						{ label: categoryName },
+						{ label: category.name },
 					]}
 				/>
 
@@ -113,7 +86,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
 						Kategori
 					</p>
 					<h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-						{categoryName}
+						{category.name}
 					</h1>
 					<p className="text-lg text-muted-foreground">
 						{articles.length} artikel{articles.length !== 1 ? "ar" : ""} i

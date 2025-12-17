@@ -3,15 +3,17 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
-import { blogArticles } from "@/data/blog/blog-data";
+import { getAllArticles } from "@/lib/data/blog";
 import { BlogCard } from "../../_components/blog-card";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import type { Article, Author } from "@/types/article";
 
 /**
  * Blog Author Archive Page
  *
  * URL: /blogg/author/[slug]/
  * Shows all blog posts by a specific author
+ * Now fetches from database
  */
 
 interface AuthorPageProps {
@@ -19,23 +21,6 @@ interface AuthorPageProps {
 		slug: string;
 	}>;
 }
-
-// Author information
-const AUTHORS: Record<
-	string,
-	{ name: string; role: string; bio?: string; image?: string }
-> = {
-	"agnessynos-se": {
-		name: "Agnes",
-		role: "Content Manager",
-		bio: "Agnes arbetar med innehåll och marknadsföring på Synos Medical.",
-	},
-	"andreassynos-se": {
-		name: "Andreas",
-		role: "VD",
-		bio: "Andreas är grundare och VD för Synos Medical.",
-	},
-};
 
 function createAuthorSlug(name: string): string {
 	return name
@@ -49,40 +34,25 @@ function createAuthorSlug(name: string): string {
 		.replace(/-+/g, "-");
 }
 
-function getArticlesByAuthor(authorSlug: string) {
-	return blogArticles.filter((article) => {
+async function getArticlesByAuthor(
+	authorSlug: string
+): Promise<{ articles: Article[]; author: Author | null }> {
+	const allArticles = await getAllArticles();
+	const articles = allArticles.filter((article) => {
 		if (!article.author?.name) return false;
 		const slug = createAuthorSlug(article.author.name);
 		return slug === authorSlug;
 	});
-}
 
-function getAuthorInfo(slug: string) {
-	// First check predefined authors
-	if (AUTHORS[slug]) {
-		return AUTHORS[slug];
-	}
-
-	// Try to find from articles
-	const articles = getArticlesByAuthor(slug);
-	if (articles.length > 0 && articles[0].author) {
-		return {
-			name: articles[0].author.name,
-			role: articles[0].author.role || "Författare",
-			bio: articles[0].author.bio,
-			image: articles[0].author.image,
-		};
-	}
-
-	return null;
+	const author = articles.length > 0 ? articles[0].author : null;
+	return { articles, author };
 }
 
 export async function generateMetadata({
 	params,
 }: AuthorPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const author = getAuthorInfo(slug);
-	const articles = getArticlesByAuthor(slug);
+	const { articles, author } = await getArticlesByAuthor(slug);
 
 	if (!author || articles.length === 0) {
 		return {
@@ -110,8 +80,7 @@ export async function generateMetadata({
 
 export default async function BlogAuthorPage({ params }: AuthorPageProps) {
 	const { slug } = await params;
-	const author = getAuthorInfo(slug);
-	const articles = getArticlesByAuthor(slug);
+	const { articles, author } = await getArticlesByAuthor(slug);
 
 	if (!author || articles.length === 0) {
 		notFound();

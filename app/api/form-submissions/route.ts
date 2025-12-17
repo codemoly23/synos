@@ -17,6 +17,7 @@ import {
 	TooManyRequestsError,
 	ValidationError,
 	NotFoundError,
+	DatabaseError,
 } from "@/lib/utils/api-error";
 
 /**
@@ -60,6 +61,16 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "callback_request") {
+			submission = await formSubmissionService.createCallbackRequest(
+				body,
+				metadata
+			);
+		} else if (type === "tour_request") {
+			submission = await formSubmissionService.createTourRequest(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}
@@ -88,6 +99,10 @@ export async function POST(request: NextRequest) {
 
 		if (error instanceof ValidationError) {
 			return validationErrorResponse(error.message, error.errors);
+		}
+
+		if (error instanceof DatabaseError) {
+			return internalServerErrorResponse(error.message);
 		}
 
 		return internalServerErrorResponse("Failed to create submission");

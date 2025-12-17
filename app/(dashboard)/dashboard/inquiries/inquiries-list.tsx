@@ -14,6 +14,8 @@ import {
 	MessageSquare,
 	Phone,
 	Building,
+	Calendar,
+	Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +60,8 @@ interface Submission {
 	helpType: HelpType | null;
 	trainingInterestType: TrainingInterestType | null;
 	subject: string | null;
+	preferredDate: string | null;
+	preferredTime: string | null;
 	createdAt: string;
 }
 
@@ -478,6 +482,7 @@ export function InquiriesList({
 								<option value="contact">Contact</option>
 								<option value="demo_request">Demo Request</option>
 								<option value="quote_request">Quote Request</option>
+								<option value="callback_request">Callback Request</option>
 							</select>
 						</div>
 					</CardContent>
@@ -630,6 +635,16 @@ export function InquiriesList({
 														{submission.subject}
 													</div>
 												)}
+											{submission.type === "callback_request" && (
+												<div className="flex items-center gap-2 text-sm text-primary mt-1">
+													<Calendar className="h-3 w-3" />
+													{submission.preferredDate
+														? new Date(submission.preferredDate).toLocaleDateString("sv-SE")
+														: "No date"}
+													<Clock className="h-3 w-3 ml-1" />
+													{submission.preferredTime || "No time"}
+												</div>
+											)}
 										</div>
 
 										{/* Type Badge */}

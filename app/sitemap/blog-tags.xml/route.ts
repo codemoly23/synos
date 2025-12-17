@@ -1,10 +1,8 @@
 /**
- * Blog Tags Sitemap
+ * Blog/News Tags Sitemap
  *
- * Generates sitemap for all blog tags.
- * URL Pattern: /blogg/tag/[slug]/
- *
- * Matches WordPress: post_tag-sitemap.xml
+ * Generates sitemap for all news/blog tags.
+ * URL Pattern: /nyheter/tag/[slug]/
  */
 
 import { NextResponse } from "next/server";

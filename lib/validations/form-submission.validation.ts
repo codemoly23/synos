@@ -10,6 +10,8 @@ export const formSubmissionTypes = [
 	"contact",
 	"demo_request",
 	"quote_request",
+	"callback_request",
+	"tour_request",
 ] as const;
 
 /**
@@ -206,6 +208,49 @@ export const trainingInquirySchema = z
 	);
 
 /**
+ * Callback Request Form Schema
+ * Simplified schema - only phone and preferred callback time
+ */
+export const callbackRequestSchema = z
+	.object({
+		countryCode: z
+			.string()
+			.min(2, "Landskod krävs")
+			.max(10, "Ogiltig landskod")
+			.regex(/^\+\d{1,4}$/, "Ogiltig landskod"),
+
+		phone: z
+			.string()
+			.min(6, "Telefonnummer måste vara minst 6 siffror")
+			.max(20, "Telefonnummer får inte överstiga 20 siffror")
+			.regex(
+				/^[0-9\s\-]+$/,
+				"Endast siffror, mellanslag och bindestreck tillåtna"
+			)
+			.trim(),
+
+		preferredDate: z.string().min(1, "Välj ett datum"),
+		preferredTime: z.string().min(1, "Välj en tid"),
+
+		gdprConsent: z
+			.boolean()
+			.refine(
+				(val) => val === true,
+				"Du måste godkänna att samtalet kan spelas in"
+			),
+	})
+	.refine(
+		(data) => {
+			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
+			return isValidPhoneNumber(fullPhone);
+		},
+		{
+			message: "Ogiltigt telefonnummer för valt land",
+			path: ["phone"],
+		}
+	);
+
+/**
  * Form submission list query params
  */
 export const formSubmissionListQuerySchema = z.object({
@@ -241,10 +286,69 @@ export const bulkExportSchema = z.object({
 	format: z.enum(["csv", "xlsx"]).default("csv"),
 });
 
+/**
+ * Tour Request Form Schema
+ * For scheduling virtual tours of facilities and equipment
+ */
+export const tourRequestSchema = z
+	.object({
+		fullName: z
+			.string()
+			.min(2, "Namnet måste vara minst 2 tecken")
+			.max(100, "Namnet får inte överstiga 100 tecken")
+			.trim(),
+
+		email: z
+			.string()
+			.email("Ange en giltig e-postadress")
+			.max(255, "E-postadressen får inte överstiga 255 tecken")
+			.trim()
+			.toLowerCase(),
+
+		countryCode: z
+			.string()
+			.min(2, "Landskod krävs")
+			.max(10, "Ogiltig landskod")
+			.regex(/^\+\d{1,4}$/, "Ogiltig landskod"),
+
+		phone: z
+			.string()
+			.min(6, "Telefonnummer måste vara minst 6 siffror")
+			.max(20, "Telefonnummer får inte överstiga 20 siffror")
+			.regex(
+				/^[0-9\s\-]+$/,
+				"Endast siffror, mellanslag och bindestreck tillåtna"
+			)
+			.trim(),
+
+		message: z
+			.string()
+			.max(1000, "Meddelandet får inte överstiga 1000 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
+
+		gdprConsent: z
+			.boolean()
+			.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+	})
+	.refine(
+		(data) => {
+			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
+			return isValidPhoneNumber(fullPhone);
+		},
+		{
+			message: "Ogiltigt telefonnummer för valt land",
+			path: ["phone"],
+		}
+	);
+
 // Type exports
 export type ProductInquiryInput = z.infer<typeof productInquirySchema>;
 export type TrainingInquiryInput = z.infer<typeof trainingInquirySchema>;
 export type ContactInquiryInput = z.infer<typeof contactInquirySchema>;
+export type CallbackRequestInput = z.infer<typeof callbackRequestSchema>;
+export type TourRequestInput = z.infer<typeof tourRequestSchema>;
 export type FormSubmissionListQuery = z.infer<
 	typeof formSubmissionListQuerySchema
 >;

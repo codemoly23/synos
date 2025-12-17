@@ -147,7 +147,7 @@ export function ContactInquiryForm() {
 				toast.success(
 					"Tack för ditt meddelande! Vi återkommer inom 24 timmar."
 				);
-				setTimeout(() => setIsSuccess(false), 10000);
+				setTimeout(() => setIsSuccess(false), 5000);
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -178,8 +178,8 @@ export function ContactInquiryForm() {
 
 	if (isSuccess) {
 		return (
-			<div className="text-center p-8 sm:p-12 rounded-2xl bg-card border border-border shadow-lg">
-				<div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+			<div className="text-center p-2 sm:p-12 rounded-2xl bg-card border border-border shadow-lg">
+				<div className="w-10 h-10 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
 					<CheckCircle2 className="h-10 w-10 text-green-600" />
 				</div>
 				<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
@@ -389,8 +389,8 @@ export function ContactInquiryForm() {
 						errors.gdprConsent
 							? "border-red-500 bg-red-50"
 							: gdprChecked
-								? "border-primary bg-primary/5"
-								: "border-border"
+							? "border-primary bg-primary/5"
+							: "border-border"
 					)}
 				>
 					<Checkbox
@@ -446,8 +446,7 @@ export function ContactInquiryForm() {
 							Jag vill ta emot nyhetsbrev och erbjudanden
 						</span>
 						<span className="block text-muted-foreground mt-1">
-							Du kan när som helst avregistrera dig från vårt
-							nyhetsbrev.
+							Du kan när som helst avregistrera dig från vårt nyhetsbrev.
 						</span>
 					</span>
 				</label>

@@ -66,7 +66,7 @@ export function Footer({ config }: FooterProps) {
 								{ label: "Produkter", href: "/produkter" },
 								{ label: "Tjänster", href: "/service" },
 								{ label: "Utbildningar", href: "/utbildningar" },
-								{ label: "Nyheter", href: "/blogg" },
+								{ label: "Nyheter", href: "/nyheter" },
 								{ label: "Kontakt", href: "/kontakt" },
 							].map((item) => (
 								<li key={item.href}>

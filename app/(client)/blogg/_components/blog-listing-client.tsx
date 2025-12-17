@@ -7,11 +7,11 @@ import { BlogHero } from "./blog-hero";
 import { BlogCard } from "./blog-card";
 import { BlogSidebar } from "./blog-sidebar";
 import { staggerContainer } from "@/lib/animations";
-import { getRecentArticles } from "@/data/blog/blog-data";
 
 interface BlogListingClientProps {
 	articles: Article[];
 	categories: string[];
+	recentArticles?: Article[];
 	basePath?: string; // e.g., "/nyheter" or "/blogg"
 	pageTitle?: string; // e.g., "Nyheter" or "Blogg"
 }
@@ -25,6 +25,7 @@ interface BlogListingClientProps {
 export function BlogListingClient({
 	articles,
 	categories,
+	recentArticles,
 	basePath = "/blogg",
 	pageTitle = "Blogg",
 }: BlogListingClientProps) {
@@ -59,7 +60,8 @@ export function BlogListingClient({
 		return filtered;
 	}, [articles, selectedCategory, searchQuery]);
 
-	const recentArticles = getRecentArticles(5);
+	// Use provided recent articles or fall back to first 5 from all articles
+	const displayRecentArticles = recentArticles || articles.slice(0, 5);
 
 	return (
 		<>
@@ -112,7 +114,7 @@ export function BlogListingClient({
 						{/* Sidebar */}
 						<BlogSidebar
 							categories={categories}
-							recentArticles={recentArticles}
+							recentArticles={displayRecentArticles}
 							onSearch={setSearchQuery}
 							onCategoryFilter={setSelectedCategory}
 							selectedCategory={selectedCategory}

@@ -1,22 +1,21 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-	getAllArticles,
 	getArticleBySlug,
-	getArticlesByCategory,
-} from "@/data/blog/blog-data";
+	getAllArticles,
+	getRelatedArticles,
+} from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
-import { BlogDetailHero } from "../../blogg/_components/blog-detail-hero";
-import { BlogContent } from "../../blogg/_components/blog-content";
-import { BlogAuthor } from "../../blogg/_components/blog-author";
-import { RelatedPosts } from "../../blogg/_components/related-posts";
+import { NyheterDetailHero } from "../_components/nyheter-detail-hero";
+import { NyheterContent } from "../_components/nyheter-content";
+import { NyheterRelated } from "../_components/nyheter-related";
 import { BlogComments } from "../../blogg/_components/blog-comments";
 
 /**
  * Nyheter Detail Page
  *
  * Dynamic route for individual news/blog posts under /nyheter.
- * Uses the same components as /blogg but with /nyheter URLs.
+ * Fetches data from MongoDB for dynamic content.
  */
 
 // Force dynamic rendering to avoid SSG issues with client components
@@ -33,7 +32,7 @@ export async function generateMetadata({
 	params,
 }: NyheterDetailPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const article = getArticleBySlug(slug);
+	const article = await getArticleBySlug(slug);
 
 	if (!article) {
 		return {
@@ -93,17 +92,22 @@ export default async function NyheterDetailPage({
 	params,
 }: NyheterDetailPageProps) {
 	const { slug } = await params;
-	const article = getArticleBySlug(slug);
+	const article = await getArticleBySlug(slug);
 
 	if (!article) {
 		notFound();
 	}
 
-	// Get related articles from the same categories
-	const relatedArticles =
-		article.categories.length > 0
-			? getArticlesByCategory(article.categories[0])
-			: getAllArticles();
+	// Get related articles based on current article
+	let relatedArticles;
+	if (article.id) {
+		relatedArticles = await getRelatedArticles(article.id, 6);
+	}
+
+	// Fallback to all articles if no related articles found
+	if (!relatedArticles || relatedArticles.length === 0) {
+		relatedArticles = await getAllArticles();
+	}
 
 	return (
 		<>
@@ -144,21 +148,13 @@ export default async function NyheterDetailPage({
 				}}
 			/>
 
-			<BlogDetailHero article={article} />
+			<NyheterDetailHero article={article} basePath="/nyheter" />
 
-			<section className="py-16 _container">
-				<BlogContent article={article} />
-			</section>
+			<NyheterContent article={article} basePath="/nyheter" />
 
-			<section className="py-16">
-				<div className="_container">
-					<BlogAuthor author={article.author} />
-				</div>
-			</section>
+			<BlogComments postId={article.id} />
 
-			<BlogComments />
-
-			<RelatedPosts
+			<NyheterRelated
 				articles={relatedArticles}
 				currentArticleId={article.id}
 				basePath="/nyheter"
