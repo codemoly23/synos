@@ -51,7 +51,7 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 						placeholder="Sök efter frågor..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-primary bg-white/80 backdrop-blur-sm text-secondary placeholder:text-secondary/40 focus:outline-none focus:border-primary focus:ring-4 focus:ring-secondary/10 transition-all duration-300"
+						className="w-full pl-12 pr-4 py-4 rounded-md border border-secondary/20 bg-white/80 backdrop-blur-sm text-secondary placeholder:text-secondary/40 focus:outline-none focus:border-primary/50 transition-all duration-300"
 					/>
 				</div>
 			</motion.div>
@@ -78,22 +78,22 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 						>
 							<div
 								className={`
-									rounded-2xl border-2 transition-all duration-300 overflow-hidden
+									rounded-md border transition-all duration-300 overflow-hidden
 									${
 										openIndex === index
-											? "border-primary bg-white shadow-xl shadow-primary/10"
-											: "border-secondary/50 bg-white/80 backdrop-blur-sm hover:border-secondary hover:shadow-lg"
+											? "border-primary/30 bg-linear-to-r from-primary/5 via-tertiary/10 to-primary/5 shadow-sm"
+											: "border-secondary/20 bg-white/80 backdrop-blur-sm hover:border-primary/20 hover:bg-linear-to-r hover:from-primary/5 hover:via-tertiary/10 hover:to-transparent"
 									}
 								`}
 							>
 								{/* Question Button */}
 								<button
 									onClick={() => toggleFAQ(index)}
-									className="w-full px-6 py-6 flex items-start justify-between gap-4 text-left group"
+									className="w-full px-4 py-4 sm:px-6 sm:py-5 flex items-center justify-between gap-3 text-left group cursor-pointer"
 									aria-expanded={openIndex === index}
 									aria-controls={`faq-answer-${faq.id}`}
 								>
-									<span className="font-semibold text-secondary text-lg flex-1 leading-relaxed">
+									<span className="font-semibold text-secondary text-base sm:text-lg flex-1 leading-snug wrap-break-word">
 										{faq.question}
 									</span>
 									<motion.div
@@ -127,8 +127,8 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 											}}
 											className="overflow-hidden"
 										>
-											<div className="px-6 pb-6 pt-0">
-												<div className="border-t-2 border-primary pt-4">
+											<div className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
+												<div className="border-t border-secondary/10 pt-3 sm:pt-4">
 													<p className="text-secondary/80 leading-relaxed">
 														{faq.answer}
 													</p>
@@ -156,7 +156,7 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
 					</p>
 					<a
 						href="/kontakt"
-						className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary text-white font-semibold hover:bg-secondary transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+						className="inline-flex items-center justify-center px-8 py-3 rounded-md bg-primary text-white font-semibold hover:bg-secondary transition-all duration-300 shadow-sm hover:shadow-md"
 					>
 						Kontakta oss
 					</a>

@@ -55,6 +55,8 @@ interface SubmissionDetail {
 	helpType: HelpType | null;
 	trainingInterestType: TrainingInterestType | null;
 	subject: string | null;
+	preferredDate: string | null;
+	preferredTime: string | null;
 	metadata: {
 		ipAddress: string;
 		userAgent: string;
@@ -377,6 +379,51 @@ export function InquiryDetail({ submission }: InquiryDetailProps) {
 								<CardContent>
 									<div className="bg-slate-50 p-3 rounded-lg">
 										<p className="font-medium">{submission.subject}</p>
+									</div>
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Callback Request Details (if applicable) */}
+						{submission.type === "callback_request" && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Phone className="h-5 w-5" />
+										Callback Request Details
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Preferred Date</label>
+											<div className="flex items-center gap-2">
+												<Calendar className="h-4 w-4 text-slate-400" />
+												<p className="font-medium">
+													{submission.preferredDate
+														? new Date(submission.preferredDate).toLocaleDateString("sv-SE", {
+																weekday: "long",
+																year: "numeric",
+																month: "long",
+																day: "numeric",
+														  })
+														: "Not specified"}
+												</p>
+											</div>
+										</div>
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Preferred Time</label>
+											<div className="flex items-center gap-2">
+												<Clock className="h-4 w-4 text-slate-400" />
+												<p className="font-medium">{submission.preferredTime || "Not specified"}</p>
+											</div>
+										</div>
+									</div>
+									<div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+										<p className="text-sm text-primary font-medium flex items-center gap-2">
+											<Phone className="h-4 w-4" />
+											Call this number: {submission.countryCode} {submission.phone}
+										</p>
 									</div>
 								</CardContent>
 							</Card>

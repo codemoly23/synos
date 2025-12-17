@@ -5,6 +5,7 @@ import { Eye } from "lucide-react";
 import { useState } from "react";
 import { fadeUp, staggerContainer, defaultTransition } from "@/lib/animations";
 import { ImageComponent } from "../common/image-component";
+import { TourRequestModal } from "./TourRequestModal";
 
 /**
  * Image Gallery Data Structure
@@ -55,6 +56,7 @@ const images: GalleryImage[] = [
  */
 export function ImageGallery() {
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+	const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
 	return (
 		<section
@@ -211,21 +213,28 @@ export function ImageGallery() {
 					<div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/60 backdrop-blur-md border border-white/50 rounded-2xl p-6 md:p-8 shadow-xl">
 						<div className="flex-1 text-left">
 							<h3 className="text-lg md:text-xl font-extrabold text-secondary mb-2 tracking-tight">
-								Want to see more?
+								Vill du se mer?
 							</h3>
 							<p className="text-secondary/50 text-sm md:text-base font-medium">
-								Schedule a virtual tour of our facilities and equipment
+								Boka en virtuell rundtur av våra anläggningar och utrustning
 							</p>
 						</div>
 						<button
+							onClick={() => setIsTourModalOpen(true)}
 							className="shrink-0 px-6 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-							aria-label="Schedule a virtual tour"
+							aria-label="Boka virtuell rundtur"
 						>
-							Schedule Tour
+							Boka rundtur
 						</button>
 					</div>
 				</motion.div>
 			</div>
+
+			{/* Tour Request Modal */}
+			<TourRequestModal
+				open={isTourModalOpen}
+				onOpenChange={setIsTourModalOpen}
+			/>
 		</section>
 	);
 }

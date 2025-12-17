@@ -1,10 +1,8 @@
 /**
  * Authors Sitemap
  *
- * Generates sitemap for all blog authors.
- * URL Pattern: /blogg/author/[slug]/
- *
- * Matches WordPress: author-sitemap.xml
+ * Generates sitemap for all news/blog authors.
+ * URL Pattern: /nyheter/author/[slug]/
  */
 
 import { NextResponse } from "next/server";

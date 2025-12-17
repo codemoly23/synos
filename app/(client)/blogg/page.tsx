@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getAllArticles, getAllCategories } from "@/data/blog/blog-data";
+import { getAllArticles, getAllCategories, getRecentArticles } from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
 import { BlogListingClient } from "./_components/blog-listing-client";
 
@@ -7,6 +7,7 @@ import { BlogListingClient } from "./_components/blog-listing-client";
  * Blog Listing Page
  *
  * Displays all blog articles with filtering and search capabilities.
+ * Now fetches from database instead of static data.
  */
 
 export const metadata: Metadata = {
@@ -52,9 +53,12 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function BlogPage() {
-	const articles = getAllArticles();
-	const categories = getAllCategories();
+export default async function BlogPage() {
+	const [articles, categories, recentArticles] = await Promise.all([
+		getAllArticles(),
+		getAllCategories(),
+		getRecentArticles(5),
+	]);
 
 	return (
 		<>
@@ -97,7 +101,11 @@ export default function BlogPage() {
 				}}
 			/>
 
-			<BlogListingClient articles={articles} categories={categories} />
+			<BlogListingClient
+				articles={articles}
+				categories={categories}
+				recentArticles={recentArticles}
+			/>
 		</>
 	);
 }

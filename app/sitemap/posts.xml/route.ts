@@ -1,10 +1,8 @@
 /**
- * Blog Posts Sitemap
+ * Blog/News Posts Sitemap
  *
- * Generates sitemap for all blog posts.
- * URL Pattern: /blogg/[slug]/
- *
- * Matches WordPress: post-sitemap.xml
+ * Generates sitemap for all blog/news posts.
+ * URL Pattern: /nyheter/[slug]/
  */
 
 import { NextResponse } from "next/server";
@@ -39,9 +37,9 @@ export async function GET(): Promise<NextResponse> {
 				: undefined,
 		}));
 
-		// Add blog listing page
+		// Add news listing page
 		urls.unshift({
-			loc: `${SITEMAP_CONFIG.baseUrl}/blogg`,
+			loc: `${SITEMAP_CONFIG.baseUrl}/nyheter`,
 			lastmod: formatSitemapDate(new Date()),
 			changefreq: SITEMAP_CONFIG.changeFreq.listing,
 			priority: SITEMAP_CONFIG.priority.mainListing,

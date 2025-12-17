@@ -1,13 +1,13 @@
 import { Metadata } from "next";
-import { getAllArticles, getAllCategories } from "@/data/blog/blog-data";
+import { getAllArticles, getAllCategories } from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
-import { BlogListingClient } from "../blogg/_components/blog-listing-client";
+import { NyheterListing } from "./_components/nyheter-listing";
 
 /**
  * Nyheter (News) Listing Page
  *
  * Main news page displaying all articles with filtering and search capabilities.
- * Uses the same components as /blogg but with "Nyheter" branding.
+ * Fetches data from MongoDB for dynamic content.
  */
 
 export const metadata: Metadata = {
@@ -52,9 +52,11 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function NyheterPage() {
-	const articles = getAllArticles();
-	const categories = getAllCategories();
+export default async function NyheterPage() {
+	const [articles, categories] = await Promise.all([
+		getAllArticles(),
+		getAllCategories(),
+	]);
 
 	return (
 		<>
@@ -97,7 +99,7 @@ export default function NyheterPage() {
 				}}
 			/>
 
-			<BlogListingClient
+			<NyheterListing
 				articles={articles}
 				categories={categories}
 				basePath="/nyheter"

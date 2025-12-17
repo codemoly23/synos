@@ -2,13 +2,13 @@
  * Sitemap Configuration
  *
  * Central configuration for sitemap generation.
- * Defines URL patterns matching the WordPress site structure.
+ * Defines URL patterns matching the site structure.
  *
- * URL Structure from synos.se:
- * - Blog posts: /blogg/[slug]/
- * - Blog categories: /blogg/category/[slug]/
- * - Blog tags: /blogg/tag/[slug]/
- * - Blog authors: /blogg/author/[slug]/
+ * URL Structure:
+ * - News/Blog posts: /nyheter/[slug]/
+ * - News categories: /nyheter/category/[slug]/
+ * - News tags: /nyheter/tag/[slug]/
+ * - News authors: /nyheter/author/[slug]/
  * - Products: /klinikutrustning/[category]/[slug]/
  * - Product categories: /klinikutrustning/[slug]/
  */
@@ -57,35 +57,35 @@ export const SITEMAP_CONFIG = {
 // ============================================================================
 
 /**
- * Build blog post URL
- * Pattern: /blogg/[slug]/
+ * Build blog/news post URL
+ * Pattern: /nyheter/[slug]/
  */
 export function buildBlogPostUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/nyheter/${slug}`;
 }
 
 /**
- * Build blog category URL
- * Pattern: /blogg/category/[slug]/
+ * Build blog/news category URL
+ * Pattern: /nyheter/category/[slug]/
  */
 export function buildBlogCategoryUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/category/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/nyheter/category/${slug}`;
 }
 
 /**
- * Build blog tag URL
- * Pattern: /blogg/tag/[slug]/
+ * Build blog/news tag URL
+ * Pattern: /nyheter/tag/[slug]/
  */
 export function buildBlogTagUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/tag/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/nyheter/tag/${slug}`;
 }
 
 /**
  * Build author URL
- * Pattern: /blogg/author/[slug]/
+ * Pattern: /nyheter/author/[slug]/
  */
 export function buildAuthorUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/author/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/nyheter/author/${slug}`;
 }
 
 /**
