@@ -51,6 +51,10 @@ export const mainNav: NavItem[] = [
 				href: "/om-oss",
 			},
 			{
+				title: "Vårt Team",
+				href: "/om-oss/team",
+			},
+			{
 				title: "FAQ",
 				href: "/faq",
 			},
