@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-	getAllArticles,
 	getArticleBySlug,
-	getArticlesByCategory,
-} from "@/data/blog/blog-data";
+	getRelatedArticles,
+	getAllArticles,
+} from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
 import { BlogDetailHero } from "../_components/blog-detail-hero";
 import { BlogContent } from "../_components/blog-content";
@@ -34,7 +34,7 @@ export async function generateMetadata({
 	params,
 }: BlogDetailPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const article = getArticleBySlug(slug);
+	const article = await getArticleBySlug(slug);
 
 	if (!article) {
 		return {
@@ -92,17 +92,17 @@ export async function generateMetadata({
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 	const { slug } = await params;
-	const article = getArticleBySlug(slug);
+	const article = await getArticleBySlug(slug);
 
 	if (!article) {
 		notFound();
 	}
 
-	// Get related articles from the same categories
-	const relatedArticles =
-		article.categories.length > 0
-			? getArticlesByCategory(article.categories[0])
-			: getAllArticles();
+	// Get related articles (same category, excluding current)
+	const relatedArticles = await getRelatedArticles(article.id, 4);
+	// Fallback to all articles if no related found
+	const displayRelated =
+		relatedArticles.length > 0 ? relatedArticles : await getAllArticles();
 
 	return (
 		<>
@@ -155,10 +155,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 				</div>
 			</section>
 
-			<BlogComments />
+			<BlogComments postId={article.id} />
 
 			<RelatedPosts
-				articles={relatedArticles}
+				articles={displayRelated}
 				currentArticleId={article.id}
 			/>
 		</>

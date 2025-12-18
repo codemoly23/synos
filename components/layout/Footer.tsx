@@ -30,7 +30,7 @@ export function Footer({ config }: FooterProps) {
 	];
 
 	return (
-		<footer className="bg-secondary text-primary-foreground pt-16 pb-8">
+		<footer className="bg-secondary text-primary-foreground pt-16 pb-24 md:pb-8">
 			<div className="_container">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
 					{/* Brand Column */}
@@ -66,7 +66,7 @@ export function Footer({ config }: FooterProps) {
 								{ label: "Produkter", href: "/produkter" },
 								{ label: "Tjänster", href: "/service" },
 								{ label: "Utbildningar", href: "/utbildningar" },
-								{ label: "Nyheter", href: "/blogg" },
+								{ label: "Nyheter", href: "/nyheter" },
 								{ label: "Kontakt", href: "/kontakt" },
 							].map((item) => (
 								<li key={item.href}>

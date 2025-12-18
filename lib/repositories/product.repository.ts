@@ -213,6 +213,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 				this.model
 					.find(filter)
 					.populate("categories", "name slug")
+					.populate("primaryCategory", "name slug")
 					.sort(sortObj)
 					.skip(skip)
 					.limit(limit)

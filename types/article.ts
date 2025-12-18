@@ -1,4 +1,12 @@
-import { SEOMetadata, ProductImage } from "./product";
+import { SEOMetadata } from "./product";
+
+export interface ArticleImage {
+  url: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  isPrimary?: boolean;
+}
 
 export interface Article {
   id: string;
@@ -9,7 +17,7 @@ export interface Article {
   author: Author;
   publishedAt: string;
   updatedAt: string;
-  featuredImage?: ProductImage;
+  featuredImage?: ArticleImage;
   categories: string[];
   tags: string[];
   seo: SEOMetadata;

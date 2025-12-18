@@ -59,6 +59,7 @@ export interface IProduct extends Document {
 	purchaseInfo?: IPurchaseInfo;
 	seo: ISeo;
 	categories: mongoose.Types.ObjectId[];
+	primaryCategory?: mongoose.Types.ObjectId; // Primary category for URL generation
 	qa: IQnA[];
 	youtubeUrl?: string;
 	rubric?: string;
@@ -244,6 +245,12 @@ const ProductSchema = new Schema<IProduct>(
 				ref: "Category",
 			},
 		],
+		primaryCategory: {
+			type: Schema.Types.ObjectId,
+			ref: "Category",
+			default: null,
+			index: true,
+		},
 		qa: [QnASchema],
 		youtubeUrl: {
 			type: String,

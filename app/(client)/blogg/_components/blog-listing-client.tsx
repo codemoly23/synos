@@ -7,21 +7,27 @@ import { BlogHero } from "./blog-hero";
 import { BlogCard } from "./blog-card";
 import { BlogSidebar } from "./blog-sidebar";
 import { staggerContainer } from "@/lib/animations";
-import { getRecentArticles } from "@/data/blog/blog-data";
 
 interface BlogListingClientProps {
 	articles: Article[];
 	categories: string[];
+	recentArticles?: Article[];
+	basePath?: string; // e.g., "/nyheter" or "/blogg"
+	pageTitle?: string; // e.g., "Nyheter" or "Blogg"
 }
 
 /**
  * BlogListingClient Component
  *
  * Client-side component for blog listing with filtering and search.
+ * Supports custom basePath for different routes (e.g., /nyheter, /blogg)
  */
 export function BlogListingClient({
 	articles,
 	categories,
+	recentArticles,
+	basePath = "/blogg",
+	pageTitle = "Blogg",
 }: BlogListingClientProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -54,11 +60,12 @@ export function BlogListingClient({
 		return filtered;
 	}, [articles, selectedCategory, searchQuery]);
 
-	const recentArticles = getRecentArticles(5);
+	// Use provided recent articles or fall back to first 5 from all articles
+	const displayRecentArticles = recentArticles || articles.slice(0, 5);
 
 	return (
 		<>
-			<BlogHero />
+			<BlogHero pageTitle={pageTitle} />
 
 			<section className="section-padding bg-slate-50">
 				<div className="_container">
@@ -87,6 +94,7 @@ export function BlogListingClient({
 											key={article.id}
 											article={article}
 											index={index}
+											basePath={basePath}
 										/>
 									))}
 								</motion.div>
@@ -106,10 +114,11 @@ export function BlogListingClient({
 						{/* Sidebar */}
 						<BlogSidebar
 							categories={categories}
-							recentArticles={recentArticles}
+							recentArticles={displayRecentArticles}
 							onSearch={setSearchQuery}
 							onCategoryFilter={setSelectedCategory}
 							selectedCategory={selectedCategory}
+							basePath={basePath}
 						/>
 					</div>
 				</div>

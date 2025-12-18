@@ -371,6 +371,9 @@ export default function ProfilePage() {
 			);
 			toast.success("Profile image updated successfully!");
 
+			// Notify other components (navbar, etc.) about the avatar update
+			window.dispatchEvent(new CustomEvent("avatar-updated"));
+
 			// Clear pending state
 			setPendingImage(null);
 			setPendingImagePreview(null);
@@ -420,6 +423,9 @@ export default function ProfilePage() {
 
 			setImagePreview(null);
 			toast.success("Profile image removed successfully!");
+
+			// Notify other components (navbar, etc.) about the avatar removal
+			window.dispatchEvent(new CustomEvent("avatar-updated"));
 		} catch (err) {
 			console.error("Error removing image:", err);
 			toast.error(
@@ -731,7 +737,7 @@ export default function ProfilePage() {
 											{imagePreview ? (
 												<ImageComponent
 													key={imageKey}
-													src={imagePreview}
+													src={`${imagePreview}${imagePreview.includes("?") ? "&" : "?"}t=${imageKey}`}
 													alt="Profile"
 													fill
 													sizes="128px"

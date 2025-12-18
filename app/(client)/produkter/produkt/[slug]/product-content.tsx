@@ -17,13 +17,21 @@ import Link from "next/link";
 
 interface ProductContentProps {
 	product: ProductType;
+	/** Base path for navigation (e.g., "/produkter" or "/klinikutrustning/category") */
+	basePath?: string;
+	/** Label for the back button breadcrumb */
+	baseLabel?: string;
 }
 
 /**
  * Client component for interactive product page elements
  * Receives all data as props from server component
  */
-export function ProductContent({ product }: ProductContentProps) {
+export function ProductContent({
+	product,
+	basePath = "/produkter",
+	baseLabel = "Produkter",
+}: ProductContentProps) {
 	const primaryImage = product.overviewImage;
 
 	return (
@@ -34,7 +42,7 @@ export function ProductContent({ product }: ProductContentProps) {
 					{/* Breadcrumb */}
 					<Breadcrumb
 						items={[
-							{ label: "Produkter", href: "/produkter" },
+							{ label: baseLabel, href: basePath },
 							{ label: product.title },
 						]}
 					/>
@@ -42,39 +50,19 @@ export function ProductContent({ product }: ProductContentProps) {
 
 				<div className="_container">
 					{/* Back Button */}
-					<motion.div
+					{/* <motion.div
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.4 }}
 						className="mb-6"
 					>
 						<Button asChild variant="ghost" size="sm">
-							<Link href="/produkter" className="gap-2">
+							<Link href={basePath} className="gap-2">
 								<ArrowLeft className="h-4 w-4" />
-								Tillbaka till produkter
+								Tillbaka till {baseLabel.toLowerCase()}
 							</Link>
 						</Button>
-					</motion.div>
-
-					{/* Treatment Badges */}
-					{product?.treatments && product.treatments.length > 0 && (
-						<motion.div
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4, delay: 0.1 }}
-							className="mb-4 flex flex-wrap gap-2"
-						>
-							{product.treatments.map((treatment) => (
-								<Badge
-									key={treatment}
-									variant="secondary"
-									className="bg-primary/10 text-primary hover:bg-primary/20"
-								>
-									{treatment}
-								</Badge>
-							))}
-						</motion.div>
-					)}
+					</motion.div> */}
 
 					{/* Title */}
 					<motion.h1
@@ -214,19 +202,21 @@ export function ProductContent({ product }: ProductContentProps) {
 										</h2>
 										<div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
 											<div className="divide-y divide-slate-100">
-												{product?.techSpecifications?.map((spec, index) => (
-													<div
-														key={index}
-														className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 px-6 hover:bg-slate-50/80 transition-colors duration-200 gap-1 sm:gap-4"
-													>
-														<span className="font-medium text-foreground">
-															{spec.title}
-														</span>
-														<span className="text-muted-foreground sm:text-right">
-															{spec.description}
-														</span>
-													</div>
-												))}
+												{product?.techSpecifications?.map(
+													(spec, index) => (
+														<div
+															key={index}
+															className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 px-6 hover:bg-slate-50/80 transition-colors duration-200 gap-1 sm:gap-4"
+														>
+															<span className="font-medium text-foreground">
+																{spec.title}
+															</span>
+															<span className="text-muted-foreground sm:text-right">
+																{spec.description}
+															</span>
+														</div>
+													)
+												)}
 											</div>
 										</div>
 									</motion.section>
@@ -247,13 +237,40 @@ export function ProductContent({ product }: ProductContentProps) {
 					</div>
 				</div>
 			</section>
+			{/* Treatment Badges */}
+			<div className="_container">
+				{product?.treatments && product.treatments.length > 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.4, delay: 0.1 }}
+						className="mb-4 flex flex-wrap gap-2"
+					>
+						{product.treatments.map((treatment) => (
+							<Badge
+								key={treatment}
+								variant="secondary"
+								className="bg-primary/10 text-primary hover:bg-primary/20"
+							>
+								{treatment}
+							</Badge>
+						))}
+					</motion.div>
+				)}
+			</div>
 
 			{/* Full Width Sections */}
 			{/* FAQ Section */}
-			{product.qa && product.qa.length > 0 && <ProductFAQ faqs={product.qa} />}
+			{product.qa && product.qa.length > 0 && (
+				<ProductFAQ faqs={product.qa} />
+			)}
 
 			{/* Product Inquiry Form */}
-			<ProductInquiryForm productName={product.title} productId={product.id} productSlug={product.slug} />
+			<ProductInquiryForm
+				productName={product.title}
+				productId={product.id}
+				productSlug={product.slug}
+			/>
 		</div>
 	);
 }

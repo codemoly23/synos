@@ -9,7 +9,9 @@ export type FormSubmissionType =
 	| "training_inquiry"
 	| "contact"
 	| "demo_request"
-	| "quote_request";
+	| "quote_request"
+	| "callback_request"
+	| "tour_request";
 
 /**
  * Form submission status
@@ -87,6 +89,10 @@ export interface IFormSubmission extends Document {
 	// Contact Inquiry Specific
 	subject?: string;
 
+	// Callback Request Specific
+	preferredDate?: Date;
+	preferredTime?: string;
+
 	// Metadata
 	metadata: IFormSubmissionMetadata;
 
@@ -139,7 +145,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		// Form Type
 		type: {
 			type: String,
-			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request"],
+			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request"],
 			required: [true, "Form type is required"],
 			index: true,
 		},
@@ -272,6 +278,18 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			type: String,
 			trim: true,
 			maxlength: [200, "Subject cannot exceed 200 characters"],
+			default: null,
+		},
+
+		// Callback Request Specific
+		preferredDate: {
+			type: Date,
+			default: null,
+		},
+		preferredTime: {
+			type: String,
+			trim: true,
+			maxlength: [10, "Time cannot exceed 10 characters"],
 			default: null,
 		},
 

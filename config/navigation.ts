@@ -3,190 +3,22 @@ export interface NavItem {
 	href: string;
 	description?: string;
 	items?: NavItem[];
+	isDynamic?: boolean; // Flag for items that load from database
 }
 
 export const mainNav: NavItem[] = [
 	{
-		title: "Produkter",
-		href: "/produkter",
-		items: [
-			{
-				title: "Hårborttagning",
-				href: "/produkter/harborttagning",
-				items: [
-					{
-						title: "MOTUS PRO",
-						href: "/produkter/produkt/motus-pro",
-					},
-					{
-						title: "Again PRO PLUS",
-						href: "/produkter/produkt/again-pro-plus",
-					},
-					{
-						title: "Motus AX",
-						href: "/produkter/produkt/motus-ax",
-					},
-					{
-						title: "Motus AY",
-						href: "/produkter/produkt/motus-ay",
-					},
-				],
-			},
-			{
-				title: "Tatueringsborttagning",
-				href: "/produkter/tatueringsborttagning",
-				items: [
-					{
-						title: "TORO Pico Laser",
-						href: "/produkter/produkt/pico",
-					},
-					{
-						title: "QTERRA Q10 Q-Switch",
-						href: "/produkter/produkt/qterra-q10",
-					},
-					{
-						title: "SmartPICO",
-						href: "/produkter/produkt/smartpico",
-					},
-				],
-			},
-			{
-				title: "Hudföryngring / Hudåtstramning",
-				href: "/produkter/hudforyngring-hudatstramning",
-				items: [
-					{
-						title: "Tetra PRO CO₂ Laser",
-						href: "/produkter/produkt/tetra-pro-co2-laser",
-					},
-					{
-						title: "Jovena",
-						href: "/produkter/produkt/jovena",
-					},
-					{
-						title: "RedTouch PRO",
-						href: "/produkter/produkt/redtouch-pro",
-					},
-					{
-						title: "DUOGlide",
-						href: "/produkter/produkt/duoglide",
-					},
-					{
-						title: "SmartXide Punto",
-						href: "/produkter/produkt/smartxide-punto",
-					},
-					{
-						title: "Vivace RF",
-						href: "/produkter/produkt/vivace-rf",
-					},
-				],
-			},
-			{
-				title: "CO₂ fraktionerad laser",
-				href: "/produkter/co2-fraktionerad-laser",
-				items: [
-					{
-						title: "Tetra PRO CO₂ Laser",
-						href: "/produkter/produkt/tetra-pro-co2-laser",
-					},
-					{
-						title: "DUOGlide",
-						href: "/produkter/produkt/duoglide",
-					},
-					{
-						title: "SmartXide Punto",
-						href: "/produkter/produkt/smartxide-punto",
-					},
-				],
-			},
-			{
-				title: "Kropp, muskler & fett",
-				href: "/produkter/kropp-muskler-fett",
-				items: [
-					{
-						title: "Jovena",
-						href: "/produkter/produkt/jovena",
-					},
-					{
-						title: "Onda Coolwaves PRO",
-						href: "/produkter/produkt/onda-coolwaves-pro",
-					},
-				],
-			},
-			{
-				title: "Ansiktsbehandlingar",
-				href: "/produkter/ansiktsbehandlingar",
-				items: [
-					{
-						title: "Tetra PRO CO₂ Laser",
-						href: "/produkter/produkt/tetra-pro-co2-laser",
-					},
-					{
-						title: "Jovena",
-						href: "/produkter/produkt/jovena",
-					},
-					{
-						title: "RedTouch PRO",
-						href: "/produkter/produkt/redtouch-pro",
-					},
-					{
-						title: "Vivace RF",
-						href: "/produkter/produkt/vivace-rf",
-					},
-				],
-			},
-			{
-				title: "Pigmentfläckar",
-				href: "/produkter/pigmentflackar",
-				items: [
-					{
-						title: "TORO Pico Laser",
-						href: "/produkter/produkt/pico",
-					},
-					{
-						title: "MOTUS PRO",
-						href: "/produkter/produkt/motus-pro",
-					},
-					{
-						title: "Jovena",
-						href: "/produkter/produkt/jovena",
-					},
-				],
-			},
-			{
-				title: "Akne, ärr och hudbristningar",
-				href: "/produkter/akne-arr-hudbristningar",
-				items: [
-					{
-						title: "Tetra PRO CO₂ Laser",
-						href: "/produkter/produkt/tetra-pro-co2-laser",
-					},
-					{
-						title: "Vivace RF",
-						href: "/produkter/produkt/vivace-rf",
-					},
-				],
-			},
-			{
-				title: "Ytliga blodkärl/angiom",
-				href: "/produkter/ytliga-blodkarl-angiom",
-				items: [
-					{
-						title: "MOTUS PRO",
-						href: "/produkter/produkt/motus-pro",
-					},
-				],
-			},
-			{
-				title: "Kirurgi",
-				href: "/produkter/kirurgi",
-				items: [
-					{
-						title: "Tetra PRO CO₂ Laser",
-						href: "/produkter/produkt/tetra-pro-co2-laser",
-					},
-				],
-			},
-		],
+		title: "Nyheter",
+		href: "/nyheter",
+	},
+	{
+		title: "Utrustning",
+		href: "/utrustning",
+	},
+	{
+		title: "Kategori",
+		href: "/kategori",
+		isDynamic: true, // This item loads categories/products from database
 	},
 	{
 		title: "Starta Eget",
@@ -219,6 +51,10 @@ export const mainNav: NavItem[] = [
 				href: "/om-oss",
 			},
 			{
+				title: "Vårt Team",
+				href: "/om-oss/team",
+			},
+			{
 				title: "FAQ",
 				href: "/faq",
 			},
@@ -231,10 +67,6 @@ export const mainNav: NavItem[] = [
 				href: "/om-oss/juridisk-information",
 			},
 		],
-	},
-	{
-		title: "Blogg",
-		href: "/blogg",
 	},
 	{
 		title: "Kontakt",

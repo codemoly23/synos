@@ -9,16 +9,19 @@ import { Sparkles } from "lucide-react";
 interface RelatedPostsProps {
 	articles: Article[];
 	currentArticleId: string;
+	basePath?: string;
 }
 
 /**
  * RelatedPosts Component
  *
  * Displays related blog posts based on categories or tags.
+ * Supports custom basePath for different routes (e.g., /nyheter, /blogg)
  */
 export function RelatedPosts({
 	articles,
 	currentArticleId,
+	basePath = "/blogg",
 }: RelatedPostsProps) {
 	// Filter out current article and limit to 3
 	const relatedArticles = articles
@@ -64,6 +67,7 @@ export function RelatedPosts({
 								key={article.id}
 								article={article}
 								index={index}
+								basePath={basePath}
 							/>
 						))}
 					</div>
