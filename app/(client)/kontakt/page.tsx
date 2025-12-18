@@ -1,33 +1,84 @@
-import { siteConfig } from "@/config/site";
+import type { Metadata } from "next";
 import { AnimatedHero } from "./_components/animated-hero";
 import { AnimatedContactCards } from "./_components/animated-contact-cards";
 import { AnimatedFormSection } from "./_components/animated-form-section";
 import { AnimatedOfficeLocations } from "./_components/animated-office-locations";
 import { AnimatedFAQ } from "./_components/animated-faq";
+import {
+	getKontaktPage,
+	getKontaktPageSeo,
+} from "@/lib/services/kontakt-page.service";
+import { getSiteSettings } from "@/lib/services/site-settings.service";
 
-export default function ContactPage() {
+export async function generateMetadata(): Promise<Metadata> {
+	const [seo, siteSettings] = await Promise.all([
+		getKontaktPageSeo(),
+		getSiteSettings(),
+	]);
+
+	const siteName = siteSettings.seo?.siteName || "Synos Medical";
+	const title = seo.title || `Kontakt - ${siteName}`;
+	const description =
+		seo.description ||
+		`Kontakta ${siteName} för frågor om medicinsk utrustning, utbildningar eller att starta din egen klinik.`;
+
+	return {
+		title,
+		description,
+		openGraph: {
+			title,
+			description,
+			type: "website",
+			siteName,
+			...(seo.ogImage && { images: [{ url: seo.ogImage }] }),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title,
+			description,
+			...(seo.ogImage && { images: [seo.ogImage] }),
+		},
+	};
+}
+
+export default async function ContactPage() {
+	// Fetch CMS data
+	const [kontaktPage, siteSettings] = await Promise.all([
+		getKontaktPage(),
+		getSiteSettings(),
+	]);
+
+	// Filter visible offices
+	const visibleOffices = siteSettings.offices.filter(
+		(office) => office.isVisible !== false
+	);
+
 	return (
 		<div className="bg-primary/50 w-full">
 			{/* Hero Section */}
 			<AnimatedHero
-				phone={siteConfig.company.phone}
-				email={siteConfig.company.email}
+				data={kontaktPage.hero}
+				phone={siteSettings.phone}
+				email={siteSettings.email}
 			/>
 
 			{/* Contact Methods Section */}
 			<AnimatedContactCards
-				phone={siteConfig.company.phone}
-				email={siteConfig.company.email}
-				facebookUrl={siteConfig.links.facebook}
-				instagramUrl={siteConfig.links.instagram}
-				linkedinUrl={siteConfig.links.linkedin}
+				phoneCard={kontaktPage.phoneCard}
+				emailCard={kontaktPage.emailCard}
+				socialCard={kontaktPage.socialCard}
+				phone={siteSettings.phone}
+				email={siteSettings.email}
+				facebookUrl={siteSettings.socialMedia?.facebook || ""}
+				instagramUrl={siteSettings.socialMedia?.instagram || ""}
+				linkedinUrl={siteSettings.socialMedia?.linkedin || ""}
 			/>
 
 			{/* Contact Form Section */}
 			<section className="section-padding bg-white">
 				<div className="_container">
 					<div className="mx-auto max-w-3xl">
-						<AnimatedFormSection />
+						<AnimatedFormSection data={kontaktPage.formSection} />
 					</div>
 				</div>
 			</section>
@@ -36,13 +87,14 @@ export default function ContactPage() {
 			<section className="section-padding bg-slate-50">
 				<div className="_container overflow-hidden">
 					<AnimatedOfficeLocations
-						addresses={siteConfig.company.addresses}
+						data={kontaktPage.officeSection}
+						addresses={visibleOffices}
 					/>
 				</div>
 			</section>
 
 			{/* FAQ Section */}
-			<AnimatedFAQ />
+			<AnimatedFAQ data={kontaktPage.faqSection} />
 		</div>
 	);
 }

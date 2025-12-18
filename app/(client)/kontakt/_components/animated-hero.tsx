@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { MessageCircle, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { IKontaktHero } from "@/models/kontakt-page.model";
 
 const fadeUp = {
 	initial: { opacity: 0, y: 20 },
@@ -19,11 +20,12 @@ const staggerContainer = {
 };
 
 interface AnimatedHeroProps {
+	data: IKontaktHero;
 	phone: string;
 	email: string;
 }
 
-export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
+export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 	return (
 		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-primary/20 padding-top pb-24">
 			{/* Background Pattern */}
@@ -39,22 +41,24 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 					className="mx-auto max-w-4xl text-center"
 				>
 					{/* Badge */}
-					<motion.div
-						variants={fadeUp}
-						className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
-					>
-						<MessageCircle className="h-4 w-4 text-primary" />
-						<span className="text-sm font-medium text-black">
-							Vi finns här för dig
-						</span>
-					</motion.div>
+					{data.badge && (
+						<motion.div
+							variants={fadeUp}
+							className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
+						>
+							<MessageCircle className="h-4 w-4 text-primary" />
+							<span className="text-sm font-medium text-black">
+								{data.badge}
+							</span>
+						</motion.div>
+					)}
 
 					{/* Heading */}
 					<motion.h1
 						variants={fadeUp}
 						className="mb-6 text-4xl font-bold tracking-tight text-primary md:text-5xl lg:text-6xl"
 					>
-						Låt oss prata om ditt projekt
+						{data.title}
 					</motion.h1>
 
 					{/* Description */}
@@ -62,9 +66,7 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 						variants={fadeUp}
 						className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-black md:text-xl"
 					>
-						Har du frågor om våra produkter, utbildningar eller vill veta
-						mer om hur du startar din egen klinik? Vårt team finns här för
-						att hjälpa dig.
+						{data.subtitle}
 					</motion.p>
 
 					{/* Quick Contact Buttons */}
@@ -100,14 +102,18 @@ export function AnimatedHero({ phone, email }: AnimatedHeroProps) {
 						variants={fadeUp}
 						className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-white/80"
 					>
-						<div className="flex items-center gap-2">
-							<MessageCircle className="h-4 w-4 text-secondary" />
-							<span>Svar inom 24 timmar</span>
-						</div>
-						<div className="flex items-center gap-2">
-							<span className="flex h-2 w-2 rounded-full bg-secondary animate-pulse" />
-							<span>Kontor i Stockholm & Linköping</span>
-						</div>
+						{data.responseTime && (
+							<div className="flex items-center gap-2">
+								<MessageCircle className="h-4 w-4 text-secondary" />
+								<span>{data.responseTime}</span>
+							</div>
+						)}
+						{data.officeLocationsText && (
+							<div className="flex items-center gap-2">
+								<span className="flex h-2 w-2 rounded-full bg-secondary animate-pulse" />
+								<span>{data.officeLocationsText}</span>
+							</div>
+						)}
 					</motion.div>
 				</motion.div>
 			</div>

@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import SunEditor from "suneditor-react";
 import SunEditorCore from "suneditor/src/lib/core";
 import katex from "katex";
 import "suneditor/dist/css/suneditor.min.css";
 import "katex/dist/katex.min.css";
 
-// import { convertImageToWebP } from '@/utils/image-utils';
-// import { api } from "@/server/api";
 import { SunEditorReactProps } from "suneditor-react/dist/types/SunEditorReactProps";
-// import { fileDelete } from '@/server/api/fileUpload';
 
 const commonButtons = [
 	"bold",
@@ -583,85 +580,130 @@ const TextEditor: React.FC<TextEditorProps> = ({
 	variant = "simple",
 }) => {
 	const editor = useRef<SunEditorCore | null>(null);
-	const [selectedImages, setSelectedImages] = React.useState<string[]>([]);
+	const [uploadedImages, setUploadedImages] = React.useState<string[]>([]);
+	const [content, setContent] = React.useState(defaultValue || "");
 
 	const getSunEditorInstance = (sunEditor: SunEditorCore) => {
 		editor.current = sunEditor;
 	};
 
+	// Upload image to storage API
+	const uploadImage = useCallback(
+		async (file: File): Promise<string | null> => {
+			try {
+				const formData = new FormData();
+				formData.append("file", file);
+				formData.append("folder", "images");
+
+				const response = await fetch("/api/storage/upload", {
+					method: "POST",
+					body: formData,
+				});
+
+				const data = await response.json();
+
+				if (!response.ok || !data.success) {
+					console.error("Image upload failed:", data.message);
+					return null;
+				}
+
+				return data.data.url;
+			} catch (error) {
+				console.error("Image upload error:", error);
+				return null;
+			}
+		},
+		[]
+	);
+
+	// Delete image from storage API
+	const deleteImage = useCallback(
+		async (imageUrl: string): Promise<boolean> => {
+			try {
+				// Extract filename and folder from URL (e.g., /storage/images/uuid.jpg)
+				const urlParts = imageUrl.split("/");
+				const filename = urlParts[urlParts.length - 1];
+				const folder = urlParts[urlParts.length - 2];
+
+				if (!filename || !folder) return false;
+
+				const response = await fetch("/api/storage/delete", {
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ filename, folder }),
+				});
+
+				const data = await response.json();
+				return response.ok && data.success;
+			} catch (error) {
+				console.error("Image deletion error:", error);
+				return false;
+			}
+		},
+		[]
+	);
+
 	const handleImageUploadBefore = (
 		files: File[],
 		_info: object,
 		uploadHandler: (response: {
-			result: { url: any; name: string }[];
+			result: { url: string; name: string }[];
 			errorMessage?: string;
 		}) => void
 	): boolean => {
 		(async () => {
 			const file = files[0];
-			// const webpFile = await convertImageToWebP(file);
+			const uploadedUrl = await uploadImage(file);
 
-			// const formData = new FormData();
-			// formData.append('file', webpFile, 'image.webp');
-			// formData.append('directory', 'editor');
+			if (uploadedUrl) {
+				// Track uploaded image for potential deletion
+				setUploadedImages((prev) => [...prev, uploadedUrl]);
 
-			// const response = await api.post('/admin-file/upload', formData);
-			// if (response.success) {
-			//   setSelectedImages((prev) => [...prev, response.data]);
-
-			uploadHandler({
-				result: [
-					{
-						url: file,
-						name: "thumbnail",
-					},
-				],
-			});
-			// }
+				uploadHandler({
+					result: [
+						{
+							url: uploadedUrl,
+							name: file.name,
+						},
+					],
+				});
+			} else {
+				uploadHandler({
+					result: [],
+					errorMessage: "Failed to upload image. Please try again.",
+				});
+			}
 		})();
 		return true;
 	};
 
-	// Define custom fonts
-	const customFonts = [
-		"Noto Sans Bengali",
-		"Tiro Bangla",
-		"Poppins",
-		"Roboto",
-		"Lato",
-		"Merriweather",
-		"Open Sans",
-		"Oswald",
-		"Raleway",
-	];
-
-	const [content, setContent] = React.useState(defaultValue || "");
-
-	const handleChange = (content: string) => {
+	const handleChange = (newContent: string) => {
+		setContent(newContent);
 		if (onChange) {
-			setContent(content);
-			onChange(content);
+			onChange(newContent);
 		}
 	};
 
+	// Clean up deleted images when content changes
 	useEffect(() => {
-		selectedImages.forEach(async (image) => {
-			// Only consider deleting if not found in content
-			if (
-				content &&
-				!content.includes("base64") &&
-				!content.includes(image)
-			) {
-				try {
-					// const removedRes = await fileDelete(image);
+		if (!content || uploadedImages.length === 0) return;
 
-					setSelectedImages((prev) => prev.filter((img) => img !== image));
-				} catch (error) {
-					console.error("Image deletion failed:", error);
-				}
+		// Find images that were uploaded but no longer exist in content
+		const imagesToDelete = uploadedImages.filter((imageUrl) => {
+			// Skip base64 images
+			if (imageUrl.includes("base64")) return false;
+			// Check if image URL is still in content
+			return !content.includes(imageUrl);
+		});
+
+		// Delete orphaned images
+		imagesToDelete.forEach(async (imageUrl) => {
+			const deleted = await deleteImage(imageUrl);
+			if (deleted) {
+				setUploadedImages((prev) => prev.filter((img) => img !== imageUrl));
 			}
 		});
-	}, [content, selectedImages]);
+	}, [content, uploadedImages, deleteImage]);
 
 	return (
 		<div className="sun-editor-wrapper">
@@ -683,7 +725,17 @@ const TextEditor: React.FC<TextEditorProps> = ({
 					katex,
 					buttonList: buttonListVariants[variant],
 					templates: templatesList,
-
+					font: [
+						"Arial",
+						"Georgia",
+						"Tahoma",
+						"Trebuchet MS",
+						"Verdana",
+						"Poppins",
+						"Roboto",
+						"Open Sans",
+						"Lato",
+					],
 					addTagsWhitelist: "math",
 				}}
 				onChange={handleChange}

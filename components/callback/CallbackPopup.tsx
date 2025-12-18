@@ -292,7 +292,7 @@ export function CallbackPopup() {
 
 								{/* Selected Time Display */}
 								{form.getValues("preferredDate") && (
-									<div className="mt-6 p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200/60">
+									<div className="mt-6 p-4 bg-linear-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200/60">
 										<p className="text-xs text-slate-400 uppercase tracking-wider mb-2">
 											Vald tid för uppringning
 										</p>
@@ -322,7 +322,7 @@ export function CallbackPopup() {
 								{/* Close Button */}
 								<Button
 									onClick={handleClose}
-									className="mt-8 w-full h-12 rounded-xl text-base font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-200/40 transition-all duration-200 hover:shadow-xl hover:shadow-emerald-200/50"
+									className="mt-8 w-full h-12 rounded-xl text-base font-medium bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-200/40 transition-all duration-200 hover:shadow-xl hover:shadow-emerald-200/50"
 								>
 									Stäng
 								</Button>

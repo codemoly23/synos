@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,11 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
 	CountryCodeSelect,
 	defaultCountry,
@@ -64,10 +59,14 @@ interface TourRequestModalProps {
 	onOpenChange: (open: boolean) => void;
 }
 
-export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) {
+export function TourRequestModal({
+	open,
+	onOpenChange,
+}: TourRequestModalProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
-	const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry);
+	const [selectedCountry, setSelectedCountry] =
+		useState<Country>(defaultCountry);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -155,7 +154,9 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 						)
 						.join(", ");
 					toast.error(
-						fieldErrors || result.message || "Något gick fel. Försök igen."
+						fieldErrors ||
+							result.message ||
+							"Något gick fel. Försök igen."
 					);
 				} else {
 					toast.error(result.message || "Något gick fel. Försök igen.");
@@ -198,7 +199,10 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 							<div className="relative w-16 h-16 mx-auto">
 								<div className="absolute inset-0 rounded-full border-3 border-emerald-100" />
 								<div className="absolute inset-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50">
-									<CheckCircle2 className="w-7 h-7 text-white" strokeWidth={2} />
+									<CheckCircle2
+										className="w-7 h-7 text-white"
+										strokeWidth={2}
+									/>
 								</div>
 							</div>
 
@@ -207,7 +211,8 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 								Tack för din förfrågan!
 							</h2>
 							<p className="mt-2 text-sm text-slate-500 leading-relaxed">
-								Vi kontaktar dig inom kort för att boka in din virtuella rundtur.
+								Vi kontaktar dig inom kort för att boka in din virtuella
+								rundtur.
 							</p>
 
 							{/* Close Button */}
@@ -251,10 +256,16 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 
 						{/* Form Content - Scrollable */}
 						<div className="bg-white rounded-t-2xl px-5 py-5 overflow-y-auto flex-1">
-							<form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+							<form
+								onSubmit={handleSubmit(onSubmit)}
+								className="space-y-3"
+							>
 								{/* Full Name */}
 								<div className="space-y-1">
-									<Label htmlFor="fullName" className="text-xs font-semibold">
+									<Label
+										htmlFor="fullName"
+										className="text-xs font-semibold"
+									>
 										Namn <span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
@@ -279,8 +290,12 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 
 								{/* Email */}
 								<div className="space-y-1">
-									<Label htmlFor="email" className="text-xs font-semibold">
-										E-postadress <span className="text-red-500">*</span>
+									<Label
+										htmlFor="email"
+										className="text-xs font-semibold"
+									>
+										E-postadress{" "}
+										<span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
 										<Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -306,7 +321,8 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 								{/* Phone with Country Code */}
 								<div className="space-y-1">
 									<Label className="text-xs font-semibold">
-										Telefonnummer <span className="text-red-500">*</span>
+										Telefonnummer{" "}
+										<span className="text-red-500">*</span>
 									</Label>
 									<div className="flex gap-2">
 										<div className="w-[100px] shrink-0">
@@ -341,7 +357,10 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 
 								{/* Message (Optional) */}
 								<div className="space-y-1">
-									<Label htmlFor="message" className="text-xs font-semibold">
+									<Label
+										htmlFor="message"
+										className="text-xs font-semibold"
+									>
 										Meddelande{" "}
 										<span className="text-muted-foreground font-normal">
 											(valfritt)
@@ -373,8 +392,8 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 											errors.gdprConsent
 												? "border-red-500 bg-red-50"
 												: gdprChecked
-													? "border-primary bg-primary/5"
-													: "border-border"
+												? "border-primary bg-primary/5"
+												: "border-border"
 										)}
 									>
 										<Checkbox
@@ -396,8 +415,9 @@ export function TourRequestModal({ open, onOpenChange }: TourRequestModalProps) 
 											>
 												integritetspolicy
 											</Link>{" "}
-											och samtycker till att mina uppgifter behandlas enligt
-											GDPR. <span className="text-red-500">*</span>
+											och samtycker till att mina uppgifter behandlas
+											enligt GDPR.{" "}
+											<span className="text-red-500">*</span>
 										</span>
 									</label>
 									{errors.gdprConsent && (

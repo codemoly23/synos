@@ -6,39 +6,11 @@ import { useState } from "react";
 import { fadeUp, staggerContainer, defaultTransition } from "@/lib/animations";
 import { ImageComponent } from "../common/image-component";
 import { TourRequestModal } from "./TourRequestModal";
+import type { IImageGallerySection } from "@/models/home-page.model";
 
-/**
- * Image Gallery Data Structure
- * Maintains the existing data format for backward compatibility
- */
-interface GalleryImage {
-	src: string;
-	title: string;
-	subtitle: string;
+interface ImageGalleryProps {
+	data: IImageGallerySection;
 }
-
-const images: GalleryImage[] = [
-	{
-		src: "https://images.unsplash.com/photo-1504813184591-01572f98c85f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-		title: "Modern Operating Theaters",
-		subtitle: "Equipped with precision robotics",
-	},
-	{
-		src: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?q=80&w=847&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-		title: "Advanced Imaging Centers",
-		subtitle: "High-resolution diagnostic clarity",
-	},
-	{
-		src: "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-		title: "Patient Care Units",
-		subtitle: "Comfort meets technology",
-	},
-	{
-		src: "https://plus.unsplash.com/premium_photo-1678376871157-6cebdd957e22?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-		title: "Sterile Processing",
-		subtitle: "Gold standard hygiene protocols",
-	},
-];
 
 /**
  * ImageGallery Component
@@ -54,7 +26,7 @@ const images: GalleryImage[] = [
  *
  * @returns {JSX.Element} The ImageGallery component
  */
-export function ImageGallery() {
+export function ImageGallery({ data }: ImageGalleryProps) {
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 	const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
@@ -83,7 +55,7 @@ export function ImageGallery() {
 					>
 						<Eye className="h-4 w-4 text-primary" />
 						<span className="text-xs font-extrabold text-primary uppercase tracking-wider">
-							Our Facilities
+							{data?.badge}
 						</span>
 					</motion.div>
 
@@ -93,7 +65,7 @@ export function ImageGallery() {
 						transition={defaultTransition}
 						className="text-4xl md:text-5xl lg:text-6xl font-black text-secondary mb-4 tracking-tight"
 					>
-						Excellence in Action
+						{data?.title}
 					</motion.h2>
 
 					<motion.p
@@ -101,8 +73,7 @@ export function ImageGallery() {
 						transition={defaultTransition}
 						className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium"
 					>
-						See how our equipment transforms medical facilities around the
-						world
+						{data?.subtitle}
 					</motion.p>
 				</motion.div>
 
@@ -114,7 +85,7 @@ export function ImageGallery() {
 					variants={staggerContainer}
 					className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
 				>
-					{images.map((image, index) => (
+					{data?.images?.map((image, index) => (
 						<motion.figure
 							key={index}
 							variants={fadeUp}
@@ -167,11 +138,6 @@ export function ImageGallery() {
 							>
 								{/* Glass Card with Content */}
 								<div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 md:p-6 shadow-2xl transform transition-all duration-300 group-hover:shadow-primary/20">
-									{/* Icon Badge */}
-									{/* <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 border border-primary/20 mb-3">
-										<Maximize2 className="h-5 w-5 text-primary" />
-									</div> */}
-
 									{/* Title */}
 									<h3 className="text-xl md:text-2xl font-extrabold text-white mb-2 line-clamp-2 tracking-tight">
 										{image.title}
@@ -186,13 +152,6 @@ export function ImageGallery() {
 									<div className="mt-4 h-1 w-16 bg-linear-to-r from-primary to-primary/20 rounded-full" />
 								</div>
 							</div>
-
-							{/* Hover Indicator - Desktop only */}
-							{/* <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
-								<div className="bg-white/70 backdrop-blur-md rounded-full p-2 shadow-lg">
-									<Eye className="h-5 w-5 text-primary" />
-								</div>
-							</div> */}
 
 							{/* Accessible caption for screen readers */}
 							<figcaption className="sr-only">
@@ -213,18 +172,18 @@ export function ImageGallery() {
 					<div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/60 backdrop-blur-md border border-white/50 rounded-2xl p-6 md:p-8 shadow-xl">
 						<div className="flex-1 text-left">
 							<h3 className="text-lg md:text-xl font-extrabold text-secondary mb-2 tracking-tight">
-								Vill du se mer?
+								{data?.ctaTitle}
 							</h3>
 							<p className="text-secondary/50 text-sm md:text-base font-medium">
-								Boka en virtuell rundtur av våra anläggningar och utrustning
+								{data?.ctaSubtitle}
 							</p>
 						</div>
 						<button
 							onClick={() => setIsTourModalOpen(true)}
 							className="shrink-0 px-6 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-							aria-label="Boka virtuell rundtur"
+							aria-label={data?.ctaButtonText}
 						>
-							Boka rundtur
+							{data?.ctaButtonText}
 						</button>
 					</div>
 				</motion.div>
