@@ -20,6 +20,10 @@ import {
 	FileText,
 	Tags,
 	MessageCircle,
+	Settings,
+	Globe,
+	Phone,
+	PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -33,55 +37,106 @@ interface NavItem {
 	badge?: string;
 }
 
-const navItems: NavItem[] = [
+interface NavSection {
+	title: string;
+	items: NavItem[];
+}
+
+// Grouped navigation sections
+const navSections: NavSection[] = [
 	{
-		title: "Dashboard",
-		href: "/dashboard",
-		icon: LayoutDashboard,
+		title: "Overview",
+		items: [
+			{
+				title: "Dashboard",
+				href: "/dashboard",
+				icon: LayoutDashboard,
+			},
+		],
+	},
+	{
+		title: "Website",
+		items: [
+			{
+				title: "Home Page",
+				href: "/dashboard/webbplats/startsida",
+				icon: Globe,
+			},
+			{
+				title: "Contact Page",
+				href: "/dashboard/webbplats/kontakt",
+				icon: Phone,
+			},
+		],
 	},
 	{
 		title: "Products",
-		href: "/dashboard/products",
-		icon: Package,
+		items: [
+			{
+				title: "All Products",
+				href: "/dashboard/products",
+				icon: Package,
+			},
+			{
+				title: "Categories",
+				href: "/dashboard/categories",
+				icon: FolderTree,
+			},
+		],
 	},
 	{
-		title: "Categories",
-		href: "/dashboard/categories",
-		icon: FolderTree,
+		title: "Blog",
+		items: [
+			{
+				title: "All Posts",
+				href: "/dashboard/blog",
+				icon: FileText,
+			},
+			{
+				title: "Categories",
+				href: "/dashboard/blog/categories",
+				icon: Tags,
+			},
+			{
+				title: "Comments",
+				href: "/dashboard/comments",
+				icon: MessageCircle,
+			},
+		],
 	},
 	{
-		title: "Blog Posts",
-		href: "/dashboard/blog",
-		icon: FileText,
+		title: "Forms",
+		items: [
+			{
+				title: "Inquiries",
+				href: "/dashboard/inquiries",
+				icon: MessageSquare,
+			},
+		],
 	},
 	{
-		title: "Blog Categories",
-		href: "/dashboard/blog/categories",
-		icon: Tags,
-	},
-	{
-		title: "Comments",
-		href: "/dashboard/comments",
-		icon: MessageCircle,
-	},
-	{
-		title: "Inquiries",
-		href: "/dashboard/inquiries",
-		icon: MessageSquare,
-	},
-	{
-		title: "Users",
-		href: "/dashboard/users",
-		icon: Users,
-	},
-	{
-		title: "Storage",
-		href: "/dashboard/storage",
-		icon: HardDrive,
+		title: "System",
+		items: [
+			{
+				title: "Users",
+				href: "/dashboard/users",
+				icon: Users,
+			},
+			{
+				title: "Storage",
+				href: "/dashboard/storage",
+				icon: HardDrive,
+			},
+		],
 	},
 ];
 
 const bottomNavItems: NavItem[] = [
+	{
+		title: "Settings",
+		href: "/dashboard/settings",
+		icon: Settings,
+	},
 	{
 		title: "Profile",
 		href: "/dashboard/profile",
@@ -104,7 +159,10 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 		}
 		// For /dashboard/blog, only match exact path to avoid matching /dashboard/blog/categories
 		if (href === "/dashboard/blog") {
-			return pathname === "/dashboard/blog" || pathname.startsWith("/dashboard/blog/posts");
+			return (
+				pathname === "/dashboard/blog" ||
+				pathname.startsWith("/dashboard/blog/posts")
+			);
 		}
 		return pathname.startsWith(href);
 	};
@@ -125,7 +183,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 				href={item.href}
 				onClick={closeMobile}
 				className={cn(
-					"flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+					"flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
 					active
 						? "bg-primary text-white shadow-md shadow-primary/20"
 						: "text-slate-600 hover:text-slate-900 hover:bg-primary/10"
@@ -133,7 +191,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 			>
 				<item.icon
 					className={cn(
-						"h-5 w-5 shrink-0",
+						"h-4.5 w-4.5 shrink-0",
 						active ? "text-white" : "text-slate-500"
 					)}
 				/>
@@ -146,6 +204,20 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 			</Link>
 		);
 	};
+
+	const renderNavSection = (section: NavSection, index: number) => (
+		<div key={section.title} className={cn(index > 0 && "mt-4")}>
+			{!isCollapsed && (
+				<p className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+					{section.title}
+				</p>
+			)}
+			{isCollapsed && index > 0 && (
+				<div className="mx-3 my-2 border-t border-slate-200" />
+			)}
+			<div className="space-y-0.5">{section.items.map(renderNavLink)}</div>
+		</div>
+	);
 
 	const sidebarContent = (
 		<>
@@ -167,19 +239,14 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 			</div>
 
 			{/* Main Navigation */}
-			<nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-				<div className="mb-2">
-					{!isCollapsed && (
-						<p className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-							Main Menu
-						</p>
-					)}
-				</div>
-				{navItems.map(renderNavLink)}
+			<nav className="flex-1 p-3 overflow-y-auto">
+				{navSections.map((section, index) =>
+					renderNavSection(section, index)
+				)}
 			</nav>
 
 			{/* Bottom Navigation */}
-			<div className="p-3 border-t border-slate-200 space-y-1">
+			<div className="p-3 border-t border-slate-200 space-y-0.5">
 				{bottomNavItems.map(renderNavLink)}
 
 				{/* Back to Site */}
@@ -187,11 +254,11 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 					href="/"
 					onClick={closeMobile}
 					className={cn(
-						"flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+						"flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
 						"text-slate-600 hover:text-slate-900 hover:bg-slate-100"
 					)}
 				>
-					<Home className="h-5 w-5 shrink-0 text-slate-500" />
+					<Home className="h-4.5 w-4.5 shrink-0 text-slate-500" />
 					{!isCollapsed && <span>Back to Site</span>}
 				</Link>
 
@@ -199,12 +266,12 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 				<button
 					onClick={handleSignOut}
 					className={cn(
-						"flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full",
+						"flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 w-full",
 						"text-red-600 hover:text-red-700 hover:bg-red-50"
 					)}
 				>
-					<LogOut className="h-5 w-5 shrink-0" />
-					{!isCollapsed && <span>Sign Out</span>}
+					<LogOut className="h-4.5 w-4.5 shrink-0" />
+					{!isCollapsed && <span>Logout</span>}
 				</button>
 			</div>
 
@@ -215,11 +282,11 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 					className="flex items-center justify-center w-full py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
 				>
 					{isCollapsed ? (
-						<ChevronRight className="h-5 w-5" />
+						<PanelLeft className="h-5 w-5" />
 					) : (
 						<>
-							<ChevronLeft className="h-5 w-5" />
-							<span className="ml-2 text-sm">Collapse</span>
+							<PanelLeft className="h-5 w-5" />
+							<span className="ml-2 text-sm">Minimera</span>
 						</>
 					)}
 				</button>

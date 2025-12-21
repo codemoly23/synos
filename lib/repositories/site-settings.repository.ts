@@ -1,0 +1,195 @@
+import type { Document } from "mongoose";
+import { connectMongoose } from "@/lib/db/db-connect";
+import { DatabaseError } from "@/lib/utils/api-error";
+import { logger } from "@/lib/utils/logger";
+import {
+	getSiteSettingsModel,
+	type ISiteSettings,
+	type IOffice,
+	type ISocialMedia,
+	type ISeoSettings,
+} from "@/models/site-settings.model";
+
+/**
+ * Input type for updating site settings
+ */
+export interface UpdateSiteSettingsInput {
+	companyName?: string;
+	orgNumber?: string;
+	vatNumber?: string;
+	phone?: string;
+	email?: string;
+	noreplyEmail?: string;
+	offices?: IOffice[];
+	socialMedia?: Partial<ISocialMedia>;
+	seo?: Partial<ISeoSettings>;
+}
+
+/**
+ * Plain object type for SiteSettings (without Mongoose Document methods)
+ */
+export type SiteSettingsData = Omit<ISiteSettings, keyof Document>;
+
+/**
+ * SiteSettings Repository
+ * Handles singleton pattern for site-wide configuration
+ */
+class SiteSettingsRepository {
+	/**
+	 * Ensure database connection
+	 */
+	private async ensureConnection(): Promise<void> {
+		await connectMongoose();
+	}
+
+	/**
+	 * Get the singleton site settings document
+	 * Creates one with defaults if it doesn't exist
+	 * Returns plain JavaScript object to avoid circular reference issues
+	 */
+	async get(): Promise<SiteSettingsData> {
+		try {
+			await this.ensureConnection();
+			const startTime = Date.now();
+			const SiteSettings = await getSiteSettingsModel();
+
+			// Try to find existing settings - use lean() to get plain object
+			let settings = await SiteSettings.findOne({}).lean<SiteSettingsData>().exec();
+
+			// If no settings exist, create with defaults
+			if (!settings) {
+				const created = await SiteSettings.create({});
+				settings = created.toObject() as SiteSettingsData;
+				logger.info("Created default site settings");
+			}
+
+			logger.db("get", "SiteSettings", Date.now() - startTime);
+			return settings;
+		} catch (error) {
+			logger.error("Error getting site settings", error);
+			throw new DatabaseError("Failed to get site settings");
+		}
+	}
+
+	/**
+	 * Update site settings
+	 * Uses upsert to ensure document exists
+	 * Returns plain JavaScript object to avoid circular reference issues
+	 */
+	async update(data: UpdateSiteSettingsInput): Promise<SiteSettingsData> {
+		try {
+			await this.ensureConnection();
+			const startTime = Date.now();
+			const SiteSettings = await getSiteSettingsModel();
+
+			// Build update object, handling nested objects properly
+			const updateData: Record<string, unknown> = {};
+
+			// Direct fields
+			if (data.companyName !== undefined)
+				updateData.companyName = data.companyName;
+			if (data.orgNumber !== undefined) updateData.orgNumber = data.orgNumber;
+			if (data.vatNumber !== undefined) updateData.vatNumber = data.vatNumber;
+			if (data.phone !== undefined) updateData.phone = data.phone;
+			if (data.email !== undefined) updateData.email = data.email;
+			if (data.noreplyEmail !== undefined)
+				updateData.noreplyEmail = data.noreplyEmail;
+			if (data.offices !== undefined) updateData.offices = data.offices;
+
+			// Nested objects - merge with existing
+			if (data.socialMedia !== undefined) {
+				const existing = await this.get();
+				updateData.socialMedia = {
+					...existing.socialMedia,
+					...data.socialMedia,
+				};
+			}
+
+			if (data.seo !== undefined) {
+				const existing = await this.get();
+				updateData.seo = {
+					...existing.seo,
+					...data.seo,
+				};
+			}
+
+			// Upsert: update if exists, create if not - use lean() to get plain object
+			const settings = await SiteSettings.findOneAndUpdate(
+				{},
+				{ $set: updateData },
+				{ new: true, upsert: true, runValidators: true }
+			).lean<SiteSettingsData>().exec();
+
+			if (!settings) {
+				throw new DatabaseError("Failed to update site settings");
+			}
+
+			logger.db("update", "SiteSettings", Date.now() - startTime);
+			logger.info("Site settings updated");
+
+			return settings;
+		} catch (error) {
+			logger.error("Error updating site settings", error);
+			throw new DatabaseError("Failed to update site settings");
+		}
+	}
+
+	/**
+	 * Get contact information only
+	 */
+	async getContact(): Promise<{
+		phone: string;
+		email: string;
+		offices: IOffice[];
+	}> {
+		const settings = await this.get();
+		return {
+			phone: settings.phone,
+			email: settings.email,
+			offices: settings.offices,
+		};
+	}
+
+	/**
+	 * Get company information only
+	 */
+	async getCompanyInfo(): Promise<{
+		companyName: string;
+		orgNumber: string;
+		vatNumber?: string;
+	}> {
+		const settings = await this.get();
+		return {
+			companyName: settings.companyName,
+			orgNumber: settings.orgNumber,
+			vatNumber: settings.vatNumber,
+		};
+	}
+
+	/**
+	 * Get social media links only
+	 */
+	async getSocialMedia(): Promise<ISocialMedia> {
+		const settings = await this.get();
+		return settings.socialMedia;
+	}
+
+	/**
+	 * Get SEO settings only
+	 */
+	async getSeo(): Promise<ISeoSettings> {
+		const settings = await this.get();
+		return settings.seo;
+	}
+
+	/**
+	 * Get headquarters office
+	 */
+	async getHeadquarters(): Promise<IOffice | undefined> {
+		const settings = await this.get();
+		return settings.offices.find((office) => office.isHeadquarters);
+	}
+}
+
+// Export singleton instance
+export const siteSettingsRepository = new SiteSettingsRepository();
