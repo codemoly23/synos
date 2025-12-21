@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
@@ -136,7 +137,7 @@ export default function RootLayout({
 					/>
 				</noscript>
 
-				{children}
+				<NuqsAdapter>{children}</NuqsAdapter>
 				<ToasterProvider />
 			</body>
 		</html>

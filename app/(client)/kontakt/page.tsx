@@ -17,9 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	]);
 
 	const siteName = siteSettings.seo?.siteName || "Synos Medical";
-	const title = seo.title || `Kontakt - ${siteName}`;
+	const title = seo?.title || `Kontakt - ${siteName}`;
 	const description =
-		seo.description ||
+		seo?.description ||
 		`Kontakta ${siteName} för frågor om medicinsk utrustning, utbildningar eller att starta din egen klinik.`;
 
 	return {
@@ -30,13 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
 			description,
 			type: "website",
 			siteName,
-			...(seo.ogImage && { images: [{ url: seo.ogImage }] }),
+			...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
 		},
 		twitter: {
 			card: "summary_large_image",
 			title,
 			description,
-			...(seo.ogImage && { images: [seo.ogImage] }),
+			...(seo?.ogImage && { images: [seo.ogImage] }),
 		},
 	};
 }

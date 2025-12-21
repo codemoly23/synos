@@ -5,19 +5,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import {
-	Loader2,
-	Plus,
-	Trash2,
-	Home,
-	Phone,
-	Mail,
-	MessageCircle,
-	Send,
-	MapPin,
-	HelpCircle,
-	Search,
-} from "lucide-react";
+import { Loader2, Plus, Trash2, Phone, Mail, MessageCircle, ExternalLink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +36,8 @@ import {
 } from "@/components/ui/select";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
+import { useConfirmModal } from "@/components/ui/confirm-modal";
 
 // Available Lucide icons for selection
 const AVAILABLE_ICONS = [
@@ -132,6 +122,7 @@ type KontaktPageFormValues = z.infer<typeof kontaktPageFormSchema>;
 export default function KontaktPage() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const { confirm, ConfirmModal } = useConfirmModal({ variant: "destructive" });
 
 	const form = useForm<KontaktPageFormValues>({
 		resolver: zodResolver(kontaktPageFormSchema),
@@ -255,7 +246,7 @@ export default function KontaktPage() {
 				throw new Error(data.message || "Failed to save content");
 			}
 
-			toast.success("Kontakt page content saved successfully");
+			toast.success("Contact page content saved successfully");
 		} catch (error) {
 			console.error("Error saving content:", error);
 			toast.error(
@@ -267,53 +258,39 @@ export default function KontaktPage() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center py-12">
-				<div className="text-center">
-					<Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-					<p className="mt-4 text-muted-foreground">Loading content...</p>
-				</div>
-			</div>
-		);
+		return <CMSPageSkeleton />;
 	}
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Contact Page</h1>
-				<p className="text-muted-foreground">
-					Manage the content on the contact page.
-				</p>
+			<div className="flex items-start justify-between">
+				<div>
+					<h1 className="text-3xl font-bold tracking-tight">Contact Page</h1>
+					<p className="text-muted-foreground">
+						Manage the content on the contact page.
+					</p>
+				</div>
+				<a
+					href="/kontakt"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+				>
+					<ExternalLink className="h-4 w-4" />
+					<span>View page</span>
+				</a>
 			</div>
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<Tabs defaultValue="hero" className="space-y-6">
-						<TabsList className="grid w-full grid-cols-6">
-							<TabsTrigger value="hero" className="flex items-center gap-2">
-								<Home className="h-4 w-4" />
-								<span className="hidden sm:inline">Hero</span>
-							</TabsTrigger>
-							<TabsTrigger value="cards" className="flex items-center gap-2">
-								<Phone className="h-4 w-4" />
-								<span className="hidden sm:inline">Cards</span>
-							</TabsTrigger>
-							<TabsTrigger value="form" className="flex items-center gap-2">
-								<Send className="h-4 w-4" />
-								<span className="hidden sm:inline">Form</span>
-							</TabsTrigger>
-							<TabsTrigger value="offices" className="flex items-center gap-2">
-								<MapPin className="h-4 w-4" />
-								<span className="hidden sm:inline">Offices</span>
-							</TabsTrigger>
-							<TabsTrigger value="faq" className="flex items-center gap-2">
-								<HelpCircle className="h-4 w-4" />
-								<span className="hidden sm:inline">FAQ</span>
-							</TabsTrigger>
-							<TabsTrigger value="seo" className="flex items-center gap-2">
-								<Search className="h-4 w-4" />
-								<span className="hidden sm:inline">SEO</span>
-							</TabsTrigger>
+						<TabsList className="flex flex-wrap h-auto gap-1 p-1 justify-start">
+							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="cards">Cards</TabsTrigger>
+							<TabsTrigger value="form">Form</TabsTrigger>
+							<TabsTrigger value="offices">Offices</TabsTrigger>
+							<TabsTrigger value="faq">FAQ</TabsTrigger>
+							<TabsTrigger value="seo">SEO</TabsTrigger>
 						</TabsList>
 
 						{/* Hero Tab */}
@@ -334,8 +311,9 @@ export default function KontaktPage() {
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="We're here for you"
 														{...field}
+														value={field.value || ""}
+														placeholder="We're here for you"
 													/>
 												</FormControl>
 												<FormDescription>
@@ -354,8 +332,9 @@ export default function KontaktPage() {
 												<FormLabel>Title</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Let's talk about your project"
 														{...field}
+														value={field.value || ""}
+														placeholder="Let's talk about your project"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -371,9 +350,10 @@ export default function KontaktPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Do you have questions about our products..."
 														rows={3}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -390,8 +370,9 @@ export default function KontaktPage() {
 													<FormLabel>Response Time Text</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Response within 24 hours"
 															{...field}
+															value={field.value || ""}
+															placeholder="Response within 24 hours"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -409,8 +390,9 @@ export default function KontaktPage() {
 													<FormLabel>Office Locations Text</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Offices in Stockholm & Linköping"
 															{...field}
+															value={field.value || ""}
+															placeholder="Offices in Stockholm & Linköping"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -475,7 +457,7 @@ export default function KontaktPage() {
 												<FormItem>
 													<FormLabel>Title</FormLabel>
 													<FormControl>
-														<Input placeholder="Phone" {...field} />
+														<Input {...field} value={field.value || ""} placeholder="Phone" />
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -489,8 +471,9 @@ export default function KontaktPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Mon-Fri 09:00-17:00"
 															{...field}
+															value={field.value || ""}
+															placeholder="Mon-Fri 09:00-17:00"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -549,7 +532,7 @@ export default function KontaktPage() {
 												<FormItem>
 													<FormLabel>Title</FormLabel>
 													<FormControl>
-														<Input placeholder="Email" {...field} />
+														<Input {...field} value={field.value || ""} placeholder="Email" />
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -563,8 +546,9 @@ export default function KontaktPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Response within 24 hours"
 															{...field}
+															value={field.value || ""}
+															placeholder="Response within 24 hours"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -623,7 +607,7 @@ export default function KontaktPage() {
 												<FormItem>
 													<FormLabel>Title</FormLabel>
 													<FormControl>
-														<Input placeholder="Social Media" {...field} />
+														<Input {...field} value={field.value || ""} placeholder="Social Media" />
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -637,8 +621,9 @@ export default function KontaktPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Follow us for updates"
 															{...field}
+															value={field.value || ""}
+															placeholder="Follow us for updates"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -667,7 +652,7 @@ export default function KontaktPage() {
 											<FormItem>
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
-													<Input placeholder="Send Message" {...field} />
+													<Input {...field} value={field.value || ""} placeholder="Send Message" />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -682,8 +667,9 @@ export default function KontaktPage() {
 												<FormLabel>Title</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Tell us about your project"
 														{...field}
+														value={field.value || ""}
+														placeholder="Tell us about your project"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -699,9 +685,10 @@ export default function KontaktPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Fill out the form and we'll get back to you..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -730,7 +717,7 @@ export default function KontaktPage() {
 											<FormItem>
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
-													<Input placeholder="Our Offices" {...field} />
+													<Input {...field} value={field.value || ""} placeholder="Our Offices" />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -744,7 +731,7 @@ export default function KontaktPage() {
 											<FormItem>
 												<FormLabel>Title</FormLabel>
 												<FormControl>
-													<Input placeholder="Visit Us" {...field} />
+													<Input {...field} value={field.value || ""} placeholder="Visit Us" />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -759,9 +746,10 @@ export default function KontaktPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="We have offices in Stockholm and Linköping..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -778,8 +766,9 @@ export default function KontaktPage() {
 													<FormLabel>Opening Hours</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Mon-Fri 09:00-17:00"
 															{...field}
+															value={field.value || ""}
+															placeholder="Mon-Fri 09:00-17:00"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -793,7 +782,7 @@ export default function KontaktPage() {
 												<FormItem>
 													<FormLabel>Closed Text</FormLabel>
 													<FormControl>
-														<Input placeholder="Weekends closed" {...field} />
+														<Input {...field} value={field.value || ""} placeholder="Weekends closed" />
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -821,7 +810,7 @@ export default function KontaktPage() {
 											<FormItem>
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
-													<Input placeholder="FAQ" {...field} />
+													<Input {...field} value={field.value || ""} placeholder="FAQ" />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -835,7 +824,7 @@ export default function KontaktPage() {
 											<FormItem>
 												<FormLabel>Title</FormLabel>
 												<FormControl>
-													<Input placeholder="Have Questions?" {...field} />
+													<Input {...field} value={field.value || ""} placeholder="Have Questions?" />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -850,9 +839,10 @@ export default function KontaktPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Here you'll find answers to the most common questions..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -899,7 +889,14 @@ export default function KontaktPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() => removeFaq(index)}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Question",
+																	description: "Are you sure you want to remove this question?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeFaq(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -915,8 +912,9 @@ export default function KontaktPage() {
 																<FormLabel>Question</FormLabel>
 																<FormControl>
 																	<Input
-																		placeholder="How quickly will I get a response?"
 																		{...field}
+																		value={field.value || ""}
+																		placeholder="How quickly will I get a response?"
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -931,9 +929,10 @@ export default function KontaktPage() {
 																<FormLabel>Answer</FormLabel>
 																<FormControl>
 																	<Textarea
+																		{...field}
+																		value={field.value || ""}
 																		placeholder="We strive to respond..."
 																		rows={2}
-																		{...field}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -967,8 +966,9 @@ export default function KontaktPage() {
 													<FormLabel>Page Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Contact Us - Synos Medical"
 															{...field}
+															value={field.value || ""}
+															placeholder="Contact Us - Synos Medical"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -987,9 +987,10 @@ export default function KontaktPage() {
 													<FormLabel>Meta Description</FormLabel>
 													<FormControl>
 														<Textarea
+															{...field}
+															value={field.value || ""}
 															placeholder="Contact Synos Medical for questions..."
 															rows={3}
-															{...field}
 														/>
 													</FormControl>
 													<FormDescription>
@@ -1069,6 +1070,7 @@ export default function KontaktPage() {
 					</div>
 				</form>
 			</Form>
+			<ConfirmModal />
 		</div>
 	);
 }

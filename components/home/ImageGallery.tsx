@@ -27,7 +27,6 @@ interface ImageGalleryProps {
  * @returns {JSX.Element} The ImageGallery component
  */
 export function ImageGallery({ data }: ImageGalleryProps) {
-	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 	const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
 	return (
@@ -90,8 +89,6 @@ export function ImageGallery({ data }: ImageGalleryProps) {
 							key={index}
 							variants={fadeUp}
 							transition={{ ...defaultTransition, delay: index * 0.1 }}
-							onMouseEnter={() => setHoveredIndex(index)}
-							onMouseLeave={() => setHoveredIndex(null)}
 							className={`
 								relative overflow-hidden rounded-2xl group cursor-pointer
 								${index === 0 ? "md:col-span-2 md:row-span-2" : ""}
@@ -115,41 +112,27 @@ export function ImageGallery({ data }: ImageGalleryProps) {
 								className="object-cover w-full h-full"
 							/>
 
-							{/* Gradient Overlay - Always visible on mobile, hover on desktop */}
+							{/* Gradient Overlay - Always visible for better text contrast */}
 							<div
-								className={`
-									absolute inset-0 bg-linear-to-t from-primary/90 via-primary/40 to-transparent
-									transition-opacity duration-500
-									md:opacity-0 md:group-hover:opacity-50
-								`}
+								className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-500"
 							/>
 
-							{/* Glassmorphic Content Overlay */}
-							<div
-								className={`
-									absolute inset-0 flex flex-col justify-end p-6 md:p-8
-									transition-all duration-500
-									${
-										hoveredIndex === index
-											? "translate-y-0 opacity-100"
-											: "md:translate-y-4 md:opacity-0"
-									}
-								`}
-							>
-								{/* Glass Card with Content */}
-								<div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 md:p-6 shadow-2xl transform transition-all duration-300 group-hover:shadow-primary/20">
+							{/* Content Overlay - Always visible */}
+							<div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6">
+								{/* Content Card */}
+								<div className="bg-black/50 backdrop-blur-sm rounded-xl p-4 md:p-5 transition-all duration-300 group-hover:bg-black/60">
 									{/* Title */}
-									<h3 className="text-xl md:text-2xl font-extrabold text-white mb-2 line-clamp-2 tracking-tight">
+									<h3 className="text-lg md:text-xl font-bold text-white mb-1 line-clamp-2 tracking-tight">
 										{image.title}
 									</h3>
 
 									{/* Subtitle */}
-									<p className="text-slate-200 text-sm md:text-base line-clamp-2 font-medium">
+									<p className="text-white/80 text-sm line-clamp-2 font-medium">
 										{image.subtitle}
 									</p>
 
 									{/* Decorative accent line */}
-									<div className="mt-4 h-1 w-16 bg-linear-to-r from-primary to-primary/20 rounded-full" />
+									<div className="mt-3 h-1 w-12 bg-primary rounded-full" />
 								</div>
 							</div>
 

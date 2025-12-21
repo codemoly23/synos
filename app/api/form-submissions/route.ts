@@ -71,6 +71,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "quote_request") {
+			submission = await formSubmissionService.createQuoteRequest(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/card";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { TagInput } from "@/components/admin/TagInput";
 
 // Validation schema matching the API
 const officeSchema = z.object({
@@ -773,6 +774,28 @@ export default function SettingsPage() {
 													</FormControl>
 													<FormDescription>
 														Used for Twitter card attribution.
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="seo.keywords"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>SEO Keywords</FormLabel>
+													<FormControl>
+														<TagInput
+															value={field.value || []}
+															onChange={field.onChange}
+															placeholder="Add keyword and press Enter..."
+															maxTags={15}
+														/>
+													</FormControl>
+													<FormDescription>
+														Default meta keywords for the site. Press Enter or comma to add.
 													</FormDescription>
 													<FormMessage />
 												</FormItem>
