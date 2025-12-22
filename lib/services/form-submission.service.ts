@@ -12,11 +12,13 @@ import {
 	contactInquirySchema,
 	callbackRequestSchema,
 	tourRequestSchema,
+	quoteRequestSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
 	type CallbackRequestInput,
 	type TourRequestInput,
+	type QuoteRequestInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -345,6 +347,59 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Tour request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a quote request submission
+	 */
+	async createQuoteRequest(
+		data: QuoteRequestInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = quoteRequestSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "quote_request" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: validData.countryCode,
+			countryName: "Sweden",
+			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: validData.gdprConsent,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Quote request created: ${submission._id}`);
 
 		return submission;
 	}

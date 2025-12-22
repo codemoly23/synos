@@ -10,8 +10,6 @@ import {
 	Users,
 	HardDrive,
 	UserCircle,
-	ChevronLeft,
-	ChevronRight,
 	LogOut,
 	Home,
 	Menu,
@@ -24,6 +22,14 @@ import {
 	Globe,
 	Phone,
 	PanelLeft,
+	Info,
+	UsersRound,
+	Scale,
+	Shield,
+	Briefcase,
+	Rocket,
+	GraduationCap,
+	HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -61,6 +67,46 @@ const navSections: NavSection[] = [
 				title: "Home Page",
 				href: "/dashboard/webbplats/startsida",
 				icon: Globe,
+			},
+			{
+				title: "About Us",
+				href: "/dashboard/webbplats/om-oss",
+				icon: Info,
+			},
+			{
+				title: "Team",
+				href: "/dashboard/webbplats/team",
+				icon: UsersRound,
+			},
+			{
+				title: "Legal Info",
+				href: "/dashboard/webbplats/juridisk-information",
+				icon: Scale,
+			},
+			{
+				title: "Privacy Policy",
+				href: "/dashboard/webbplats/integritetspolicy",
+				icon: Shield,
+			},
+			{
+				title: "Careers",
+				href: "/dashboard/webbplats/lediga-tjanster",
+				icon: Briefcase,
+			},
+			{
+				title: "Start Business",
+				href: "/dashboard/webbplats/starta-eget",
+				icon: Rocket,
+			},
+			{
+				title: "Training",
+				href: "/dashboard/webbplats/utbildningar",
+				icon: GraduationCap,
+			},
+			{
+				title: "FAQ",
+				href: "/dashboard/webbplats/faq",
+				icon: HelpCircle,
 			},
 			{
 				title: "Contact Page",

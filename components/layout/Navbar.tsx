@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { QuoteRequestModal } from "./QuoteRequestModal";
 
 import {
 	NavigationMenu,
@@ -23,6 +24,7 @@ import type { SiteConfigType } from "@/config/site";
 import Logo from "../common/logo";
 import MobileNavbar from "./MobileNavbar";
 import ProtectedNavbar from "./ProtectedNavbar";
+import { NavbarSearch } from "./NavbarSearch";
 
 interface NavbarProps {
 	config: SiteConfigType;
@@ -30,6 +32,7 @@ interface NavbarProps {
 
 export function Navbar({ config }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 	const { data: navigationData } = useNavigation();
 	const { variant } = useNavbarVariant();
 
@@ -196,6 +199,11 @@ export function Navbar({ config }: NavbarProps) {
 								</NavigationMenu>
 							</div>
 
+							{/* Search */}
+							<div className="hidden lg:flex items-center">
+								<NavbarSearch useLightText={useLightText} />
+							</div>
+
 							{/* Actions */}
 							<div className="hidden md:flex items-center gap-6 shrink-0">
 								<div className="space-y-2">
@@ -223,12 +231,15 @@ export function Navbar({ config }: NavbarProps) {
 										<span>{config.company.phone}</span>
 									</a>
 								</div>
-								<Button className={cn(
-									"rounded-full px-6 shadow-md",
-									useLightText
-										? "bg-white text-secondary hover:bg-white/90 shadow-black/10"
-										: "bg-primary hover:bg-primary text-white shadow-secondary/20"
-								)}>
+								<Button
+									className={cn(
+										"rounded-full px-6 shadow-md",
+										useLightText
+											? "bg-white text-secondary hover:bg-white/90 shadow-black/10"
+											: "bg-primary hover:bg-primary text-white shadow-secondary/20"
+									)}
+									onClick={() => setIsQuoteModalOpen(true)}
+								>
 									Begär offert
 								</Button>
 							</div>
@@ -242,6 +253,12 @@ export function Navbar({ config }: NavbarProps) {
 					</nav>
 				</header>
 			</div>
+
+			{/* Quote Request Modal */}
+			<QuoteRequestModal
+				open={isQuoteModalOpen}
+				onOpenChange={setIsQuoteModalOpen}
+			/>
 		</div>
 	);
 }

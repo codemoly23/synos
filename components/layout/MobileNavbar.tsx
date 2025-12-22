@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Menu, X, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -22,10 +23,30 @@ import { useNavigation } from "@/lib/hooks/use-navigation";
 import Logo from "../common/logo";
 import { useState } from "react";
 import ProtectedNavbar from "./ProtectedNavbar";
+import { QuoteRequestModal } from "./QuoteRequestModal";
+import { Input } from "@/components/ui/input";
 
 const MobileNavbar = () => {
+	const router = useRouter();
 	const [open, setOpen] = useState(false);
+	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+	const [searchValue, setSearchValue] = useState("");
 	const { data: navigationData, isLoading } = useNavigation();
+
+	const handleQuoteClick = () => {
+		setOpen(false); // Close the mobile menu
+		setIsQuoteModalOpen(true); // Open the quote modal
+	};
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		const trimmed = searchValue.trim();
+		if (trimmed.length >= 2) {
+			router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			setOpen(false);
+			setSearchValue("");
+		}
+	};
 
 	return (
 		<Sheet open={open} onOpenChange={setOpen}>
@@ -54,6 +75,20 @@ const MobileNavbar = () => {
 								<X className="h-5 w-5 text-gray-800" />
 							</button>
 						</SheetClose>
+					</div>
+
+					{/* Search Section */}
+					<div className="shrink-0 px-4 py-3 border-b border-gray-100">
+						<form onSubmit={handleSearch} className="relative">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+							<Input
+								type="text"
+								value={searchValue}
+								onChange={(e) => setSearchValue(e.target.value)}
+								placeholder="Sök produkter, artiklar..."
+								className="pl-10 pr-4 h-10 bg-gray-50 border-gray-200 rounded-lg text-sm focus:ring-primary"
+							/>
+						</form>
 					</div>
 
 					{/* User Profile Section */}
@@ -214,13 +249,19 @@ const MobileNavbar = () => {
 					<div className="shrink-0 p-3 border-t border-gray-100 bg-gray-50/80">
 						<Button
 							className="w-full bg-primary hover:bg-primary-hover text-white h-10 text-sm font-medium rounded-xl shadow-sm"
-							onClick={() => setOpen(false)}
+							onClick={handleQuoteClick}
 						>
 							Begär offert
 						</Button>
 					</div>
 				</div>
 			</SheetContent>
+
+			{/* Quote Request Modal */}
+			<QuoteRequestModal
+				open={isQuoteModalOpen}
+				onOpenChange={setIsQuoteModalOpen}
+			/>
 		</Sheet>
 	);
 };

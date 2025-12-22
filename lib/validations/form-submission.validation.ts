@@ -343,12 +343,77 @@ export const tourRequestSchema = z
 		}
 	);
 
+/**
+ * Quote Request Form Schema
+ * For requesting quotes/offers for products or services
+ */
+export const quoteRequestSchema = z
+	.object({
+		fullName: z
+			.string()
+			.min(2, "Namnet måste vara minst 2 tecken")
+			.max(100, "Namnet får inte överstiga 100 tecken")
+			.trim(),
+
+		email: z
+			.string()
+			.email("Ange en giltig e-postadress")
+			.max(255, "E-postadressen får inte överstiga 255 tecken")
+			.trim()
+			.toLowerCase(),
+
+		countryCode: z
+			.string()
+			.min(2, "Landskod krävs")
+			.max(10, "Ogiltig landskod")
+			.regex(/^\+\d{1,4}$/, "Ogiltig landskod"),
+
+		phone: z
+			.string()
+			.min(6, "Telefonnummer måste vara minst 6 siffror")
+			.max(20, "Telefonnummer får inte överstiga 20 siffror")
+			.regex(
+				/^[0-9\s\-]+$/,
+				"Endast siffror, mellanslag och bindestreck tillåtna"
+			)
+			.trim(),
+
+		companyName: z
+			.string()
+			.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
+
+		message: z
+			.string()
+			.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
+
+		gdprConsent: z
+			.boolean()
+			.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+	})
+	.refine(
+		(data) => {
+			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
+			return isValidPhoneNumber(fullPhone);
+		},
+		{
+			message: "Ogiltigt telefonnummer för valt land",
+			path: ["phone"],
+		}
+	);
+
 // Type exports
 export type ProductInquiryInput = z.infer<typeof productInquirySchema>;
 export type TrainingInquiryInput = z.infer<typeof trainingInquirySchema>;
 export type ContactInquiryInput = z.infer<typeof contactInquirySchema>;
 export type CallbackRequestInput = z.infer<typeof callbackRequestSchema>;
 export type TourRequestInput = z.infer<typeof tourRequestSchema>;
+export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
 export type FormSubmissionListQuery = z.infer<
 	typeof formSubmissionListQuerySchema
 >;

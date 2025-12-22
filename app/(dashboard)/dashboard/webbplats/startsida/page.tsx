@@ -9,21 +9,12 @@ import {
 	Loader2,
 	Plus,
 	Trash2,
-	GripVertical,
-	Home,
-	Sparkles,
-	ListOrdered,
-	Info,
-	MessageSquare,
-	Search,
-	Package,
-	Image,
-	Quote,
-	Settings,
+	ExternalLink,
 	Clock,
 	ShieldCheck,
 	Truck,
 	HeadphonesIcon,
+	Search,
 	FileText,
 	CheckCircle,
 	Star,
@@ -68,6 +59,8 @@ import {
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
 import { Switch } from "@/components/ui/switch";
+import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
+import { useConfirmModal } from "@/components/ui/confirm-modal";
 
 // Icon name to component mapping
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -232,19 +225,21 @@ const homePageFormSchema = z.object({
 	sectionVisibility: sectionVisibilitySchema,
 
 	// Hero Section - all fields optional
-	hero: z.object({
-		badge: z.string().optional(),
-		title: z.string().optional(),
-		titleHighlight: z.string().optional(),
-		subtitle: z.string().optional(),
-		primaryCta: ctaButtonSchema.optional(),
-		secondaryCta: ctaButtonSchema.optional(),
-		backgroundImage: z.string().optional(),
-		mainImage: z.string().optional(),
-		trustIndicators: z.array(trustIndicatorSchema).optional(),
-		floatingCard: heroFloatingCardSchema.optional(),
-		certificationCard: heroCertificationCardSchema.optional(),
-	}).optional(),
+	hero: z
+		.object({
+			badge: z.string().optional(),
+			title: z.string().optional(),
+			titleHighlight: z.string().optional(),
+			subtitle: z.string().optional(),
+			primaryCta: ctaButtonSchema.optional(),
+			secondaryCta: ctaButtonSchema.optional(),
+			backgroundImage: z.string().optional(),
+			mainImage: z.string().optional(),
+			trustIndicators: z.array(trustIndicatorSchema).optional(),
+			floatingCard: heroFloatingCardSchema.optional(),
+			certificationCard: heroCertificationCardSchema.optional(),
+		})
+		.optional(),
 
 	// Features
 	features: z.array(featureSchema).optional(),
@@ -259,40 +254,46 @@ const homePageFormSchema = z.object({
 	imageGallery: imageGallerySectionSchema.optional(),
 
 	// About Section - all fields optional
-	aboutSection: z.object({
-		badge: z.string().optional(),
-		title: z.string().optional(),
-		titleHighlight: z.string().optional(),
-		content: z.string().optional(),
-		image: z.string().optional(),
-		benefits: z.array(z.string()).optional(),
-		primaryCta: ctaButtonSchema.optional(),
-		secondaryCta: ctaButtonSchema.optional(),
-		certificationBadge: aboutCertificationBadgeSchema.optional(),
-	}).optional(),
+	aboutSection: z
+		.object({
+			badge: z.string().optional(),
+			title: z.string().optional(),
+			titleHighlight: z.string().optional(),
+			content: z.string().optional(),
+			image: z.string().optional(),
+			benefits: z.array(z.string()).optional(),
+			primaryCta: ctaButtonSchema.optional(),
+			secondaryCta: ctaButtonSchema.optional(),
+			certificationBadge: aboutCertificationBadgeSchema.optional(),
+		})
+		.optional(),
 
 	// Testimonials Section
 	testimonialsSection: testimonialsSectionSchema.optional(),
 
 	// CTA Section - all fields optional
-	ctaSection: z.object({
-		title: z.string().optional(),
-		subtitle: z.string().optional(),
-		phoneTitle: z.string().optional(),
-		phoneSubtitle: z.string().optional(),
-		emailTitle: z.string().optional(),
-		emailSubtitle: z.string().optional(),
-		formTitle: z.string().optional(),
-		formSubtitle: z.string().optional(),
-		formCtaText: z.string().optional(),
-	}).optional(),
+	ctaSection: z
+		.object({
+			title: z.string().optional(),
+			subtitle: z.string().optional(),
+			phoneTitle: z.string().optional(),
+			phoneSubtitle: z.string().optional(),
+			emailTitle: z.string().optional(),
+			emailSubtitle: z.string().optional(),
+			formTitle: z.string().optional(),
+			formSubtitle: z.string().optional(),
+			formCtaText: z.string().optional(),
+		})
+		.optional(),
 
 	// SEO
-	seo: z.object({
-		title: z.string().optional(),
-		description: z.string().optional(),
-		ogImage: z.string().optional(),
-	}).optional(),
+	seo: z
+		.object({
+			title: z.string().optional(),
+			description: z.string().optional(),
+			ogImage: z.string().optional(),
+		})
+		.optional(),
 });
 
 type HomePageFormValues = z.infer<typeof homePageFormSchema>;
@@ -300,6 +301,7 @@ type HomePageFormValues = z.infer<typeof homePageFormSchema>;
 export default function StartsidaPage() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const { confirm, ConfirmModal } = useConfirmModal({ variant: "destructive" });
 
 	const form = useForm<HomePageFormValues>({
 		resolver: zodResolver(homePageFormSchema),
@@ -735,23 +737,27 @@ export default function StartsidaPage() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center py-12">
-				<div className="text-center">
-					<Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-					<p className="mt-4 text-muted-foreground">Loading content...</p>
-				</div>
-			</div>
-		);
+		return <CMSPageSkeleton />;
 	}
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Home Page</h1>
-				<p className="text-muted-foreground">
-					Manage the content on the home page.
-				</p>
+			<div className="flex items-start justify-between">
+				<div>
+					<h1 className="text-3xl font-bold tracking-tight">Home Page</h1>
+					<p className="text-muted-foreground">
+						Manage the content on the home page.
+					</p>
+				</div>
+				<a
+					href="/"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+				>
+					<ExternalLink className="h-4 w-4" />
+					<span>View page</span>
+				</a>
 			</div>
 
 			<Form {...form}>
@@ -760,77 +766,17 @@ export default function StartsidaPage() {
 					className="space-y-6"
 				>
 					<Tabs defaultValue="settings" className="space-y-6">
-						<TabsList className="flex flex-wrap h-auto gap-1 p-1">
-							<TabsTrigger
-								value="settings"
-								className="flex items-center gap-2"
-							>
-								<Settings className="h-4 w-4" />
-								<span className="hidden sm:inline">Settings</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="hero"
-								className="flex items-center gap-2"
-							>
-								<Home className="h-4 w-4" />
-								<span className="hidden sm:inline">Hero</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="features"
-								className="flex items-center gap-2"
-							>
-								<Sparkles className="h-4 w-4" />
-								<span className="hidden sm:inline">Features</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="products"
-								className="flex items-center gap-2"
-							>
-								<Package className="h-4 w-4" />
-								<span className="hidden sm:inline">Products</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="gallery"
-								className="flex items-center gap-2"
-							>
-								<Image className="h-4 w-4" />
-								<span className="hidden sm:inline">Gallery</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="process"
-								className="flex items-center gap-2"
-							>
-								<ListOrdered className="h-4 w-4" />
-								<span className="hidden sm:inline">Process</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="about"
-								className="flex items-center gap-2"
-							>
-								<Info className="h-4 w-4" />
-								<span className="hidden sm:inline">About</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="testimonials"
-								className="flex items-center gap-2"
-							>
-								<Quote className="h-4 w-4" />
-								<span className="hidden sm:inline">Testimonials</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="cta"
-								className="flex items-center gap-2"
-							>
-								<MessageSquare className="h-4 w-4" />
-								<span className="hidden sm:inline">CTA</span>
-							</TabsTrigger>
-							<TabsTrigger
-								value="seo"
-								className="flex items-center gap-2"
-							>
-								<Search className="h-4 w-4" />
-								<span className="hidden sm:inline">SEO</span>
-							</TabsTrigger>
+						<TabsList className="flex flex-wrap h-auto gap-1 p-1 justify-start">
+							<TabsTrigger value="settings">Settings</TabsTrigger>
+							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="features">Features</TabsTrigger>
+							<TabsTrigger value="products">Products</TabsTrigger>
+							<TabsTrigger value="gallery">Gallery</TabsTrigger>
+							<TabsTrigger value="process">Process</TabsTrigger>
+							<TabsTrigger value="about">About</TabsTrigger>
+							<TabsTrigger value="testimonials">Testimonials</TabsTrigger>
+							<TabsTrigger value="cta">CTA</TabsTrigger>
+							<TabsTrigger value="seo">SEO</TabsTrigger>
 						</TabsList>
 
 						{/* Settings Tab - Section Visibility */}
@@ -1045,8 +991,9 @@ export default function StartsidaPage() {
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Sweden's leading supplier..."
 														{...field}
+														value={field.value || ""}
+														placeholder="Sweden's leading supplier..."
 													/>
 												</FormControl>
 												<FormDescription>
@@ -1066,8 +1013,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Advanced medical"
 															{...field}
+															value={field.value || ""}
+															placeholder="Advanced medical"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1082,11 +1030,12 @@ export default function StartsidaPage() {
 													<FormLabel>Title (highlight)</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="equipment for your clinic"
 															{...field}
+															value={field.value || ""}
+															placeholder="equipment for your clinic"
 														/>
 													</FormControl>
-													<FormDescription>
+													<FormDescription className="text-xs">
 														Part of the title with different
 														color.
 													</FormDescription>
@@ -1104,9 +1053,10 @@ export default function StartsidaPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Describe your offering..."
 														rows={3}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -1126,8 +1076,9 @@ export default function StartsidaPage() {
 														<FormLabel>Text</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="View our catalog"
 																{...field}
+																value={field.value || ""}
+																placeholder="View our catalog"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -1142,8 +1093,9 @@ export default function StartsidaPage() {
 														<FormLabel>Link</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="/products"
 																{...field}
+																value={field.value || ""}
+																placeholder="/products"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -1198,8 +1150,9 @@ export default function StartsidaPage() {
 														<FormLabel>Text</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Contact us"
 																{...field}
+																value={field.value || ""}
+																placeholder="Contact us"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -1214,8 +1167,9 @@ export default function StartsidaPage() {
 														<FormLabel>Link</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="/contact"
 																{...field}
+																value={field.value || ""}
+																placeholder="/contact"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -1373,8 +1327,9 @@ export default function StartsidaPage() {
 																<FormLabel>Text</FormLabel>
 																<FormControl>
 																	<Input
-																		placeholder="MDR certified"
 																		{...field}
+																		value={field.value || ""}
+																		placeholder="MDR certified"
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -1386,9 +1341,14 @@ export default function StartsidaPage() {
 													type="button"
 													variant="ghost"
 													size="sm"
-													onClick={() =>
-														removeTrustIndicator(index)
-													}
+													onClick={async () => {
+														const confirmed = await confirm({
+															title: "Remove Trust Indicator",
+															description: "Are you sure you want to remove this trust indicator?",
+															confirmText: "Remove",
+														});
+														if (confirmed) removeTrustIndicator(index);
+													}}
 													className="text-destructive hover:text-destructive"
 												>
 													<Trash2 className="h-4 w-4" />
@@ -1438,8 +1398,9 @@ export default function StartsidaPage() {
 												<FormLabel>Label</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Precision Optics"
 														{...field}
+														value={field.value || ""}
+														placeholder="Precision Optics"
 													/>
 												</FormControl>
 												<FormDescription>
@@ -1474,8 +1435,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Certified Excellence"
 															{...field}
+															value={field.value || ""}
+															placeholder="Certified Excellence"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1490,8 +1452,9 @@ export default function StartsidaPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="ISO 13485 Compliant"
 															{...field}
+															value={field.value || ""}
+															placeholder="ISO 13485 Compliant"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1508,8 +1471,9 @@ export default function StartsidaPage() {
 													<FormLabel>Progress Label</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Performance Score"
 															{...field}
+															value={field.value || ""}
+															placeholder="Performance Score"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1524,8 +1488,9 @@ export default function StartsidaPage() {
 													<FormLabel>Progress Value</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="99.8%"
 															{...field}
+															value={field.value || ""}
+															placeholder="99.8%"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -1612,9 +1577,14 @@ export default function StartsidaPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() =>
-																removeFeature(index)
-															}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Feature",
+																	description: "Are you sure you want to remove this feature?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeFeature(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -1688,8 +1658,9 @@ export default function StartsidaPage() {
 																<FormLabel>Title</FormLabel>
 																<FormControl>
 																	<Input
-																		placeholder="24/7 Support"
 																		{...field}
+																		value={field.value || ""}
+																		placeholder="24/7 Support"
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -1706,9 +1677,10 @@ export default function StartsidaPage() {
 																</FormLabel>
 																<FormControl>
 																	<Textarea
+																		{...field}
+																		value={field.value || ""}
 																		placeholder="Expert technical assistance..."
 																		rows={2}
-																		{...field}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -1743,8 +1715,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Premium Medical Equipment"
 															{...field}
+															value={field.value || ""}
+															placeholder="Premium Medical Equipment"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1759,8 +1732,9 @@ export default function StartsidaPage() {
 													<FormLabel>CTA Button Text</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="View Full Catalog"
 															{...field}
+															value={field.value || ""}
+															placeholder="View Full Catalog"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -1776,9 +1750,10 @@ export default function StartsidaPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Explore our catalog of certified, high-performance medical devices..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -1793,8 +1768,9 @@ export default function StartsidaPage() {
 												<FormLabel>CTA Button Link</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="/produkter"
 														{...field}
+														value={field.value || ""}
+														placeholder="/produkter"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -1850,9 +1826,14 @@ export default function StartsidaPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() =>
-																removeProduct(index)
-															}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Product",
+																	description: "Are you sure you want to remove this product?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeProduct(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -1869,8 +1850,9 @@ export default function StartsidaPage() {
 																	<FormLabel>Name</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Advanced MRI Scanner X1"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Advanced MRI Scanner X1"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -1887,8 +1869,9 @@ export default function StartsidaPage() {
 																	</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Imaging"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Imaging"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -1906,9 +1889,10 @@ export default function StartsidaPage() {
 																</FormLabel>
 																<FormControl>
 																	<Textarea
+																		{...field}
+																		value={field.value || ""}
 																		placeholder="Professional grade equipment..."
 																		rows={2}
-																		{...field}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -1962,8 +1946,9 @@ export default function StartsidaPage() {
 																	</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="/produkter/product-slug"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="/produkter/product-slug"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2023,8 +2008,9 @@ export default function StartsidaPage() {
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Our Facilities"
 														{...field}
+														value={field.value || ""}
+														placeholder="Our Facilities"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2040,8 +2026,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Excellence in Action"
 															{...field}
+															value={field.value || ""}
+															placeholder="Excellence in Action"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -2056,8 +2043,9 @@ export default function StartsidaPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="See how our equipment transforms..."
 															{...field}
+															value={field.value || ""}
+															placeholder="See how our equipment transforms..."
 														/>
 													</FormControl>
 													<FormMessage />
@@ -2076,8 +2064,9 @@ export default function StartsidaPage() {
 														<FormLabel>CTA Title</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Want to see more?"
 																{...field}
+																value={field.value || ""}
+																placeholder="Want to see more?"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -2092,8 +2081,9 @@ export default function StartsidaPage() {
 														<FormLabel>Button Text</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Book Tour"
 																{...field}
+																value={field.value || ""}
+																placeholder="Book Tour"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -2109,8 +2099,9 @@ export default function StartsidaPage() {
 													<FormLabel>CTA Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Book a virtual tour of our facilities..."
 															{...field}
+															value={field.value || ""}
+															placeholder="Book a virtual tour of our facilities..."
 														/>
 													</FormControl>
 													<FormMessage />
@@ -2167,9 +2158,14 @@ export default function StartsidaPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() =>
-																removeGalleryImage(index)
-															}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Gallery Image",
+																	description: "Are you sure you want to remove this image?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeGalleryImage(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -2211,8 +2207,9 @@ export default function StartsidaPage() {
 																	<FormLabel>Title</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Modern Operating Theaters"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Modern Operating Theaters"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2229,8 +2226,9 @@ export default function StartsidaPage() {
 																	</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Equipped with precision robotics"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Equipped with precision robotics"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2266,8 +2264,9 @@ export default function StartsidaPage() {
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="How it works"
 														{...field}
+														value={field.value || ""}
+														placeholder="How it works"
 													/>
 												</FormControl>
 												<FormDescription>
@@ -2285,8 +2284,9 @@ export default function StartsidaPage() {
 												<FormLabel>Section Title</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Seamless purchasing process"
 														{...field}
+														value={field.value || ""}
+														placeholder="Seamless purchasing process"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2301,9 +2301,10 @@ export default function StartsidaPage() {
 												<FormLabel>Section Description</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="We make it simple, transparent and efficient..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2359,9 +2360,14 @@ export default function StartsidaPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() =>
-																removeProcessStep(index)
-															}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Process Step",
+																	description: "Are you sure you want to remove this step?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeProcessStep(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -2380,8 +2386,9 @@ export default function StartsidaPage() {
 																	</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="01"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="01"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2457,8 +2464,9 @@ export default function StartsidaPage() {
 																<FormLabel>Title</FormLabel>
 																<FormControl>
 																	<Input
-																		placeholder="Browse & Select"
 																		{...field}
+																		value={field.value || ""}
+																		placeholder="Browse & Select"
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -2475,9 +2483,10 @@ export default function StartsidaPage() {
 																</FormLabel>
 																<FormControl>
 																	<Textarea
+																		{...field}
+																		value={field.value || ""}
 																		placeholder="Explore our comprehensive catalog..."
 																		rows={2}
-																		{...field}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -2510,8 +2519,9 @@ export default function StartsidaPage() {
 												<FormLabel>Badge Text</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Why choose Synos"
 														{...field}
+														value={field.value || ""}
+														placeholder="Why choose Synos"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2528,8 +2538,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Empowering healthcare with"
 															{...field}
+															value={field.value || ""}
+															placeholder="Empowering healthcare with"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -2544,8 +2555,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title (highlight)</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="precision technology"
 															{...field}
+															value={field.value || ""}
+															placeholder="precision technology"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -2562,9 +2574,10 @@ export default function StartsidaPage() {
 												<FormLabel>Content</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="At Synos Medical we bridge..."
 														rows={4}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2625,7 +2638,14 @@ export default function StartsidaPage() {
 													type="button"
 													variant="ghost"
 													size="sm"
-													onClick={() => removeBenefit(index)}
+													onClick={async () => {
+														const confirmed = await confirm({
+															title: "Remove Benefit",
+															description: "Are you sure you want to remove this benefit?",
+															confirmText: "Remove",
+														});
+														if (confirmed) removeBenefit(index);
+													}}
 													className="text-destructive hover:text-destructive"
 												>
 													<Trash2 className="h-4 w-4" />
@@ -2646,8 +2666,9 @@ export default function StartsidaPage() {
 														<FormLabel>Text</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Learn more about us"
 																{...field}
+																value={field.value || ""}
+																placeholder="Learn more about us"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -2662,8 +2683,9 @@ export default function StartsidaPage() {
 														<FormLabel>Link</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="/about"
 																{...field}
+																value={field.value || ""}
+																placeholder="/about"
 															/>
 														</FormControl>
 														<FormMessage />
@@ -2717,8 +2739,9 @@ export default function StartsidaPage() {
 													<FormLabel>Badge Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="ISO 13485 Certified"
 															{...field}
+															value={field.value || ""}
+															placeholder="ISO 13485 Certified"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -2737,9 +2760,10 @@ export default function StartsidaPage() {
 													<FormLabel>Badge Description</FormLabel>
 													<FormControl>
 														<Textarea
+															{...field}
+															value={field.value || ""}
 															placeholder="Setting the gold standard in medical technology distribution."
 															rows={2}
-															{...field}
 														/>
 													</FormControl>
 													<FormDescription>
@@ -2775,8 +2799,9 @@ export default function StartsidaPage() {
 												<FormLabel>Section Title</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Trusted by Leading Healthcare Providers"
 														{...field}
+														value={field.value || ""}
+														placeholder="Trusted by Leading Healthcare Providers"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2791,9 +2816,10 @@ export default function StartsidaPage() {
 												<FormLabel>Section Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Hear from healthcare professionals who have transformed their practices..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2847,9 +2873,14 @@ export default function StartsidaPage() {
 															type="button"
 															variant="ghost"
 															size="sm"
-															onClick={() =>
-																removeTestimonial(index)
-															}
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Testimonial",
+																	description: "Are you sure you want to remove this testimonial?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) removeTestimonial(index);
+															}}
 															className="text-destructive hover:text-destructive"
 														>
 															<Trash2 className="h-4 w-4" />
@@ -2865,9 +2896,10 @@ export default function StartsidaPage() {
 																<FormLabel>Quote</FormLabel>
 																<FormControl>
 																	<Textarea
+																		{...field}
+																		value={field.value || ""}
 																		placeholder="Enter the testimonial quote..."
 																		rows={3}
-																		{...field}
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -2885,8 +2917,9 @@ export default function StartsidaPage() {
 																	</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Dr. Sarah Chen"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Dr. Sarah Chen"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2901,8 +2934,9 @@ export default function StartsidaPage() {
 																	<FormLabel>Role</FormLabel>
 																	<FormControl>
 																		<Input
-																			placeholder="Chief of Radiology"
 																			{...field}
+																			value={field.value || ""}
+																			placeholder="Chief of Radiology"
 																		/>
 																	</FormControl>
 																	<FormMessage />
@@ -2920,8 +2954,9 @@ export default function StartsidaPage() {
 																</FormLabel>
 																<FormControl>
 																	<Input
-																		placeholder="St. Mary's General Hospital"
 																		{...field}
+																		value={field.value || ""}
+																		placeholder="St. Mary's General Hospital"
 																	/>
 																</FormControl>
 																<FormMessage />
@@ -2955,8 +2990,9 @@ export default function StartsidaPage() {
 												<FormLabel>Title</FormLabel>
 												<FormControl>
 													<Input
-														placeholder="Ready to upgrade your business?"
 														{...field}
+														value={field.value || ""}
+														placeholder="Ready to upgrade your business?"
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2972,9 +3008,10 @@ export default function StartsidaPage() {
 												<FormLabel>Subtitle</FormLabel>
 												<FormControl>
 													<Textarea
+														{...field}
+														value={field.value || ""}
 														placeholder="Contact us today..."
 														rows={2}
-														{...field}
 													/>
 												</FormControl>
 												<FormMessage />
@@ -2991,8 +3028,9 @@ export default function StartsidaPage() {
 													<FormLabel>Phone Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Call us directly"
 															{...field}
+															value={field.value || ""}
+															placeholder="Call us directly"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3007,8 +3045,9 @@ export default function StartsidaPage() {
 													<FormLabel>Phone Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="We are available..."
 															{...field}
+															value={field.value || ""}
+															placeholder="We are available..."
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3026,8 +3065,9 @@ export default function StartsidaPage() {
 													<FormLabel>Email Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Email"
 															{...field}
+															value={field.value || ""}
+															placeholder="Email"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3042,8 +3082,9 @@ export default function StartsidaPage() {
 													<FormLabel>Email Subtitle</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Send us a message"
 															{...field}
+															value={field.value || ""}
+															placeholder="Send us a message"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3062,8 +3103,9 @@ export default function StartsidaPage() {
 													<FormLabel>Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Have questions?"
 															{...field}
+															value={field.value || ""}
+															placeholder="Have questions?"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3078,9 +3120,10 @@ export default function StartsidaPage() {
 													<FormLabel>Subtitle</FormLabel>
 													<FormControl>
 														<Textarea
+															{...field}
+															value={field.value || ""}
 															placeholder="Fill out our contact form..."
 															rows={2}
-															{...field}
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3095,8 +3138,9 @@ export default function StartsidaPage() {
 													<FormLabel>Button Text</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Go to contact form"
 															{...field}
+															value={field.value || ""}
+															placeholder="Go to contact form"
 														/>
 													</FormControl>
 													<FormMessage />
@@ -3127,8 +3171,9 @@ export default function StartsidaPage() {
 													<FormLabel>Page Title</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Synos Medical - Medical Equipment"
 															{...field}
+															value={field.value || ""}
+															placeholder="Synos Medical - Medical Equipment"
 														/>
 													</FormControl>
 													<FormDescription>
@@ -3148,9 +3193,10 @@ export default function StartsidaPage() {
 													<FormLabel>Meta Description</FormLabel>
 													<FormControl>
 														<Textarea
+															{...field}
+															value={field.value || ""}
 															placeholder="Sweden's leading supplier..."
 															rows={3}
-															{...field}
 														/>
 													</FormControl>
 													<FormDescription>
@@ -3234,6 +3280,7 @@ export default function StartsidaPage() {
 					</div>
 				</form>
 			</Form>
+			<ConfirmModal />
 		</div>
 	);
 }

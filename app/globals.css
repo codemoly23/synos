@@ -186,6 +186,7 @@
     0% {
       transform: translateX(-100%);
     }
+
     100% {
       transform: translateX(100%);
     }
@@ -228,6 +229,10 @@
   /* page top padding to adjust the navbar height */
   .padding-top {
     @apply pt-32;
+  }
+
+  .padding-bottom {
+    @apply pb-32;
   }
 
   /* Glassmorphism */
@@ -3529,6 +3534,7 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-300;
 }
+
 /* ============================================
    REACT DAY PICKER STYLES
    ============================================ */
