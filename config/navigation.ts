@@ -16,6 +16,10 @@ export const mainNav: NavItem[] = [
 		href: "/utrustning",
 	},
 	{
+		title: "Produkter",
+		href: "/produkter",
+	},
+	{
 		title: "Kategori",
 		href: "/kategori",
 		isDynamic: true, // This item loads categories/products from database

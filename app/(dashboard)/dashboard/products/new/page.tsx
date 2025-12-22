@@ -39,6 +39,27 @@ export default function NewProductPage() {
 		}
 	}, [session, isPending, router]);
 
+	// Format validation errors for user-friendly display
+	const formatValidationErrors = (errors: unknown): string => {
+		if (!errors) return "";
+		if (Array.isArray(errors)) {
+			// Product validation errors format: { field, message, type }
+			return errors
+				.map((err: { field?: string; message?: string; path?: string[] }) => {
+					const field = err.field || err.path?.join(".") || "Field";
+					const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+					return `• ${fieldName}: ${err.message || "Invalid value"}`;
+				})
+				.join("\n");
+		}
+		if (typeof errors === "object") {
+			return Object.entries(errors)
+				.map(([field, msg]) => `• ${field}: ${msg}`)
+				.join("\n");
+		}
+		return String(errors);
+	};
+
 	// Fetch category tree and tags
 	React.useEffect(() => {
 		const fetchData = async () => {
@@ -92,7 +113,19 @@ export default function NewProductPage() {
 				router.push(`/dashboard/products/${result.data._id}`);
 				return { success: true, data: result.data };
 			} else {
-				toast.error(result.message || "Failed to create product");
+				const errorDetails = result.errors
+					? formatValidationErrors(result.errors)
+					: "";
+				const errorMessage = result.message || "Failed to create product";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				return {
 					success: false,
 					errors: result.errors,
@@ -101,7 +134,10 @@ export default function NewProductPage() {
 			}
 		} catch (error) {
 			console.error("Failed to create product:", error);
-			toast.error("Failed to create product");
+			toast.error("Failed to create product", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 			return { success: false, message: "Failed to create product" };
 		} finally {
 			setIsLoading(false);
@@ -130,7 +166,19 @@ export default function NewProductPage() {
 			const createResult = await createResponse.json();
 
 			if (!createResult.success) {
-				toast.error(createResult.message || "Failed to create product");
+				const errorDetails = createResult.errors
+					? formatValidationErrors(createResult.errors)
+					: "";
+				const errorMessage = createResult.message || "Failed to create product";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				return {
 					success: false,
 					errors: createResult.errors,
@@ -156,9 +204,20 @@ export default function NewProductPage() {
 				};
 			} else {
 				// Product was created but publish failed - redirect to edit page
-				toast.error(
-					publishResult.message || "Product created but publish failed"
-				);
+				const errorDetails = publishResult.errors
+					? formatValidationErrors(publishResult.errors)
+					: "";
+				const errorMessage =
+					publishResult.message || "Product created but publish failed";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				router.push(`/dashboard/products/${createResult.data._id}`);
 				return {
 					success: false,
@@ -168,7 +227,10 @@ export default function NewProductPage() {
 			}
 		} catch (error) {
 			console.error("Failed to publish product:", error);
-			toast.error("Failed to publish product");
+			toast.error("Failed to publish product", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 			return { success: false, message: "Failed to publish product" };
 		} finally {
 			setIsLoading(false);

@@ -60,7 +60,7 @@ const BlogCategorySchema = new Schema<IBlogCategory>(
 		description: {
 			type: String,
 			default: "",
-			maxlength: [500, "Category description cannot exceed 500 characters"],
+			maxlength: [15000, "Category description cannot exceed 15000 characters"],
 		},
 		parent: {
 			type: Schema.Types.ObjectId,

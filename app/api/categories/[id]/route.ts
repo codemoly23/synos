@@ -97,7 +97,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 		return successResponse(category, "Category updated successfully");
 	} catch (error: unknown) {
-		logger.error("Error updating category", error);
+		logger.error("Error updating category =>>>>>", error);
 
 		if (error instanceof Error) {
 			if (error.message.includes("not found")) {
@@ -113,7 +113,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 				return badRequestResponse(error.message);
 			}
 		}
-
+		console.log("error -> ", error);
 		const message =
 			error instanceof Error ? error.message : "Failed to update category";
 		return internalServerErrorResponse(message);

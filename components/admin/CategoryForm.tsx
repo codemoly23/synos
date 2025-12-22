@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker } from "@/components/storage";
+import TextEditor from "@/components/common/TextEditor";
 import {
 	createCategorySchema,
 	updateCategorySchema,
@@ -28,8 +28,6 @@ type CategoryFormData = {
 	description?: string;
 	parent?: string | null;
 	image?: string | null;
-	order?: number;
-	isActive?: boolean;
 };
 
 interface CategoryFormProps {
@@ -71,15 +69,13 @@ export function CategoryForm({
 			description: category?.description || "",
 			parent: category?.parent?.toString() || null,
 			image: category?.image || "",
-			order: category?.order || 0,
-			isActive: category?.isActive ?? true,
 		},
 	});
 
 	const name = watch("name");
 	const slug = watch("slug");
 	const parent = watch("parent");
-	const isActive = watch("isActive");
+	const description = watch("description");
 
 	// Auto-generate slug from name
 	const handleNameBlur = () => {
@@ -145,17 +141,23 @@ export function CategoryForm({
 			{/* Description */}
 			<div className="space-y-2">
 				<Label htmlFor="description">Description</Label>
-				<Textarea
-					id="description"
-					{...register("description")}
-					placeholder="Enter category description"
-					disabled={isLoading}
-					rows={3}
+				<TextEditor
+					name="description"
+					defaultValue={description || ""}
+					onChange={(value) =>
+						setValue("description", value, { shouldDirty: true })
+					}
+					placeholder="Enter category description (supports rich text, images, etc.)"
+					variant="detailedAdvance"
+					height="400px"
+					disable={isLoading}
 				/>
+				<p className="text-xs text-slate-500">
+					Rich content that will be displayed on the category page after the
+					products list.
+				</p>
 				{errors.description && (
-					<p className="text-sm text-red-500">
-						{errors.description.message}
-					</p>
+					<p className="text-sm text-red-500">{errors.description.message}</p>
 				)}
 			</div>
 
@@ -197,42 +199,6 @@ export function CategoryForm({
 				)}
 			</div>
 
-			{/* Order */}
-			<div className="space-y-2">
-				<Label htmlFor="order">Display Order</Label>
-				<Input
-					id="order"
-					type="number"
-					{...register("order", { valueAsNumber: true })}
-					placeholder="0"
-					disabled={isLoading}
-				/>
-				<p className="text-xs text-slate-500">
-					Lower numbers appear first. Categories with the same order are
-					sorted alphabetically.
-				</p>
-			</div>
-
-			{/* Active Status */}
-			<div className="flex items-center gap-3">
-				<input
-					type="checkbox"
-					id="isActive"
-					checked={isActive}
-					onChange={(e) =>
-						setValue("isActive", e.target.checked, { shouldDirty: true })
-					}
-					disabled={isLoading}
-					className="h-4 w-4 rounded border-slate-300"
-				/>
-				<Label htmlFor="isActive" className="cursor-pointer">
-					Active
-				</Label>
-				<p className="text-xs text-slate-500">
-					Inactive categories are hidden from public view
-				</p>
-			</div>
-
 			{/* Actions */}
 			<div className="flex gap-3 pt-4 border-t">
 				{onCancel && (
@@ -245,10 +211,7 @@ export function CategoryForm({
 						Cancel
 					</Button>
 				)}
-				<Button
-					type="submit"
-					disabled={isLoading || (!isDirty && isEditing)}
-				>
+				<Button type="submit" disabled={isLoading || (!isDirty && isEditing)}>
 					{isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
 					{isEditing ? "Update Category" : "Create Category"}
 				</Button>

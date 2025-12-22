@@ -47,6 +47,27 @@ export default function EditProductPage() {
 		}
 	}, [session, isPending, router, productId]);
 
+	// Format validation errors for user-friendly display
+	const formatValidationErrors = (errors: unknown): string => {
+		if (!errors) return "";
+		if (Array.isArray(errors)) {
+			// Product validation errors format: { field, message, type }
+			return errors
+				.map((err: { field?: string; message?: string; path?: string[] }) => {
+					const field = err.field || err.path?.join(".") || "Field";
+					const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+					return `• ${fieldName}: ${err.message || "Invalid value"}`;
+				})
+				.join("\n");
+		}
+		if (typeof errors === "object") {
+			return Object.entries(errors)
+				.map(([field, msg]) => `• ${field}: ${msg}`)
+				.join("\n");
+		}
+		return String(errors);
+	};
+
 	// Fetch product and related data - only once when authenticated
 	useEffect(() => {
 		// Skip if already fetched or no session yet
@@ -120,7 +141,19 @@ export default function EditProductPage() {
 				toast.success("Product saved successfully");
 				return { success: true, data: result.data };
 			} else {
-				toast.error(result.message || "Failed to save product");
+				const errorDetails = result.errors
+					? formatValidationErrors(result.errors)
+					: "";
+				const errorMessage = result.message || "Failed to save product";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				return {
 					success: false,
 					errors: result.errors,
@@ -129,7 +162,10 @@ export default function EditProductPage() {
 			}
 		} catch (error) {
 			console.error("Failed to save product:", error);
-			toast.error("Failed to save product");
+			toast.error("Failed to save product", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 			return { success: false, message: "Failed to save product" };
 		} finally {
 			setIsSaving(false);
@@ -157,7 +193,19 @@ export default function EditProductPage() {
 			const saveResult = await saveResponse.json();
 
 			if (!saveResult.success) {
-				toast.error(saveResult.message || "Failed to save product");
+				const errorDetails = saveResult.errors
+					? formatValidationErrors(saveResult.errors)
+					: "";
+				const errorMessage = saveResult.message || "Failed to save product";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				return {
 					success: false,
 					errors: saveResult.errors,
@@ -182,7 +230,21 @@ export default function EditProductPage() {
 					warnings: publishResult.data.warnings,
 				};
 			} else {
-				toast.error(publishResult.message || "Failed to publish");
+				// Format and show validation errors
+				const errorDetails = publishResult.errors
+					? formatValidationErrors(publishResult.errors)
+					: "";
+				const errorMessage =
+					publishResult.message || "Failed to publish product";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 6000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 				return {
 					success: false,
 					errors: publishResult.errors,
@@ -191,7 +253,10 @@ export default function EditProductPage() {
 			}
 		} catch (error) {
 			console.error("Failed to publish product:", error);
-			toast.error("Failed to publish product");
+			toast.error("Failed to publish product", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 			return { success: false, message: "Failed to publish product" };
 		} finally {
 			setIsSaving(false);
