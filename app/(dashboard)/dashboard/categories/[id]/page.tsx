@@ -27,6 +27,7 @@ export default function EditCategoryPage() {
 	);
 	const [isLoading, setIsLoading] = React.useState(true);
 	const [isSaving, setIsSaving] = React.useState(false);
+	const [hasFetched, setHasFetched] = React.useState(false);
 
 	// Redirect if not authenticated
 	React.useEffect(() => {
@@ -35,7 +36,7 @@ export default function EditCategoryPage() {
 		}
 	}, [session, isPending, router, categoryId]);
 
-	// Fetch category and tree
+	// Fetch category and tree - only once when authenticated
 	React.useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
@@ -64,13 +65,35 @@ export default function EditCategoryPage() {
 				router.push("/dashboard/categories");
 			} finally {
 				setIsLoading(false);
+				setHasFetched(true);
 			}
 		};
 
-		if (session && categoryId) {
+		// Only fetch if we have a session and haven't fetched yet
+		if (session && categoryId && !hasFetched) {
 			fetchData();
 		}
-	}, [session, categoryId, router]);
+	}, [session, categoryId, router, hasFetched]);
+
+	// Format validation errors for display
+	const formatValidationErrors = (errors: unknown): string => {
+		if (!errors) return "";
+		if (Array.isArray(errors)) {
+			// Zod validation errors format
+			return errors
+				.map((err: { path?: string[]; message?: string }) => {
+					const field = err.path?.join(".") || "Field";
+					return `${field}: ${err.message || "Invalid value"}`;
+				})
+				.join("\n");
+		}
+		if (typeof errors === "object") {
+			return Object.entries(errors)
+				.map(([field, msg]) => `${field}: ${msg}`)
+				.join("\n");
+		}
+		return String(errors);
+	};
 
 	// Handle submit
 	const handleSubmit = async (data: Record<string, unknown>) => {
@@ -88,11 +111,27 @@ export default function EditCategoryPage() {
 				setCategory(result.data);
 				toast.success("Category updated successfully");
 			} else {
-				toast.error(result.message || "Failed to update category");
+				// Show specific error message with validation details
+				const errorDetails = result.errors
+					? formatValidationErrors(result.errors)
+					: "";
+				const errorMessage = result.message || "Failed to update category";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 5000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 			}
 		} catch (error) {
 			console.error("Failed to update category:", error);
-			toast.error("Failed to update category");
+			toast.error("Failed to update category", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 		} finally {
 			setIsSaving(false);
 		}
@@ -140,6 +179,7 @@ export default function EditCategoryPage() {
 					</CardHeader>
 					<CardContent>
 						<CategoryForm
+							key={category._id.toString()}
 							category={category}
 							categoryTree={categoryTree}
 							onSubmit={handleSubmit}

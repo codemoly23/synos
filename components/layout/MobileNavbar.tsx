@@ -26,7 +26,11 @@ import ProtectedNavbar from "./ProtectedNavbar";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 import { Input } from "@/components/ui/input";
 
-const MobileNavbar = () => {
+interface MobileNavbarProps {
+	useLightText?: boolean;
+}
+
+const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
@@ -56,7 +60,9 @@ const MobileNavbar = () => {
 					size="icon"
 					className="lg:hidden bg-none! hover:bg-transparent! p-0! w-auto! h-auto!"
 				>
-					<Menu className="h-6 w-6 text-secondary" />
+					<Menu
+						className={`h-6 w-6 ${useLightText ? "text-white" : "text-secondary"}`}
+					/>
 				</Button>
 			</SheetTrigger>
 			<SheetContent

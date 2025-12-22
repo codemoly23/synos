@@ -49,6 +49,26 @@ export default function NewCategoryPage() {
 		}
 	}, [session]);
 
+	// Format validation errors for display
+	const formatValidationErrors = (errors: unknown): string => {
+		if (!errors) return "";
+		if (Array.isArray(errors)) {
+			// Zod validation errors format
+			return errors
+				.map((err: { path?: string[]; message?: string }) => {
+					const field = err.path?.join(".") || "Field";
+					return `${field}: ${err.message || "Invalid value"}`;
+				})
+				.join("\n");
+		}
+		if (typeof errors === "object") {
+			return Object.entries(errors)
+				.map(([field, msg]) => `${field}: ${msg}`)
+				.join("\n");
+		}
+		return String(errors);
+	};
+
 	// Handle submit
 	const handleSubmit = async (data: Record<string, unknown>) => {
 		setIsLoading(true);
@@ -65,11 +85,27 @@ export default function NewCategoryPage() {
 				toast.success("Category created successfully");
 				router.push("/dashboard/categories");
 			} else {
-				toast.error(result.message || "Failed to create category");
+				// Show specific error message with validation details
+				const errorDetails = result.errors
+					? formatValidationErrors(result.errors)
+					: "";
+				const errorMessage = result.message || "Failed to create category";
+
+				if (errorDetails) {
+					toast.error(errorMessage, {
+						description: errorDetails,
+						duration: 5000,
+					});
+				} else {
+					toast.error(errorMessage);
+				}
 			}
 		} catch (error) {
 			console.error("Failed to create category:", error);
-			toast.error("Failed to create category");
+			toast.error("Failed to create category", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
 		} finally {
 			setIsLoading(false);
 		}

@@ -248,7 +248,7 @@ export function Navbar({ config }: NavbarProps) {
 							</div>
 
 							{/* Mobile Menu */}
-							<MobileNavbar />
+							<MobileNavbar useLightText={useLightText} />
 						</div>
 					</nav>
 				</header>

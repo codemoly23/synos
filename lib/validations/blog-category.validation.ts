@@ -50,6 +50,11 @@ const optionalUrlSchema = z
 	);
 
 /**
+ * Rich HTML description max length (15KB for rich content)
+ */
+const DESCRIPTION_MAX_LENGTH = 15000;
+
+/**
  * Create Blog Category Schema
  */
 export const createBlogCategorySchema = z.object({
@@ -60,7 +65,10 @@ export const createBlogCategorySchema = z.object({
 	slug: slugSchema.optional(), // Auto-generated if not provided
 	description: z
 		.string()
-		.max(500, "Description cannot exceed 500 characters")
+		.max(
+			DESCRIPTION_MAX_LENGTH,
+			`Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters`
+		)
 		.optional()
 		.default(""),
 	parent: z.string().nullable().optional().default(null),
@@ -81,7 +89,10 @@ export const updateBlogCategorySchema = z.object({
 	slug: slugSchema.optional(),
 	description: z
 		.string()
-		.max(500, "Description cannot exceed 500 characters")
+		.max(
+			DESCRIPTION_MAX_LENGTH,
+			`Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters`
+		)
 		.optional(),
 	parent: z.string().nullable().optional(),
 	image: optionalUrlSchema,

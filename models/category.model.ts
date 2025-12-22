@@ -9,7 +9,7 @@ export interface ICategory extends Document {
 	_id: mongoose.Types.ObjectId;
 	name: string;
 	slug: string;
-	description?: string;
+	description?: string; // Rich HTML content from TextEditor
 	parent: mongoose.Types.ObjectId | null;
 	image?: string | null; // URL
 	order: number; // For sorting siblings
@@ -59,7 +59,6 @@ const CategorySchema = new Schema<ICategory>(
 		description: {
 			type: String,
 			default: "",
-			maxlength: [500, "Category description cannot exceed 500 characters"],
 		},
 		parent: {
 			type: Schema.Types.ObjectId,

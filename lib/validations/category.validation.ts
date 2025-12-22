@@ -50,6 +50,11 @@ const optionalUrlSchema = z
 	);
 
 /**
+ * Rich HTML description max length (15KB for rich content with images, tables, etc.)
+ */
+const DESCRIPTION_MAX_LENGTH = 15000;
+
+/**
  * Create Category Schema
  */
 export const createCategorySchema = z.object({
@@ -60,13 +65,14 @@ export const createCategorySchema = z.object({
 	slug: slugSchema.optional(), // Auto-generated if not provided
 	description: z
 		.string()
-		.max(500, "Description cannot exceed 500 characters")
+		.max(
+			DESCRIPTION_MAX_LENGTH,
+			`Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters`
+		)
 		.optional()
 		.default(""),
 	parent: z.string().nullable().optional().default(null), // ObjectId string or null
 	image: optionalUrlSchema,
-	order: z.number().int().default(0),
-	isActive: z.boolean().default(true),
 });
 
 /**
@@ -81,12 +87,13 @@ export const updateCategorySchema = z.object({
 	slug: slugSchema.optional(),
 	description: z
 		.string()
-		.max(500, "Description cannot exceed 500 characters")
+		.max(
+			DESCRIPTION_MAX_LENGTH,
+			`Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters`
+		)
 		.optional(),
 	parent: z.string().nullable().optional(), // ObjectId string or null
 	image: optionalUrlSchema,
-	order: z.number().int().optional(),
-	isActive: z.boolean().optional(),
 });
 
 /**

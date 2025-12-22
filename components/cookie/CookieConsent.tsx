@@ -325,20 +325,24 @@ function CookieSettingsModal() {
 				</div>
 
 				{/* Actions */}
-				<div className="px-5 py-4 border-t border-slate-200 flex gap-3">
-					<Button
-						variant="outline"
-						className="flex-1 h-10 text-sm rounded-lg border-slate-300"
-						onClick={handleWithdraw}
-					>
-						Återkalla samtycke
-					</Button>
-					<Button
-						className="flex-1 h-10 text-sm rounded-lg bg-primary hover:bg-primary-hover"
-						onClick={handleChangeConsent}
-					>
-						Ändra samtycke
-					</Button>
+				<div className="px-4 py-3 sm:px-5 sm:py-4 border-t border-slate-200 bg-slate-50/50">
+					<div className="flex gap-2 sm:gap-3">
+						<Button
+							variant="outline"
+							size="sm"
+							className="flex-1 h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-full border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-all px-3 sm:px-4"
+							onClick={handleWithdraw}
+						>
+							Återkalla
+						</Button>
+						<Button
+							size="sm"
+							className="flex-1 h-9 sm:h-10 text-xs sm:text-sm font-medium rounded-full bg-primary hover:bg-primary/90 shadow-sm hover:shadow-md transition-all px-3 sm:px-4"
+							onClick={handleChangeConsent}
+						>
+							Ändra samtycke
+						</Button>
+					</div>
 				</div>
 			</div>
 		</>
