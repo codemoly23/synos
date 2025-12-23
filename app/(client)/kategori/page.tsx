@@ -53,9 +53,8 @@ export const metadata: Metadata = {
 	},
 };
 
-// Force dynamic rendering to ensure fresh data on each request
-// ISR is handled by unstable_cache in the service layer (1 hour)
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
 
 // Product Card Component for Database Products
 function ProductCardDB({

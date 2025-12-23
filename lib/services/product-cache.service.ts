@@ -11,8 +11,11 @@ import type { ICategory } from "@/models/category.model";
 export const PRODUCTS_CACHE_TAG = "products";
 export const CATEGORIES_CACHE_TAG = "categories";
 
+// 24 hours in seconds
+const CACHE_REVALIDATE = 86400;
+
 /**
- * Get published products with ISR caching (1 hour)
+ * Get published products with ISR caching (24 hours)
  * For use on /produkter and /kategori pages
  */
 export const getPublishedProducts = unstable_cache(
@@ -29,7 +32,7 @@ export const getPublishedProducts = unstable_cache(
 	["published-products"],
 	{
 		tags: [PRODUCTS_CACHE_TAG],
-		revalidate: 3600, // 1 hour ISR
+		revalidate: CACHE_REVALIDATE,
 	}
 );
 
@@ -48,12 +51,12 @@ export const getNewestProducts = unstable_cache(
 	["newest-products"],
 	{
 		tags: [PRODUCTS_CACHE_TAG],
-		revalidate: 3600, // 1 hour ISR
+		revalidate: CACHE_REVALIDATE,
 	}
 );
 
 /**
- * Get active categories with ISR caching (1 hour)
+ * Get active categories with ISR caching (24 hours)
  * For use on sidebar filters
  */
 export const getActiveCategories = unstable_cache(
@@ -63,12 +66,12 @@ export const getActiveCategories = unstable_cache(
 	["active-categories"],
 	{
 		tags: [CATEGORIES_CACHE_TAG],
-		revalidate: 3600, // 1 hour ISR
+		revalidate: CACHE_REVALIDATE,
 	}
 );
 
 /**
- * Get products by category with ISR caching (1 hour)
+ * Get products by category with ISR caching (24 hours)
  */
 export const getProductsByCategory = unstable_cache(
 	async (
@@ -84,12 +87,12 @@ export const getProductsByCategory = unstable_cache(
 	["products-by-category"],
 	{
 		tags: [PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG],
-		revalidate: 3600, // 1 hour ISR
+		revalidate: CACHE_REVALIDATE,
 	}
 );
 
 /**
- * Get category by slug with ISR caching (1 hour)
+ * Get category by slug with ISR caching (24 hours)
  */
 export const getCategoryBySlug = unstable_cache(
 	async (slug: string): Promise<ICategory | null> => {
@@ -98,6 +101,6 @@ export const getCategoryBySlug = unstable_cache(
 	["category-by-slug"],
 	{
 		tags: [CATEGORIES_CACHE_TAG],
-		revalidate: 3600, // 1 hour ISR
+		revalidate: CACHE_REVALIDATE,
 	}
 );

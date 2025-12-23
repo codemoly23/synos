@@ -12,8 +12,27 @@ import { Breadcrumb } from "@/components/shared/Breadcrumb";
  *
  * URL: /blogg/category/[slug]/
  * Shows all blog posts in a specific category
- * Now fetches from database
+ * Uses ISR for optimal performance.
  */
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new categories to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all active categories at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const categories = await blogCategoryService.getActiveCategories();
+		return categories.map((cat) => ({ slug: cat.slug }));
+	} catch (error) {
+		console.error("Error generating static params for blog categories:", error);
+		return [];
+	}
+}
 
 interface CategoryPageProps {
 	params: Promise<{

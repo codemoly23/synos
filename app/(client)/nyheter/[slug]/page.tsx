@@ -5,6 +5,7 @@ import {
 	getAllArticles,
 	getRelatedArticles,
 } from "@/lib/data/blog";
+import { blogPostService } from "@/lib/services/blog-post.service";
 import { siteConfig } from "@/config/site";
 import { NyheterDetailHero } from "../_components/nyheter-detail-hero";
 import { NyheterContent } from "../_components/nyheter-content";
@@ -15,11 +16,30 @@ import { BlogComments } from "../../blogg/_components/blog-comments";
  * Nyheter Detail Page
  *
  * Dynamic route for individual news/blog posts under /nyheter.
- * Fetches data from MongoDB for dynamic content.
+ * Uses ISR for optimal performance with fresh content.
  */
 
-// Force dynamic rendering to avoid SSG issues with client components
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new posts to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all published posts at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const result = await blogPostService.getPublishedPosts({
+			limit: 1000,
+			sort: "-publishedAt",
+		});
+		return result.data.map((post) => ({ slug: post.slug }));
+	} catch (error) {
+		console.error("Error generating static params for news posts:", error);
+		return [];
+	}
+}
 
 interface NyheterDetailPageProps {
 	params: Promise<{

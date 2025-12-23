@@ -5,6 +5,7 @@ import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
+import { CACHE_TAGS, DEFAULT_REVALIDATE } from "@/lib/revalidation";
 import type { ApiResponse, ProductType } from "@/types";
 
 /**
@@ -21,8 +22,38 @@ interface ProductPageProps {
 	}>;
 }
 
-// Revalidate every minute
-export const revalidate = 60;
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new products to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all published products at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const { data: products } = await productRepository.findPublished({
+			limit: 1000,
+		});
+
+		return products.map((product) => {
+			// Get the first category slug, or use 'uncategorized' as fallback
+			const categories = product.categories as unknown as Array<{
+				slug?: string;
+			}>;
+			const categorySlug = categories?.[0]?.slug || "uncategorized";
+
+			return {
+				category: categorySlug,
+				slug: product.slug,
+			};
+		});
+	} catch (error) {
+		console.error("Error generating static params for products:", error);
+		return [];
+	}
+}
 
 /**
  * Fetch product data server-side
@@ -33,8 +64,8 @@ async function getProduct(slug: string): Promise<ProductType | null> {
 			`${process.env.BETTER_AUTH_URL}/api/products/client/${slug}`,
 			{
 				next: {
-					revalidate: 60,
-					tags: [`product-${slug}`],
+					revalidate: DEFAULT_REVALIDATE,
+					tags: [CACHE_TAGS.PRODUCT(slug), CACHE_TAGS.PRODUCTS],
 				},
 			}
 		);

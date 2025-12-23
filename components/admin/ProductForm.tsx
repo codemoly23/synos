@@ -32,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TagInput } from "./TagInput";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker, MediaGallery } from "@/components/storage";
+import { BeforeAfterGallery, type BeforeAfterPair } from "./BeforeAfterGallery";
 import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import type { FileMetadata } from "@/lib/storage/client";
 import {
@@ -274,10 +275,12 @@ function DocumentPicker({
 export type ProductFormData = CreateProductDraftInput | UpdateProductInput;
 
 /**
- * Server error structure from API responses (Zod issue format)
+ * Server error structure from API responses
+ * Supports both raw Zod format and formatted error format
  */
 export interface ServerFieldError {
-	path?: (string | number)[];
+	path?: (string | number)[]; // Original path array
+	field?: string; // Formatted field label (Swedish)
 	message: string;
 	code?: string;
 }
@@ -377,10 +380,14 @@ export function ProductForm({
 		const publishErrors: PublishValidationError[] = [];
 
 		errors.forEach((err) => {
+			// Get the path for form field mapping (dot notation)
 			const fieldPath = err.path?.map(String).join(".") || "general";
+			// Get the display label (use formatted field if available, otherwise path)
+			const displayField = err.field || fieldPath;
+
 			fieldErrors[fieldPath] = err.message;
 			publishErrors.push({
-				field: fieldPath,
+				field: displayField,
 				message: err.message,
 				type: "error",
 			});
@@ -443,6 +450,12 @@ export function ProductForm({
 			treatments: product?.treatments || [],
 			productImages: product?.productImages || [],
 			overviewImage: product?.overviewImage || "",
+			beforeAfterImages:
+				product?.beforeAfterImages?.map((ba) => ({
+					beforeImage: ba.beforeImage,
+					afterImage: ba.afterImage,
+					label: ba.label || "",
+				})) || [],
 			techSpecifications:
 				product?.techSpecifications?.map((t) => ({
 					title: t.title,
@@ -506,6 +519,14 @@ export function ProductForm({
 	} = useFieldArray({
 		control,
 		name: "qa",
+	});
+
+	const {
+		fields: beforeAfterFields,
+		replace: replaceBeforeAfter,
+	} = useFieldArray({
+		control,
+		name: "beforeAfterImages",
 	});
 
 	const {
@@ -1023,6 +1044,54 @@ export function ProductForm({
 										type="url"
 										{...register("youtubeUrl")}
 										placeholder="https://www.youtube.com/watch?v=..."
+										disabled={isLoading}
+									/>
+								</div>
+
+								{/* Before & After Images */}
+								<div className="space-y-3 pt-4 border-t">
+									<Label>Before & After Images</Label>
+									<p className="text-sm text-muted-foreground">
+										Add before and after image pairs to showcase
+										treatment results. These will be displayed in an
+										interactive comparison slider on the product page.
+									</p>
+									<BeforeAfterGallery
+										pairs={beforeAfterFields.map((field) => ({
+											beforeImage:
+												(
+													field as {
+														beforeImage?: string;
+														afterImage?: string;
+														label?: string;
+													}
+												).beforeImage || "",
+											afterImage:
+												(
+													field as {
+														beforeImage?: string;
+														afterImage?: string;
+														label?: string;
+													}
+												).afterImage || "",
+											label:
+												(
+													field as {
+														beforeImage?: string;
+														afterImage?: string;
+														label?: string;
+													}
+												).label || "",
+										}))}
+										onChange={(pairs) => {
+											replaceBeforeAfter(
+												pairs.map((pair) => ({
+													beforeImage: pair.beforeImage,
+													afterImage: pair.afterImage,
+													label: pair.label || "",
+												}))
+											);
+										}}
 										disabled={isLoading}
 									/>
 								</div>

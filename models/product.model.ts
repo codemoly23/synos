@@ -26,6 +26,13 @@ export interface IDocumentEntry {
 	url: string;
 }
 
+export interface IBeforeAfterImage {
+	_id?: mongoose.Types.ObjectId;
+	beforeImage: string;
+	afterImage: string;
+	label?: string;
+}
+
 export interface IPurchaseInfo {
 	title?: string;
 	description?: string; // Rich HTML
@@ -54,6 +61,7 @@ export interface IProduct extends Document {
 	treatments: string[]; // Tags
 	productImages: string[]; // URLs
 	overviewImage?: string; // URL
+	beforeAfterImages: IBeforeAfterImage[]; // Before/after image pairs
 	techSpecifications: ITechSpec[];
 	documentation: IDocumentEntry[];
 	purchaseInfo?: IPurchaseInfo;
@@ -120,6 +128,25 @@ const DocumentEntrySchema = new Schema<IDocumentEntry>(
 		url: {
 			type: String,
 			required: [true, "Document URL is required"],
+			trim: true,
+		},
+	},
+	{ _id: true }
+);
+
+const BeforeAfterImageSchema = new Schema<IBeforeAfterImage>(
+	{
+		beforeImage: {
+			type: String,
+			required: [true, "Before image is required"],
+		},
+		afterImage: {
+			type: String,
+			required: [true, "After image is required"],
+		},
+		label: {
+			type: String,
+			default: "",
 			trim: true,
 		},
 	},
@@ -226,6 +253,10 @@ const ProductSchema = new Schema<IProduct>(
 		overviewImage: {
 			type: String,
 			default: "",
+		},
+		beforeAfterImages: {
+			type: [BeforeAfterImageSchema],
+			default: [],
 		},
 		techSpecifications: [TechSpecSchema],
 		documentation: [DocumentEntrySchema],

@@ -4,6 +4,7 @@ import { blogPostService } from "@/lib/services/blog-post.service";
 import { updateBlogPostSchema } from "@/lib/validations/blog-post.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateBlogPost } from "@/lib/revalidation/actions";
 import {
 	successResponse,
 	badRequestResponse,
@@ -86,6 +87,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		// Update blog post
 		const post = await blogPostService.updatePost(id, validationResult.data);
 
+		// Revalidate ISR cache for this post
+		await revalidateBlogPost(post.slug);
+
 		logger.info("Blog post updated", {
 			postId: id,
 			updatedBy: session.user.id,
@@ -134,8 +138,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 			return badRequestResponse("Invalid blog post ID format");
 		}
 
+		// Get post info before deletion for revalidation
+		const postToDelete = await blogPostService.getPostById(id);
+		const postSlug = postToDelete?.slug;
+
 		// Delete blog post
 		await blogPostService.deletePost(id);
+
+		// Revalidate ISR cache
+		if (postSlug) {
+			await revalidateBlogPost(postSlug);
+		}
 
 		logger.info("Blog post deleted", {
 			postId: id,

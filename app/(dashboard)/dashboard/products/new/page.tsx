@@ -40,24 +40,46 @@ export default function NewProductPage() {
 	}, [session, isPending, router]);
 
 	// Format validation errors for user-friendly display
-	const formatValidationErrors = (errors: unknown): string => {
-		if (!errors) return "";
+	const formatValidationErrors = (
+		errors: unknown
+	): { summary: string; details: string[] } => {
+		if (!errors) return { summary: "", details: [] };
+
 		if (Array.isArray(errors)) {
-			// Product validation errors format: { field, message, type }
-			return errors
-				.map((err: { field?: string; message?: string; path?: string[] }) => {
-					const field = err.field || err.path?.join(".") || "Field";
-					const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
-					return `• ${fieldName}: ${err.message || "Invalid value"}`;
-				})
-				.join("\n");
+			// Formatted validation errors: { field, message, path }
+			const details = errors.map(
+				(err: {
+					field?: string;
+					message?: string;
+					path?: (string | number)[];
+				}) => {
+					// Use field (formatted label) if available, otherwise join path array
+					const field =
+						err.field ||
+						(Array.isArray(err.path) ? err.path.join(".") : "Field");
+					return `• ${field}: ${err.message || "Invalid value"}`;
+				}
+			);
+			return {
+				summary:
+					errors.length === 1
+						? `Valideringsfel: ${errors[0]?.field || "Okänt fält"}`
+						: `${errors.length} valideringsfel hittades`,
+				details,
+			};
 		}
+
 		if (typeof errors === "object") {
-			return Object.entries(errors)
-				.map(([field, msg]) => `• ${field}: ${msg}`)
-				.join("\n");
+			const details = Object.entries(errors).map(
+				([field, msg]) => `• ${field}: ${msg}`
+			);
+			return {
+				summary: `${details.length} valideringsfel hittades`,
+				details,
+			};
 		}
-		return String(errors);
+
+		return { summary: String(errors), details: [] };
 	};
 
 	// Fetch category tree and tags
@@ -113,15 +135,16 @@ export default function NewProductPage() {
 				router.push(`/dashboard/products/${result.data._id}`);
 				return { success: true, data: result.data };
 			} else {
-				const errorDetails = result.errors
+				const { summary, details } = result.errors
 					? formatValidationErrors(result.errors)
-					: "";
-				const errorMessage = result.message || "Failed to create product";
+					: { summary: "", details: [] };
+				const errorMessage =
+					summary || result.message || "Failed to create product";
 
-				if (errorDetails) {
+				if (details.length > 0) {
 					toast.error(errorMessage, {
-						description: errorDetails,
-						duration: 6000,
+						description: details.join("\n"),
+						duration: 8000,
 					});
 				} else {
 					toast.error(errorMessage);
@@ -166,15 +189,16 @@ export default function NewProductPage() {
 			const createResult = await createResponse.json();
 
 			if (!createResult.success) {
-				const errorDetails = createResult.errors
+				const { summary, details } = createResult.errors
 					? formatValidationErrors(createResult.errors)
-					: "";
-				const errorMessage = createResult.message || "Failed to create product";
+					: { summary: "", details: [] };
+				const errorMessage =
+					summary || createResult.message || "Failed to create product";
 
-				if (errorDetails) {
+				if (details.length > 0) {
 					toast.error(errorMessage, {
-						description: errorDetails,
-						duration: 6000,
+						description: details.join("\n"),
+						duration: 8000,
 					});
 				} else {
 					toast.error(errorMessage);
@@ -204,16 +228,18 @@ export default function NewProductPage() {
 				};
 			} else {
 				// Product was created but publish failed - redirect to edit page
-				const errorDetails = publishResult.errors
+				const { summary, details } = publishResult.errors
 					? formatValidationErrors(publishResult.errors)
-					: "";
+					: { summary: "", details: [] };
 				const errorMessage =
-					publishResult.message || "Product created but publish failed";
+					summary ||
+					publishResult.message ||
+					"Product created but publish failed";
 
-				if (errorDetails) {
+				if (details.length > 0) {
 					toast.error(errorMessage, {
-						description: errorDetails,
-						duration: 6000,
+						description: details.join("\n"),
+						duration: 8000,
 					});
 				} else {
 					toast.error(errorMessage);
