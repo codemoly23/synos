@@ -4,6 +4,7 @@ import { blogPostService } from "@/lib/services/blog-post.service";
 import { updatePublishTypeSchema } from "@/lib/validations/blog-post.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateBlogPost } from "@/lib/revalidation/actions";
 import {
 	successResponse,
 	badRequestResponse,
@@ -55,6 +56,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		// Update publish type
 		if (publishType === "publish") {
 			const result = await blogPostService.publishPost(id);
+
+			// Revalidate ISR cache for this post
+			await revalidateBlogPost(result.post.slug);
+
 			logger.info("Blog post published", {
 				postId: id,
 				publishedBy: session.user.id,
@@ -66,6 +71,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			);
 		} else {
 			const post = await blogPostService.updatePublishType(id, publishType);
+
+			// Revalidate ISR cache for this post
+			await revalidateBlogPost(post.slug);
+
 			logger.info("Blog post publish type updated", {
 				postId: id,
 				updatedBy: session.user.id,

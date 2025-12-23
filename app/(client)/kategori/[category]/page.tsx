@@ -40,8 +40,26 @@ interface CategoryPageProps {
 	}>;
 }
 
-// Revalidate every hour
-export const revalidate = 3600;
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new categories to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all active categories at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const categories = await categoryRepository.findActiveCategories();
+		return categories
+			.filter((cat) => cat.slug)
+			.map((cat) => ({ category: cat.slug }));
+	} catch (error) {
+		console.error("Error generating static params for categories:", error);
+		return [];
+	}
+}
 
 async function getCategory(slug: string) {
 	try {

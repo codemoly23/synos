@@ -3,6 +3,7 @@ import { getAuth } from "@/lib/db/auth";
 import { productService } from "@/lib/services/product.service";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateProduct } from "@/lib/revalidation/actions";
 import {
 	successResponse,
 	badRequestResponse,
@@ -43,6 +44,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			id,
 			session.user.id
 		);
+
+		// Revalidate ISR cache for this product
+		const categorySlug = (
+			product.categories as unknown as Array<{ slug?: string }>
+		)?.[0]?.slug;
+		await revalidateProduct(product.slug, categorySlug);
 
 		logger.info("Product unpublished", {
 			productId: id,

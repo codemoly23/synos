@@ -50,8 +50,8 @@ export const metadata: Metadata = {
 	},
 };
 
-// Revalidate every hour
-export const revalidate = 3600;
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
 
 async function getCategories() {
 	try {

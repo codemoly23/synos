@@ -8,6 +8,7 @@ import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { ProductShareButtons } from "@/components/products/ProductShareButtons";
 import { ProductLongDescription } from "@/components/products/ProductLongDescription";
+import { BeforeAfterShowcase } from "@/components/products/BeforeAfterShowcase";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
@@ -185,6 +186,15 @@ export function ProductContent({
 									description={product.productDescription}
 								/>
 							)}
+
+							{/* Before & After Section */}
+							{product.beforeAfterImages &&
+								product.beforeAfterImages.length > 0 && (
+									<BeforeAfterShowcase
+										pairs={product.beforeAfterImages}
+										productName={product.title}
+									/>
+								)}
 
 							{/* Specifications Section */}
 							{product?.techSpecifications &&

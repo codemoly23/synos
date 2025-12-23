@@ -10,6 +10,9 @@ import { BlogListingClient } from "./_components/blog-listing-client";
  * Now fetches from database instead of static data.
  */
 
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
 	title: "Blogg – Nyheter & Artiklar | Synos Medical",
 	description:

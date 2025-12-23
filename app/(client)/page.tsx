@@ -9,12 +9,15 @@ import { ProcessSteps } from "@/components/home/ProcessSteps";
 import { Testimonials } from "@/components/home/Testimonials";
 import AboutSection from "@/components/home/AboutSection";
 import CtaSection from "@/components/home/CtaSection";
-import { FloatingContactButton } from "@/components/home/FloatingContactButton";
 import { getHomePage, getHomePageSeo } from "@/lib/services/home-page.service";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { searchService } from "@/lib/services/search.service";
 import { SearchPageClient } from "./search-page";
 import { SearchPageSkeleton } from "@/components/search/SearchSkeleton";
+
+// ISR: Revalidate every 24 hours
+// Note: Search mode uses searchParams which makes those requests dynamic
+export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
 	const [seo, siteSettings] = await Promise.all([

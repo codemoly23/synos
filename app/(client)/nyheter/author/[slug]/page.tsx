@@ -13,8 +13,42 @@ import type { Article, Author } from "@/types/article";
  *
  * URL: /nyheter/author/[slug]/
  * Shows all blog posts by a specific author
- * Fetches from MongoDB
+ * Uses ISR for optimal performance.
  */
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new authors to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all authors at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const articles = await getAllArticles();
+		const authorSlugs = new Set<string>();
+		articles.forEach((article) => {
+			if (article.author?.name) {
+				const slug = article.author.name
+					.toLowerCase()
+					.replace(/\s+/g, "-")
+					.replace(/[åä]/g, "a")
+					.replace(/ö/g, "o")
+					.replace(/@/g, "")
+					.replace(/\./g, "-")
+					.replace(/[^a-z0-9-]/g, "")
+					.replace(/-+/g, "-");
+				authorSlugs.add(slug);
+			}
+		});
+		return Array.from(authorSlugs).map((slug) => ({ slug }));
+	} catch (error) {
+		console.error("Error generating static params for nyheter authors:", error);
+		return [];
+	}
+}
 
 interface AuthorPageProps {
 	params: Promise<{

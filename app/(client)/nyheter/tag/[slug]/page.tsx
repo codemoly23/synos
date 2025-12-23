@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { getArticlesByTag } from "@/lib/data/blog";
+import { getArticlesByTag, getAllTags } from "@/lib/data/blog";
 import { NyheterCard } from "../../_components/nyheter-card";
 import { NyheterHero } from "../../_components/nyheter-hero";
 
@@ -11,8 +11,32 @@ import { NyheterHero } from "../../_components/nyheter-hero";
  *
  * URL: /nyheter/tag/[slug]/
  * Shows all blog posts with a specific tag
- * Fetches from MongoDB
+ * Uses ISR for optimal performance.
  */
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new tags to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all tags at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const tags = await getAllTags();
+		return tags.map((tag) => ({
+			slug: tag
+				.toLowerCase()
+				.replace(/\s+/g, "-")
+				.replace(/[^a-z0-9-]/g, ""),
+		}));
+	} catch (error) {
+		console.error("Error generating static params for nyheter tags:", error);
+		return [];
+	}
+}
 
 interface TagPageProps {
 	params: Promise<{

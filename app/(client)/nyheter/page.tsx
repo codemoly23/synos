@@ -10,6 +10,9 @@ import { NyheterListing } from "./_components/nyheter-listing";
  * Fetches data from MongoDB for dynamic content.
  */
 
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
 	title: "Nyheter | Synos Medical",
 	description:

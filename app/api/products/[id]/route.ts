@@ -4,6 +4,7 @@ import { productService } from "@/lib/services/product.service";
 import { updateProductSchema } from "@/lib/validations/product.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateProduct } from "@/lib/revalidation/actions";
 import {
 	successResponse,
 	badRequestResponse,
@@ -90,6 +91,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			session.user.id
 		);
 
+		// Revalidate ISR cache for this product
+		const categorySlug = (
+			product.categories as unknown as Array<{ slug?: string }>
+		)?.[0]?.slug;
+		await revalidateProduct(product.slug, categorySlug);
+
 		logger.info("Product updated", {
 			productId: id,
 			updatedBy: session.user.id,
@@ -138,8 +145,20 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 			return badRequestResponse("Invalid product ID format");
 		}
 
+		// Get product info before deletion for revalidation
+		const productToDelete = await productService.getProductById(id);
+		const productSlug = productToDelete?.slug;
+		const categorySlug = (
+			productToDelete?.categories as unknown as Array<{ slug?: string }>
+		)?.[0]?.slug;
+
 		// Delete product
 		await productService.deleteProduct(id);
+
+		// Revalidate ISR cache
+		if (productSlug) {
+			await revalidateProduct(productSlug, categorySlug);
+		}
 
 		logger.info("Product deleted", {
 			productId: id,

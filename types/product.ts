@@ -28,6 +28,12 @@ export interface Product {
 	updatedAt: string;
 }
 
+export interface BeforeAfterImage {
+	beforeImage: string;
+	afterImage: string;
+	label?: string;
+}
+
 export type ProductType = {
 	_id: string;
 	title: string;
@@ -40,6 +46,7 @@ export type ProductType = {
 	treatments: Array<string> | null;
 	productImages: Array<string>;
 	overviewImage: string;
+	beforeAfterImages: Array<BeforeAfterImage> | null;
 	techSpecifications: Array<{
 		title: string;
 		description: string;

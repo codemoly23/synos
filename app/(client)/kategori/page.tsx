@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { productRepository } from "@/lib/repositories/product.repository";
-import { categoryRepository } from "@/lib/repositories/category.repository";
+import {
+	getPublishedProducts,
+	getActiveCategories,
+} from "@/lib/services/product-cache.service";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,27 +53,8 @@ export const metadata: Metadata = {
 	},
 };
 
-// Revalidate every hour
-export const revalidate = 3600;
-
-async function getCategories() {
-	try {
-		return await categoryRepository.findActiveCategories();
-	} catch (error) {
-		console.error("Error fetching categories:", error);
-		return [];
-	}
-}
-
-async function getProducts() {
-	try {
-		const { data } = await productRepository.findPublished({ limit: 100 });
-		return data;
-	} catch (error) {
-		console.error("Error fetching products:", error);
-		return [];
-	}
-}
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
 
 // Product Card Component for Database Products
 function ProductCardDB({
@@ -286,8 +269,8 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 
 export default async function KategoriPage() {
 	const [categories, products] = await Promise.all([
-		getCategories(),
-		getProducts(),
+		getActiveCategories(),
+		getPublishedProducts({ limit: 100 }),
 	]);
 
 	// Create a map of category ID to slug for product cards

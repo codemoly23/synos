@@ -5,23 +5,42 @@ import {
 	getRelatedArticles,
 	getAllArticles,
 } from "@/lib/data/blog";
+import { blogPostService } from "@/lib/services/blog-post.service";
 import { siteConfig } from "@/config/site";
 import { BlogDetailHero } from "../_components/blog-detail-hero";
 import { BlogContent } from "../_components/blog-content";
 import { BlogAuthor } from "../_components/blog-author";
 import { RelatedPosts } from "../_components/related-posts";
 import { BlogComments } from "../_components/blog-comments";
-// import { Breadcrumb } from "@/components/shared/Breadcrumb";
 
 /**
  * Blog Detail Page
  *
  * Dynamic route for individual blog posts.
- * Using force-dynamic to avoid SSG issues with framer-motion context
+ * Uses ISR for optimal performance with fresh content.
  */
 
-// Force dynamic rendering to avoid SSG issues with client components
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new posts to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all published blog posts at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const result = await blogPostService.getPublishedPosts({
+			limit: 1000,
+			sort: "-publishedAt",
+		});
+		return result.data.map((post) => ({ slug: post.slug }));
+	} catch (error) {
+		console.error("Error generating static params for blog posts:", error);
+		return [];
+	}
+}
 
 interface BlogDetailPageProps {
 	params: Promise<{

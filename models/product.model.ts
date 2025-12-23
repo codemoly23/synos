@@ -26,6 +26,13 @@ export interface IDocumentEntry {
 	url: string;
 }
 
+export interface IBeforeAfterImage {
+	_id?: mongoose.Types.ObjectId;
+	beforeImage: string;
+	afterImage: string;
+	label?: string;
+}
+
 export interface IPurchaseInfo {
 	title?: string;
 	description?: string; // Rich HTML
@@ -54,6 +61,7 @@ export interface IProduct extends Document {
 	treatments: string[]; // Tags
 	productImages: string[]; // URLs
 	overviewImage?: string; // URL
+	beforeAfterImages: IBeforeAfterImage[]; // Before/after image pairs
 	techSpecifications: ITechSpec[];
 	documentation: IDocumentEntry[];
 	purchaseInfo?: IPurchaseInfo;
@@ -126,6 +134,25 @@ const DocumentEntrySchema = new Schema<IDocumentEntry>(
 	{ _id: true }
 );
 
+const BeforeAfterImageSchema = new Schema<IBeforeAfterImage>(
+	{
+		beforeImage: {
+			type: String,
+			required: [true, "Before image is required"],
+		},
+		afterImage: {
+			type: String,
+			required: [true, "After image is required"],
+		},
+		label: {
+			type: String,
+			default: "",
+			trim: true,
+		},
+	},
+	{ _id: true }
+);
+
 const PurchaseInfoSchema = new Schema<IPurchaseInfo>(
 	{
 		title: {
@@ -185,8 +212,6 @@ const ProductSchema = new Schema<IProduct>(
 			required: [true, "Product slug is required"],
 			trim: true,
 			lowercase: true,
-			unique: true,
-			index: true,
 			maxlength: [120, "Product slug cannot exceed 120 characters"],
 		},
 		description: {
@@ -229,6 +254,10 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			default: "",
 		},
+		beforeAfterImages: {
+			type: [BeforeAfterImageSchema],
+			default: [],
+		},
 		techSpecifications: [TechSpecSchema],
 		documentation: [DocumentEntrySchema],
 		purchaseInfo: {
@@ -264,7 +293,6 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			enum: ["publish", "draft", "private"],
 			default: "draft",
-			index: true,
 		},
 		visibility: {
 			type: String,

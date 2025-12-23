@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import { HTTP_STATUS } from "./constants";
 
 /**
+ * Formatted validation error for user-friendly display
+ * Includes both the original path (for form field mapping) and
+ * the formatted field name (for user display)
+ */
+export interface FormattedValidationError {
+	field: string; // User-friendly label (e.g., "Före/efter-bilder #1 → Före-bild")
+	message: string; // Error message
+	path: (string | number)[]; // Original path array for form field mapping (e.g., ["beforeAfterImages", 0, "beforeImage"])
+}
+
+/**
  * Standard API response structure
  */
 export interface ApiResponse<T = any> {
@@ -14,7 +25,91 @@ export interface ApiResponse<T = any> {
 		total?: number;
 		totalPages?: number;
 	};
-	errors?: any;
+	errors?: FormattedValidationError[];
+}
+
+/**
+ * Field name mappings for Swedish/user-friendly display
+ */
+const FIELD_LABELS: Record<string, string> = {
+	title: "Titel",
+	slug: "URL-slug",
+	description: "Beskrivning",
+	shortDescription: "Kort beskrivning",
+	productDescription: "Produktbeskrivning",
+	benefits: "Fördelar",
+	certifications: "Certifieringar",
+	treatments: "Behandlingar",
+	productImages: "Produktbilder",
+	overviewImage: "Översiktsbild",
+	beforeAfterImages: "Före/efter-bilder",
+	beforeImage: "Före-bild",
+	afterImage: "Efter-bild",
+	label: "Etikett",
+	techSpecifications: "Tekniska specifikationer",
+	documentation: "Dokumentation",
+	purchaseInfo: "Köpinformation",
+	seo: "SEO",
+	categories: "Kategorier",
+	qa: "Frågor & Svar",
+	question: "Fråga",
+	answer: "Svar",
+	youtubeUrl: "YouTube URL",
+	rubric: "Rubrik",
+	publishType: "Publiceringstyp",
+	visibility: "Synlighet",
+	url: "URL",
+};
+
+/**
+ * Get user-friendly field label
+ */
+function getFieldLabel(path: (string | number)[]): string {
+	// Build a readable field path
+	const parts: string[] = [];
+
+	for (let i = 0; i < path.length; i++) {
+		const segment = path[i];
+
+		if (typeof segment === "number") {
+			// It's an array index, add to the previous label
+			parts[parts.length - 1] += ` #${segment + 1}`;
+		} else {
+			const label = FIELD_LABELS[segment] || segment;
+			parts.push(label);
+		}
+	}
+
+	return parts.join(" → ");
+}
+
+/**
+ * Zod issue structure (simplified type to avoid deprecation warnings)
+ */
+interface ZodValidationIssue {
+	path: (string | number)[];
+	message: string;
+	code?: string;
+}
+
+/**
+ * Format Zod validation errors into user-friendly format
+ */
+export function formatZodErrors(issues: ZodValidationIssue[]): FormattedValidationError[] {
+	return issues.map((issue) => ({
+		field: getFieldLabel(issue.path),
+		message: issue.message,
+		path: issue.path, // Keep original array for form field mapping
+	}));
+}
+
+/**
+ * Create a summary message from validation errors
+ */
+export function createValidationSummary(errors: FormattedValidationError[]): string {
+	if (errors.length === 0) return "Validation failed";
+	if (errors.length === 1) return `Valideringsfel: ${errors[0].field}`;
+	return `${errors.length} valideringsfel hittades`;
 }
 
 /**
@@ -72,12 +167,37 @@ export function noContentResponse(): NextResponse {
 
 /**
  * Create a bad request response (400)
+ * Automatically formats Zod validation errors if provided
  */
 export function badRequestResponse(
 	message: string = "Bad request",
-	errors?: any
+	errors?: ZodValidationIssue[] | FormattedValidationError[] | unknown
 ): NextResponse<ApiResponse> {
-	return errorResponse(message, HTTP_STATUS.BAD_REQUEST, errors);
+	let formattedErrors: FormattedValidationError[] | undefined;
+	let summaryMessage = message;
+
+	// Check if errors are validation issues
+	if (Array.isArray(errors) && errors.length > 0) {
+		const firstError = errors[0];
+		if (firstError && typeof firstError === "object") {
+			// Check if already formatted (has 'field' property with formatted label)
+			if ("field" in firstError && typeof firstError.field === "string") {
+				// Already formatted errors - use as-is
+				formattedErrors = errors as FormattedValidationError[];
+				summaryMessage = createValidationSummary(formattedErrors);
+			} else if (
+				"path" in firstError &&
+				Array.isArray(firstError.path) &&
+				"message" in firstError
+			) {
+				// Raw Zod errors - format them
+				formattedErrors = formatZodErrors(errors as ZodValidationIssue[]);
+				summaryMessage = createValidationSummary(formattedErrors);
+			}
+		}
+	}
+
+	return errorResponse(summaryMessage, HTTP_STATUS.BAD_REQUEST, formattedErrors);
 }
 
 /**

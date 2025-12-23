@@ -735,6 +735,12 @@ class ProductService {
 			treatments: [...product.treatments],
 			productImages: [...product.productImages],
 			overviewImage: product.overviewImage,
+			beforeAfterImages:
+				product.beforeAfterImages?.map((ba) => ({
+					beforeImage: ba.beforeImage,
+					afterImage: ba.afterImage,
+					label: ba.label,
+				})) || [],
 			techSpecifications: product.techSpecifications.map((spec) => ({
 				title: spec.title,
 				description: spec.description,

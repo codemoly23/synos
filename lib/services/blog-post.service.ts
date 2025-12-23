@@ -65,19 +65,20 @@ class BlogPostService {
 			});
 		}
 
-		if (!post.excerpt?.trim()) {
-			errors.push({
-				field: "excerpt",
-				message: "Excerpt is required for publishing",
-				type: "error",
-			});
-		}
-
 		if (!post.content?.trim()) {
 			errors.push({
 				field: "content",
 				message: "Content is required for publishing",
 				type: "error",
+			});
+		}
+
+		// Excerpt recommended but not required
+		if (!post.excerpt?.trim()) {
+			errors.push({
+				field: "excerpt",
+				message: "Excerpt is recommended for better SEO and social sharing",
+				type: "warning",
 			});
 		}
 
@@ -338,7 +339,11 @@ class BlogPostService {
 
 		// If there are errors, don't allow publishing
 		if (errors.length > 0) {
-			throw new ValidationError("Blog post cannot be published", errors);
+			const missingFields = errors.map((e) => e.field).join(", ");
+			throw new ValidationError(
+				`Please fill in the following required fields: ${missingFields}`,
+				errors
+			);
 		}
 
 		// Update publish status

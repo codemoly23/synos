@@ -3,12 +3,35 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "./product-content";
+import { productRepository } from "@/lib/repositories/product.repository";
+import { CACHE_TAGS, DEFAULT_REVALIDATE } from "@/lib/revalidation";
 import { ApiResponse, ProductType } from "@/types";
 
 interface ProductPageProps {
 	params: Promise<{
 		slug: string;
 	}>;
+}
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
+
+// Allow new products to be generated on-demand
+export const dynamicParams = true;
+
+/**
+ * Generate static params for all published products at build time
+ */
+export async function generateStaticParams() {
+	try {
+		const { data: products } = await productRepository.findPublished({
+			limit: 1000,
+		});
+		return products.map((product) => ({ slug: product.slug }));
+	} catch (error) {
+		console.error("Error generating static params for products:", error);
+		return [];
+	}
 }
 
 const BASE_URL = siteConfig.url;
@@ -23,8 +46,8 @@ async function getProduct(slug: string): Promise<ProductType | null> {
 			`${process.env.BETTER_AUTH_URL}/api/products/client/${slug}`,
 			{
 				next: {
-					revalidate: 60, // Revalidate every 60 seconds
-					tags: [`product-${slug}`],
+					revalidate: DEFAULT_REVALIDATE,
+					tags: [CACHE_TAGS.PRODUCT(slug), CACHE_TAGS.PRODUCTS],
 				},
 			}
 		);

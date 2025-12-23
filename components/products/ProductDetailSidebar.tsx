@@ -70,7 +70,7 @@ export function ProductDetailSidebar({
 								asChild
 								variant="outline"
 								size="sm"
-								className="w-full border border-white/30 bg-white/10 text-white hover:bg-white/20 hover:border-white/50 gap-2 flex items-center justify-center transition-all duration-200 h-9 text-sm"
+								className="w-full border border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white hover:border-white/50 gap-2 flex items-center justify-center transition-all duration-200 h-9 text-sm"
 							>
 								<Link href="tel:+46102051501">
 									<Phone className="h-4 w-4" />

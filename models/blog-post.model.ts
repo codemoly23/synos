@@ -136,8 +136,6 @@ const BlogPostSchema = new Schema<IBlogPost>(
 			required: [true, "Blog post slug is required"],
 			trim: true,
 			lowercase: true,
-			unique: true,
-			index: true,
 			maxlength: [250, "Blog post slug cannot exceed 250 characters"],
 		},
 		excerpt: {
@@ -161,7 +159,6 @@ const BlogPostSchema = new Schema<IBlogPost>(
 			type: Schema.Types.ObjectId,
 			ref: "User",
 			required: [true, "Author is required"],
-			index: true,
 		},
 		categories: [
 			{
@@ -183,7 +180,6 @@ const BlogPostSchema = new Schema<IBlogPost>(
 			type: String,
 			enum: ["publish", "draft", "private"],
 			default: "draft",
-			index: true,
 		},
 		publishedAt: {
 			type: Date,

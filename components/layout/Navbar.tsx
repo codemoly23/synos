@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 
@@ -16,7 +16,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import { mainNav } from "@/config/navigation";
+import { mainNavNew } from "@/config/navigation-new";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 import { useNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { cn } from "@/lib/utils";
@@ -66,41 +66,41 @@ export function Navbar({ config }: NavbarProps) {
 							<div className="hidden lg:flex items-center justify-center flex-1">
 								<NavigationMenu>
 									<NavigationMenuList>
-										{mainNav.map((item) => (
+										{mainNavNew.map((item) => (
 											<NavigationMenuItem key={item.title}>
-												{/* Dynamic Kategori menu */}
+												{/* Dynamic Produkter mega-menu */}
 												{item.isDynamic ? (
 													<>
 														<NavigationMenuTrigger
-																className={cn(
-																	"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
-																	useLightText
-																		? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
-																		: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
-																)}
-															>
+															className={cn(
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																useLightText
+																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
+																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
+															)}
+														>
 															<Link href={item.href}>
 																{item.title}
 															</Link>
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
-															<div className="w-[800px] p-5 md:w-[600px] lg:w-[850px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">
-																<div className="grid grid-cols-3 gap-4">
+															<div className="w-[800px] p-3 md:w-[200px] lg:w-[500px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">
+																<div className="grid grid-cols-3 gap-x-4 gap-y-2">
 																	{navigationData?.categories.map(
 																		(category) => (
 																			<div
 																				key={category._id}
-																				className="space-y-2"
+																				className="space-y-0"
 																			>
 																				<Link
 																					href={`/kategori/${category.slug}`}
-																					className="block text-sm font-bold text-secondary hover:text-secondary hover:underline transition-colors"
+																					className="block text-sm font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
 																				>
 																					{category.name}
 																				</Link>
 																				{category.products
 																					.length > 0 && (
-																					<ul className="space-y-1.5">
+																					<ul className="space-y-0">
 																						{category.products.map(
 																							(
 																								product
@@ -112,7 +112,7 @@ export function Navbar({ config }: NavbarProps) {
 																								>
 																									<Link
 																										href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
-																										className="block text-sm text-slate-400 hover:text-secondary transition-colors line-clamp-1 hover:underline"
+																										className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
 																									>
 																										{
 																											product.title
@@ -146,16 +146,16 @@ export function Navbar({ config }: NavbarProps) {
 														</NavigationMenuContent>
 													</>
 												) : item.items ? (
-													// Static menu items with subitems
+													// Static menu items with subitems (Starta Eget, Om Oss)
 													<>
 														<NavigationMenuTrigger
-																className={cn(
-																	"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
-																	useLightText
-																		? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
-																		: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
-																)}
-															>
+															className={cn(
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																useLightText
+																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
+																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
+															)}
+														>
 															<Link href={item.href}>
 																{item.title}
 															</Link>
@@ -179,7 +179,7 @@ export function Navbar({ config }: NavbarProps) {
 														</NavigationMenuContent>
 													</>
 												) : (
-													// Simple link items
+													// Simple link items (Nyheter och artiklar, Utbildningar, Kontakt)
 													<NavigationMenuLink
 														href={item.href}
 														className={cn(
@@ -211,7 +211,9 @@ export function Navbar({ config }: NavbarProps) {
 										href={`mailto:${config.company.email}`}
 										className={cn(
 											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
-											useLightText ? "text-white/90 hover:text-white" : "text-primary"
+											useLightText
+												? "text-white/90 hover:text-white"
+												: "text-primary"
 										)}
 									>
 										<Mail className="h-4 w-4" />
@@ -224,7 +226,9 @@ export function Navbar({ config }: NavbarProps) {
 										)}`}
 										className={cn(
 											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
-											useLightText ? "text-white/90 hover:text-white" : "text-primary hover:text-primary"
+											useLightText
+												? "text-white/90 hover:text-white"
+												: "text-primary hover:text-primary"
 										)}
 									>
 										<Phone className="h-4 w-4" />
