@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { productRepository } from "@/lib/repositories/product.repository";
-import { categoryRepository } from "@/lib/repositories/category.repository";
+import {
+	getNewestProducts,
+	getActiveCategories,
+} from "@/lib/services/product-cache.service";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +34,9 @@ import type { ICategory } from "@/models/category.model";
  * Shows all published products with category sidebar filter
  */
 
-// Revalidate every hour
-export const revalidate = 3600;
+// Force dynamic rendering to ensure fresh data on each request
+// ISR is handled by unstable_cache in the service layer (1 hour)
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
 	title: `Produkter | ${siteConfig.name}`,
@@ -52,28 +55,6 @@ export const metadata: Metadata = {
 		canonical: `${siteConfig.url}/produkter`,
 	},
 };
-
-async function getProducts() {
-	try {
-		const { data } = await productRepository.findPublished({
-			limit: 100,
-			sort: "-createdAt",
-		});
-		return data;
-	} catch (error) {
-		console.error("Error fetching products:", error);
-		return [];
-	}
-}
-
-async function getCategories() {
-	try {
-		return await categoryRepository.findActiveCategories();
-	} catch (error) {
-		console.error("Error fetching categories:", error);
-		return [];
-	}
-}
 
 // Product Card Component
 function ProductCardDB({
@@ -282,8 +263,8 @@ function MobileDrawer({
 
 export default async function ProductsPage() {
 	const [products, categories] = await Promise.all([
-		getProducts(),
-		getCategories(),
+		getNewestProducts(100),
+		getActiveCategories(),
 	]);
 
 	// Create a map of category ID to slug for product cards

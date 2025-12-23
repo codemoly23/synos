@@ -53,8 +53,6 @@ const BlogCategorySchema = new Schema<IBlogCategory>(
 			required: [true, "Category slug is required"],
 			trim: true,
 			lowercase: true,
-			unique: true,
-			index: true,
 			maxlength: [120, "Category slug cannot exceed 120 characters"],
 		},
 		description: {
@@ -66,7 +64,6 @@ const BlogCategorySchema = new Schema<IBlogCategory>(
 			type: Schema.Types.ObjectId,
 			ref: "BlogCategory",
 			default: null,
-			index: true,
 		},
 		image: {
 			type: String,

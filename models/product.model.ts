@@ -185,8 +185,6 @@ const ProductSchema = new Schema<IProduct>(
 			required: [true, "Product slug is required"],
 			trim: true,
 			lowercase: true,
-			unique: true,
-			index: true,
 			maxlength: [120, "Product slug cannot exceed 120 characters"],
 		},
 		description: {
@@ -264,7 +262,6 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			enum: ["publish", "draft", "private"],
 			default: "draft",
-			index: true,
 		},
 		visibility: {
 			type: String,

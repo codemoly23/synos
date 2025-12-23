@@ -44,21 +44,21 @@ export function NyheterCard({
 			<Link href={`${basePath}/${article.slug}`} className="block h-full">
 				<div className="relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:shadow-lg hover:shadow-primary/10">
 					{/* Image */}
-					{article.featuredImage && (
-						<div className="relative aspect-4/3 w-full overflow-hidden">
-							<div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
-								<ImageComponent
-									src={article.featuredImage.url}
-									alt={article.featuredImage.alt}
-									height={0}
-									width={0}
-									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-									wrapperClasses="w-full h-full"
-									className="object-cover w-full h-full"
-								/>
-							</div>
+					{/* {article.featuredImage && ( */}
+					<div className="relative aspect-4/3 w-full overflow-hidden">
+						<div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+							<ImageComponent
+								src={article?.featuredImage?.url}
+								alt={article?.featuredImage?.alt ?? ""}
+								height={0}
+								width={0}
+								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+								wrapperClasses="w-full h-full"
+								className="object-cover w-full h-full"
+							/>
 						</div>
-					)}
+					</div>
+					{/* )} */}
 
 					{/* Content */}
 					<div className="flex flex-1 flex-col p-4">
