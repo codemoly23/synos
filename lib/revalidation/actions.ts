@@ -51,11 +51,13 @@ export async function revalidateAllProducts(): Promise<void> {
  * Revalidate category-related caches
  * Call this when a category is created, updated, or deleted
  */
-export async function revalidateCategory(slug: string): Promise<void> {
-	revalidateTag(CACHE_TAGS.CATEGORY(slug), "max");
+export async function revalidateCategory(slug?: string): Promise<void> {
+	if (slug) {
+		revalidateTag(CACHE_TAGS.CATEGORY(slug), "max");
+		revalidatePath(`${PATHS.KATEGORI}/${slug}`);
+		revalidatePath(`${PATHS.KLINIKUTRUSTNING}/${slug}`);
+	}
 	revalidateTag(CACHE_TAGS.CATEGORIES, "max");
-	revalidatePath(`${PATHS.KATEGORI}/${slug}`);
-	revalidatePath(`${PATHS.KLINIKUTRUSTNING}/${slug}`);
 	revalidatePath(PATHS.KATEGORI);
 	revalidatePath(PATHS.KLINIKUTRUSTNING);
 	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
