@@ -1192,14 +1192,17 @@ export function ProductForm({
 											setValue("categories", cats, {
 												shouldDirty: true,
 											});
+											const currentPrimary = watch("primaryCategory");
 											// Clear primary category if it's no longer in selected categories
-											const currentPrimary =
-												watch("primaryCategory");
-											if (
-												currentPrimary &&
-												!cats.includes(currentPrimary)
-											) {
-												setValue("primaryCategory", "", {
+											if (currentPrimary && !cats.includes(currentPrimary)) {
+												// Auto-set to first category if available
+												setValue("primaryCategory", cats[0] || "", {
+													shouldDirty: true,
+												});
+											}
+											// Auto-set primary category to first category if not set
+											if (!currentPrimary && cats.length > 0) {
+												setValue("primaryCategory", cats[0], {
 													shouldDirty: true,
 												});
 											}

@@ -14,6 +14,7 @@ import {
 	paginatedResponse,
 	conflictResponse,
 } from "@/lib/utils/api-response";
+import { revalidateBlogPost, revalidateBlogTags } from "@/lib/revalidation/actions";
 
 /**
  * GET /api/blog-posts
@@ -107,6 +108,13 @@ export async function POST(request: NextRequest) {
 			validationResult.data,
 			session.user.id
 		);
+
+		// Revalidate ISR cache
+		await revalidateBlogPost(post.slug);
+		// Revalidate tags if the post has tags
+		if (post.tags && post.tags.length > 0) {
+			await revalidateBlogTags();
+		}
 
 		logger.info("Blog post created", {
 			postId: post._id,

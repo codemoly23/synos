@@ -64,7 +64,7 @@ interface MediaGalleryProps {
 	selectedUrls?: string[];
 	/** Dialog title override */
 	title?: string;
-	/** Items per page */
+	/** Items per page (default: 32) */
 	pageSize?: number;
 }
 
@@ -129,7 +129,7 @@ export function MediaGallery({
 	selectedUrl,
 	selectedUrls = [],
 	title,
-	pageSize = 12,
+	pageSize = 32,
 }: MediaGalleryProps) {
 	const [activeTab, setActiveTab] = useState<"library" | "upload">("library");
 	const [files, setFiles] = useState<FileMetadata[]>([]);

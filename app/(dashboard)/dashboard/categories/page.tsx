@@ -91,6 +91,11 @@ function TreeNode({
 				{/* Name */}
 				<span className="flex-1 font-medium">{node.name}</span>
 
+				{/* Order badge */}
+				<Badge variant="outline" className="text-xs font-mono">
+					{node.order}
+				</Badge>
+
 				{/* Status badge */}
 				{!node.isActive && (
 					<Badge variant="secondary" className="text-xs">
@@ -267,17 +272,27 @@ export default function CategoriesPage() {
 			const node = findNodeById(categoryTree, id);
 			if (!node) return;
 
+			const newStatus = !node.isActive;
 			const response = await fetch(`/api/categories/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ isActive: !node.isActive }),
+				body: JSON.stringify({ isActive: newStatus }),
 			});
 
 			if (response.ok) {
+				toast.success(
+					newStatus
+						? "Category activated successfully"
+						: "Category deactivated successfully"
+				);
 				fetchCategories();
+			} else {
+				const data = await response.json();
+				toast.error(data.message || "Failed to update category status");
 			}
 		} catch (error) {
 			console.error("Failed to toggle category:", error);
+			toast.error("Failed to update category status");
 		}
 	};
 

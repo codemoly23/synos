@@ -63,7 +63,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 
 			const categories = await this.model
 				.find({ parent: null })
-				.sort({ order: 1, name: 1 })
+				.sort({ order: 1, createdAt: 1 })
 				.exec();
 
 			logger.db(
@@ -88,7 +88,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 
 			const categories = await this.model
 				.find({ parent: parentId })
-				.sort({ order: 1, name: 1 })
+				.sort({ order: 1, createdAt: 1 })
 				.exec();
 
 			logger.db("findChildren", this.modelName, Date.now() - startTime);
@@ -127,7 +127,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 
 			const categories = await this.model
 				.find(filter)
-				.sort({ order: 1, name: 1 })
+				.sort({ order: 1, createdAt: 1 })
 				.exec();
 
 			const tree = buildCategoryTree(categories, null, 0, "");
@@ -185,7 +185,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 			const [data, total] = await Promise.all([
 				this.model
 					.find(filter)
-					.sort({ order: 1, name: 1 })
+					.sort({ order: 1, createdAt: 1 })
 					.skip(skip)
 					.limit(limit)
 					.exec(),
@@ -289,7 +289,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 
 			const categories = await this.model
 				.find({ isActive: true })
-				.sort({ order: 1, name: 1 })
+				.sort({ order: 1, createdAt: 1 })
 				.exec();
 
 			logger.db(
@@ -317,7 +317,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
 					name: { $regex: query, $options: "i" },
 				})
 				.limit(limit)
-				.sort({ name: 1 })
+				.sort({ order: 1, createdAt: 1 })
 				.exec();
 
 			logger.db("searchByName", this.modelName, Date.now() - startTime);

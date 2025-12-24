@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { startaEgetPageService } from "@/lib/services/starta-eget-page.service";
 import { updateStartaEgetPageSchema } from "@/lib/validations/starta-eget-page.validation";
+import { revalidateStartaEgetPage } from "@/lib/revalidation/actions";
 
 export async function GET() {
 	try {
@@ -31,6 +32,10 @@ export async function PUT(request: NextRequest) {
 		const updated = await startaEgetPageService.updateStartaEgetPage(
 			result.data
 		);
+
+		// Revalidate ISR cache
+		await revalidateStartaEgetPage();
+
 		return NextResponse.json(updated);
 	} catch (error) {
 		console.error("Error updating starta eget page:", error);

@@ -15,6 +15,7 @@ import {
 	paginatedResponse,
 	conflictResponse,
 } from "@/lib/utils/api-response";
+import { revalidateBlogCategory } from "@/lib/revalidation/actions";
 
 /**
  * GET /api/blog-categories
@@ -113,6 +114,9 @@ export async function POST(request: NextRequest) {
 		const category = await blogCategoryService.createCategory(
 			validationResult.data
 		);
+
+		// Revalidate ISR cache
+		await revalidateBlogCategory(category.slug);
 
 		logger.info("Blog category created", {
 			categoryId: category._id,

@@ -17,6 +17,7 @@ import {
 	validationErrorResponse,
 } from "@/lib/utils/api-response";
 import { generateSlug } from "@/lib/utils/product-helpers";
+import { revalidateProduct } from "@/lib/revalidation/actions";
 
 /**
  * GET /api/products
@@ -149,6 +150,13 @@ export async function POST(request: NextRequest) {
 					session.user.id
 				);
 
+				// Revalidate ISR cache - use primaryCategory first, then first category
+				const publishedProduct = publishResult.product;
+				const primaryCat = publishedProduct.primaryCategory as unknown as { slug?: string } | null;
+				const categoriesArray = publishedProduct.categories as unknown as Array<{ slug?: string }>;
+				const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
+				await revalidateProduct(publishedProduct.slug, categorySlug);
+
 				logger.info("Product created and published", {
 					productId: product._id,
 					title: product.title,
@@ -168,6 +176,12 @@ export async function POST(request: NextRequest) {
 				);
 			}
 		}
+
+		// Revalidate ISR cache for draft products too (so they show in admin lists)
+		const primaryCat = product.primaryCategory as unknown as { slug?: string } | null;
+		const categoriesArray = product.categories as unknown as Array<{ slug?: string }>;
+		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
+		await revalidateProduct(product.slug, categorySlug);
 
 		return createdResponse(product, "Product created successfully");
 	} catch (error: unknown) {

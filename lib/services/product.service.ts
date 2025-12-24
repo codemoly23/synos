@@ -399,6 +399,18 @@ class ProductService {
 				}
 			}
 
+			// Determine primaryCategory: use provided value, or fallback to first category
+			let primaryCategory: string | null = null;
+			if (data.primaryCategory &&
+				data.primaryCategory !== "undefined" &&
+				data.primaryCategory !== "null" &&
+				data.primaryCategory.trim() !== "") {
+				primaryCategory = data.primaryCategory;
+			} else if (data.categories && data.categories.length > 0) {
+				// Auto-set to first category if no primary specified
+				primaryCategory = data.categories[0];
+			}
+
 			// Sanitize HTML fields
 			const sanitizedData = {
 				...data,
@@ -418,13 +430,7 @@ class ProductService {
 								: "",
 					  }
 					: undefined,
-				// Convert empty/invalid primaryCategory to null for MongoDB
-				primaryCategory: (data.primaryCategory &&
-					data.primaryCategory !== "undefined" &&
-					data.primaryCategory !== "null" &&
-					data.primaryCategory.trim() !== "")
-					? data.primaryCategory
-					: null,
+				primaryCategory,
 				lastEditedBy: userId,
 			};
 
@@ -571,14 +577,30 @@ class ProductService {
 					description: sanitizeHtml(data.purchaseInfo.description),
 				};
 			}
-			// Convert empty/invalid primaryCategory to null for MongoDB
-			if (data.primaryCategory !== undefined) {
-				sanitizedData.primaryCategory = (data.primaryCategory &&
+			// Handle primaryCategory: use provided value, or fallback to first category if updating categories
+			if (data.primaryCategory !== undefined || data.categories !== undefined) {
+				let primaryCategory: string | null = null;
+
+				if (data.primaryCategory &&
 					data.primaryCategory !== "undefined" &&
 					data.primaryCategory !== "null" &&
-					data.primaryCategory.trim() !== "")
-					? data.primaryCategory
-					: null;
+					data.primaryCategory.trim() !== "") {
+					primaryCategory = data.primaryCategory;
+				} else if (data.categories && data.categories.length > 0) {
+					// Get the first category ID (handle both string and object formats)
+					const firstCat = data.categories[0];
+					if (typeof firstCat === "string") {
+						primaryCategory = firstCat;
+					} else if (typeof firstCat === "object" && firstCat !== null) {
+						const catObj = firstCat as { _id?: string; id?: string; value?: string };
+						primaryCategory = catObj._id ?? catObj.id ?? catObj.value ?? null;
+					}
+				} else if (!data.primaryCategory && product.categories.length > 0) {
+					// Keep existing primary category if no new one provided and categories exist
+					primaryCategory = product.primaryCategory?.toString() || null;
+				}
+
+				sanitizedData.primaryCategory = primaryCategory;
 			}
 
 			sanitizedData.lastEditedBy = userId;

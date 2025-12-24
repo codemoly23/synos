@@ -7,14 +7,22 @@ import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker } from "@/components/storage";
+import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import TextEditor from "@/components/common/TextEditor";
 import {
 	createCategorySchema,
 	updateCategorySchema,
-	type CreateCategoryInput,
-	type UpdateCategoryInput,
 } from "@/lib/validations/category.validation";
 import { generateSlug } from "@/lib/utils/product-helpers";
 import type { ICategory, ICategoryTreeNode } from "@/models/category.model";
@@ -28,6 +36,13 @@ type CategoryFormData = {
 	description?: string;
 	parent?: string | null;
 	image?: string | null;
+	order?: number;
+	seo?: {
+		title?: string;
+		description?: string;
+		ogImage?: string | null;
+		noindex?: boolean;
+	};
 };
 
 interface CategoryFormProps {
@@ -59,16 +74,23 @@ export function CategoryForm({
 		setValue,
 		watch,
 		formState: { errors, isDirty },
-	} = useForm<CreateCategoryInput | UpdateCategoryInput>({
+	} = useForm<CategoryFormData>({
 		resolver: zodResolver(
 			isEditing ? updateCategorySchema : createCategorySchema
-		),
+		) as never,
 		defaultValues: {
 			name: category?.name || "",
 			slug: category?.slug || "",
 			description: category?.description || "",
 			parent: category?.parent?.toString() || null,
 			image: category?.image || "",
+			order: category?.order ?? 0,
+			seo: {
+				title: category?.seo?.title || "",
+				description: category?.seo?.description || "",
+				ogImage: category?.seo?.ogImage || "",
+				noindex: category?.seo?.noindex || false,
+			},
 		},
 	});
 
@@ -76,6 +98,10 @@ export function CategoryForm({
 	const slug = watch("slug");
 	const parent = watch("parent");
 	const description = watch("description");
+	const image = watch("image");
+	const seoTitle = watch("seo.title");
+	const seoDescription = watch("seo.description");
+	const seoOgImage = watch("seo.ogImage");
 
 	// Auto-generate slug from name
 	const handleNameBlur = () => {
@@ -89,10 +115,8 @@ export function CategoryForm({
 		setValue("parent", selected[0] || null, { shouldDirty: true });
 	};
 
-	const onFormSubmit = async (
-		data: CreateCategoryInput | UpdateCategoryInput
-	) => {
-		await onSubmit(data as CategoryFormData);
+	const onFormSubmit = async (data: CategoryFormData) => {
+		await onSubmit(data);
 	};
 
 	return (
@@ -135,6 +159,27 @@ export function CategoryForm({
 				</p>
 				{errors.slug && (
 					<p className="text-sm text-red-500">{errors.slug.message}</p>
+				)}
+			</div>
+
+			{/* Order */}
+			<div className="space-y-2">
+				<Label htmlFor="order">Display Order</Label>
+				<Input
+					id="order"
+					type="number"
+					min={0}
+					{...register("order")}
+					placeholder="0"
+					disabled={isLoading}
+					className={cn("w-32", errors.order ? "border-red-500" : "")}
+				/>
+				<p className="text-xs text-slate-500">
+					Lower numbers appear first. Categories with the same order are
+					sorted by creation date.
+				</p>
+				{errors.order && (
+					<p className="text-sm text-red-500">{errors.order.message}</p>
 				)}
 			</div>
 
@@ -197,6 +242,160 @@ export function CategoryForm({
 				{errors.image && (
 					<p className="text-sm text-red-500">{errors.image.message}</p>
 				)}
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* SEO Section */}
+			<div className="space-y-6">
+				<h3 className="text-lg font-semibold">SEO Settings</h3>
+				<p className="text-sm text-muted-foreground">
+					Optimize how this category appears in search engines and social
+					media.
+				</p>
+
+				<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+					{/* Left Column - SEO Settings */}
+					<div className="space-y-6">
+						<Card>
+							<CardHeader>
+								<CardTitle className="text-base">
+									Search Engine Optimization
+								</CardTitle>
+								<CardDescription>
+									Configure meta tags for better search visibility
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								{/* SEO Title */}
+								<div className="space-y-2">
+									<Label htmlFor="seo.title">SEO Title</Label>
+									<Input
+										id="seo.title"
+										{...register("seo.title")}
+										placeholder="SEO title (recommended 50-60 characters)"
+										disabled={isLoading}
+										maxLength={70}
+									/>
+									<CharacterCount
+										value={seoTitle || ""}
+										min={30}
+										max={70}
+										optimal={{ min: 50, max: 60 }}
+										label="Title length"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* SEO Description */}
+								<div className="space-y-2">
+									<Label htmlFor="seo.description">
+										Meta Description
+									</Label>
+									<Textarea
+										id="seo.description"
+										{...register("seo.description")}
+										placeholder="SEO description (recommended 120-160 characters)"
+										disabled={isLoading}
+										rows={3}
+										maxLength={200}
+									/>
+									<CharacterCount
+										value={seoDescription || ""}
+										min={80}
+										max={200}
+										optimal={{ min: 120, max: 160 }}
+										label="Description length"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* OG Image */}
+								<div className="space-y-2">
+									<Label>Open Graph Image</Label>
+									<p className="text-sm text-muted-foreground">
+										Image shown when sharing on social media
+										(recommended 1200x630px)
+									</p>
+									<MediaPicker
+										type="image"
+										value={seoOgImage || null}
+										onChange={(url) =>
+											setValue("seo.ogImage", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select OG image"
+										disabled={isLoading}
+										galleryTitle="Select Open Graph Image"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Noindex */}
+								<div className="flex items-center gap-3">
+									<input
+										type="checkbox"
+										id="seo.noindex"
+										{...register("seo.noindex")}
+										disabled={isLoading}
+										className="h-4 w-4"
+									/>
+									<Label
+										htmlFor="seo.noindex"
+										className="cursor-pointer"
+									>
+										No Index
+									</Label>
+									<p className="text-xs text-slate-500">
+										Prevent search engines from indexing this
+										category
+									</p>
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* SEO Analysis */}
+						<SeoAnalysis
+							data={{
+								title: seoTitle || "",
+								description: seoDescription || "",
+								slug: slug || "",
+								productTitle: name || "",
+								hasOgImage: !!seoOgImage,
+							}}
+						/>
+					</div>
+
+					{/* Right Column - Preview */}
+					<div>
+						<Card>
+							<CardHeader>
+								<CardTitle className="text-base">Preview</CardTitle>
+								<CardDescription>
+									See how your category will appear in search results
+									and social media
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<SeoPreview
+									data={{
+										title: seoTitle || "",
+										description: seoDescription || "",
+										slug: slug || "",
+										ogImage: seoOgImage || image || null,
+										siteUrl: "synos.se",
+										siteName: "Synos",
+										productTitle: name || "",
+									}}
+								/>
+							</CardContent>
+						</Card>
+					</div>
+				</div>
 			</div>
 
 			{/* Actions */}

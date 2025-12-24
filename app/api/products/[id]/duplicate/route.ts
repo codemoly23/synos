@@ -3,6 +3,7 @@ import { getAuth } from "@/lib/db/auth";
 import { productService } from "@/lib/services/product.service";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateProduct } from "@/lib/revalidation/actions";
 import {
 	createdResponse,
 	badRequestResponse,
@@ -43,6 +44,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			id,
 			session.user.id
 		);
+
+		// Revalidate ISR cache - use primaryCategory first, then first category
+		const primaryCat = product.primaryCategory as unknown as { slug?: string } | null;
+		const categoriesArray = product.categories as unknown as Array<{ slug?: string }>;
+		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
+		await revalidateProduct(product.slug, categorySlug);
 
 		logger.info("Product duplicated", {
 			originalProductId: id,

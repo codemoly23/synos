@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getLegalPage, updateLegalPage } from "@/lib/services/legal-page.service";
 import { updateLegalPageSchema } from "@/lib/validations/legal-page.validation";
+import { revalidateLegalPage } from "@/lib/revalidation/actions";
 
 /**
  * GET /api/legal-page
@@ -40,6 +41,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updatedPage = await updateLegalPage(validationResult.data);
+
+		// Revalidate ISR cache
+		await revalidateLegalPage();
+
 		return NextResponse.json(updatedPage);
 	} catch (error) {
 		console.error("Error updating legal page:", error);

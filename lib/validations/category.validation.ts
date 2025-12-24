@@ -55,6 +55,22 @@ const optionalUrlSchema = z
 const DESCRIPTION_MAX_LENGTH = 15000;
 
 /**
+ * SEO Schema for categories
+ */
+const categorySeoSchema = z.object({
+	title: z
+		.string()
+		.max(70, "SEO title cannot exceed 70 characters")
+		.optional(),
+	description: z
+		.string()
+		.max(200, "SEO description cannot exceed 200 characters")
+		.optional(),
+	ogImage: optionalUrlSchema,
+	noindex: z.boolean().optional(),
+});
+
+/**
  * Create Category Schema
  */
 export const createCategorySchema = z.object({
@@ -73,6 +89,13 @@ export const createCategorySchema = z.object({
 		.default(""),
 	parent: z.string().nullable().optional().default(null), // ObjectId string or null
 	image: optionalUrlSchema,
+	order: z.coerce
+		.number()
+		.int()
+		.min(0, "Order must be 0 or greater")
+		.optional()
+		.default(0),
+	seo: categorySeoSchema.optional(),
 });
 
 /**
@@ -94,6 +117,9 @@ export const updateCategorySchema = z.object({
 		.optional(),
 	parent: z.string().nullable().optional(), // ObjectId string or null
 	image: optionalUrlSchema,
+	order: z.coerce.number().int().min(0, "Order must be 0 or greater").optional(),
+	isActive: z.boolean().optional(),
+	seo: categorySeoSchema.optional(),
 });
 
 /**

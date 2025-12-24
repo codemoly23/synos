@@ -147,3 +147,90 @@ export async function revalidateHomePage(): Promise<void> {
 export async function revalidateSitemaps(): Promise<void> {
 	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
 }
+
+// ============ Static Page Revalidation Functions ============
+
+/**
+ * Revalidate about page
+ * Call this when about page content is updated
+ */
+export async function revalidateAboutPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.ABOUT_PAGE, "max");
+	revalidatePath(PATHS.ABOUT);
+}
+
+/**
+ * Revalidate team page
+ * Call this when team page content is updated
+ */
+export async function revalidateTeamPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.TEAM_PAGE, "max");
+	revalidatePath(PATHS.TEAM);
+}
+
+/**
+ * Revalidate legal page
+ * Call this when legal page content is updated
+ */
+export async function revalidateLegalPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.LEGAL_PAGE, "max");
+	revalidatePath(PATHS.LEGAL);
+}
+
+/**
+ * Revalidate privacy page
+ * Call this when privacy policy content is updated
+ */
+export async function revalidatePrivacyPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.PRIVACY_PAGE, "max");
+	revalidatePath(PATHS.PRIVACY);
+}
+
+/**
+ * Revalidate careers page
+ * Call this when careers page content is updated
+ */
+export async function revalidateCareersPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.CAREERS_PAGE, "max");
+	revalidatePath(PATHS.CAREERS);
+}
+
+/**
+ * Revalidate starta eget page
+ * Call this when start business page content is updated
+ */
+export async function revalidateStartaEgetPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.STARTA_EGET_PAGE, "max");
+	revalidatePath(PATHS.STARTA_EGET);
+	// Also revalidate sub-pages
+	revalidatePath(`${PATHS.STARTA_EGET}/kopguide`);
+	revalidatePath(`${PATHS.STARTA_EGET}/miniutbildning`);
+	revalidatePath(`${PATHS.STARTA_EGET}/varfor-valja-synos`);
+}
+
+/**
+ * Revalidate training page
+ * Call this when training/education page content is updated
+ */
+export async function revalidateTrainingPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.TRAINING_PAGE, "max");
+	revalidatePath(PATHS.TRAINING);
+}
+
+/**
+ * Revalidate FAQ page
+ * Call this when FAQ page content is updated
+ */
+export async function revalidateFaqPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.FAQ_PAGE, "max");
+	revalidatePath(PATHS.FAQ);
+}
+
+/**
+ * Revalidate contact page
+ * Call this when contact page content is updated
+ */
+export async function revalidateContactPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.CONTACT_PAGE, "max");
+	revalidatePath(PATHS.CONTACT);
+}
