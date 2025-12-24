@@ -41,6 +41,7 @@ export type ProductType = {
 	description: string;
 	shortDescription: string;
 	productDescription: string | null;
+	hiddenDescription: string | null;
 	benefits: Array<string> | null;
 	certifications: Array<string> | null;
 	treatments: Array<string> | null;
@@ -74,6 +75,12 @@ export type ProductType = {
 		slug: string;
 		id: string;
 	}>;
+	primaryCategory: {
+		_id: string;
+		name: string;
+		slug: string;
+		id: string;
+	} | null;
 	qa: Array<{
 		question: string;
 		answer: string;

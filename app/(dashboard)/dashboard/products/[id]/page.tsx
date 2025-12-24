@@ -195,71 +195,46 @@ export default function EditProductPage() {
 		}
 	};
 
-	// Handle publish
+	// Handle publish (atomic save-and-publish)
+	// If validation fails, NO changes are saved - user stays on form with errors
 	const handlePublish = async (
 		data: ProductFormData
 	): Promise<ProductFormResult> => {
 		setIsSaving(true);
 		try {
-			// First save the current data
+			// Use atomic save-and-publish with shouldPublish flag
+			// Server validates for publishing BEFORE saving the product
 			const payload = {
 				...data,
 				categories: normalizeCategories(data.categories),
+				shouldPublish: true, // Tells API to validate and publish atomically
 			};
 
-			const saveResponse = await fetch(`/api/products/${productId}`, {
+			const response = await fetch(`/api/products/${productId}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
 			});
 
-			const saveResult = await saveResponse.json();
+			const result = await response.json();
 
-			if (!saveResult.success) {
-				const { summary, details } = saveResult.errors
-					? formatValidationErrors(saveResult.errors)
-					: { summary: "", details: [] };
-				const errorMessage =
-					summary || saveResult.message || "Failed to save product";
-
-				if (details.length > 0) {
-					toast.error(errorMessage, {
-						description: details.join("\n"),
-						duration: 8000,
-					});
-				} else {
-					toast.error(errorMessage);
-				}
-				return {
-					success: false,
-					errors: saveResult.errors,
-					message: saveResult.message,
-				};
-			}
-
-			// Then publish
-			const publishResponse = await fetch(
-				`/api/products/${productId}/publish`,
-				{ method: "POST" }
-			);
-
-			const publishResult = await publishResponse.json();
-
-			if (publishResult.success) {
-				setProduct(publishResult.data.product);
+			if (result.success) {
+				// Product saved AND published successfully
+				setProduct(result.data?.product || result.data);
 				toast.success("Product published successfully");
 				return {
 					success: true,
-					data: publishResult.data.product,
-					warnings: publishResult.data.warnings,
+					data: result.data?.product || result.data,
+					warnings: result.data?.warnings,
 				};
 			} else {
-				// Format and show validation errors
-				const { summary, details } = publishResult.errors
-					? formatValidationErrors(publishResult.errors)
+				// Validation failed - product was NOT saved
+				// Show errors on the form (no changes made)
+				const { summary, details } = result.errors
+					? formatValidationErrors(result.errors)
 					: { summary: "", details: [] };
 				const errorMessage =
-					summary || publishResult.message || "Failed to publish product";
+					summary || result.message || "Failed to publish product";
 
 				if (details.length > 0) {
 					toast.error(errorMessage, {
@@ -269,10 +244,12 @@ export default function EditProductPage() {
 				} else {
 					toast.error(errorMessage);
 				}
+
+				// Return errors to form - NO changes saved, user can fix and retry
 				return {
 					success: false,
-					errors: publishResult.errors,
-					message: publishResult.message,
+					errors: result.errors,
+					message: result.message,
 				};
 			}
 		} catch (error) {
@@ -296,6 +273,66 @@ export default function EditProductPage() {
 			return result.data;
 		} else {
 			throw new Error(result.message || "Failed to validate");
+		}
+	};
+
+	// Handle unpublish (convert published product back to draft)
+	const handleUnpublish = async () => {
+		setIsSaving(true);
+		try {
+			const response = await fetch(`/api/products/${productId}/unpublish`, {
+				method: "POST",
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				setProduct(result.data);
+				toast.success("Product unpublished successfully");
+				return { success: true, data: result.data };
+			} else {
+				toast.error(result.message || "Failed to unpublish product");
+				return { success: false, message: result.message };
+			}
+		} catch (error) {
+			console.error("Failed to unpublish product:", error);
+			toast.error("Failed to unpublish product", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
+			return { success: false, message: "Failed to unpublish product" };
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	// Handle submit for review (set to pending status)
+	const handleSubmitForReview = async () => {
+		setIsSaving(true);
+		try {
+			const response = await fetch(`/api/products/${productId}/submit-for-review`, {
+				method: "POST",
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				setProduct(result.data);
+				toast.success("Product submitted for review");
+				return { success: true, data: result.data };
+			} else {
+				toast.error(result.message || "Failed to submit product for review");
+				return { success: false, message: result.message };
+			}
+		} catch (error) {
+			console.error("Failed to submit product for review:", error);
+			toast.error("Failed to submit product for review", {
+				description:
+					error instanceof Error ? error.message : "Network error occurred",
+			});
+			return { success: false, message: "Failed to submit product for review" };
+		} finally {
+			setIsSaving(false);
 		}
 	};
 
@@ -362,6 +399,8 @@ export default function EditProductPage() {
 					certificationSuggestions={certificationSuggestions}
 					onSaveDraft={handleSaveDraft}
 					onPublish={handlePublish}
+					onUnpublish={handleUnpublish}
+					onSubmitForReview={handleSubmitForReview}
 					onValidate={handleValidate}
 					onCancel={() => router.push("/dashboard/products")}
 					isLoading={isSaving}

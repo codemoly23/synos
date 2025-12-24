@@ -495,6 +495,38 @@ class ProductRepository extends BaseRepository<IProduct> {
 	}
 
 	/**
+	 * Find products without any categories (uncategorized products)
+	 */
+	async findUncategorized(options?: {
+		page?: number;
+		limit?: number;
+		publishedOnly?: boolean;
+	}): Promise<{
+		data: IProduct[];
+		total: number;
+		page: number;
+		limit: number;
+		totalPages: number;
+	}> {
+		const { page = 1, limit = 100, publishedOnly = true } = options || {};
+
+		const filter: Record<string, unknown> = {
+			$or: [
+				{ categories: { $exists: false } },
+				{ categories: { $size: 0 } },
+				{ categories: null },
+			],
+		};
+
+		if (publishedOnly) {
+			filter.publishType = "publish";
+			filter.visibility = "public";
+		}
+
+		return this.findPaginated(filter, page, limit, { createdAt: -1 });
+	}
+
+	/**
 	 * Remove category from all products (used when deleting a category)
 	 */
 	async removeCategoryFromProducts(categoryId: string): Promise<number> {

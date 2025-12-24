@@ -4,8 +4,13 @@ import {
 	type IBlogPost,
 	type BlogPublishType,
 } from "@/models/blog-post.model";
+// Import to ensure BlogCategory model is registered before population
+import { getBlogCategoryModelSync } from "@/models/blog-category.model";
 import { logger } from "@/lib/utils/logger";
 import { DatabaseError } from "@/lib/utils/api-error";
+
+// Register BlogCategory model for population
+getBlogCategoryModelSync();
 
 /**
  * Helper function to parse sort string into MongoDB sort object

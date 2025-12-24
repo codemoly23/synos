@@ -4,7 +4,7 @@ import { connectMongoose } from "@/lib/db/db-connect";
 /**
  * Type definitions for Product sub-documents
  */
-export type PublishType = "publish" | "draft" | "private";
+export type PublishType = "publish" | "draft" | "pending" | "private";
 export type Visibility = "public" | "hidden";
 
 export interface IQnA {
@@ -56,6 +56,7 @@ export interface IProduct extends Document {
 	description: string; // Rich HTML
 	shortDescription?: string;
 	productDescription?: string; // Second rich HTML block
+	hiddenDescription?: string; // Hidden description (not shown on product page)
 	benefits: string[]; // Array of paragraphs or simple text blocks
 	certifications: string[]; // Tags
 	treatments: string[]; // Tags
@@ -227,6 +228,10 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			default: "",
 		},
+		hiddenDescription: {
+			type: String,
+			default: "",
+		},
 		benefits: [
 			{
 				type: String,
@@ -291,7 +296,7 @@ const ProductSchema = new Schema<IProduct>(
 		},
 		publishType: {
 			type: String,
-			enum: ["publish", "draft", "private"],
+			enum: ["publish", "draft", "pending", "private"],
 			default: "draft",
 		},
 		visibility: {

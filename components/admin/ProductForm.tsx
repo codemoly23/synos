@@ -15,6 +15,8 @@ import {
 	ImageIcon,
 	FileText,
 	X,
+	Undo2,
+	ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -29,6 +31,14 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { TagInput } from "./TagInput";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker, MediaGallery } from "@/components/storage";
@@ -298,21 +308,35 @@ export interface ProductFormResult {
 
 /**
  * Helper to extract category ID from various formats
- * Handles: string, ObjectId, populated category object
+ * Handles: string, ObjectId, populated category object, null, undefined
  */
 type CategoryInput =
 	| string
 	| { _id?: unknown; id?: string; value?: string }
+	| null
+	| undefined
 	| unknown;
 export function normalizeCategoryId(category: CategoryInput): string {
-	if (typeof category === "string") return category;
+	// Handle null, undefined, empty values
+	if (category === null || category === undefined) return "";
+	if (typeof category === "string") {
+		// Handle the string "undefined" or empty strings
+		if (
+			category === "undefined" ||
+			category === "null" ||
+			category.trim() === ""
+		) {
+			return "";
+		}
+		return category;
+	}
 	if (category && typeof category === "object") {
 		const cat = category as { _id?: unknown; id?: string; value?: string };
 		if (cat._id) return String(cat._id);
 		if (cat.id) return cat.id;
 		if (cat.value) return cat.value;
 	}
-	return String(category);
+	return "";
 }
 
 /**
@@ -325,6 +349,250 @@ export function normalizeCategories(
 	return categories.map(normalizeCategoryId);
 }
 
+/**
+ * Tab definitions for the product form
+ */
+type TabId = "basic" | "content" | "media" | "specs" | "qna" | "seo";
+
+const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
+	basic: {
+		label: "Basic",
+		fields: [
+			"title",
+			"slug",
+			"shortDescription",
+			"categories",
+			"primaryCategory",
+			"treatments",
+			"certifications",
+			"publishType",
+			"visibility",
+		],
+	},
+	content: {
+		label: "Content",
+		fields: [
+			"description",
+			"productDescription",
+			"hiddenDescription",
+			"benefits",
+			"purchaseInfo",
+			"rubric",
+		],
+	},
+	media: {
+		label: "Media",
+		fields: [
+			"productImages",
+			"overviewImage",
+			"beforeAfterImages",
+			"youtubeUrl",
+		],
+	},
+	specs: {
+		label: "Specs & Docs",
+		fields: ["techSpecifications", "documentation"],
+	},
+	qna: {
+		label: "Q&A",
+		fields: ["qa"],
+	},
+	seo: {
+		label: "SEO",
+		fields: ["seo"],
+	},
+};
+
+/**
+ * Human-readable field labels
+ */
+const FIELD_LABELS: Record<string, string> = {
+	title: "Product Title",
+	slug: "Slug",
+	shortDescription: "Short Description",
+	description: "Description",
+	productDescription: "Extended Description",
+	hiddenDescription: "Hidden Description",
+	categories: "Categories",
+	primaryCategory: "Primary Category",
+	treatments: "Treatments / Tags",
+	certifications: "Certifications",
+	benefits: "Benefits",
+	purchaseInfo: "Purchase Information",
+	"purchaseInfo.title": "Purchase Info Title",
+	"purchaseInfo.description": "Purchase Info Description",
+	rubric: "Rubric Notes",
+	productImages: "Product Images",
+	overviewImage: "Overview Image",
+	beforeAfterImages: "Before/After Images",
+	youtubeUrl: "YouTube URL",
+	techSpecifications: "Tech Specifications",
+	documentation: "Documentation",
+	qa: "Q&A",
+	seo: "SEO",
+	"seo.title": "SEO Title",
+	"seo.description": "SEO Description",
+	"seo.ogImage": "OG Image",
+	"seo.canonicalUrl": "Canonical URL",
+	"seo.noindex": "No Index",
+	publishType: "Publish Type",
+	visibility: "Visibility",
+};
+
+/**
+ * Get the tab that a field belongs to
+ */
+function getFieldTab(fieldPath: string): TabId | null {
+	// Get the root field name (e.g., "seo.title" -> "seo")
+	const rootField = fieldPath.split(".")[0];
+
+	for (const [tabId, config] of Object.entries(TAB_CONFIG)) {
+		if (config.fields.includes(rootField)) {
+			return tabId as TabId;
+		}
+	}
+	return null;
+}
+
+/**
+ * Get human-readable label for a field path
+ */
+function getFieldLabel(fieldPath: string): string {
+	// Check for exact match first
+	if (FIELD_LABELS[fieldPath]) {
+		return FIELD_LABELS[fieldPath];
+	}
+
+	// Check for array index patterns like "benefits.0" -> "Benefits Item 1"
+	const parts = fieldPath.split(".");
+	if (parts.length >= 2 && !isNaN(Number(parts[1]))) {
+		const baseField = parts[0];
+		const index = Number(parts[1]) + 1;
+		const baseLabel = FIELD_LABELS[baseField] || baseField;
+
+		if (parts.length === 2) {
+			return `${baseLabel} #${index}`;
+		}
+		// e.g., "techSpecifications.0.title" -> "Tech Specifications #1 Title"
+		const subField = parts.slice(2).join(".");
+		const subLabel = FIELD_LABELS[`${baseField}.${subField}`] || subField;
+		return `${baseLabel} #${index} - ${subLabel}`;
+	}
+
+	// Fallback to the root field label
+	const rootField = parts[0];
+	return FIELD_LABELS[rootField] || fieldPath;
+}
+
+/**
+ * Extract all errors from react-hook-form errors object
+ */
+interface FormError {
+	path: string;
+	message: string;
+	tab: TabId | null;
+	label: string;
+}
+
+// Keys to skip when traversing react-hook-form errors (these can cause circular refs or aren't errors)
+const SKIP_KEYS = new Set(["ref", "type", "types", "root"]);
+
+function extractFormErrors(
+	errors: Record<string, unknown>,
+	prefix = "",
+	visited = new WeakSet<object>()
+): FormError[] {
+	const result: FormError[] = [];
+
+	// Prevent circular reference infinite loops
+	if (visited.has(errors)) {
+		return result;
+	}
+	visited.add(errors);
+
+	for (const [key, value] of Object.entries(errors)) {
+		// Skip internal react-hook-form properties
+		if (SKIP_KEYS.has(key)) {
+			continue;
+		}
+
+		const path = prefix ? `${prefix}.${key}` : key;
+
+		if (value && typeof value === "object") {
+			// Skip DOM elements and other non-plain objects
+			if (value instanceof Element || value instanceof Node) {
+				continue;
+			}
+
+			// Check if this is a react-hook-form error object (has message property)
+			if ("message" in value && typeof value.message === "string") {
+				result.push({
+					path,
+					message: value.message,
+					tab: getFieldTab(path),
+					label: getFieldLabel(path),
+				});
+				// Don't recurse into error objects - we've extracted what we need
+				continue;
+			}
+
+			// Check for array root errors
+			if (
+				"root" in value &&
+				typeof value.root === "object" &&
+				value.root !== null
+			) {
+				const rootError = value.root as { message?: string };
+				if (rootError.message) {
+					result.push({
+						path,
+						message: rootError.message,
+						tab: getFieldTab(path),
+						label: getFieldLabel(path),
+					});
+				}
+			}
+
+			// Only recurse into plain objects/arrays (not error objects)
+			if (
+				Array.isArray(value) ||
+				Object.getPrototypeOf(value) === Object.prototype
+			) {
+				const nested = extractFormErrors(
+					value as Record<string, unknown>,
+					path,
+					visited
+				);
+				result.push(...nested);
+			}
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Count errors per tab
+ */
+function countErrorsPerTab(errors: FormError[]): Record<TabId, number> {
+	const counts: Record<TabId, number> = {
+		basic: 0,
+		content: 0,
+		media: 0,
+		specs: 0,
+		qna: 0,
+		seo: 0,
+	};
+
+	for (const error of errors) {
+		if (error.tab) {
+			counts[error.tab]++;
+		}
+	}
+
+	return counts;
+}
+
 interface ProductFormProps {
 	product?: IProduct | null;
 	categoryTree: ICategoryTreeNode[];
@@ -332,6 +600,8 @@ interface ProductFormProps {
 	certificationSuggestions?: string[];
 	onSaveDraft: (data: ProductFormData) => Promise<ProductFormResult>;
 	onPublish?: (data: ProductFormData) => Promise<ProductFormResult>;
+	onUnpublish?: () => Promise<ProductFormResult>;
+	onSubmitForReview?: () => Promise<ProductFormResult>;
 	onValidate?: (id: string) => Promise<{
 		canPublish: boolean;
 		errors: PublishValidationError[];
@@ -353,12 +623,17 @@ export function ProductForm({
 	certificationSuggestions = [],
 	onSaveDraft,
 	onPublish,
+	onUnpublish,
+	onSubmitForReview,
 	onValidate,
 	onCancel,
 	isLoading = false,
 	className,
 }: ProductFormProps) {
 	const isEditing = !!product;
+	const isPublished = product?.publishType === "publish";
+	const isPending = product?.publishType === "pending";
+	const isDraft = !product || product?.publishType === "draft";
 	const [validationResults, setValidationResults] = React.useState<{
 		errors: PublishValidationError[];
 		warnings: PublishValidationError[];
@@ -369,6 +644,9 @@ export function ProductForm({
 	const [generalError, setGeneralError] = React.useState<string | null>(null);
 	const [isSaving, setIsSaving] = React.useState(false);
 	const [isPublishing, setIsPublishing] = React.useState(false);
+	const [isUnpublishing, setIsUnpublishing] = React.useState(false);
+	const [isSubmittingForReview, setIsSubmittingForReview] =
+		React.useState(false);
 
 	// Helper to convert server errors to field-level errors
 	const processServerErrors = (
@@ -445,6 +723,7 @@ export function ProductForm({
 			description: product?.description || "",
 			shortDescription: product?.shortDescription || "",
 			productDescription: product?.productDescription || "",
+			hiddenDescription: product?.hiddenDescription || "",
 			benefits: product?.benefits || [],
 			certifications: product?.certifications || [],
 			treatments: product?.treatments || [],
@@ -480,6 +759,9 @@ export function ProductForm({
 			categories: normalizeCategories(
 				product?.categories as CategoryInput[]
 			),
+			primaryCategory:
+				normalizeCategoryId(product?.primaryCategory as CategoryInput) ||
+				"",
 			qa:
 				product?.qa?.map((q) => ({
 					question: q.question,
@@ -521,13 +803,11 @@ export function ProductForm({
 		name: "qa",
 	});
 
-	const {
-		fields: beforeAfterFields,
-		replace: replaceBeforeAfter,
-	} = useFieldArray({
-		control,
-		name: "beforeAfterImages",
-	});
+	const { fields: beforeAfterFields, replace: replaceBeforeAfter } =
+		useFieldArray({
+			control,
+			name: "beforeAfterImages",
+		});
 
 	const {
 		fields: benefitFields,
@@ -608,6 +888,69 @@ export function ProductForm({
 		}
 	};
 
+	// Handle unpublish (convert published product back to draft)
+	const handleUnpublish = async () => {
+		if (!onUnpublish) return;
+		setIsUnpublishing(true);
+		setServerErrors({});
+		setGeneralError(null);
+		setValidationResults(null);
+		try {
+			const result = await onUnpublish();
+			if (!result.success && result.message) {
+				setGeneralError(result.message);
+			}
+		} finally {
+			setIsUnpublishing(false);
+		}
+	};
+
+	// Handle submit for review (set to pending status)
+	const handleSubmitForReview = async () => {
+		if (!onSubmitForReview) return;
+		setIsSubmittingForReview(true);
+		setServerErrors({});
+		setGeneralError(null);
+		setValidationResults(null);
+		try {
+			const result = await onSubmitForReview();
+			if (!result.success && result.message) {
+				setGeneralError(result.message);
+			}
+		} finally {
+			setIsSubmittingForReview(false);
+		}
+	};
+
+	// Extract and organize form errors
+	const formErrors = React.useMemo(
+		() => extractFormErrors(errors as Record<string, unknown>),
+		[errors]
+	);
+	const tabErrorCounts = React.useMemo(
+		() => countErrorsPerTab(formErrors),
+		[formErrors]
+	);
+	const hasFormErrors = formErrors.length > 0;
+
+	// Group errors by tab for display
+	const errorsByTab = React.useMemo(() => {
+		const grouped: Record<TabId, FormError[]> = {
+			basic: [],
+			content: [],
+			media: [],
+			specs: [],
+			qna: [],
+			seo: [],
+		};
+		for (const error of formErrors) {
+			if (error.tab) {
+				grouped[error.tab].push(error);
+			}
+		}
+		return grouped;
+	}, [formErrors]);
+
 	return (
 		<div className={cn("space-y-6", className)}>
 			{/* General Error Banner */}
@@ -622,15 +965,52 @@ export function ProductForm({
 				</Card>
 			)}
 
-			{/* Validation Results Banner */}
+			{/* Form Validation Errors Banner */}
+			{hasFormErrors && (
+				<Card className="border-red-300 bg-red-50">
+					<CardContent className="pt-4">
+						<div className="flex items-center gap-2 text-red-600 mb-3">
+							<AlertCircle className="h-5 w-5 shrink-0" />
+							<span className="font-medium">
+								Please fix {formErrors.length} validation{" "}
+								{formErrors.length === 1 ? "error" : "errors"} before
+								saving
+							</span>
+						</div>
+						<div className="space-y-3">
+							{(Object.entries(errorsByTab) as [TabId, FormError[]][])
+								.filter(([, tabErrors]) => tabErrors.length > 0)
+								.map(([tabId, tabErrors]) => (
+									<div key={tabId} className="text-sm">
+										<div className="font-medium text-red-700 mb-1">
+											{TAB_CONFIG[tabId].label} Tab:
+										</div>
+										<ul className="list-disc list-inside space-y-0.5 text-red-600 pl-2">
+											{tabErrors.map((error, i) => (
+												<li key={i}>
+													<span className="font-medium">
+														{error.label}:
+													</span>{" "}
+													{error.message}
+												</li>
+											))}
+										</ul>
+									</div>
+								))}
+						</div>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Server Validation Results Banner */}
 			{validationResults &&
 				(validationResults.errors.length > 0 ||
 					validationResults.warnings.length > 0) && (
 					<Card
 						className={
 							validationResults.errors.length > 0
-								? "border-red-300"
-								: "border-yellow-300"
+								? "border-red-300 bg-red-50"
+								: "border-yellow-300 bg-yellow-50"
 						}
 					>
 						<CardContent className="pt-4">
@@ -639,7 +1019,8 @@ export function ProductForm({
 									<div className="flex items-center gap-2 text-red-600 mb-2">
 										<AlertCircle className="h-5 w-5" />
 										<span className="font-medium">
-											Errors ({validationResults.errors.length})
+											Server Errors (
+											{validationResults.errors.length})
 										</span>
 									</div>
 									<ul className="list-disc list-inside space-y-1 text-sm text-red-600">
@@ -677,12 +1058,54 @@ export function ProductForm({
 			<form onSubmit={handleSubmit(handleSaveDraft)}>
 				<Tabs defaultValue="basic" className="space-y-6">
 					<TabsList className="grid grid-cols-6 w-full">
-						<TabsTrigger value="basic">Basic</TabsTrigger>
-						<TabsTrigger value="content">Content</TabsTrigger>
-						<TabsTrigger value="media">Media</TabsTrigger>
-						<TabsTrigger value="specs">Specs & Docs</TabsTrigger>
-						<TabsTrigger value="qna">Q&A</TabsTrigger>
-						<TabsTrigger value="seo">SEO</TabsTrigger>
+						<TabsTrigger value="basic" className="relative">
+							Basic
+							{tabErrorCounts.basic > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.basic}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="content" className="relative">
+							Content
+							{tabErrorCounts.content > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.content}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="media" className="relative">
+							Media
+							{tabErrorCounts.media > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.media}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="specs" className="relative">
+							Specs & Docs
+							{tabErrorCounts.specs > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.specs}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="qna" className="relative">
+							Q&A
+							{tabErrorCounts.qna > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.qna}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="seo" className="relative">
+							SEO
+							{tabErrorCounts.seo > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.seo}
+								</span>
+							)}
+						</TabsTrigger>
 					</TabsList>
 
 					{/* Basic Info Tab */}
@@ -716,9 +1139,14 @@ export function ProductForm({
 									)}
 								</div>
 
+								<Separator />
+
 								{/* Slug */}
 								<div className="space-y-2">
-									<Label htmlFor="slug">Slug</Label>
+									<Label htmlFor="slug">
+										Slug
+										<span className="text-red-500">*</span>
+									</Label>
 									<Input
 										id="slug"
 										{...register("slug")}
@@ -737,6 +1165,8 @@ export function ProductForm({
 									)}
 								</div>
 
+								<Separator />
+
 								{/* Short Description */}
 								<div className="space-y-2">
 									<Label htmlFor="shortDescription">
@@ -745,11 +1175,13 @@ export function ProductForm({
 									<Textarea
 										id="shortDescription"
 										{...register("shortDescription")}
-										placeholder="Brief product summary (max 300 characters)"
+										placeholder="Brief product summary (max 1500 characters)"
 										disabled={isLoading}
 										rows={2}
 									/>
 								</div>
+
+								<Separator />
 
 								{/* Categories */}
 								<div className="space-y-2">
@@ -760,12 +1192,82 @@ export function ProductForm({
 											setValue("categories", cats, {
 												shouldDirty: true,
 											});
+											// Clear primary category if it's no longer in selected categories
+											const currentPrimary =
+												watch("primaryCategory");
+											if (
+												currentPrimary &&
+												!cats.includes(currentPrimary)
+											) {
+												setValue("primaryCategory", "", {
+													shouldDirty: true,
+												});
+											}
 										}}
 										tree={categoryTree}
 										placeholder="Select categories"
 										disabled={isLoading}
 									/>
 								</div>
+
+								{/* Primary Category */}
+								{(watch("categories")?.length || 0) > 0 && (
+									<>
+										<Separator />
+										<div className="space-y-2">
+											<Label>
+												Primary Category{" "}
+												<span className="text-muted-foreground font-normal">
+													(for URL generation)
+												</span>
+											</Label>
+											<Select
+												value={watch("primaryCategory") || ""}
+												onValueChange={(value) =>
+													setValue("primaryCategory", value, {
+														shouldDirty: true,
+													})
+												}
+												disabled={isLoading}
+											>
+												<SelectTrigger>
+													<SelectValue placeholder="Select primary category" />
+												</SelectTrigger>
+												<SelectContent>
+													{(watch("categories") || []).map(
+														(catId) => {
+															const findCategory = (
+																nodes: ICategoryTreeNode[]
+															): ICategoryTreeNode | null => {
+																for (const node of nodes) {
+																	if (node._id === catId)
+																		return node;
+																	const found = findCategory(
+																		node.children
+																	);
+																	if (found) return found;
+																}
+																return null;
+															};
+															const cat =
+																findCategory(categoryTree);
+															return cat ? (
+																<SelectItem
+																	key={cat._id}
+																	value={cat._id}
+																>
+																	{cat.name}
+																</SelectItem>
+															) : null;
+														}
+													)}
+												</SelectContent>
+											</Select>
+										</div>
+									</>
+								)}
+
+								<Separator />
 
 								{/* Treatments / Tags */}
 								<div className="space-y-2">
@@ -783,6 +1285,8 @@ export function ProductForm({
 									/>
 								</div>
 
+								<Separator />
+
 								{/* Certifications */}
 								<div className="space-y-2">
 									<Label>Certifications</Label>
@@ -799,35 +1303,24 @@ export function ProductForm({
 									/>
 								</div>
 
-								{/* Visibility & Publish Type */}
-								<div className="grid grid-cols-2 gap-4">
-									<div className="space-y-2">
-										<Label htmlFor="publishType">
-											Publish Status
-										</Label>
-										<select
-											id="publishType"
-											{...register("publishType")}
-											disabled={isLoading}
-											className="w-full h-11 px-4 rounded-md border border-slate-200 bg-white"
-										>
-											<option value="draft">Draft</option>
-											<option value="publish">Published</option>
-											<option value="private">Private</option>
-										</select>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="visibility">Visibility</Label>
-										<select
-											id="visibility"
-											{...register("visibility")}
-											disabled={isLoading}
-											className="w-full h-11 px-4 rounded-md border border-slate-200 bg-white"
-										>
-											<option value="public">Public</option>
-											<option value="hidden">Hidden</option>
-										</select>
-									</div>
+								<Separator />
+
+								{/* Visibility */}
+								<div className="space-y-2">
+									<Label htmlFor="visibility">Visibility</Label>
+									<select
+										id="visibility"
+										{...register("visibility")}
+										disabled={isLoading}
+										className="w-full h-11 px-4 rounded-md border border-slate-200 bg-white"
+									>
+										<option value="public">Public</option>
+										<option value="hidden">Hidden</option>
+									</select>
+									<p className="text-xs text-slate-500">
+										Hidden products won&apos;t appear in public
+										listings
+									</p>
 								</div>
 							</CardContent>
 						</Card>
@@ -843,45 +1336,12 @@ export function ProductForm({
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-6">
-								{/* Main Description */}
-								{/* <RichTextEditor
-										value={watch("description") || ""}
-										onChange={(val) =>
-											setValue("description", val, {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Enter main product description..."
-										disabled={isLoading}
-									/> */}
-								{/* <div className="space-y-2">
-									<Label>Short Description</Label>
-									<TextEditor
-										height="300px"
-										defaultValue={watch("description") || ""}
-										onChange={(val) =>
-											setValue("description", val, {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Enter main product description..."
-										// disabled={isLoading}
-									/>
-								</div> */}
-
 								{/* Product Description */}
 								<div className="space-y-2">
-									<Label>Extended Description</Label>
-									{/* <RichTextEditor
-										value={watch("productDescription") || ""}
-										onChange={(val) =>
-											setValue("productDescription", val, {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Enter extended product description..."
-										disabled={isLoading}
-									/> */}
+									<Label>
+										Extended Description
+										<span className="text-red-500">*</span>
+									</Label>
 									<TextEditor
 										height="500px"
 										defaultValue={watch("productDescription") || ""}
@@ -891,10 +1351,38 @@ export function ProductForm({
 											})
 										}
 										placeholder="Enter extended product description..."
-										// disabled={isLoading}
 										variant={"advanceFull"}
 									/>
 								</div>
+
+								<Separator />
+
+								{/* Hidden Description */}
+								<div className="space-y-2">
+									<Label>
+										Hidden Description{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional)
+										</span>
+									</Label>
+									<p className="text-sm text-muted-foreground">
+										This description is for internal use only and will
+										not be displayed on the product page.
+									</p>
+									<TextEditor
+										height="300px"
+										defaultValue={watch("hiddenDescription") || ""}
+										onChange={(val) =>
+											setValue("hiddenDescription", val, {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Enter hidden description (internal use only)..."
+										variant={"advanceFull"}
+									/>
+								</div>
+
+								<Separator />
 
 								{/* Benefits */}
 								<div className="space-y-2">
@@ -934,6 +1422,8 @@ export function ProductForm({
 									</div>
 								</div>
 
+								<Separator />
+
 								{/* Purchase Info */}
 								<div className="space-y-4">
 									<Label>Purchase Information</Label>
@@ -942,17 +1432,6 @@ export function ProductForm({
 										placeholder="Purchase info title"
 										disabled={isLoading}
 									/>
-									{/* <RichTextEditor
-										value={watch("purchaseInfo.description") || ""}
-										onChange={(val) =>
-											setValue("purchaseInfo.description", val, {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Purchase information details..."
-										disabled={isLoading}
-										minHeight="100px"
-									/> */}
 									<TextEditor
 										height="200px"
 										defaultValue={
@@ -964,10 +1443,10 @@ export function ProductForm({
 											})
 										}
 										placeholder="Enter extended product description..."
-										// disabled={isLoading}
-										// variant={"advanceFull"}
 									/>
 								</div>
+
+								<Separator />
 
 								{/* Rubric */}
 								<div className="space-y-2">
@@ -1000,7 +1479,7 @@ export function ProductForm({
 										Product Images{" "}
 										<span className="text-red-500">*</span>
 									</Label>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-xs text-muted-foreground">
 										Select multiple images from the media library or
 										upload new ones.
 									</p>
@@ -1015,10 +1494,12 @@ export function ProductForm({
 									/>
 								</div>
 
+								<Separator />
+
 								{/* Overview Image */}
 								<div className="space-y-2">
 									<Label>Overview Image</Label>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-xs text-muted-foreground">
 										Main image shown in product listings and overview
 										sections.
 									</p>
@@ -1036,6 +1517,8 @@ export function ProductForm({
 									/>
 								</div>
 
+								<Separator />
+
 								{/* YouTube URL */}
 								<div className="space-y-2">
 									<Label htmlFor="youtubeUrl">YouTube Video URL</Label>
@@ -1048,8 +1531,10 @@ export function ProductForm({
 									/>
 								</div>
 
+								<Separator />
+
 								{/* Before & After Images */}
-								<div className="space-y-3 pt-4 border-t">
+								<div className="space-y-3">
 									<Label>Before & After Images</Label>
 									<p className="text-sm text-muted-foreground">
 										Add before and after image pairs to showcase
@@ -1340,6 +1825,8 @@ export function ProductForm({
 											)}
 										</div>
 
+										<Separator />
+
 										{/* SEO Description */}
 										<div className="space-y-2">
 											<Label htmlFor="seo.description">
@@ -1371,6 +1858,8 @@ export function ProductForm({
 											)}
 										</div>
 
+										<Separator />
+
 										{/* OG Image */}
 										<div className="space-y-2">
 											<Label>Open Graph Image</Label>
@@ -1392,6 +1881,8 @@ export function ProductForm({
 											/>
 										</div>
 
+										<Separator />
+
 										{/* Canonical URL */}
 										<div className="space-y-2">
 											<Label htmlFor="seo.canonicalUrl">
@@ -1408,6 +1899,8 @@ export function ProductForm({
 												Leave empty to use the default product URL
 											</p>
 										</div>
+
+										<Separator />
 
 										{/* Noindex */}
 										<div className="flex items-center gap-3">
@@ -1493,17 +1986,23 @@ export function ProductForm({
 					</div>
 
 					<div className="flex gap-3">
-						{isEditing && onValidate && (
+						{/* Unpublish button - only show for published products */}
+						{isPublished && onUnpublish && (
 							<Button
 								type="button"
 								variant="outline"
-								onClick={handleValidate}
-								disabled={isLoading}
+								onClick={handleUnpublish}
+								disabled={isLoading || isUnpublishing}
 							>
-								Validate
+								{isUnpublishing && (
+									<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+								)}
+								<Undo2 className="h-4 w-4 mr-2" />
+								Unpublish
 							</Button>
 						)}
 
+						{/* Save button - label changes based on status */}
 						<Button
 							type="submit"
 							variant="outline"
@@ -1513,10 +2012,28 @@ export function ProductForm({
 								<Loader2 className="h-4 w-4 mr-2 animate-spin" />
 							)}
 							<Save className="h-4 w-4 mr-2" />
-							Save Draft
+							{isDraft ? "Save Draft" : "Save"}
 						</Button>
 
-						{onPublish && (
+						{/* Submit for Review button - only show for draft products */}
+						{isDraft && onSubmitForReview && (
+							<Button
+								type="button"
+								variant="secondary"
+								className="text-primary border border-primary"
+								onClick={handleSubmitForReview}
+								disabled={isLoading || isSubmittingForReview}
+							>
+								{isSubmittingForReview && (
+									<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+								)}
+								<ClipboardCheck className="h-4 w-4 mr-2" />
+								Submit for Review
+							</Button>
+						)}
+
+						{/* Publish button - show for draft and pending products */}
+						{!isPublished && onPublish && (
 							<Button
 								type="button"
 								onClick={handleSubmit(handlePublish)}
