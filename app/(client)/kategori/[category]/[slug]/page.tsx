@@ -83,9 +83,23 @@ async function getProduct(slug: string): Promise<ProductType | null> {
 }
 
 /**
+ * Fallback data for uncategorized products
+ */
+const UNCATEGORIZED_FALLBACK = {
+	slug: "uncategorized",
+	name: "Okategoriserad",
+} as const;
+
+/**
  * Get category by slug
+ * Returns a fallback object for "uncategorized" products
  */
 async function getCategory(categorySlug: string) {
+	// Handle uncategorized products
+	if (categorySlug === "uncategorized") {
+		return UNCATEGORIZED_FALLBACK;
+	}
+
 	try {
 		return await categoryRepository.findBySlug(categorySlug);
 	} catch {

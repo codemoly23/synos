@@ -219,6 +219,153 @@ class ProductService {
 	}
 
 	/**
+	 * Validate product form data for publishing (before DB save)
+	 * Similar to validateForPublish but works on form data, not IProduct
+	 * Used to validate BEFORE creating a product when user wants to publish directly
+	 */
+	validateForPublishData(
+		data: Partial<CreateProductDraftInput> & { slug?: string }
+	): PublishValidationError[] {
+		const errors: PublishValidationError[] = [];
+
+		// Required fields (errors)
+		if (!data.title?.trim()) {
+			errors.push({
+				field: "title",
+				message: "Title is required for publishing",
+				type: "error",
+			});
+		}
+
+		if (!data.slug?.trim()) {
+			errors.push({
+				field: "slug",
+				message: "Slug is required for publishing",
+				type: "error",
+			});
+		} else if (!isValidSlug(data.slug)) {
+			errors.push({
+				field: "slug",
+				message: "Slug must be lowercase, alphanumeric with hyphens only",
+				type: "error",
+			});
+		}
+
+		if (!data.shortDescription?.trim()) {
+			errors.push({
+				field: "shortDescription",
+				message: "Short Description is required for publishing",
+				type: "error",
+			});
+		}
+
+		if (!data.productDescription?.trim()) {
+			errors.push({
+				field: "productDescription",
+				message: "Product Description is required for publishing",
+				type: "error",
+			});
+		}
+
+		// At least one product image
+		if (!data.productImages || data.productImages.length === 0) {
+			errors.push({
+				field: "productImages",
+				message: "At least one product image is required for publishing",
+				type: "error",
+			});
+		}
+
+		// Validate tech specifications
+		if (data.techSpecifications && data.techSpecifications.length > 0) {
+			data.techSpecifications.forEach((spec, index) => {
+				if (!spec.title?.trim()) {
+					errors.push({
+						field: `techSpecifications[${index}].title`,
+						message: `Tech specification ${index + 1} requires a title`,
+						type: "error",
+					});
+				}
+				if (!spec.description?.trim()) {
+					errors.push({
+						field: `techSpecifications[${index}].description`,
+						message: `Tech specification ${index + 1} requires a description`,
+						type: "error",
+					});
+				}
+			});
+		}
+
+		// Validate documentation entries
+		if (data.documentation && data.documentation.length > 0) {
+			data.documentation.forEach((doc, index) => {
+				if (!doc.title?.trim()) {
+					errors.push({
+						field: `documentation[${index}].title`,
+						message: `Documentation ${index + 1} requires a title`,
+						type: "error",
+					});
+				}
+				if (!doc.url?.trim()) {
+					errors.push({
+						field: `documentation[${index}].url`,
+						message: `Documentation ${index + 1} requires a URL`,
+						type: "error",
+					});
+				}
+			});
+		}
+
+		// Validate QnA entries
+		if (data.qa && data.qa.length > 0) {
+			data.qa.forEach((qa, index) => {
+				if (!qa.question?.trim()) {
+					errors.push({
+						field: `qa[${index}].question`,
+						message: `Q&A ${index + 1} requires a question`,
+						type: "error",
+					});
+				}
+				if (!qa.answer?.trim()) {
+					errors.push({
+						field: `qa[${index}].answer`,
+						message: `Q&A ${index + 1} requires an answer`,
+						type: "error",
+					});
+				}
+			});
+		}
+
+		// Validate YouTube URL if present
+		if (data.youtubeUrl && !isValidUrl(data.youtubeUrl)) {
+			errors.push({
+				field: "youtubeUrl",
+				message: "Invalid YouTube URL format",
+				type: "error",
+			});
+		}
+
+		// SEO warnings (not blocking, but recommended)
+		if (!data.seo?.title?.trim()) {
+			errors.push({
+				field: "seo.title",
+				message: "SEO title is recommended for better search visibility",
+				type: "warning",
+			});
+		}
+
+		if (!data.seo?.description?.trim()) {
+			errors.push({
+				field: "seo.description",
+				message: "SEO description is recommended for better search visibility",
+				type: "warning",
+			});
+		}
+
+		return errors;
+	}
+
+	/**
 	 * Create a new product (draft)
 	 */
 	async createProduct(
@@ -260,6 +407,9 @@ class ProductService {
 				productDescription: data.productDescription
 					? sanitizeHtml(data.productDescription)
 					: "",
+				hiddenDescription: data.hiddenDescription
+					? sanitizeHtml(data.hiddenDescription)
+					: "",
 				purchaseInfo: data.purchaseInfo
 					? {
 							...data.purchaseInfo,
@@ -268,6 +418,13 @@ class ProductService {
 								: "",
 					  }
 					: undefined,
+				// Convert empty/invalid primaryCategory to null for MongoDB
+				primaryCategory: (data.primaryCategory &&
+					data.primaryCategory !== "undefined" &&
+					data.primaryCategory !== "null" &&
+					data.primaryCategory.trim() !== "")
+					? data.primaryCategory
+					: null,
 				lastEditedBy: userId,
 			};
 
@@ -403,11 +560,25 @@ class ProductService {
 					data.productDescription
 				);
 			}
+			if (data.hiddenDescription !== undefined) {
+				sanitizedData.hiddenDescription = sanitizeHtml(
+					data.hiddenDescription
+				);
+			}
 			if (data.purchaseInfo?.description !== undefined) {
 				sanitizedData.purchaseInfo = {
 					...data.purchaseInfo,
 					description: sanitizeHtml(data.purchaseInfo.description),
 				};
+			}
+			// Convert empty/invalid primaryCategory to null for MongoDB
+			if (data.primaryCategory !== undefined) {
+				sanitizedData.primaryCategory = (data.primaryCategory &&
+					data.primaryCategory !== "undefined" &&
+					data.primaryCategory !== "null" &&
+					data.primaryCategory.trim() !== "")
+					? data.primaryCategory
+					: null;
 			}
 
 			sanitizedData.lastEditedBy = userId;
@@ -528,6 +699,31 @@ class ProductService {
 		logger.info("Product unpublished", { productId: id });
 
 		return unpublishedProduct;
+	}
+
+	/**
+	 * Submit product for review (set to pending)
+	 */
+	async submitForReview(id: string, userId: string): Promise<IProduct> {
+		const product = await productRepository.findById(id);
+
+		if (!product) {
+			throw new NotFoundError("Product not found");
+		}
+
+		const pendingProduct = await productRepository.updatePublishType(
+			id,
+			"pending",
+			userId
+		);
+
+		if (!pendingProduct) {
+			throw new DatabaseError("Failed to submit product for review");
+		}
+
+		logger.info("Product submitted for review", { productId: id });
+
+		return pendingProduct;
 	}
 
 	/**

@@ -3,7 +3,7 @@ import { getAuth } from "@/lib/db/auth";
 import { productService } from "@/lib/services/product.service";
 import { updateProductSchema } from "@/lib/validations/product.validation";
 import { logger } from "@/lib/utils/logger";
-import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { isValidObjectId, generateSlug } from "@/lib/utils/product-helpers";
 import { revalidateProduct } from "@/lib/revalidation/actions";
 import {
 	successResponse,
@@ -13,6 +13,7 @@ import {
 	internalServerErrorResponse,
 	noContentResponse,
 	conflictResponse,
+	validationErrorResponse,
 } from "@/lib/utils/api-response";
 
 interface RouteParams {
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 /**
  * PUT /api/products/[id]
  * Update a product (requires authentication)
+ * Supports atomic save-and-publish with shouldPublish flag
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
 	try {
@@ -72,7 +74,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 		// Parse and validate request body
 		const body = await request.json();
-		const validationResult = updateProductSchema.safeParse(body);
+		const { shouldPublish, ...productData } = body;
+		const validationResult = updateProductSchema.safeParse(productData);
 
 		if (!validationResult.success) {
 			logger.warn("Product update validation failed", {
@@ -84,6 +87,41 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			);
 		}
 
+		// If shouldPublish is true, validate for publishing BEFORE saving
+		if (shouldPublish) {
+			// Get existing product to merge with updates for validation
+			const existingProduct = await productService.getProductById(id);
+
+			// Merge existing data with updates for complete validation
+			const mergedData = {
+				title: validationResult.data.title ?? existingProduct.title,
+				slug: validationResult.data.slug ?? existingProduct.slug ?? generateSlug(validationResult.data.title ?? existingProduct.title),
+				shortDescription: validationResult.data.shortDescription ?? existingProduct.shortDescription,
+				productDescription: validationResult.data.productDescription ?? existingProduct.productDescription,
+				productImages: validationResult.data.productImages ?? existingProduct.productImages,
+				techSpecifications: validationResult.data.techSpecifications ?? existingProduct.techSpecifications,
+				documentation: validationResult.data.documentation ?? existingProduct.documentation,
+				qa: validationResult.data.qa ?? existingProduct.qa,
+				youtubeUrl: validationResult.data.youtubeUrl ?? existingProduct.youtubeUrl,
+				seo: validationResult.data.seo ?? existingProduct.seo,
+			};
+
+			const publishErrors = productService.validateForPublishData(mergedData);
+			const errors = publishErrors.filter((e) => e.type === "error");
+
+			if (errors.length > 0) {
+				// Return validation errors WITHOUT saving the product
+				logger.warn("Product publish validation failed (pre-save)", {
+					productId: id,
+					errors: errors,
+				});
+				return validationErrorResponse(
+					"Product cannot be published due to validation errors",
+					errors
+				);
+			}
+		}
+
 		// Update product
 		const product = await productService.updateProduct(
 			id,
@@ -91,17 +129,50 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			session.user.id
 		);
 
-		// Revalidate ISR cache for this product
-		const categorySlug = (
-			product.categories as unknown as Array<{ slug?: string }>
-		)?.[0]?.slug;
-		await revalidateProduct(product.slug, categorySlug);
-
 		logger.info("Product updated", {
 			productId: id,
 			updatedBy: session.user.id,
 			updates: Object.keys(validationResult.data),
 		});
+
+		// If shouldPublish, also publish the product
+		if (shouldPublish) {
+			try {
+				const publishResult = await productService.publishProduct(
+					id,
+					session.user.id
+				);
+
+				// Revalidate ISR cache for this product
+				const categorySlug = (
+					publishResult.product.categories as unknown as Array<{ slug?: string }>
+				)?.[0]?.slug;
+				await revalidateProduct(publishResult.product.slug, categorySlug);
+
+				logger.info("Product updated and published", {
+					productId: id,
+					title: product.title,
+				});
+
+				return successResponse(
+					publishResult,
+					"Product updated and published successfully"
+				);
+			} catch (publishError) {
+				// If publish fails after save (shouldn't happen due to pre-validation)
+				logger.error("Product saved but publish failed", publishError);
+				return validationErrorResponse(
+					"Product saved but publish failed",
+					publishError instanceof Error ? [{ field: "general", message: publishError.message, type: "error" }] : []
+				);
+			}
+		}
+
+		// Revalidate ISR cache for this product
+		const categorySlug = (
+			product.categories as unknown as Array<{ slug?: string }>
+		)?.[0]?.slug;
+		await revalidateProduct(product.slug, categorySlug);
 
 		return successResponse(product, "Product updated successfully");
 	} catch (error: unknown) {

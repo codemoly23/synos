@@ -15,11 +15,12 @@ interface ProductResultCardProps {
 }
 
 export function ProductResultCard({ product }: ProductResultCardProps) {
-	// Use primaryCategory if available, otherwise fall back to first category
-	const categorySlug = product.primaryCategory?.slug || product.categories?.[0]?.slug;
-	const href = categorySlug
-		? `/kategori/${categorySlug}/${product.slug}`
-		: `/kategori/${product.slug}`;
+	// Use primaryCategory if available, otherwise fall back to first category, then "uncategorized"
+	const categorySlug =
+		product.primaryCategory?.slug ||
+		product.categories?.[0]?.slug ||
+		"uncategorized";
+	const href = `/kategori/${categorySlug}/${product.slug}`;
 
 	return (
 		<Link

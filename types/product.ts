@@ -75,6 +75,12 @@ export type ProductType = {
 		slug: string;
 		id: string;
 	}>;
+	primaryCategory: {
+		_id: string;
+		name: string;
+		slug: string;
+		id: string;
+	} | null;
 	qa: Array<{
 		question: string;
 		answer: string;

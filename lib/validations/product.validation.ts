@@ -133,10 +133,11 @@ export const createProductDraftSchema = z.object({
 	purchaseInfo: purchaseInfoSchema.optional(),
 	seo: seoSchema.optional(),
 	categories: z.array(z.string()).optional().default([]),
+	primaryCategory: z.string().optional(),
 	qa: z.array(qnaSchema).optional().default([]),
 	youtubeUrl: optionalUrlSchema,
 	rubric: z.string().max(1000).optional(),
-	publishType: z.enum(["publish", "draft", "private"]).default("draft"),
+	publishType: z.enum(["publish", "draft", "pending", "private"]).default("draft"),
 	visibility: z.enum(["public", "hidden"]).default("public"),
 });
 
@@ -147,7 +148,7 @@ export const updateProductSchema = z.object({
 	title: z.string().min(1).max(200).optional(),
 	slug: slugSchema.optional(),
 	description: z.string().optional(),
-	shortDescription: z.string().max(300).optional(),
+	shortDescription: z.string().max(1500).optional(),
 	productDescription: z.string().optional(),
 	hiddenDescription: z.string().optional(),
 	benefits: z.array(z.string().max(500)).optional(),
@@ -161,10 +162,11 @@ export const updateProductSchema = z.object({
 	purchaseInfo: purchaseInfoSchema.optional(),
 	seo: seoSchema.optional(),
 	categories: z.array(z.string()).optional(),
+	primaryCategory: z.string().optional(),
 	qa: z.array(qnaSchema).optional(),
 	youtubeUrl: optionalUrlSchema,
 	rubric: z.string().max(1000).optional(),
-	publishType: z.enum(["publish", "draft", "private"]).optional(),
+	publishType: z.enum(["publish", "draft", "pending", "private"]).optional(),
 	visibility: z.enum(["public", "hidden"]).optional(),
 });
 

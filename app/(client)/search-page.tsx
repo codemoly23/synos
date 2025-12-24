@@ -76,6 +76,14 @@ export function SearchPageClient({
 		}
 	}, []);
 
+	// Sync input value with URL search query when it changes externally (e.g., popular search links)
+	useEffect(() => {
+		if (searchQuery !== inputValue) {
+			setInputValue(searchQuery);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [searchQuery]);
+
 	// Fetch when URL params change (after initial mount)
 	useEffect(() => {
 		// Skip if we have initial results and query matches

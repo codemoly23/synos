@@ -167,74 +167,47 @@ export default function NewProductPage() {
 		}
 	};
 
-	// Handle publish (create and publish in one go)
+	// Handle publish (atomic create-and-publish)
+	// If validation fails, NO product is created - user stays on form with errors
 	const handlePublish = async (
 		data: ProductFormData
 	): Promise<ProductFormResult> => {
 		setIsLoading(true);
 		try {
-			// First create the product
+			// Use atomic create-and-publish with shouldPublish flag
+			// Server validates for publishing BEFORE creating the product
 			const payload = {
 				...data,
 				categories: normalizeCategories(data.categories),
-				publishType: "draft" as const,
+				shouldPublish: true, // Tells API to validate and publish atomically
 			};
 
-			const createResponse = await fetch("/api/products", {
+			const response = await fetch("/api/products", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
 			});
 
-			const createResult = await createResponse.json();
+			const result = await response.json();
 
-			if (!createResult.success) {
-				const { summary, details } = createResult.errors
-					? formatValidationErrors(createResult.errors)
-					: { summary: "", details: [] };
-				const errorMessage =
-					summary || createResult.message || "Failed to create product";
-
-				if (details.length > 0) {
-					toast.error(errorMessage, {
-						description: details.join("\n"),
-						duration: 8000,
-					});
-				} else {
-					toast.error(errorMessage);
-				}
-				return {
-					success: false,
-					errors: createResult.errors,
-					message: createResult.message,
-				};
-			}
-
-			// Then publish it
-			const publishResponse = await fetch(
-				`/api/products/${createResult.data._id}/publish`,
-				{ method: "POST" }
-			);
-
-			const publishResult = await publishResponse.json();
-
-			if (publishResult.success) {
+			if (result.success) {
+				// Product created AND published successfully
 				toast.success("Product published successfully");
-				router.push(`/dashboard/products/${createResult.data._id}`);
+				const productId = result.data?.product?._id || result.data?._id;
+				router.push(`/dashboard/products/${productId}`);
 				return {
 					success: true,
-					data: publishResult.data?.product,
-					warnings: publishResult.data?.warnings,
+					data: result.data?.product || result.data,
+					warnings: result.data?.warnings,
 				};
 			} else {
-				// Product was created but publish failed - redirect to edit page
-				const { summary, details } = publishResult.errors
-					? formatValidationErrors(publishResult.errors)
+				// Validation failed - product was NOT created
+				// Show errors on the form (no redirect)
+				const { summary, details } = result.errors
+					? formatValidationErrors(result.errors)
 					: { summary: "", details: [] };
 				const errorMessage =
-					summary ||
-					publishResult.message ||
-					"Product created but publish failed";
+					summary || result.message || "Failed to publish product";
 
 				if (details.length > 0) {
 					toast.error(errorMessage, {
@@ -244,11 +217,12 @@ export default function NewProductPage() {
 				} else {
 					toast.error(errorMessage);
 				}
-				router.push(`/dashboard/products/${createResult.data._id}`);
+
+				// Return errors to form - NO redirect, user can fix and retry
 				return {
 					success: false,
-					errors: publishResult.errors,
-					message: publishResult.message,
+					errors: result.errors,
+					message: result.message,
 				};
 			}
 		} catch (error) {
@@ -262,6 +236,7 @@ export default function NewProductPage() {
 			setIsLoading(false);
 		}
 	};
+
 
 	if (isPending) {
 		return (

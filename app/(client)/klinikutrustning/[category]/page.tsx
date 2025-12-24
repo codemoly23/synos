@@ -60,7 +60,24 @@ export async function generateStaticParams() {
 	}
 }
 
+/**
+ * Fallback data for uncategorized products
+ */
+const UNCATEGORIZED_FALLBACK = {
+	_id: { toString: () => "uncategorized" },
+	slug: "uncategorized",
+	name: "Okategoriserad",
+	description: "Produkter som inte tillhör någon specifik kategori.",
+	image: null,
+	isActive: true,
+} as const;
+
 async function getCategory(slug: string) {
+	// Handle uncategorized products
+	if (slug === "uncategorized") {
+		return UNCATEGORIZED_FALLBACK;
+	}
+
 	try {
 		return await categoryRepository.findBySlug(slug);
 	} catch (error) {
@@ -80,6 +97,15 @@ async function getCategories() {
 
 async function getProductsByCategory(categoryId: string) {
 	try {
+		// Handle uncategorized products
+		if (categoryId === "uncategorized") {
+			const { data } = await productRepository.findUncategorized({
+				limit: 100,
+				publishedOnly: true,
+			});
+			return data;
+		}
+
 		const { data } = await productRepository.findByCategory(categoryId, {
 			limit: 100,
 			publishedOnly: true,

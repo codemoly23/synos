@@ -4,7 +4,7 @@ import { connectMongoose } from "@/lib/db/db-connect";
 /**
  * Type definitions for Product sub-documents
  */
-export type PublishType = "publish" | "draft" | "private";
+export type PublishType = "publish" | "draft" | "pending" | "private";
 export type Visibility = "public" | "hidden";
 
 export interface IQnA {
@@ -296,7 +296,7 @@ const ProductSchema = new Schema<IProduct>(
 		},
 		publishType: {
 			type: String,
-			enum: ["publish", "draft", "private"],
+			enum: ["publish", "draft", "pending", "private"],
 			default: "draft",
 		},
 		visibility: {

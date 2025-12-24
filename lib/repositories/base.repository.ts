@@ -1,8 +1,39 @@
 import type { Model, Document, UpdateQuery, QueryOptions } from "mongoose";
+import mongoose from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 import { PAGINATION } from "@/lib/utils/constants";
-import { DatabaseError } from "@/lib/utils/api-error";
+import { DatabaseError, BadRequestError } from "@/lib/utils/api-error";
 import { logger } from "@/lib/utils/logger";
+
+/**
+ * Extract user-friendly error message from MongoDB/Mongoose errors
+ */
+function extractMongooseErrorMessage(error: unknown): string {
+	if (error instanceof mongoose.Error.ValidationError) {
+		// Extract all validation error messages
+		const messages = Object.values(error.errors).map((err) => {
+			if (err instanceof mongoose.Error.CastError) {
+				return `Invalid value for ${err.path}`;
+			}
+			return err.message;
+		});
+		return messages.join(", ");
+	}
+
+	if (error instanceof mongoose.Error.CastError) {
+		return `Invalid value for field "${error.path}"`;
+	}
+
+	if (error instanceof Error) {
+		// Handle duplicate key errors
+		if (error.message.includes("duplicate key")) {
+			return "A record with this value already exists";
+		}
+		return error.message;
+	}
+
+	return "An unexpected database error occurred";
+}
 
 /**
  * Base Repository Pattern
@@ -156,7 +187,15 @@ export class BaseRepository<T extends Document> {
 			return document;
 		} catch (error) {
 			logger.error(`Error creating ${this.modelName}`, error);
-			throw new DatabaseError(`Failed to create ${this.modelName}`);
+			const message = extractMongooseErrorMessage(error);
+			// Use BadRequestError for validation errors, DatabaseError for others
+			if (
+				error instanceof mongoose.Error.ValidationError ||
+				error instanceof mongoose.Error.CastError
+			) {
+				throw new BadRequestError(message);
+			}
+			throw new DatabaseError(message);
 		}
 	}
 
@@ -180,7 +219,14 @@ export class BaseRepository<T extends Document> {
 			return document;
 		} catch (error) {
 			logger.error(`Error updating ${this.modelName}`, error);
-			throw new DatabaseError(`Failed to update ${this.modelName}`);
+			const message = extractMongooseErrorMessage(error);
+			if (
+				error instanceof mongoose.Error.ValidationError ||
+				error instanceof mongoose.Error.CastError
+			) {
+				throw new BadRequestError(message);
+			}
+			throw new DatabaseError(message);
 		}
 	}
 

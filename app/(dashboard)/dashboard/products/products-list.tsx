@@ -41,7 +41,7 @@ interface Product {
 	_id: string;
 	title: string;
 	slug: string;
-	publishType: "publish" | "draft" | "private";
+	publishType: "publish" | "draft" | "pending" | "private";
 	visibility: "public" | "hidden";
 	productImages: string[];
 	categories: { _id: string; name: string; slug: string }[];

@@ -14,7 +14,9 @@ import {
 	internalServerErrorResponse,
 	paginatedResponse,
 	conflictResponse,
+	validationErrorResponse,
 } from "@/lib/utils/api-response";
+import { generateSlug } from "@/lib/utils/product-helpers";
 
 /**
  * GET /api/products
@@ -73,6 +75,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/products
  * Create a new product (requires authentication)
+ * Supports atomic create-and-publish with shouldPublish flag
  */
 export async function POST(request: NextRequest) {
 	try {
@@ -89,7 +92,9 @@ export async function POST(request: NextRequest) {
 
 		// Parse and validate request body
 		const body = await request.json();
-		const validationResult = createProductDraftSchema.safeParse(body);
+		const { shouldPublish, ...productData } = body;
+
+		const validationResult = createProductDraftSchema.safeParse(productData);
 
 		if (!validationResult.success) {
 			logger.warn("Product creation validation failed", {
@@ -99,6 +104,29 @@ export async function POST(request: NextRequest) {
 				"Validation failed",
 				validationResult.error.issues
 			);
+		}
+
+		// If shouldPublish is true, validate for publishing BEFORE creating
+		if (shouldPublish) {
+			// Generate slug if not provided (same logic as createProduct)
+			const dataWithSlug = {
+				...validationResult.data,
+				slug: validationResult.data.slug || generateSlug(validationResult.data.title),
+			};
+
+			const publishErrors = productService.validateForPublishData(dataWithSlug);
+			const errors = publishErrors.filter((e) => e.type === "error");
+
+			if (errors.length > 0) {
+				// Return validation errors WITHOUT creating the product
+				logger.warn("Product publish validation failed (pre-create)", {
+					errors: errors,
+				});
+				return validationErrorResponse(
+					"Product cannot be published due to validation errors",
+					errors
+				);
+			}
 		}
 
 		// Create product
@@ -112,6 +140,34 @@ export async function POST(request: NextRequest) {
 			title: product.title,
 			createdBy: session.user.id,
 		});
+
+		// If shouldPublish, also publish the product
+		if (shouldPublish) {
+			try {
+				const publishResult = await productService.publishProduct(
+					product._id.toString(),
+					session.user.id
+				);
+
+				logger.info("Product created and published", {
+					productId: product._id,
+					title: product.title,
+				});
+
+				return createdResponse(
+					publishResult,
+					"Product created and published successfully"
+				);
+			} catch (publishError) {
+				// If publish fails after create (shouldn't happen due to pre-validation)
+				// Return error but product is still created as draft
+				logger.error("Product created but publish failed", publishError);
+				return validationErrorResponse(
+					"Product created but publish failed",
+					publishError instanceof Error ? [{ field: "general", message: publishError.message, type: "error" }] : []
+				);
+			}
+		}
 
 		return createdResponse(product, "Product created successfully");
 	} catch (error: unknown) {
