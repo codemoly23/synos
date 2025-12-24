@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { faqPageService } from "@/lib/services/faq-page.service";
 import { updateFAQPageSchema } from "@/lib/validations/faq-page.validation";
+import { revalidateFaqPage } from "@/lib/revalidation/actions";
 
 export async function GET() {
 	try {
@@ -29,6 +30,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updated = await faqPageService.updateFAQPage(result.data);
+
+		// Revalidate ISR cache
+		await revalidateFaqPage();
+
 		return NextResponse.json(updated);
 	} catch (error) {
 		console.error("Error updating FAQ page:", error);

@@ -47,6 +47,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 			const product = await this.model
 				.findOne({ slug })
 				.populate("categories", "name slug")
+				.populate("primaryCategory", "name slug")
 				.populate("lastEditedBy", "name email")
 				.exec();
 
@@ -78,6 +79,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 					visibility: "public",
 				})
 				.populate("categories", "name slug")
+				.populate("primaryCategory", "name slug")
 				.exec();
 
 			logger.db("findPublicBySlug", this.modelName, Date.now() - startTime);
@@ -99,6 +101,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 			const product = await this.model
 				.findById(id)
 				.populate("categories", "name slug")
+				.populate("primaryCategory", "name slug")
 				.populate("lastEditedBy", "name email")
 				.exec();
 
@@ -409,6 +412,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 				this.model
 					.find(filter, { score: { $meta: "textScore" } })
 					.populate("categories", "name slug")
+					.populate("primaryCategory", "name slug")
 					.sort({ score: { $meta: "textScore" } })
 					.skip(skip)
 					.limit(limit)

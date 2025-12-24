@@ -28,8 +28,17 @@ export const CACHE_TAGS = {
 	AUTHORS: "authors",
 	AUTHOR: (id: string) => `author-${id}`,
 
-	// Pages
+	// Static Pages
 	HOME_PAGE: "home-page",
+	ABOUT_PAGE: "about-page",
+	TEAM_PAGE: "team-page",
+	LEGAL_PAGE: "legal-page",
+	PRIVACY_PAGE: "privacy-page",
+	CAREERS_PAGE: "careers-page",
+	STARTA_EGET_PAGE: "starta-eget-page",
+	TRAINING_PAGE: "training-page",
+	FAQ_PAGE: "faq-page",
+	CONTACT_PAGE: "contact-page",
 
 	// Sitemaps
 	SITEMAPS: "sitemaps",
@@ -43,6 +52,16 @@ export const PATHS = {
 	KLINIKUTRUSTNING: "/klinikutrustning",
 	BLOG: "/blogg",
 	NEWS: "/nyheter",
+	// Static pages
+	ABOUT: "/om-oss",
+	TEAM: "/om-oss/team",
+	LEGAL: "/om-oss/juridisk-information",
+	PRIVACY: "/integritetspolicy",
+	CAREERS: "/om-oss/lediga-tjanster",
+	STARTA_EGET: "/starta-eget",
+	TRAINING: "/utbildningar",
+	FAQ: "/faq",
+	CONTACT: "/kontakt",
 } as const;
 
 // Default revalidation time in seconds (24 hours)

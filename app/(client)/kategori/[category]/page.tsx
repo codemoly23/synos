@@ -71,6 +71,7 @@ const UNCATEGORIZED_FALLBACK = {
 	description: "Produkter som inte tillhör någon specifik kategori.",
 	image: null,
 	isActive: true,
+	seo: undefined,
 } as const;
 
 async function getCategory(slug: string) {
@@ -136,27 +137,35 @@ export async function generateMetadata({
 		};
 	}
 
-	// Strip HTML from description for meta tags
-	const plainDescription = category.description
-		? stripHtml(category.description).slice(0, 160)
-		: `Utforska vårt sortiment av ${category.name.toLowerCase()}. MDR-certifierad utrustning från DEKA.`;
+	// Use SEO fields if available, otherwise fallback to defaults
+	const seoTitle =
+		category.seo?.title ||
+		`${category.name} | Kategori | ${siteConfig.name}`;
+	const seoDescription =
+		category.seo?.description ||
+		(category.description
+			? stripHtml(category.description).slice(0, 160)
+			: `Utforska vårt sortiment av ${category.name.toLowerCase()}. MDR-certifierad utrustning från DEKA.`);
+
+	// OG image priority: seo.ogImage > category.image
+	const ogImage = category.seo?.ogImage || category.image;
 
 	return {
-		title: `${category.name} | Kategori | ${siteConfig.name}`,
-		description: plainDescription,
+		title: seoTitle,
+		description: seoDescription,
 		openGraph: {
-			title: `${category.name} | ${siteConfig.name}`,
-			description: plainDescription,
+			title: category.seo?.title || `${category.name} | ${siteConfig.name}`,
+			description: seoDescription,
 			url: `${siteConfig.url}/kategori/${category.slug}`,
 			siteName: siteConfig.name,
 			locale: "sv_SE",
 			type: "website",
-			images: category.image
+			images: ogImage
 				? [
 						{
-							url: category.image.startsWith("http")
-								? category.image
-								: `${siteConfig.url}${category.image}`,
+							url: ogImage.startsWith("http")
+								? ogImage
+								: `${siteConfig.url}${ogImage}`,
 							alt: category.name,
 						},
 				  ]
@@ -165,6 +174,9 @@ export async function generateMetadata({
 		alternates: {
 			canonical: `${siteConfig.url}/kategori/${category.slug}`,
 		},
+		robots: category.seo?.noindex
+			? { index: false, follow: true }
+			: undefined,
 	};
 }
 

@@ -143,10 +143,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 					session.user.id
 				);
 
-				// Revalidate ISR cache for this product
-				const categorySlug = (
-					publishResult.product.categories as unknown as Array<{ slug?: string }>
-				)?.[0]?.slug;
+				// Revalidate ISR cache - use primaryCategory first, then first category
+				const primaryCat = publishResult.product.primaryCategory as unknown as { slug?: string } | null;
+				const categoriesArray = publishResult.product.categories as unknown as Array<{ slug?: string }>;
+				const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 				await revalidateProduct(publishResult.product.slug, categorySlug);
 
 				logger.info("Product updated and published", {
@@ -168,10 +168,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			}
 		}
 
-		// Revalidate ISR cache for this product
-		const categorySlug = (
-			product.categories as unknown as Array<{ slug?: string }>
-		)?.[0]?.slug;
+		// Revalidate ISR cache - use primaryCategory first, then first category
+		const primaryCat = product.primaryCategory as unknown as { slug?: string } | null;
+		const categoriesArray = product.categories as unknown as Array<{ slug?: string }>;
+		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 		await revalidateProduct(product.slug, categorySlug);
 
 		return successResponse(product, "Product updated successfully");
@@ -219,9 +219,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 		// Get product info before deletion for revalidation
 		const productToDelete = await productService.getProductById(id);
 		const productSlug = productToDelete?.slug;
-		const categorySlug = (
-			productToDelete?.categories as unknown as Array<{ slug?: string }>
-		)?.[0]?.slug;
+		// Use primaryCategory first, then first category
+		const primaryCat = productToDelete?.primaryCategory as unknown as { slug?: string } | null;
+		const categoriesArray = productToDelete?.categories as unknown as Array<{ slug?: string }>;
+		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 
 		// Delete product
 		await productService.deleteProduct(id);

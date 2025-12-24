@@ -2,6 +2,16 @@ import mongoose, { Schema, Model, Document } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 
 /**
+ * SEO settings interface for categories
+ */
+export interface ICategorySeo {
+	title?: string;
+	description?: string;
+	ogImage?: string | null;
+	noindex?: boolean;
+}
+
+/**
  * Category interface extending Mongoose Document
  * Supports infinite nesting via parent reference
  */
@@ -14,6 +24,7 @@ export interface ICategory extends Document {
 	image?: string | null; // URL
 	order: number; // For sorting siblings
 	isActive: boolean;
+	seo?: ICategorySeo;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -75,6 +86,26 @@ const CategorySchema = new Schema<ICategory>(
 			type: Boolean,
 			default: true,
 		},
+		seo: {
+			title: {
+				type: String,
+				default: "",
+				maxlength: [70, "SEO title cannot exceed 70 characters"],
+			},
+			description: {
+				type: String,
+				default: "",
+				maxlength: [200, "SEO description cannot exceed 200 characters"],
+			},
+			ogImage: {
+				type: String,
+				default: null,
+			},
+			noindex: {
+				type: Boolean,
+				default: false,
+			},
+		},
 	},
 	{
 		timestamps: true,
@@ -82,9 +113,11 @@ const CategorySchema = new Schema<ICategory>(
 	}
 );
 
-// Compound index for efficient tree queries
-CategorySchema.index({ parent: 1, order: 1 });
+// Compound index for efficient tree queries and sorting
+CategorySchema.index({ parent: 1, order: 1, createdAt: 1 });
 CategorySchema.index({ slug: 1 }, { unique: true });
+CategorySchema.index({ order: 1, createdAt: 1 });
+CategorySchema.index({ isActive: 1, order: 1, createdAt: 1 });
 
 // Virtual for children (populated on demand)
 CategorySchema.virtual("children", {

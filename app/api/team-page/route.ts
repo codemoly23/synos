@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTeamPage, updateTeamPage } from "@/lib/services/team-page.service";
 import { updateTeamPageSchema } from "@/lib/validations/team-page.validation";
+import { revalidateTeamPage } from "@/lib/revalidation/actions";
 
 /**
  * GET /api/team-page
@@ -40,6 +41,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updatedPage = await updateTeamPage(validationResult.data);
+
+		// Revalidate ISR cache
+		await revalidateTeamPage();
+
 		return NextResponse.json(updatedPage);
 	} catch (error) {
 		console.error("Error updating team page:", error);

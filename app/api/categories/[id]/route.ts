@@ -13,6 +13,7 @@ import {
 	noContentResponse,
 	conflictResponse,
 } from "@/lib/utils/api-response";
+import { revalidateCategory } from "@/lib/revalidation/actions";
 
 interface RouteParams {
 	params: Promise<{ id: string }>;
@@ -69,6 +70,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			return badRequestResponse("Invalid category ID format");
 		}
 
+		// Get old category to check if slug changes
+		const oldCategory = await categoryService.getCategoryById(id);
+		const oldSlug = oldCategory.slug;
+
 		// Parse and validate request body
 		const body = await request.json();
 		const validationResult = updateCategorySchema.safeParse(body);
@@ -89,6 +94,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			validationResult.data
 		);
 
+		// Revalidate category caches (both old and new slugs if changed)
+		await revalidateCategory(category.slug);
+		if (oldSlug !== category.slug) {
+			await revalidateCategory(oldSlug);
+		}
+
 		logger.info("Category updated", {
 			categoryId: id,
 			updatedBy: session.user.id,
@@ -97,7 +108,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 		return successResponse(category, "Category updated successfully");
 	} catch (error: unknown) {
-		logger.error("Error updating category =>>>>>", error);
+		logger.error("Error updating category", error);
 
 		if (error instanceof Error) {
 			if (error.message.includes("not found")) {
@@ -113,7 +124,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 				return badRequestResponse(error.message);
 			}
 		}
-		console.log("error -> ", error);
+
 		const message =
 			error instanceof Error ? error.message : "Failed to update category";
 		return internalServerErrorResponse(message);
@@ -143,12 +154,19 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 			return badRequestResponse("Invalid category ID format");
 		}
 
+		// Get category slug before deletion for cache invalidation
+		const categoryToDelete = await categoryService.getCategoryById(id);
+		const categorySlug = categoryToDelete.slug;
+
 		// Check for reparent option in query
 		const { searchParams } = new URL(request.url);
 		const reparentChildren = searchParams.get("reparentChildren") === "true";
 
 		// Delete category
 		await categoryService.deleteCategory(id, { reparentChildren });
+
+		// Revalidate category caches
+		await revalidateCategory(categorySlug);
 
 		logger.info("Category deleted", {
 			categoryId: id,

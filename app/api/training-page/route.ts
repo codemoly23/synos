@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trainingPageService } from "@/lib/services/training-page.service";
 import { updateTrainingPageSchema } from "@/lib/validations/training-page.validation";
+import { revalidateTrainingPage } from "@/lib/revalidation/actions";
 
 export async function GET() {
 	try {
@@ -29,6 +30,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updated = await trainingPageService.updateTrainingPage(result.data);
+
+		// Revalidate ISR cache
+		await revalidateTrainingPage();
+
 		return NextResponse.json(updated);
 	} catch (error) {
 		console.error("Error updating training page:", error);

@@ -38,11 +38,12 @@ export async function generateStaticParams() {
 		});
 
 		return products.map((product) => {
-			// Get the first category slug, or use 'uncategorized' as fallback
+			// Use primaryCategory first, then first category, or 'uncategorized' as fallback
+			const primaryCat = product.primaryCategory as unknown as { slug?: string } | null;
 			const categories = product.categories as unknown as Array<{
 				slug?: string;
 			}>;
-			const categorySlug = categories?.[0]?.slug || "uncategorized";
+			const categorySlug = primaryCat?.slug || categories?.[0]?.slug || "uncategorized";
 
 			return {
 				category: categorySlug,

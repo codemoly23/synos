@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { careersPageService } from "@/lib/services/careers-page.service";
 import { updateCareersPageSchema } from "@/lib/validations/careers-page.validation";
+import { revalidateCareersPage } from "@/lib/revalidation/actions";
 
 export async function GET() {
 	try {
@@ -29,6 +30,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updated = await careersPageService.updateCareersPage(result.data);
+
+		// Revalidate ISR cache
+		await revalidateCareersPage();
+
 		return NextResponse.json(updated);
 	} catch (error) {
 		console.error("Error updating careers page:", error);

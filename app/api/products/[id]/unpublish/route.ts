@@ -45,10 +45,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			session.user.id
 		);
 
-		// Revalidate ISR cache for this product
-		const categorySlug = (
-			product.categories as unknown as Array<{ slug?: string }>
-		)?.[0]?.slug;
+		// Revalidate ISR cache - use primaryCategory first, then first category
+		const primaryCat = product.primaryCategory as unknown as { slug?: string } | null;
+		const categoriesArray = product.categories as unknown as Array<{ slug?: string }>;
+		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 		await revalidateProduct(product.slug, categorySlug);
 
 		logger.info("Product unpublished", {

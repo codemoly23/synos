@@ -4,6 +4,7 @@ import { blogCategoryService } from "@/lib/services/blog-category.service";
 import { updateBlogCategorySchema } from "@/lib/validations/blog-category.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
+import { revalidateBlogCategory } from "@/lib/revalidation/actions";
 import {
 	successResponse,
 	badRequestResponse,
@@ -85,11 +86,21 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			);
 		}
 
+		// Get old slug before update for revalidation
+		const oldCategory = await blogCategoryService.getCategoryById(id);
+		const oldSlug = oldCategory?.slug;
+
 		// Update blog category
 		const category = await blogCategoryService.updateCategory(
 			id,
 			validationResult.data
 		);
+
+		// Revalidate ISR cache - both old and new slugs if changed
+		if (oldSlug && oldSlug !== category.slug) {
+			await revalidateBlogCategory(oldSlug);
+		}
+		await revalidateBlogCategory(category.slug);
 
 		logger.info("Blog category updated", {
 			categoryId: id,
@@ -151,8 +162,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 		const { searchParams } = new URL(request.url);
 		const reparentChildren = searchParams.get("reparentChildren") === "true";
 
+		// Get category info before deletion for revalidation
+		const categoryToDelete = await blogCategoryService.getCategoryById(id);
+		const categorySlug = categoryToDelete?.slug;
+
 		// Delete blog category
 		await blogCategoryService.deleteCategory(id, { reparentChildren });
+
+		// Revalidate ISR cache
+		if (categorySlug) {
+			await revalidateBlogCategory(categorySlug);
+		}
 
 		logger.info("Blog category deleted", {
 			categoryId: id,

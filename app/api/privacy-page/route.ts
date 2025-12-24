@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { privacyPageService } from "@/lib/services/privacy-page.service";
 import { updatePrivacyPageSchema } from "@/lib/validations/privacy-page.validation";
+import { revalidatePrivacyPage } from "@/lib/revalidation/actions";
 
 export async function GET() {
 	try {
@@ -29,6 +30,10 @@ export async function PUT(request: NextRequest) {
 		}
 
 		const updated = await privacyPageService.updatePrivacyPage(result.data);
+
+		// Revalidate ISR cache
+		await revalidatePrivacyPage();
+
 		return NextResponse.json(updated);
 	} catch (error) {
 		console.error("Error updating privacy page:", error);

@@ -168,7 +168,7 @@ export function CallbackPopup() {
 	return (
 		<>
 			{/* Mobile: Stacked buttons (Cookie + Callback) - positioned above bottom nav */}
-			<div className="fixed bottom-[88px] right-4 z-50 flex flex-col items-center gap-2 md:hidden">
+			<div className="fixed bottom-[100px] right-4 z-50 flex flex-col items-center gap-2 md:hidden">
 				{/* Cookie Button - only show if user has consented */}
 				{hasConsented && (
 					<button
@@ -190,7 +190,7 @@ export function CallbackPopup() {
 				<button
 					onClick={() => setIsModalOpen(true)}
 					className={cn(
-						"w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center",
+						"w-11 h-11 rounded-full bg-primary text-white shadow-lg flex items-center justify-center",
 						"transition-all duration-300 ease-out",
 						"hover:bg-primary-hover hover:scale-105 hover:shadow-xl",
 						"focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
