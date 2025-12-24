@@ -445,6 +445,7 @@ export function ProductForm({
 			description: product?.description || "",
 			shortDescription: product?.shortDescription || "",
 			productDescription: product?.productDescription || "",
+			hiddenDescription: product?.hiddenDescription || "",
 			benefits: product?.benefits || [],
 			certifications: product?.certifications || [],
 			treatments: product?.treatments || [],
@@ -892,6 +893,34 @@ export function ProductForm({
 										}
 										placeholder="Enter extended product description..."
 										// disabled={isLoading}
+										variant={"advanceFull"}
+									/>
+								</div>
+
+								{/* Hidden Description */}
+								<div className="space-y-2">
+									<Label>
+										Hidden Description{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional)
+										</span>
+									</Label>
+									<p className="text-sm text-muted-foreground">
+										This description is for internal use only
+										and will not be displayed on the product
+										page.
+									</p>
+									<TextEditor
+										height="300px"
+										defaultValue={
+											watch("hiddenDescription") || ""
+										}
+										onChange={(val) =>
+											setValue("hiddenDescription", val, {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Enter hidden description (internal use only)..."
 										variant={"advanceFull"}
 									/>
 								</div>

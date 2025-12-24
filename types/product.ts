@@ -41,6 +41,7 @@ export type ProductType = {
 	description: string;
 	shortDescription: string;
 	productDescription: string | null;
+	hiddenDescription: string | null;
 	benefits: Array<string> | null;
 	certifications: Array<string> | null;
 	treatments: Array<string> | null;
