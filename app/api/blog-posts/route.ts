@@ -24,15 +24,21 @@ export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 
-		// Parse query params
+		// Helper to get param value or undefined (not null)
+		const getParam = (key: string): string | undefined => {
+			const value = searchParams.get(key);
+			return value ?? undefined;
+		};
+
+		// Parse query params - convert null to undefined for Zod compatibility
 		const queryResult = blogPostListQuerySchema.safeParse({
 			page: searchParams.get("page") || "1",
 			limit: searchParams.get("limit") || "10",
-			search: searchParams.get("search"),
-			category: searchParams.get("category"),
-			tag: searchParams.get("tag"),
-			author: searchParams.get("author"),
-			publishType: searchParams.get("publishType"),
+			search: getParam("search"),
+			category: getParam("category"),
+			tag: getParam("tag"),
+			author: getParam("author"),
+			publishType: getParam("publishType"),
 			sort: searchParams.get("sort") || "-createdAt",
 		});
 

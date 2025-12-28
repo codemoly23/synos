@@ -125,6 +125,7 @@ export const updateBlogPostSchema = z.object({
 
 /**
  * Blog Post list query params
+ * Note: API routes should pass undefined (not null) for missing params
  */
 export const blogPostListQuerySchema = z.object({
 	page: z.coerce.number().int().positive().default(1),

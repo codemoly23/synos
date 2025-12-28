@@ -4,8 +4,32 @@
  */
 
 /**
+ * Normalize special unicode characters to ASCII equivalents
+ * Handles subscript/superscript numbers, special symbols, etc.
+ */
+function normalizeSpecialChars(text: string): string {
+	const charMap: Record<string, string> = {
+		// Subscript numbers
+		"\u2080": "0", "\u2081": "1", "\u2082": "2", "\u2083": "3", "\u2084": "4",
+		"\u2085": "5", "\u2086": "6", "\u2087": "7", "\u2088": "8", "\u2089": "9",
+		// Superscript numbers
+		"\u2070": "0", "\u00B9": "1", "\u00B2": "2", "\u00B3": "3", "\u2074": "4",
+		"\u2075": "5", "\u2076": "6", "\u2077": "7", "\u2078": "8", "\u2079": "9",
+		// Common special characters
+		"\u2122": "", "\u00AE": "", "\u00A9": "", // ™ ® ©
+		"\u2013": "-", "\u2014": "-", // En-dash, em-dash
+		"\u2018": "", "\u2019": "", "\u201C": "", "\u201D": "", // Curly quotes
+	};
+
+	return text.replace(
+		/[\u2080-\u2089\u2070\u00B9\u00B2\u00B3\u2074-\u2079\u2122\u00AE\u00A9\u2013\u2014\u2018\u2019\u201C\u201D]/g,
+		(char) => charMap[char] ?? ""
+	);
+}
+
+/**
  * Generate a URL-safe slug from text
- * - Normalizes unicode characters
+ * - Normalizes unicode characters (including subscript/superscript)
  * - Converts to lowercase
  * - Replaces non-alphanumeric with hyphens
  * - Removes leading/trailing hyphens
@@ -16,8 +40,7 @@ export function generateSlug(text: string): string {
 		return "";
 	}
 
-	return text
-		.toString()
+	return normalizeSpecialChars(text)
 		.normalize("NFKD") // Normalize unicode
 		.replace(/[\u0300-\u036f]/g, "") // Remove diacritics
 		.toLowerCase()
@@ -30,12 +53,29 @@ export function generateSlug(text: string): string {
 
 /**
  * Validate if a string is a valid slug format
+ * Normalizes special characters before validation
  */
 export function isValidSlug(slug: string): boolean {
 	if (!slug || typeof slug !== "string") {
 		return false;
 	}
-	return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+	// Normalize special characters before validation
+	const normalizedSlug = normalizeSpecialChars(slug).toLowerCase();
+	return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug);
+}
+
+/**
+ * Normalize a slug - converts special characters to ASCII equivalents
+ */
+export function normalizeSlug(slug: string): string {
+	if (!slug || typeof slug !== "string") {
+		return "";
+	}
+	return normalizeSpecialChars(slug)
+		.toLowerCase()
+		.replace(/[^a-z0-9-]+/g, "-")
+		.replace(/^-+|-+$/g, "")
+		.replace(/-+/g, "-");
 }
 
 /**

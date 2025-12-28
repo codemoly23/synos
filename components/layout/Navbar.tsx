@@ -84,8 +84,8 @@ export function Navbar({ config }: NavbarProps) {
 															</Link>
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
-															<div className="w-[800px] p-3 md:w-[200px] lg:w-[500px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[70vh] overflow-y-auto nav-dropdown-scroll">
-																<div className="grid grid-cols-3 gap-x-4 gap-y-2">
+															<div className="w-[calc(100vw-3rem)] max-w-[1200px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
+																<div className="grid grid-cols-5 gap-x-6 gap-y-3">
 																	{navigationData?.categories.map(
 																		(category) => (
 																			<div
@@ -128,7 +128,7 @@ export function Navbar({ config }: NavbarProps) {
 																	)}
 																	{/* Loading state */}
 																	{!navigationData && (
-																		<div className="col-span-3 py-8 text-center text-slate-400 text-sm">
+																		<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
 																			Laddar...
 																		</div>
 																	)}
@@ -136,7 +136,7 @@ export function Navbar({ config }: NavbarProps) {
 																	{navigationData &&
 																		navigationData.categories
 																			.length === 0 && (
-																			<div className="col-span-3 py-8 text-center text-slate-400 text-sm">
+																			<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
 																				Inga kategorier
 																				tillgängliga
 																			</div>
