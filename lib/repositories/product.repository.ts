@@ -5,9 +5,16 @@ import {
 	type PublishType,
 	type Visibility,
 } from "@/models/product.model";
+// Import models to ensure they're registered before populate operations
+import { getCategoryModelSync } from "@/models/category.model";
+import { getUserModelSync } from "@/models/user.model";
 import { logger } from "@/lib/utils/logger";
 import { DatabaseError } from "@/lib/utils/api-error";
 import { parseSortString } from "@/lib/utils/product-helpers";
+
+// Register models for population - required for serverless cold starts
+getCategoryModelSync();
+getUserModelSync();
 
 /**
  * Product Repository
@@ -16,6 +23,14 @@ import { parseSortString } from "@/lib/utils/product-helpers";
 class ProductRepository extends BaseRepository<IProduct> {
 	constructor() {
 		super(getProductModelSync());
+	}
+
+	/**
+	 * Ensure related models are registered before populate operations
+	 */
+	private ensureRelatedModels(): void {
+		// Ensure Category model is registered for populate operations
+		getCategoryModelSync();
 	}
 
 	/**
@@ -42,6 +57,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	async findBySlugWithCategories(slug: string): Promise<IProduct | null> {
 		try {
 			await this.ensureConnection();
+			this.ensureRelatedModels();
 			const startTime = Date.now();
 
 			const product = await this.model
@@ -70,6 +86,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	async findPublicBySlug(slug: string): Promise<IProduct | null> {
 		try {
 			await this.ensureConnection();
+			this.ensureRelatedModels();
 			const startTime = Date.now();
 
 			const product = await this.model
@@ -96,6 +113,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	async findByIdWithPopulated(id: string): Promise<IProduct | null> {
 		try {
 			await this.ensureConnection();
+			this.ensureRelatedModels();
 			const startTime = Date.now();
 
 			const product = await this.model
@@ -156,6 +174,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	}> {
 		try {
 			await this.ensureConnection();
+			this.ensureRelatedModels();
 			const startTime = Date.now();
 
 			const {
@@ -393,6 +412,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 	}> {
 		try {
 			await this.ensureConnection();
+			this.ensureRelatedModels();
 			const startTime = Date.now();
 
 			const { page = 1, limit = 10, publishedOnly = false } = options || {};

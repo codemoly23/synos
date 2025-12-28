@@ -8,8 +8,6 @@ import {
 	Upload,
 	ExternalLink,
 	RefreshCw,
-	ChevronLeft,
-	ChevronRight,
 	Loader2,
 	Check,
 	Copy,
@@ -73,6 +71,7 @@ interface PaginationMeta {
 	limit: number;
 	total: number;
 	totalPages: number;
+	hasMore: boolean;
 }
 
 /**
@@ -138,7 +137,9 @@ export function MediaGallery({
 		limit: pageSize,
 		total: 0,
 		totalPages: 0,
+		hasMore: false,
 	});
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	// Single select mode
 	const [selectedFile, setSelectedFile] = useState<FileMetadata | null>(null);
@@ -162,10 +163,15 @@ export function MediaGallery({
 	const maxFileSize =
 		type === "image" ? FILE_SIZE_LIMITS.IMAGE : FILE_SIZE_LIMITS.DOCUMENT;
 
-	// Fetch files
+	// Fetch files - supports both initial load and load more
 	const fetchFiles = useCallback(
-		async (page: number = 1) => {
-			setIsLoading(true);
+		async (page: number = 1, append: boolean = false) => {
+			if (append) {
+				setIsLoadingMore(true);
+			} else {
+				setIsLoading(true);
+			}
+
 			try {
 				const params = new URLSearchParams({
 					folder,
@@ -182,21 +188,33 @@ export function MediaGallery({
 					throw new Error(data.message || "Failed to fetch files");
 				}
 
-				setFiles(data.data || []);
-				setMeta(
-					data.meta || {
-						page: 1,
-						limit: pageSize,
-						total: 0,
-						totalPages: 0,
-					}
-				);
+				const newFiles = data.data || [];
+				const responseMeta = data.meta || {
+					page: 1,
+					limit: pageSize,
+					total: 0,
+					totalPages: 0,
+				};
+
+				if (append) {
+					// Append new files to existing ones
+					setFiles((prev) => [...prev, ...newFiles]);
+				} else {
+					// Replace files (initial load or refresh)
+					setFiles(newFiles);
+				}
+
+				setMeta({
+					...responseMeta,
+					hasMore: responseMeta.page < responseMeta.totalPages,
+				});
 			} catch (error) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to load files"
 				);
 			} finally {
 				setIsLoading(false);
+				setIsLoadingMore(false);
 			}
 		},
 		[folder, pageSize]
@@ -296,15 +314,12 @@ export function MediaGallery({
 		toast.success("URL copied");
 	}, []);
 
-	// Pagination
-	const handlePageChange = useCallback(
-		(newPage: number) => {
-			if (newPage >= 1 && newPage <= meta.totalPages) {
-				fetchFiles(newPage);
-			}
-		},
-		[meta.totalPages, fetchFiles]
-	);
+	// Load more files
+	const handleLoadMore = useCallback(() => {
+		if (meta.hasMore && !isLoadingMore) {
+			fetchFiles(meta.page + 1, true);
+		}
+	}, [meta.hasMore, meta.page, isLoadingMore, fetchFiles]);
 
 	// Upload handling
 	const handleUpload = useCallback(
@@ -806,28 +821,27 @@ export function MediaGallery({
 							)}
 						</div>
 
-						{/* Pagination */}
-						{meta.totalPages > 1 && (
-							<div className="flex items-center justify-center gap-2 pt-4 border-t mt-4">
+						{/* Load More */}
+						{meta.hasMore && (
+							<div className="flex flex-col items-center gap-2 pt-4 border-t mt-4">
 								<Button
 									variant="outline"
-									size="sm"
-									onClick={() => handlePageChange(meta.page - 1)}
-									disabled={meta.page <= 1}
+									onClick={handleLoadMore}
+									disabled={isLoadingMore}
+									className="min-w-[140px]"
 								>
-									<ChevronLeft className="h-4 w-4" />
+									{isLoadingMore ? (
+										<>
+											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+											Loading...
+										</>
+									) : (
+										"Load More"
+									)}
 								</Button>
-								<span className="text-sm text-muted-foreground">
-									{meta.page} / {meta.totalPages}
+								<span className="text-xs text-muted-foreground">
+									Showing {files.length} of {meta.total}
 								</span>
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => handlePageChange(meta.page + 1)}
-									disabled={meta.page >= meta.totalPages}
-								>
-									<ChevronRight className="h-4 w-4" />
-								</Button>
 							</div>
 						)}
 					</TabsContent>

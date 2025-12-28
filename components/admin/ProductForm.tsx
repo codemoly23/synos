@@ -1171,6 +1171,7 @@ export function ProductForm({
 								<div className="space-y-2">
 									<Label htmlFor="shortDescription">
 										Short Description
+										<span className="text-red-500">*</span>
 									</Label>
 									<Textarea
 										id="shortDescription"
@@ -1192,9 +1193,13 @@ export function ProductForm({
 											setValue("categories", cats, {
 												shouldDirty: true,
 											});
-											const currentPrimary = watch("primaryCategory");
+											const currentPrimary =
+												watch("primaryCategory");
 											// Clear primary category if it's no longer in selected categories
-											if (currentPrimary && !cats.includes(currentPrimary)) {
+											if (
+												currentPrimary &&
+												!cats.includes(currentPrimary)
+											) {
 												// Auto-set to first category if available
 												setValue("primaryCategory", cats[0] || "", {
 													shouldDirty: true,
@@ -1760,11 +1765,18 @@ export function ProductForm({
 											placeholder="Question"
 											disabled={isLoading}
 										/>
-										<Textarea
-											{...register(`qa.${index}.answer`)}
-											placeholder="Answer"
-											disabled={isLoading}
-											rows={2}
+										<TextEditor
+											name={`qa.${index}.answer`}
+											defaultValue={watch(`qa.${index}.answer`) || ""}
+											onChange={(val) =>
+												setValue(`qa.${index}.answer`, val, {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Answer (supports rich text)"
+											variant="detailedSimple"
+											height="150px"
+											disable={isLoading}
 										/>
 									</div>
 								))}

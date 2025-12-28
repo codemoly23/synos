@@ -138,6 +138,7 @@ export function ProductContent({
 							<ProductImageGallery
 								images={product.productImages}
 								productName={product.title}
+								youtubeUrl={product.youtubeUrl}
 							/>
 						) : primaryImage ? (
 							<div className="relative aspect-video md:aspect-21/9 w-full overflow-hidden rounded-2xl shadow-xl">

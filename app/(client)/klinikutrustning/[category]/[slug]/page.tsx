@@ -5,8 +5,7 @@ import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
-import { CACHE_TAGS, DEFAULT_REVALIDATE } from "@/lib/revalidation";
-import type { ApiResponse, ProductType } from "@/types";
+import type { ProductType } from "@/types";
 
 /**
  * Product Detail Page
@@ -57,26 +56,17 @@ export async function generateStaticParams() {
 }
 
 /**
- * Fetch product data server-side
+ * Fetch product data server-side using repository directly
+ * This avoids fetch calls during SSG which would fail (server not running)
  */
 async function getProduct(slug: string): Promise<ProductType | null> {
 	try {
-		const response = await fetch(
-			`${process.env.BETTER_AUTH_URL}/api/products/client/${slug}`,
-			{
-				next: {
-					revalidate: DEFAULT_REVALIDATE,
-					tags: [CACHE_TAGS.PRODUCT(slug), CACHE_TAGS.PRODUCTS],
-				},
-			}
-		);
-
-		if (!response.ok) {
+		const product = await productRepository.findPublicBySlug(slug);
+		if (!product) {
 			return null;
 		}
-
-		const data: ApiResponse<ProductType> = await response.json();
-		return data.data || null;
+		// Convert Mongoose document to plain object for client component
+		return JSON.parse(JSON.stringify(product)) as ProductType;
 	} catch (error) {
 		console.error(`Error fetching product ${slug}:`, error);
 		return null;

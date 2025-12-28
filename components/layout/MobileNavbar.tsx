@@ -111,8 +111,8 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 					</div>
 
 					{/* Scrollable Navigation */}
-					<div className="flex-1 overflow-y-auto">
-						<div className="px-2 py-2">
+					<div className="flex-1 overflow-y-auto nav-dropdown-scroll">
+						<div className="px-2 py-2 pb-4">
 							<Accordion
 								type="single"
 								collapsible
@@ -159,7 +159,7 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 																			</button>
 																			{/* Products - only show when expanded */}
 																			{expandedCategory === category._id && (
-																				<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
+																				<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200 max-h-[200px] overflow-y-auto nav-dropdown-scroll">
 																					{category.products.map((product) => (
 																						<Link
 																							key={product._id}

@@ -7,8 +7,6 @@ import {
 	Trash2,
 	ExternalLink,
 	RefreshCw,
-	ChevronLeft,
-	ChevronRight,
 	Loader2,
 	Copy,
 	FileText,
@@ -61,6 +59,7 @@ interface PaginationMeta {
 	limit: number;
 	total: number;
 	totalPages: number;
+	hasMore: boolean;
 }
 
 /**
@@ -144,15 +143,22 @@ export function FileList({
 		limit: pageSize,
 		total: 0,
 		totalPages: 0,
+		hasMore: false,
 	});
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [deletingFile, setDeletingFile] = useState<string | null>(null);
 	const [fileToDelete, setFileToDelete] = useState<FileMetadata | null>(null);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
 	const fetchFiles = useCallback(
-		async (page: number = 1) => {
-			setIsLoading(true);
+		async (page: number = 1, append: boolean = false) => {
+			if (append) {
+				setIsLoadingMore(true);
+			} else {
+				setIsLoading(true);
+			}
+
 			try {
 				const params = new URLSearchParams({
 					folder,
@@ -169,21 +175,33 @@ export function FileList({
 					throw new Error(data.message || "Failed to fetch files");
 				}
 
-				setFiles(data.data || []);
-				setMeta(
-					data.meta || {
-						page: 1,
-						limit: pageSize,
-						total: 0,
-						totalPages: 0,
-					}
-				);
+				const newFiles = data.data || [];
+				const responseMeta = data.meta || {
+					page: 1,
+					limit: pageSize,
+					total: 0,
+					totalPages: 0,
+				};
+
+				if (append) {
+					// Append new files to existing ones
+					setFiles((prev) => [...prev, ...newFiles]);
+				} else {
+					// Replace files (initial load or refresh)
+					setFiles(newFiles);
+				}
+
+				setMeta({
+					...responseMeta,
+					hasMore: responseMeta.page < responseMeta.totalPages,
+				});
 			} catch (error) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to load files"
 				);
 			} finally {
 				setIsLoading(false);
+				setIsLoadingMore(false);
 			}
 		},
 		[folder, pageSize]
@@ -251,14 +269,11 @@ export function FileList({
 		toast.success("URL copied to clipboard");
 	}, []);
 
-	const handlePageChange = useCallback(
-		(newPage: number) => {
-			if (newPage >= 1 && newPage <= meta.totalPages) {
-				fetchFiles(newPage);
-			}
-		},
-		[meta.totalPages, fetchFiles]
-	);
+	const handleLoadMore = useCallback(() => {
+		if (meta.hasMore && !isLoadingMore) {
+			fetchFiles(meta.page + 1, true);
+		}
+	}, [meta.hasMore, meta.page, isLoadingMore, fetchFiles]);
 
 	const isImage = (mimeType: string) => mimeType.startsWith("image/");
 
@@ -394,33 +409,27 @@ export function FileList({
 								))}
 							</div>
 
-							{/* Pagination */}
-							{meta.totalPages > 1 && (
-								<div className="flex items-center justify-between mt-6 pt-4 border-t">
-									<p className="text-sm text-muted-foreground">
+							{/* Load More */}
+							{meta.hasMore && (
+								<div className="flex flex-col items-center gap-2 mt-6 pt-4 border-t">
+									<Button
+										variant="outline"
+										onClick={handleLoadMore}
+										disabled={isLoadingMore}
+										className="min-w-[140px]"
+									>
+										{isLoadingMore ? (
+											<>
+												<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+												Loading...
+											</>
+										) : (
+											"Load More"
+										)}
+									</Button>
+									<span className="text-xs text-muted-foreground">
 										Showing {files.length} of {meta.total} files
-									</p>
-									<div className="flex items-center gap-2">
-										<Button
-											variant="outline"
-											size="sm"
-											onClick={() => handlePageChange(meta.page - 1)}
-											disabled={meta.page <= 1}
-										>
-											<ChevronLeft className="h-4 w-4" />
-										</Button>
-										<span className="text-sm">
-											Page {meta.page} of {meta.totalPages}
-										</span>
-										<Button
-											variant="outline"
-											size="sm"
-											onClick={() => handlePageChange(meta.page + 1)}
-											disabled={meta.page >= meta.totalPages}
-										>
-											<ChevronRight className="h-4 w-4" />
-										</Button>
-									</div>
+									</span>
 								</div>
 							)}
 						</>

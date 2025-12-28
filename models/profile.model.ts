@@ -74,8 +74,7 @@ const ProfileSchema = new Schema<IProfile>(
 	}
 );
 
-// Indexes
-ProfileSchema.index({ userId: 1 });
+// Note: userId already has unique: true which creates an index
 
 // Ensure virtuals are included in JSON
 ProfileSchema.set("toJSON", {

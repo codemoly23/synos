@@ -1,6 +1,11 @@
 import { BaseRepository } from "./base.repository";
 import { IUser, getUserModelSync } from "@/models/user.model";
+// Import Profile model to ensure it's registered before populate operations
+import { getProfileModelSync } from "@/models/profile.model";
 import { logger } from "@/lib/utils/logger";
+
+// Register Profile model for population - required for serverless cold starts
+getProfileModelSync();
 
 /**
  * User Repository

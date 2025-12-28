@@ -33,13 +33,13 @@ export const STORAGE_CONFIG = {
  */
 export const FILE_SIZE_LIMITS = {
 	/** Maximum image size: 5MB */
-	IMAGE: 5 * 1024 * 1024,
+	IMAGE: 15 * 1024 * 1024,
 
 	/** Maximum document size: 20MB */
-	DOCUMENT: 20 * 1024 * 1024,
+	DOCUMENT: 100 * 1024 * 1024,
 
 	/** Default maximum: 10MB */
-	DEFAULT: 10 * 1024 * 1024,
+	DEFAULT: 100 * 1024 * 1024,
 } as const;
 
 /**
