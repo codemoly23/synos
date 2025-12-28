@@ -84,7 +84,7 @@ export function Navbar({ config }: NavbarProps) {
 															</Link>
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
-															<div className="w-[800px] p-3 md:w-[200px] lg:w-[500px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">
+															<div className="w-[800px] p-3 md:w-[200px] lg:w-[500px] bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[70vh] overflow-y-auto nav-dropdown-scroll">
 																<div className="grid grid-cols-3 gap-x-4 gap-y-2">
 																	{navigationData?.categories.map(
 																		(category) => (

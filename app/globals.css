@@ -3535,6 +3535,29 @@
   @apply bg-slate-300;
 }
 
+/* Navigation dropdown scrollbar - thin and subtle */
+.nav-dropdown-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nav-dropdown-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nav-dropdown-scroll::-webkit-scrollbar-thumb {
+  @apply bg-slate-300/60 rounded-full;
+}
+
+.nav-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400/80;
+}
+
+/* Firefox scrollbar support */
+.nav-dropdown-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225 / 0.6) transparent;
+}
+
 /* ============================================
    REACT DAY PICKER STYLES
    ============================================ */
