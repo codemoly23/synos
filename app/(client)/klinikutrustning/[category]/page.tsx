@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
+import { PreviewEditor } from "@/components/common/TextEditor";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -430,9 +431,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						{category.name}
 					</h1>
 					{category.description && (
-						<p className="max-w-3xl text-lg text-muted-foreground">
-							{category.description}
-						</p>
+						<div className="prose prose-slate max-w-3xl text-muted-foreground">
+							<PreviewEditor>{category.description}</PreviewEditor>
+						</div>
 					)}
 				</div>
 

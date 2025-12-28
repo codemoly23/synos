@@ -17,7 +17,7 @@ export async function revalidateProduct(
 	// Revalidate products list
 	revalidateTag(CACHE_TAGS.PRODUCTS, "max");
 
-	// Revalidate product detail pages
+	// Revalidate product detail pages for the specific category
 	if (categorySlug) {
 		revalidatePath(`${PATHS.KATEGORI}/${categorySlug}/${slug}`);
 		revalidatePath(`${PATHS.KLINIKUTRUSTNING}/${categorySlug}/${slug}`);
@@ -25,11 +25,17 @@ export async function revalidateProduct(
 		revalidatePath(`${PATHS.KLINIKUTRUSTNING}/${categorySlug}`);
 	}
 
+	// Always revalidate uncategorized paths (product might have been moved)
+	revalidatePath(`${PATHS.KATEGORI}/uncategorized/${slug}`);
+	revalidatePath(`${PATHS.KLINIKUTRUSTNING}/uncategorized/${slug}`);
+
+	// Revalidate the direct product page
+	revalidatePath(`${PATHS.PRODUCTS}/produkt/${slug}`);
+
 	// Revalidate listing pages
 	revalidatePath(PATHS.PRODUCTS);
 	revalidatePath(PATHS.KATEGORI);
 	revalidatePath(PATHS.KLINIKUTRUSTNING);
-	revalidatePath(`${PATHS.PRODUCTS}/produkt/${slug}`);
 
 	// Revalidate sitemaps
 	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
