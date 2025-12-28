@@ -53,6 +53,14 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "images.pexels.com",
 			},
+			{
+				protocol: "https",
+				hostname: "img.youtube.com",
+			},
+			{
+				protocol: "https",
+				hostname: "i.ytimg.com",
+			},
 		],
 		// Allow query strings for local images (needed for cache-busting avatars)
 		// Omitting 'search' property allows any query string (e.g., ?t=timestamp)
