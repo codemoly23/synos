@@ -4,13 +4,15 @@ import {
 	type IBlogPost,
 	type BlogPublishType,
 } from "@/models/blog-post.model";
-// Import to ensure BlogCategory model is registered before population
+// Import to ensure models are registered before population
 import { getBlogCategoryModelSync } from "@/models/blog-category.model";
+import { getUserModelSync } from "@/models/user.model";
 import { logger } from "@/lib/utils/logger";
 import { DatabaseError } from "@/lib/utils/api-error";
 
-// Register BlogCategory model for population
+// Register models for population - required for serverless cold starts
 getBlogCategoryModelSync();
+getUserModelSync();
 
 /**
  * Helper function to parse sort string into MongoDB sort object

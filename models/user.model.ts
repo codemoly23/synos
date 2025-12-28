@@ -66,7 +66,7 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Indexes for performance
-UserSchema.index({ email: 1 });
+// Note: email already has unique: true which creates an index
 UserSchema.index({ createdAt: -1 });
 
 // Virtual for user's full profile
