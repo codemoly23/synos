@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, HelpCircle } from "lucide-react";
-import { FAQ } from "@/types/product";
+import { PreviewEditor } from "@/components/common/TextEditor";
 
 interface ProductFAQProps {
 	faqs: Array<{
@@ -117,7 +117,7 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 											>
 												<div className="px-6 pb-5 pt-0">
 													<div className="prose prose-sm max-w-none text-muted-foreground border-t border-slate-300 pt-4">
-														<p>{faq.answer}</p>
+														<PreviewEditor>{faq.answer}</PreviewEditor>
 													</div>
 												</div>
 											</motion.div>
