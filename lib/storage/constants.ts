@@ -50,6 +50,7 @@ export const ALLOWED_IMAGE_TYPES = [
 	"image/png",
 	"image/webp",
 	"image/gif",
+	"image/svg+xml",
 ] as const;
 
 /**
@@ -78,6 +79,7 @@ export const MIME_TO_EXTENSION: MimeExtensionMap = {
 	"image/png": ".png",
 	"image/webp": ".webp",
 	"image/gif": ".gif",
+	"image/svg+xml": ".svg",
 
 	// Documents
 	"application/pdf": ".pdf",
@@ -96,6 +98,7 @@ export const EXTENSION_TO_MIME: Record<string, string> = {
 	".png": "image/png",
 	".webp": "image/webp",
 	".gif": "image/gif",
+	".svg": "image/svg+xml",
 
 	// Documents
 	".pdf": "application/pdf",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import {
 	FileIcon,
@@ -14,6 +14,10 @@ import {
 	FileText,
 	X,
 	Info,
+	Search,
+	Calendar,
+	Eye,
+	Grid3X3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +29,20 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerDescription,
+	DrawerClose,
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils/cn";
 import type {
 	FileMetadata,
@@ -44,25 +62,15 @@ import Link from "next/link";
 export type MediaType = "image" | "document";
 
 interface MediaGalleryProps {
-	/** Whether the gallery dialog is open */
 	open: boolean;
-	/** Callback when dialog open state changes */
 	onOpenChange: (open: boolean) => void;
-	/** Type of media to display/accept */
 	type: MediaType;
-	/** Callback when a file is selected (single select mode) */
 	onSelect?: (file: FileMetadata) => void;
-	/** Callback when files are selected (multi-select mode) */
 	onMultiSelect?: (files: FileMetadata[]) => void;
-	/** Enable multi-select mode */
 	multiSelect?: boolean;
-	/** Currently selected file URL (for highlighting in single mode) */
 	selectedUrl?: string | null;
-	/** Currently selected file URLs (for highlighting in multi mode) */
 	selectedUrls?: string[];
-	/** Dialog title override */
 	title?: string;
-	/** Items per page (default: 32) */
 	pageSize?: number;
 }
 
@@ -74,17 +82,11 @@ interface PaginationMeta {
 	hasMore: boolean;
 }
 
-/**
- * Get file extension from filename
- */
 function getFileExtension(filename: string): string {
 	const ext = filename.split(".").pop()?.toUpperCase() || "";
 	return ext;
 }
 
-/**
- * Get MIME type display name
- */
 function getMimeTypeDisplay(mimeType: string): string {
 	const mimeMap: Record<string, string> = {
 		"image/jpeg": "JPEG Image",
@@ -101,9 +103,6 @@ function getMimeTypeDisplay(mimeType: string): string {
 	return mimeMap[mimeType] || mimeType;
 }
 
-/**
- * Get document icon color based on MIME type
- */
 function getDocumentIconClass(mimeType: string): string {
 	if (mimeType === "application/pdf") {
 		return "text-red-500";
@@ -116,6 +115,128 @@ function getDocumentIconClass(mimeType: string): string {
 		return "text-blue-500";
 	}
 	return "text-muted-foreground";
+}
+
+// File Info Popover Component
+function FileInfoPopover({
+	file,
+	isImage,
+	onCopyUrl,
+}: {
+	file: FileMetadata;
+	isImage: boolean;
+	onCopyUrl: (url: string, e: React.MouseEvent) => void;
+}) {
+	return (
+		<PopoverContent className="w-72 p-0" align="start" side="left">
+			<div className="p-4 space-y-3">
+				{/* Preview */}
+				<div className="aspect-video rounded-md overflow-hidden bg-slate-100 border">
+					{isImage ? (
+						<ImageComponent
+							src={file.url}
+							alt={file.filename}
+							className="w-full h-full object-contain"
+							width="256"
+							height="144"
+						/>
+					) : (
+						<div className="w-full h-full flex items-center justify-center">
+							<FileText
+								className={cn(
+									"h-12 w-12",
+									getDocumentIconClass(file.mimeType)
+								)}
+							/>
+						</div>
+					)}
+				</div>
+
+				{/* Info */}
+				<div className="space-y-2 text-sm">
+					<div>
+						<p className="text-xs text-muted-foreground uppercase tracking-wide">
+							Filename
+						</p>
+						<p className="font-medium break-all text-xs">
+							{file.filename}
+						</p>
+					</div>
+
+					<div className="grid grid-cols-2 gap-2">
+						<div>
+							<p className="text-xs text-muted-foreground uppercase tracking-wide">
+								Size
+							</p>
+							<p className="font-medium text-xs">
+								{formatFileSize(file.size)}
+							</p>
+						</div>
+						<div>
+							<p className="text-xs text-muted-foreground uppercase tracking-wide">
+								Type
+							</p>
+							<p className="font-medium text-xs">
+								{getFileExtension(file.filename)}
+							</p>
+						</div>
+					</div>
+
+					<div>
+						<p className="text-xs text-muted-foreground uppercase tracking-wide">
+							Format
+						</p>
+						<p className="font-medium text-xs">
+							{getMimeTypeDisplay(file.mimeType)}
+						</p>
+					</div>
+
+					{file.createdAt && (
+						<div>
+							<p className="text-xs text-muted-foreground uppercase tracking-wide">
+								Uploaded
+							</p>
+							<p className="font-medium text-xs">
+								{new Date(file.createdAt).toLocaleDateString("sv-SE", {
+									year: "numeric",
+									month: "short",
+									day: "numeric",
+								})}
+							</p>
+						</div>
+					)}
+				</div>
+
+				{/* Actions */}
+				<div className="flex gap-2 pt-2 border-t">
+					<Button
+						variant="outline"
+						size="sm"
+						className="flex-1 text-xs"
+						onClick={(e) => onCopyUrl(file.url, e)}
+					>
+						<Copy className="h-3 w-3 mr-1" />
+						Copy URL
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						className="flex-1 text-xs"
+						asChild
+					>
+						<Link
+							href={file.url}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<ExternalLink className="h-3 w-3 mr-1" />
+							Open
+						</Link>
+					</Button>
+				</div>
+			</div>
+		</PopoverContent>
+	);
 }
 
 export function MediaGallery({
@@ -141,27 +262,51 @@ export function MediaGallery({
 	});
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
-	// Single select mode
 	const [selectedFile, setSelectedFile] = useState<FileMetadata | null>(null);
-	// Multi-select mode
 	const [selectedFiles, setSelectedFiles] = useState<FileMetadata[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
-	// Preview/detail panel file
-	const [previewFile, setPreviewFile] = useState<FileMetadata | null>(null);
+	const [previewDrawerOpen, setPreviewDrawerOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// Map type to folder
-	const folder: StorageFolder = type === "image" ? "images" : "documents";
+	// Search state
+	const [searchQuery, setSearchQuery] = useState("");
+	const [dateFilter, setDateFilter] = useState<string>("");
 
-	// Accepted types based on media type
+	const folder: StorageFolder = type === "image" ? "images" : "documents";
 	const acceptedTypes =
 		type === "image"
 			? ALLOWED_IMAGE_TYPES.join(",")
 			: ALLOWED_DOCUMENT_TYPES.join(",");
-
 	const maxFileSize =
 		type === "image" ? FILE_SIZE_LIMITS.IMAGE : FILE_SIZE_LIMITS.DOCUMENT;
+
+	// Filter files based on search and date
+	const filteredFiles = useMemo(() => {
+		let result = files;
+
+		// Filter by search query
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase();
+			result = result.filter((file) =>
+				file.filename.toLowerCase().includes(query)
+			);
+		}
+
+		// Filter by date
+		if (dateFilter) {
+			const filterDate = new Date(dateFilter);
+			filterDate.setHours(0, 0, 0, 0);
+			result = result.filter((file) => {
+				if (!file.createdAt) return false;
+				const fileDate = new Date(file.createdAt);
+				fileDate.setHours(0, 0, 0, 0);
+				return fileDate.getTime() === filterDate.getTime();
+			});
+		}
+
+		return result;
+	}, [files, searchQuery, dateFilter]);
 
 	// Fetch files - supports both initial load and load more
 	const fetchFiles = useCallback(
@@ -197,10 +342,8 @@ export function MediaGallery({
 				};
 
 				if (append) {
-					// Append new files to existing ones
 					setFiles((prev) => [...prev, ...newFiles]);
 				} else {
-					// Replace files (initial load or refresh)
 					setFiles(newFiles);
 				}
 
@@ -220,16 +363,17 @@ export function MediaGallery({
 		[folder, pageSize]
 	);
 
-	// Fetch files when dialog opens or tab changes
+	// Only fetch files when dialog opens (not on tab change to preserve selections)
 	useEffect(() => {
-		if (open && activeTab === "library") {
+		if (open) {
 			fetchFiles(1);
-			// Reset selections when opening
+			// Reset selections only when dialog opens
 			setSelectedFile(null);
 			setSelectedFiles([]);
-			setPreviewFile(null);
+			setSearchQuery("");
+			setDateFilter("");
 		}
-	}, [open, activeTab, fetchFiles]);
+	}, [open, fetchFiles]);
 
 	// Check if a file is selected (multi-select mode)
 	const isFileSelected = useCallback(
@@ -239,7 +383,7 @@ export function MediaGallery({
 		[selectedFiles]
 	);
 
-	// Check if file is already in the parent's selection (for highlighting)
+	// Check if file is already in the parent's selection
 	const isAlreadySelected = useCallback(
 		(file: FileMetadata): boolean => {
 			if (multiSelect) {
@@ -250,11 +394,10 @@ export function MediaGallery({
 		[multiSelect, selectedUrls, selectedUrl]
 	);
 
-	// Handle file click - different behavior for single vs multi select
+	// Handle file click
 	const handleFileClick = useCallback(
 		(file: FileMetadata) => {
 			if (multiSelect) {
-				// Toggle selection in multi-select mode
 				setSelectedFiles((prev) => {
 					const isSelected = prev.some((f) => f.url === file.url);
 					if (isSelected) {
@@ -263,12 +406,8 @@ export function MediaGallery({
 						return [...prev, file];
 					}
 				});
-				// Set preview file
-				setPreviewFile(file);
 			} else {
-				// Single select mode
 				setSelectedFile(file);
-				setPreviewFile(file);
 			}
 		},
 		[multiSelect]
@@ -296,12 +435,13 @@ export function MediaGallery({
 		onOpenChange,
 	]);
 
-	// Clear all selections (multi-select mode)
+	// Clear all selections
 	const handleClearSelection = useCallback(() => {
 		setSelectedFiles([]);
+		setSelectedFile(null);
 	}, []);
 
-	// Remove a single file from selection (multi-select mode)
+	// Remove a single file from selection
 	const handleRemoveFromSelection = useCallback((file: FileMetadata) => {
 		setSelectedFiles((prev) => prev.filter((f) => f.url !== file.url));
 	}, []);
@@ -321,10 +461,20 @@ export function MediaGallery({
 		}
 	}, [meta.hasMore, meta.page, isLoadingMore, fetchFiles]);
 
-	// Upload handling
-	const handleUpload = useCallback(
-		async (file: File) => {
-			// Validate file type
+	// Handle refresh - preserve selections
+	const handleRefresh = useCallback(() => {
+		fetchFiles(1);
+	}, [fetchFiles]);
+
+	// Clear search/filters
+	const handleClearFilters = useCallback(() => {
+		setSearchQuery("");
+		setDateFilter("");
+	}, []);
+
+	// Upload a single file
+	const uploadSingleFile = useCallback(
+		async (file: File): Promise<FileMetadata | null> => {
 			const isCorrectType =
 				type === "image"
 					? file.type.startsWith("image/")
@@ -336,16 +486,14 @@ export function MediaGallery({
 						? "Please select an image file"
 						: "Please select a document file"
 				);
-				return;
+				return null;
 			}
 
 			if (file.size > maxFileSize) {
 				const maxMB = Math.round(maxFileSize / (1024 * 1024));
 				toast.error(`File size exceeds ${maxMB}MB limit`);
-				return;
+				return null;
 			}
-
-			setIsUploading(true);
 
 			const formData = new FormData();
 			formData.append("file", file);
@@ -363,15 +511,8 @@ export function MediaGallery({
 					throw new Error(data.message || "Upload failed");
 				}
 
-				toast.success("File uploaded");
-
-				// Switch to library tab and refresh
-				setActiveTab("library");
-				fetchFiles(1);
-
-				// Auto-select the uploaded file
 				const uploadedFile = data.data as StorageFile;
-				const newFile: FileMetadata = {
+				return {
 					filename: uploadedFile.filename,
 					mimeType: uploadedFile.mimeType,
 					size: uploadedFile.size,
@@ -380,41 +521,90 @@ export function MediaGallery({
 					modifiedAt: uploadedFile.createdAt,
 					createdAt: uploadedFile.createdAt,
 				};
-
-				if (multiSelect) {
-					setSelectedFiles((prev) => [...prev, newFile]);
-				} else {
-					setSelectedFile(newFile);
-				}
-				setPreviewFile(newFile);
 			} catch (error) {
 				toast.error(
 					error instanceof Error ? error.message : "Upload failed"
 				);
-			} finally {
-				setIsUploading(false);
-				if (fileInputRef.current) {
-					fileInputRef.current.value = "";
-				}
+				return null;
 			}
 		},
-		[type, maxFileSize, folder, fetchFiles, multiSelect]
+		[type, maxFileSize, folder]
 	);
 
+	// Handle file input change
 	const handleFileInputChange = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
-			const files = e.target.files;
-			if (!files || files.length === 0) return;
-			// In multi-select mode, allow uploading multiple files
-			if (multiSelect) {
-				for (const file of Array.from(files)) {
-					await handleUpload(file);
+			const inputFiles = e.target.files;
+			if (!inputFiles || inputFiles.length === 0) return;
+
+			setIsUploading(true);
+
+			const filesToUpload = Array.from(inputFiles);
+			const uploadedFiles: FileMetadata[] = [];
+
+			for (const file of filesToUpload) {
+				const result = await uploadSingleFile(file);
+				if (result) {
+					uploadedFiles.push(result);
 				}
+			}
+
+			if (fileInputRef.current) {
+				fileInputRef.current.value = "";
+			}
+
+			setIsUploading(false);
+
+			if (uploadedFiles.length === 0) return;
+
+			toast.success(
+				uploadedFiles.length === 1
+					? "File uploaded"
+					: `${uploadedFiles.length} files uploaded`
+			);
+
+			setActiveTab("library");
+
+			// Fetch fresh files
+			const params = new URLSearchParams({
+				folder,
+				page: "1",
+				limit: pageSize.toString(),
+			});
+
+			try {
+				const response = await fetch(
+					`${STORAGE_API_ROUTES.LIST}?${params.toString()}`
+				);
+				const data = await response.json();
+
+				if (response.ok) {
+					const newFiles = data.data || [];
+					const responseMeta = data.meta || {
+						page: 1,
+						limit: pageSize,
+						total: 0,
+						totalPages: 0,
+					};
+
+					setFiles(newFiles);
+					setMeta({
+						...responseMeta,
+						hasMore: responseMeta.page < responseMeta.totalPages,
+					});
+				}
+			} catch {
+				await fetchFiles(1);
+			}
+
+			// Select uploaded files
+			if (multiSelect) {
+				setSelectedFiles((prev) => [...prev, ...uploadedFiles]);
 			} else {
-				await handleUpload(files[0]);
+				setSelectedFile(uploadedFiles[0]);
 			}
 		},
-		[handleUpload, multiSelect]
+		[uploadSingleFile, multiSelect, folder, pageSize, fetchFiles]
 	);
 
 	const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -435,18 +625,73 @@ export function MediaGallery({
 			e.stopPropagation();
 			setIsDragging(false);
 
-			const files = e.dataTransfer.files;
-			if (!files || files.length === 0) return;
+			const droppedFiles = e.dataTransfer.files;
+			if (!droppedFiles || droppedFiles.length === 0) return;
+
+			setIsUploading(true);
+
+			const filesToUpload = multiSelect
+				? Array.from(droppedFiles)
+				: [droppedFiles[0]];
+			const uploadedFiles: FileMetadata[] = [];
+
+			for (const file of filesToUpload) {
+				const result = await uploadSingleFile(file);
+				if (result) {
+					uploadedFiles.push(result);
+				}
+			}
+
+			setIsUploading(false);
+
+			if (uploadedFiles.length === 0) return;
+
+			toast.success(
+				uploadedFiles.length === 1
+					? "File uploaded"
+					: `${uploadedFiles.length} files uploaded`
+			);
+
+			setActiveTab("library");
+
+			const params = new URLSearchParams({
+				folder,
+				page: "1",
+				limit: pageSize.toString(),
+			});
+
+			try {
+				const response = await fetch(
+					`${STORAGE_API_ROUTES.LIST}?${params.toString()}`
+				);
+				const data = await response.json();
+
+				if (response.ok) {
+					const newFiles = data.data || [];
+					const responseMeta = data.meta || {
+						page: 1,
+						limit: pageSize,
+						total: 0,
+						totalPages: 0,
+					};
+
+					setFiles(newFiles);
+					setMeta({
+						...responseMeta,
+						hasMore: responseMeta.page < responseMeta.totalPages,
+					});
+				}
+			} catch {
+				await fetchFiles(1);
+			}
 
 			if (multiSelect) {
-				for (const file of Array.from(files)) {
-					await handleUpload(file);
-				}
+				setSelectedFiles((prev) => [...prev, ...uploadedFiles]);
 			} else {
-				await handleUpload(files[0]);
+				setSelectedFile(uploadedFiles[0]);
 			}
 		},
-		[handleUpload, multiSelect]
+		[uploadSingleFile, multiSelect, folder, pageSize, fetchFiles]
 	);
 
 	const isImage = type === "image";
@@ -459,136 +704,223 @@ export function MediaGallery({
 		: "Select Document";
 	const dialogTitle = title || defaultTitle;
 
-	// Selection count for footer
 	const selectionCount = multiSelect
 		? selectedFiles.length
 		: selectedFile
 		? 1
 		: 0;
 
+	const hasActiveFilters = searchQuery.trim() || dateFilter;
+
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
-				<DialogHeader>
-					<DialogTitle className="flex items-center gap-2">
-						{isImage ? (
-							<ImageIcon className="h-5 w-5" />
-						) : (
-							<FileText className="h-5 w-5" />
-						)}
-						{dialogTitle}
-					</DialogTitle>
-					<DialogDescription>
-						{multiSelect
-							? `Choose ${
-									isImage ? "images" : "documents"
-							  } from the library or upload new ones. Click to select/deselect.`
-							: isImage
-							? "Choose an existing image or upload a new one"
-							: "Choose an existing document or upload a new one"}
-					</DialogDescription>
-				</DialogHeader>
+		<>
+			<Dialog open={open} onOpenChange={onOpenChange}>
+				<DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
+					<DialogHeader>
+						<DialogTitle className="flex items-center gap-2">
+							{isImage ? (
+								<ImageIcon className="h-5 w-5" />
+							) : (
+								<FileText className="h-5 w-5" />
+							)}
+							{dialogTitle}
+						</DialogTitle>
+						<DialogDescription>
+							{multiSelect
+								? `Choose ${
+										isImage ? "images" : "documents"
+								  } from the library or upload new ones. Click to select/deselect.`
+								: isImage
+								? "Choose an existing image or upload a new one"
+								: "Choose an existing document or upload a new one"}
+						</DialogDescription>
+					</DialogHeader>
 
-				<Tabs
-					value={activeTab}
-					onValueChange={(v) => setActiveTab(v as "library" | "upload")}
-					className="flex-1 flex flex-col min-h-0"
-				>
-					<TabsList className="grid w-full grid-cols-2">
-						<TabsTrigger value="library">Media Library</TabsTrigger>
-						<TabsTrigger value="upload">Upload New</TabsTrigger>
-					</TabsList>
-
-					{/* Library Tab */}
-					<TabsContent
-						value="library"
-						className="flex-1 flex flex-col min-h-0 mt-4"
+					<Tabs
+						value={activeTab}
+						onValueChange={(v) => setActiveTab(v as "library" | "upload")}
+						className="flex-1 flex flex-col min-h-0"
 					>
-						<div className="flex items-center justify-between mb-4">
-							<p className="text-sm text-muted-foreground">
-								{meta.total} {isImage ? "images" : "documents"} in
-								library
-								{multiSelect && selectedFiles.length > 0 && (
-									<span className="ml-2 text-primary font-medium">
-										• {selectedFiles.length} selected
-									</span>
-								)}
-							</p>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => fetchFiles(meta.page)}
-								disabled={isLoading}
-							>
-								<RefreshCw
-									className={cn(
-										"h-4 w-4 mr-2",
-										isLoading && "animate-spin"
-									)}
-								/>
-								Refresh
-							</Button>
-						</div>
+						<TabsList className="grid w-full grid-cols-2">
+							<TabsTrigger value="library">Media Library</TabsTrigger>
+							<TabsTrigger value="upload">Upload New</TabsTrigger>
+						</TabsList>
 
-						{/* Main Content Area - Grid + Preview Panel */}
-						<div className="flex-1 flex gap-4 min-h-[350px]">
+						{/* Library Tab */}
+						<TabsContent
+							value="library"
+							className="flex-1 flex flex-col min-h-0 mt-4"
+						>
+							{/* Search and Filter Bar */}
+							<div className="flex flex-col sm:flex-row gap-3 mb-4">
+								<div className="relative flex-1">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+									<Input
+										placeholder={`Search ${
+											isImage ? "images" : "documents"
+										}...`}
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
+										className="pl-9 h-9"
+									/>
+									{searchQuery && (
+										<button
+											type="button"
+											onClick={() => setSearchQuery("")}
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+										>
+											<X className="h-4 w-4" />
+										</button>
+									)}
+								</div>
+
+								<div className="flex gap-2">
+									<div className="relative">
+										<Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+										<input
+											type="date"
+											value={dateFilter}
+											onChange={(e) => setDateFilter(e.target.value)}
+											className="h-9 w-40 pl-9 pr-3 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+										/>
+									</div>
+
+									{hasActiveFilters && (
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={handleClearFilters}
+											className="h-9 px-3 text-xs"
+										>
+											Clear
+										</Button>
+									)}
+
+									<Button
+										variant="outline"
+										size="icon"
+										onClick={handleRefresh}
+										disabled={isLoading}
+										className="h-9 w-9"
+									>
+										<RefreshCw
+											className={cn(
+												"h-4 w-4",
+												isLoading && "animate-spin"
+											)}
+										/>
+									</Button>
+								</div>
+							</div>
+
+							{/* Stats Bar */}
+							<div className="flex items-center justify-between mb-3">
+								<p className="text-sm text-muted-foreground">
+									{hasActiveFilters ? (
+										<>
+											{filteredFiles.length} of {meta.total}{" "}
+											{isImage ? "images" : "documents"}
+										</>
+									) : (
+										<>
+											{meta.total} {isImage ? "images" : "documents"}{" "}
+											in library
+										</>
+									)}
+									{multiSelect && selectedFiles.length > 0 && (
+										<span className="ml-2 text-primary font-medium">
+											• {selectedFiles.length} selected
+										</span>
+									)}
+								</p>
+
+								{/* Preview Selected Button */}
+								{multiSelect && selectedFiles.length > 0 && (
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => setPreviewDrawerOpen(true)}
+										className="h-8 text-xs gap-1.5"
+									>
+										<Eye className="h-3.5 w-3.5" />
+										Preview ({selectedFiles.length})
+									</Button>
+								)}
+							</div>
+
 							{/* File Grid */}
-							<div className="flex-1 overflow-auto">
+							<div className="flex-1 overflow-auto min-h-[300px]">
 								{isLoading ? (
 									<div className="flex items-center justify-center h-full">
 										<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
 									</div>
-								) : files.length === 0 ? (
+								) : filteredFiles.length === 0 ? (
 									<div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-										{isImage ? (
-											<ImageIcon className="h-12 w-12 mb-4" />
+										{hasActiveFilters ? (
+											<>
+												<Search className="h-12 w-12 mb-4 opacity-50" />
+												<p>No files match your search</p>
+												<Button
+													variant="ghost"
+													className="mt-2 text-primary"
+													onClick={handleClearFilters}
+												>
+													Clear filters
+												</Button>
+											</>
 										) : (
-											<FileIcon className="h-12 w-12 mb-4" />
+											<>
+												{isImage ? (
+													<ImageIcon className="h-12 w-12 mb-4" />
+												) : (
+													<FileIcon className="h-12 w-12 mb-4" />
+												)}
+												<p>No files found</p>
+												<Button
+													variant="ghost"
+													className="mt-2 text-primary underline-offset-4 hover:underline"
+													onClick={() => setActiveTab("upload")}
+												>
+													Upload your first{" "}
+													{isImage ? "image" : "document"}
+												</Button>
+											</>
 										)}
-										<p>No files found</p>
-										<Button
-											variant="ghost"
-											className="mt-2 text-primary underline-offset-4 hover:underline"
-											onClick={() => setActiveTab("upload")}
-										>
-											Upload your first{" "}
-											{isImage ? "image" : "document"}
-										</Button>
 									</div>
 								) : (
-									<div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-										{files.map((file) => {
+									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+										{filteredFiles.map((file) => {
 											const isSelected = multiSelect
 												? isFileSelected(file)
 												: selectedFile?.filename === file.filename;
 											const isCurrentlyInParent =
 												isAlreadySelected(file);
-											const isBeingPreviewed =
-												previewFile?.filename === file.filename;
 
 											return (
 												<div
 													key={file.filename}
 													onClick={() => handleFileClick(file)}
 													className={cn(
-														"group relative aspect-square rounded-lg border-2 overflow-hidden cursor-pointer transition-all",
+														"group relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all",
 														isSelected
-															? "border-primary ring-2 ring-primary/20"
-															: isBeingPreviewed
-															? "border-blue-400"
-															: "border-border hover:border-primary/50",
+															? "ring-2 ring-primary ring-offset-2"
+															: "hover:ring-1 hover:ring-primary/30",
 														isCurrentlyInParent &&
 															!isSelected &&
-															"border-green-500/50 bg-green-50/20"
+															"ring-1 ring-green-500/50",
+														!isSelected && "bg-black/5"
 													)}
 												>
 													{/* Preview */}
-													<div className="absolute inset-0 bg-muted">
+													<div className="absolute inset-0">
 														{isImage ? (
 															<ImageComponent
 																src={file.url}
 																alt={file.filename}
-																className="h-full w-full object-cover"
+																className={cn(
+																	"h-full w-full object-cover transition-opacity",
+																	!isSelected && "opacity-90"
+																)}
 																height={"150"}
 																width={"150"}
 															/>
@@ -610,10 +942,10 @@ export function MediaGallery({
 													{multiSelect && (
 														<div
 															className={cn(
-																"absolute top-2 left-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
+																"absolute top-2 left-2 w-5 h-5 rounded flex items-center justify-center transition-all",
 																isSelected
-																	? "bg-primary border-primary text-primary-foreground"
-																	: "bg-white/80 border-slate-300"
+																	? "bg-primary border-2 border-primary text-primary-foreground"
+																	: "bg-white/90 border-2 border-slate-300"
 															)}
 														>
 															{isSelected && (
@@ -629,20 +961,20 @@ export function MediaGallery({
 														</div>
 													)}
 
-													{/* Current selection badge (already in parent) */}
+													{/* Current selection badge */}
 													{isCurrentlyInParent && !isSelected && (
 														<div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
 															Added
 														</div>
 													)}
 
-													{/* Action buttons - always visible in top right (when no badge) */}
+													{/* Action buttons */}
 													{!isCurrentlyInParent && (
-														<div className="absolute top-1.5 right-1.5 flex flex-col gap-1">
+														<div className="absolute top-1.5 right-1.5 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 															<Button
 																variant="secondary"
 																size="icon"
-																className="h-6 w-6 bg-white/90 hover:bg-white shadow-sm"
+																className="h-6 w-6 bg-white/95 hover:bg-white shadow-sm"
 																onClick={(e) =>
 																	handleCopyUrl(file.url, e)
 																}
@@ -653,7 +985,7 @@ export function MediaGallery({
 															<Button
 																variant="secondary"
 																size="icon"
-																className="h-6 w-6 bg-white/90 hover:bg-white shadow-sm"
+																className="h-6 w-6 bg-white/95 hover:bg-white shadow-sm"
 																asChild
 															>
 																<Link
@@ -668,6 +1000,26 @@ export function MediaGallery({
 																	<ExternalLink className="h-3 w-3 text-black" />
 																</Link>
 															</Button>
+															<Popover>
+																<PopoverTrigger asChild>
+																	<Button
+																		variant="secondary"
+																		size="icon"
+																		className="h-6 w-6 bg-white/95 hover:bg-white shadow-sm"
+																		onClick={(e) =>
+																			e.stopPropagation()
+																		}
+																		title="File info"
+																	>
+																		<Info className="h-3 w-3 text-black" />
+																	</Button>
+																</PopoverTrigger>
+																<FileInfoPopover
+																	file={file}
+																	isImage={isImage}
+																	onCopyUrl={handleCopyUrl}
+																/>
+															</Popover>
 														</div>
 													)}
 
@@ -688,315 +1040,281 @@ export function MediaGallery({
 									</div>
 								)}
 							</div>
+						</TabsContent>
 
-							{/* Preview/Detail Panel */}
-							{previewFile && (
-								<div className="w-64 shrink-0 border rounded-lg p-4 bg-slate-50 space-y-4 overflow-hidden">
-									<div className="flex items-center justify-between">
-										<h4 className="text-sm font-medium flex items-center gap-1.5">
-											<Info className="h-4 w-4" />
-											File Details
-										</h4>
-										<Button
-											variant="ghost"
-											size="icon"
-											className="h-6 w-6"
-											onClick={() => setPreviewFile(null)}
-										>
-											<X className="h-4 w-4" />
-										</Button>
+						{/* Upload Tab */}
+						<TabsContent value="upload" className="flex-1 mt-4">
+							<input
+								ref={fileInputRef}
+								type="file"
+								accept={acceptedTypes}
+								onChange={handleFileInputChange}
+								className="hidden"
+								disabled={isUploading}
+								multiple={multiSelect}
+							/>
+
+							<div
+								onClick={() => fileInputRef.current?.click()}
+								onDragOver={handleDragOver}
+								onDragLeave={handleDragLeave}
+								onDrop={handleDrop}
+								className={cn(
+									"flex flex-col items-center justify-center gap-4 rounded-md border-2 border-dashed p-12 transition-colors cursor-pointer min-h-[300px]",
+									isDragging
+										? "border-primary bg-primary/5"
+										: "border-border hover:border-primary/50",
+									isUploading && "pointer-events-none opacity-50"
+								)}
+							>
+								{isUploading ? (
+									<>
+										<Loader2 className="h-12 w-12 animate-spin text-primary" />
+										<p className="text-sm text-muted-foreground">
+											Uploading...
+										</p>
+									</>
+								) : (
+									<>
+										<div className="rounded-full bg-muted p-4">
+											<Upload className="h-8 w-8 text-muted-foreground" />
+										</div>
+										<div className="text-center">
+											<p className="text-lg font-medium">
+												Drop{" "}
+												{isImage
+													? multiSelect
+														? "images"
+														: "image"
+													: multiSelect
+													? "documents"
+													: "document"}{" "}
+												here or click to browse
+											</p>
+											<p className="text-sm text-muted-foreground mt-2">
+												{isImage
+													? "Supports JPG, PNG, WebP, GIF (max 5MB)"
+													: "Supports PDF, DOC, DOCX (max 20MB)"}
+											</p>
+											{multiSelect && (
+												<p className="text-xs text-muted-foreground mt-1">
+													You can select multiple files
+												</p>
+											)}
+										</div>
+									</>
+								)}
+							</div>
+
+							{/* Show selected files count in upload tab */}
+							{multiSelect && selectedFiles.length > 0 && (
+								<div className="mt-4 p-3 bg-slate-50 rounded-md flex items-center justify-between">
+									<div className="flex items-center gap-2 text-sm">
+										<Grid3X3 className="h-4 w-4 text-primary" />
+										<span className="font-medium">
+											{selectedFiles.length} files selected
+										</span>
 									</div>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => setPreviewDrawerOpen(true)}
+										className="text-xs"
+									>
+										Preview Selection
+									</Button>
+								</div>
+							)}
+						</TabsContent>
+					</Tabs>
 
-									{/* Preview */}
-									<div className="aspect-video rounded-md overflow-hidden bg-white border">
+					{/* Footer */}
+					<DialogFooter className="border-t pt-3 mt-3">
+						<div className="flex items-center justify-between w-full gap-4">
+							{/* Left side - Stats, Load More, and selection info */}
+							<div className="flex items-center gap-2 text-sm text-muted-foreground">
+								<span className="text-xs">
+									{files.length}/{meta.total}
+								</span>
+								{meta.hasMore &&
+									activeTab === "library" &&
+									!hasActiveFilters && (
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={handleLoadMore}
+											disabled={isLoadingMore}
+											className="h-7 px-2 text-xs text-primary hover:text-primary border-1"
+										>
+											{isLoadingMore ? (
+												<Loader2 className="h-3 w-3 animate-spin" />
+											) : (
+												"Load more"
+											)}
+										</Button>
+									)}
+								{multiSelect && selectedFiles.length > 0 && (
+									<>
+										<span className="text-slate-300">|</span>
+										<button
+											type="button"
+											onClick={() => setPreviewDrawerOpen(true)}
+											className="text-primary hover:underline font-medium text-xs"
+										>
+											{selectedFiles.length} selected
+										</button>
+										<button
+											type="button"
+											onClick={handleClearSelection}
+											className="text-red-500 hover:text-red-600 text-xs"
+										>
+											Clear
+										</button>
+									</>
+								)}
+								{!multiSelect && selectedFile && (
+									<>
+										<span className="text-slate-300">|</span>
+										<span className="text-primary font-medium truncate max-w-[120px] text-xs">
+											{selectedFile.filename}
+										</span>
+									</>
+								)}
+							</div>
+
+							{/* Action Buttons */}
+							<div className="flex gap-2 shrink-0">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => onOpenChange(false)}
+								>
+									Cancel
+								</Button>
+								<Button
+									size="sm"
+									onClick={handleConfirmSelect}
+									disabled={selectionCount === 0}
+								>
+									{multiSelect
+										? `Select (${selectionCount})`
+										: "Select"}
+								</Button>
+							</div>
+						</div>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Preview Drawer for Selected Images */}
+			<Drawer
+				open={previewDrawerOpen}
+				onOpenChange={setPreviewDrawerOpen}
+				direction="bottom"
+			>
+				<DrawerContent className="max-h-[85vh]">
+					<DrawerHeader className="border-b">
+						<div className="flex items-center justify-between">
+							<div>
+								<DrawerTitle className="flex items-center gap-2">
+									<Eye className="h-5 w-5" />
+									Selected {isImage ? "Images" : "Documents"} (
+									{selectedFiles.length})
+								</DrawerTitle>
+								<DrawerDescription>
+									Review your selection before confirming
+								</DrawerDescription>
+							</div>
+							<DrawerClose asChild>
+								<Button variant="ghost" size="icon">
+									<X className="h-5 w-5" />
+								</Button>
+							</DrawerClose>
+						</div>
+					</DrawerHeader>
+
+					<div className="p-4 overflow-auto">
+						{selectedFiles.length === 0 ? (
+							<div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+								<ImageIcon className="h-12 w-12 mb-4 opacity-50" />
+								<p>No files selected</p>
+							</div>
+						) : (
+							<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+								{selectedFiles.map((file) => (
+									<div
+										key={file.url}
+										className="group relative aspect-square rounded-md overflow-hidden border bg-slate-50"
+									>
 										{isImage ? (
 											<ImageComponent
-												src={previewFile.url}
-												alt={previewFile.filename}
-												className="w-full h-full object-contain"
-												width="256"
-												height="144"
+												src={file.url}
+												alt={file.filename}
+												className="h-full w-full object-cover"
+												height="200"
+												width="200"
 											/>
 										) : (
-											<div className="w-full h-full flex items-center justify-center bg-slate-100">
+											<div className="flex h-full w-full items-center justify-center">
 												<FileText
 													className={cn(
 														"h-12 w-12",
-														getDocumentIconClass(
-															previewFile.mimeType
-														)
+														getDocumentIconClass(file.mimeType)
 													)}
 												/>
 											</div>
 										)}
-									</div>
 
-									{/* File Info */}
-									<div className="space-y-3 text-sm">
-										<div>
-											<p className="text-xs text-muted-foreground uppercase tracking-wide">
-												Filename
+										{/* Remove button */}
+										<button
+											type="button"
+											onClick={() => handleRemoveFromSelection(file)}
+											className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+											title="Remove from selection"
+										>
+											<X className="h-4 w-4" />
+										</button>
+
+										{/* File info overlay */}
+										<div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-2 pt-4">
+											<p className="text-white text-xs font-medium truncate">
+												{file.filename}
 											</p>
-											<p className="font-medium break-all">
-												{previewFile.filename}
+											<p className="text-white/70 text-[10px]">
+												{formatFileSize(file.size)}
 											</p>
-										</div>
-
-										<div className="grid grid-cols-2 gap-3">
-											<div>
-												<p className="text-xs text-muted-foreground uppercase tracking-wide">
-													Size
-												</p>
-												<p className="font-medium">
-													{formatFileSize(previewFile.size)}
-												</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground uppercase tracking-wide">
-													Type
-												</p>
-												<p className="font-medium">
-													{getFileExtension(previewFile.filename)}
-												</p>
-											</div>
-										</div>
-
-										<div>
-											<p className="text-xs text-muted-foreground uppercase tracking-wide">
-												Format
-											</p>
-											<p className="font-medium text-xs">
-												{getMimeTypeDisplay(previewFile.mimeType)}
-											</p>
-										</div>
-
-										{previewFile.createdAt && (
-											<div>
-												<p className="text-xs text-muted-foreground uppercase tracking-wide">
-													Uploaded
-												</p>
-												<p className="font-medium text-xs">
-													{new Date(
-														previewFile.createdAt
-													).toLocaleDateString("sv-SE", {
-														year: "numeric",
-														month: "short",
-														day: "numeric",
-													})}
-												</p>
-											</div>
-										)}
-
-										{/* Actions */}
-										<div className="flex gap-2 pt-2">
-											<Button
-												variant="outline"
-												size="sm"
-												className="flex-1 text-xs"
-												onClick={(e) =>
-													handleCopyUrl(previewFile.url, e)
-												}
-											>
-												<Copy className="h-3 w-3 mr-1" />
-												Copy URL
-											</Button>
-											<Button
-												variant="outline"
-												size="sm"
-												className="flex-1 text-xs"
-												asChild
-											>
-												<Link
-													href={previewFile.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													<ExternalLink className="h-3 w-3 mr-1" />
-													Open
-												</Link>
-											</Button>
 										</div>
 									</div>
-								</div>
-							)}
-						</div>
-
-						{/* Load More */}
-						{meta.hasMore && (
-							<div className="flex flex-col items-center gap-2 pt-4 border-t mt-4">
-								<Button
-									variant="outline"
-									onClick={handleLoadMore}
-									disabled={isLoadingMore}
-									className="min-w-[140px]"
-								>
-									{isLoadingMore ? (
-										<>
-											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-											Loading...
-										</>
-									) : (
-										"Load More"
-									)}
-								</Button>
-								<span className="text-xs text-muted-foreground">
-									Showing {files.length} of {meta.total}
-								</span>
+								))}
 							</div>
 						)}
-					</TabsContent>
+					</div>
 
-					{/* Upload Tab */}
-					<TabsContent value="upload" className="flex-1 mt-4">
-						<input
-							ref={fileInputRef}
-							type="file"
-							accept={acceptedTypes}
-							onChange={handleFileInputChange}
-							className="hidden"
-							disabled={isUploading}
-							multiple={multiSelect}
-						/>
-
-						<div
-							onClick={() => fileInputRef.current?.click()}
-							onDragOver={handleDragOver}
-							onDragLeave={handleDragLeave}
-							onDrop={handleDrop}
-							className={cn(
-								"flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-12 transition-colors cursor-pointer min-h-[300px]",
-								isDragging
-									? "border-primary bg-primary/5"
-									: "border-border hover:border-primary/50",
-								isUploading && "pointer-events-none opacity-50"
-							)}
+					<div className="p-4 border-t bg-slate-50 flex items-center justify-between gap-4">
+						<Button
+							variant="outline"
+							onClick={handleClearSelection}
+							className="text-red-600 hover:text-red-700 hover:bg-red-50"
 						>
-							{isUploading ? (
-								<>
-									<Loader2 className="h-12 w-12 animate-spin text-primary" />
-									<p className="text-sm text-muted-foreground">
-										Uploading...
-									</p>
-								</>
-							) : (
-								<>
-									<div className="rounded-full bg-muted p-4">
-										<Upload className="h-8 w-8 text-muted-foreground" />
-									</div>
-									<div className="text-center">
-										<p className="text-lg font-medium">
-											Drop{" "}
-											{isImage
-												? multiSelect
-													? "images"
-													: "image"
-												: multiSelect
-												? "documents"
-												: "document"}{" "}
-											here or click to browse
-										</p>
-										<p className="text-sm text-muted-foreground mt-2">
-											{isImage
-												? "Supports JPG, PNG, WebP, GIF (max 5MB)"
-												: "Supports PDF, DOC, DOCX (max 20MB)"}
-										</p>
-										{multiSelect && (
-											<p className="text-xs text-muted-foreground mt-1">
-												You can select multiple files
-											</p>
-										)}
-									</div>
-								</>
-							)}
-						</div>
-					</TabsContent>
-				</Tabs>
-
-				{/* Footer with selection info */}
-				<DialogFooter className="border-t pt-4 mt-4">
-					<div className="flex items-center justify-between w-full gap-4">
-						{/* Selection Preview */}
-						<div className="flex-1 min-w-0">
-							{multiSelect ? (
-								// Multi-select mode footer
-								selectedFiles.length > 0 ? (
-									<div className="flex items-center gap-2">
-										<div className="flex items-center gap-1 flex-wrap max-w-[400px]">
-											{selectedFiles.slice(0, 3).map((file) => (
-												<div
-													key={file.url}
-													className="flex items-center gap-1 bg-slate-100 rounded px-2 py-1 text-xs"
-												>
-													<span className="truncate max-w-[100px]">
-														{file.filename}
-													</span>
-													<button
-														type="button"
-														onClick={() =>
-															handleRemoveFromSelection(file)
-														}
-														className="text-slate-500 hover:text-red-500"
-													>
-														<X className="h-3 w-3" />
-													</button>
-												</div>
-											))}
-											{selectedFiles.length > 3 && (
-												<span className="text-xs text-muted-foreground">
-													+{selectedFiles.length - 3} more
-												</span>
-											)}
-										</div>
-										<Button
-											variant="ghost"
-											size="sm"
-											onClick={handleClearSelection}
-											className="text-xs shrink-0"
-										>
-											Clear all
-										</Button>
-									</div>
-								) : (
-									<p className="text-sm text-muted-foreground">
-										Click images to select them
-									</p>
-								)
-							) : (
-								// Single select mode footer
-								selectedFile && (
-									<div className="flex items-center gap-2 text-sm text-muted-foreground">
-										<Check className="h-4 w-4 text-primary" />
-										<span className="truncate max-w-[200px]">
-											{selectedFile.filename}
-										</span>
-										<span>({formatFileSize(selectedFile.size)})</span>
-									</div>
-								)
-							)}
-						</div>
-
-						{/* Action Buttons */}
-						<div className="flex gap-2 shrink-0">
+							Clear All
+						</Button>
+						<div className="flex gap-2">
+							<DrawerClose asChild>
+								<Button variant="outline">Back to Gallery</Button>
+							</DrawerClose>
 							<Button
-								variant="outline"
-								onClick={() => onOpenChange(false)}
+								onClick={() => {
+									setPreviewDrawerOpen(false);
+									handleConfirmSelect();
+								}}
+								disabled={selectedFiles.length === 0}
 							>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleConfirmSelect}
-								disabled={selectionCount === 0}
-							>
-								{multiSelect
-									? `Select ${
-											selectionCount > 0 ? `(${selectionCount})` : ""
-									  } ${isImage ? "Images" : "Documents"}`
-									: `Select ${isImage ? "Image" : "Document"}`}
+								Confirm Selection ({selectedFiles.length})
 							</Button>
 						</div>
 					</div>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
+				</DrawerContent>
+			</Drawer>
+		</>
 	);
 }

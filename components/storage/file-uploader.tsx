@@ -89,7 +89,7 @@ export function FileUploader({
 	/** Validate a single file */
 	const validateFile = useCallback(
 		(file: File): string | null => {
-			const isImage = file.type.startsWith("image/");
+			const isImage = file.type.startsWith("image/") || file.type === "image/svg+xml";
 			const isDocument =
 				file.type === "application/pdf" ||
 				file.type === "application/msword" ||
@@ -426,9 +426,9 @@ export function FileUploader({
 					</p>
 					<p className="text-xs text-muted-foreground mt-1">
 						{folder === "images"
-							? "JPG, PNG, WebP, GIF (max 5MB each)"
+							? "JPG, PNG, WebP, GIF, SVG (max 15MB each)"
 							: folder === "documents"
-								? "PDF, DOC, DOCX (max 20MB each)"
+								? "PDF, DOC, DOCX (max 100MB each)"
 								: "Images or documents"}
 						{multiple && " • Multiple files supported"}
 					</p>
