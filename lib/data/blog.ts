@@ -66,9 +66,10 @@ function convertToArticle(post: IBlogPost): Article {
  */
 export async function getAllArticles(): Promise<Article[]> {
 	try {
+		// Fetch all published posts (use high limit to get all)
 		const result = await blogPostService.getPublishedPosts({
 			page: 1,
-			limit: 9,
+			limit: 1000, // High limit to fetch all posts
 			sort: "-publishedAt",
 		});
 

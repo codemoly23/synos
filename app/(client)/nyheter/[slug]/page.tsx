@@ -11,6 +11,7 @@ import { NyheterDetailHero } from "../_components/nyheter-detail-hero";
 import { NyheterContent } from "../_components/nyheter-content";
 import { NyheterRelated } from "../_components/nyheter-related";
 import { BlogComments } from "../../blogg/_components/blog-comments";
+// import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
 /**
  * Nyheter Detail Page
@@ -171,6 +172,8 @@ export default async function NyheterDetailPage({
 			<NyheterDetailHero article={article} basePath="/nyheter" />
 
 			<NyheterContent article={article} basePath="/nyheter" />
+
+			{/* Customer Reviews - Temporarily disabled */}
 
 			<BlogComments postId={article.id} />
 

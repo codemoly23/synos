@@ -34,6 +34,14 @@ function parseSortString(sort: string): Record<string, 1 | -1> {
 }
 
 /**
+ * Escape special regex characters in a string
+ * This prevents search terms with special chars from breaking the query
+ */
+function escapeRegex(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Blog Post Repository
  * Extends BaseRepository with blog post-specific operations
  */
@@ -190,14 +198,15 @@ class BlogPostRepository extends BaseRepository<IBlogPost> {
 
 			const filter: Record<string, unknown> = {};
 
-			// Text search
+			// Text search with escaped regex for safety
 			if (search && search.trim()) {
-				const searchTerm = search.trim();
+				const searchTerm = escapeRegex(search.trim());
 				filter.$or = [
 					{ title: { $regex: searchTerm, $options: "i" } },
 					{ excerpt: { $regex: searchTerm, $options: "i" } },
 					{ content: { $regex: searchTerm, $options: "i" } },
 					{ slug: { $regex: searchTerm, $options: "i" } },
+					{ tags: { $regex: searchTerm, $options: "i" } },
 				];
 			}
 

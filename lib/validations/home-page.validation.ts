@@ -217,6 +217,7 @@ export const sectionVisibilitySchema = z.object({
 	about: z.boolean(),
 	testimonials: z.boolean(),
 	cta: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 /**

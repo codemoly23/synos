@@ -192,6 +192,7 @@ export interface ISectionVisibility {
 	about: boolean;
 	testimonials: boolean;
 	cta: boolean;
+	richContent: boolean;
 }
 
 /**
@@ -236,6 +237,9 @@ export interface IHomePage extends Document {
 
 	// CTA Section
 	ctaSection: ICtaSection;
+
+	// Rich Content (HTML from text editor)
+	richContent?: string;
 
 	// SEO
 	seo: IHomePageSeo;
@@ -503,6 +507,7 @@ const SectionVisibilitySchema = new Schema<ISectionVisibility>(
 		about: { type: Boolean, default: true },
 		testimonials: { type: Boolean, default: true },
 		cta: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: false },
 	},
 	{ _id: false }
 );
@@ -525,6 +530,7 @@ const HomePageSchema = new Schema<IHomePage>(
 				about: true,
 				testimonials: true,
 				cta: true,
+				richContent: false,
 			},
 		},
 		hero: {
@@ -558,6 +564,10 @@ const HomePageSchema = new Schema<IHomePage>(
 		ctaSection: {
 			type: CtaSectionSchema,
 			default: {},
+		},
+		richContent: {
+			type: String,
+			default: "",
 		},
 		seo: {
 			type: HomePageSeoSchema,

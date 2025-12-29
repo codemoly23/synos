@@ -15,6 +15,7 @@ import {
 	Settings,
 	type LucideIcon,
 } from "lucide-react";
+import { PreviewEditor } from "@/components/common/TextEditor";
 
 // Icon mapping
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -54,10 +55,12 @@ export default async function AboutPage() {
 		contactSection: true,
 		featureCards: true,
 		companyInfo: true,
+		richContent: true,
 	};
 
 	// Check if we have content to display
 	const hasHero = aboutPage.hero?.title || aboutPage.hero?.subtitle;
+	const hasRichContent = aboutPage.richContent && aboutPage.richContent.trim().length > 0;
 	const hasContentSections =
 		aboutPage.contentSections &&
 		aboutPage.contentSections.filter((s) => s.title || s.content).length > 0;
@@ -87,6 +90,24 @@ export default async function AboutPage() {
 					)}
 				</div>
 			)}
+
+			{/* Rich Content (from Text Editor) */}
+			{visibility.richContent && hasRichContent && (
+				<div className="mb-16 prose prose-lg max-w-none">
+					<PreviewEditor>{aboutPage.richContent!}</PreviewEditor>
+				</div>
+			)}
+
+			{/* Reco Reviews Widget */}
+			<div className="mb-16">
+				<iframe
+					src="https://widget.reco.se/v2/widget/4026137?mode=HORIZONTAL_QUOTE&inverted=false&border=true"
+					style={{ width: "100%", border: 0, display: "block", overflow: "hidden" }}
+					height={225}
+					title="Reco Reviews"
+					loading="lazy"
+				/>
+			</div>
 
 			{/* Content Sections */}
 			{visibility.contentSections && hasContentSections && (

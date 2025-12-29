@@ -11,6 +11,7 @@ export interface ITeamSectionVisibility {
 	values: boolean;
 	joinUs: boolean;
 	contact: boolean;
+	richContent: boolean;
 }
 
 const TeamSectionVisibilitySchema = new Schema<ITeamSectionVisibility>(
@@ -21,6 +22,7 @@ const TeamSectionVisibilitySchema = new Schema<ITeamSectionVisibility>(
 		values: { type: Boolean, default: true },
 		joinUs: { type: Boolean, default: true },
 		contact: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: false },
 	},
 	{ _id: false }
 );
@@ -204,6 +206,7 @@ export interface ITeamPage extends Document {
 	valuesSection: ITeamValuesSection;
 	joinUs: ITeamJoinUsSection;
 	contact: ITeamContactSection;
+	richContent?: string;
 	seo: ITeamPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -220,6 +223,7 @@ const TeamPageSchema = new Schema<ITeamPage>(
 				values: true,
 				joinUs: true,
 				contact: true,
+				richContent: false,
 			},
 		},
 		hero: { type: TeamHeroSectionSchema, default: {} },
@@ -228,6 +232,7 @@ const TeamPageSchema = new Schema<ITeamPage>(
 		valuesSection: { type: TeamValuesSectionSchema, default: {} },
 		joinUs: { type: TeamJoinUsSectionSchema, default: {} },
 		contact: { type: TeamContactSectionSchema, default: {} },
+		richContent: { type: String, default: "" },
 		seo: { type: TeamPageSeoSchema, default: {} },
 	},
 	{

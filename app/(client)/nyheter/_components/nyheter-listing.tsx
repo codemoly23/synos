@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Article } from "@/types/article";
 import { NyheterHero } from "./nyheter-hero";
 import { NyheterCard } from "./nyheter-card";
 import { NyheterSidebar } from "./nyheter-sidebar";
 import { staggerContainer } from "@/lib/animations";
+
+const ARTICLES_PER_PAGE = 9;
 
 interface NyheterListingProps {
 	articles: Article[];
@@ -31,6 +34,10 @@ export function NyheterListing({
 }: NyheterListingProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+	const [page, setPage] = useQueryState(
+		"page",
+		parseAsInteger.withDefault(1)
+	);
 
 	const filteredArticles = useMemo(() => {
 		let filtered = articles;
@@ -55,6 +62,41 @@ export function NyheterListing({
 		return filtered;
 	}, [articles, selectedCategory, searchQuery]);
 
+	// Pagination calculations
+	const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+
+	// Ensure page is within valid range
+	const currentPage = Math.min(Math.max(1, page), Math.max(1, totalPages));
+
+	// Update URL if page is out of bounds
+	useEffect(() => {
+		if (page !== currentPage && totalPages > 0) {
+			setPage(currentPage);
+		}
+	}, [page, currentPage, totalPages, setPage]);
+
+	const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+	const paginatedArticles = filteredArticles.slice(
+		startIndex,
+		startIndex + ARTICLES_PER_PAGE
+	);
+
+	// Reset to page 1 when filters change
+	const handleCategoryFilter = (category: string | null) => {
+		setSelectedCategory(category);
+		setPage(1);
+	};
+
+	const handleSearch = (query: string) => {
+		setSearchQuery(query);
+		setPage(1);
+	};
+
+	const handlePageChange = (newPage: number) => {
+		setPage(newPage);
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 	const displayRecentArticles = recentArticles || articles.slice(0, 5);
 
 	return (
@@ -70,8 +112,8 @@ export function NyheterListing({
 							<NyheterSidebar
 								categories={categories}
 								recentArticles={displayRecentArticles}
-								onSearch={setSearchQuery}
-								onCategoryFilter={setSelectedCategory}
+								onSearch={handleSearch}
+								onCategoryFilter={handleCategoryFilter}
 								selectedCategory={selectedCategory}
 								basePath={basePath}
 							/>
@@ -84,9 +126,9 @@ export function NyheterListing({
 								<p className="text-sm text-muted-foreground">
 									Visar{" "}
 									<span className="font-semibold text-secondary">
-										{filteredArticles.length}
+										{startIndex + 1}-{Math.min(startIndex + ARTICLES_PER_PAGE, filteredArticles.length)}
 									</span>{" "}
-									av {articles.length} artiklar
+									av {filteredArticles.length} artiklar
 									{selectedCategory && (
 										<span>
 											{" "}
@@ -111,8 +153,8 @@ export function NyheterListing({
 									<MobileFilters
 										categories={categories}
 										recentArticles={displayRecentArticles}
-										onSearch={setSearchQuery}
-										onCategoryFilter={setSelectedCategory}
+										onSearch={handleSearch}
+										onCategoryFilter={handleCategoryFilter}
 										selectedCategory={selectedCategory}
 										basePath={basePath}
 									/>
@@ -120,14 +162,15 @@ export function NyheterListing({
 							</div>
 
 							{/* Articles Grid */}
-							{filteredArticles.length > 0 ? (
+							{paginatedArticles.length > 0 ? (
 								<motion.div
+									key={currentPage}
 									initial="initial"
 									animate="animate"
 									variants={staggerContainer}
 									className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
 								>
-									{filteredArticles.map((article, index) => (
+									{paginatedArticles.map((article, index) => (
 										<NyheterCard
 											key={article.id}
 											article={article}
@@ -146,6 +189,15 @@ export function NyheterListing({
 										annan kategori.
 									</p>
 								</div>
+							)}
+
+							{/* Pagination */}
+							{totalPages > 1 && (
+								<Pagination
+									currentPage={currentPage}
+									totalPages={totalPages}
+									onPageChange={handlePageChange}
+								/>
 							)}
 						</div>
 					</div>
@@ -256,5 +308,126 @@ function MobileFilters({
 				</>
 			)}
 		</>
+	);
+}
+
+/**
+ * Pagination Component
+ */
+function Pagination({
+	currentPage,
+	totalPages,
+	onPageChange,
+}: {
+	currentPage: number;
+	totalPages: number;
+	onPageChange: (page: number) => void;
+}) {
+	const getVisiblePages = () => {
+		const pages: (number | "ellipsis")[] = [];
+		const showEllipsisThreshold = 7;
+
+		if (totalPages <= showEllipsisThreshold) {
+			for (let i = 1; i <= totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			pages.push(1);
+
+			if (currentPage > 3) {
+				pages.push("ellipsis");
+			}
+
+			const start = Math.max(2, currentPage - 1);
+			const end = Math.min(totalPages - 1, currentPage + 1);
+
+			for (let i = start; i <= end; i++) {
+				pages.push(i);
+			}
+
+			if (currentPage < totalPages - 2) {
+				pages.push("ellipsis");
+			}
+
+			pages.push(totalPages);
+		}
+
+		return pages;
+	};
+
+	return (
+		<nav
+			className="mt-10 flex items-center justify-center gap-2"
+			aria-label="Pagination"
+		>
+			<button
+				onClick={() => onPageChange(currentPage - 1)}
+				disabled={currentPage === 1}
+				className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/50 bg-white text-secondary transition-colors hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+				aria-label="Föregående sida"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				>
+					<polyline points="15 18 9 12 15 6" />
+				</svg>
+			</button>
+
+			<div className="flex items-center gap-1">
+				{getVisiblePages().map((page, index) =>
+					page === "ellipsis" ? (
+						<span
+							key={`ellipsis-${index}`}
+							className="flex h-10 w-10 items-center justify-center text-muted-foreground"
+						>
+							...
+						</span>
+					) : (
+						<button
+							key={page}
+							onClick={() => onPageChange(page)}
+							className={`inline-flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+								currentPage === page
+									? "bg-primary text-white"
+									: "border border-border/50 bg-white text-secondary hover:bg-slate-50"
+							}`}
+							aria-label={`Gå till sida ${page}`}
+							aria-current={currentPage === page ? "page" : undefined}
+						>
+							{page}
+						</button>
+					)
+				)}
+			</div>
+
+			<button
+				onClick={() => onPageChange(currentPage + 1)}
+				disabled={currentPage === totalPages}
+				className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/50 bg-white text-secondary transition-colors hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+				aria-label="Nästa sida"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				>
+					<polyline points="9 18 15 12 9 6" />
+				</svg>
+			</button>
+		</nav>
 	);
 }

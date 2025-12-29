@@ -12,6 +12,7 @@ export interface ITrainingSectionVisibility {
 	support: boolean;
 	inquiryForm: boolean;
 	resources: boolean;
+	richContent: boolean;
 }
 
 const TrainingSectionVisibilitySchema =
@@ -24,6 +25,7 @@ const TrainingSectionVisibilitySchema =
 			support: { type: Boolean, default: true },
 			inquiryForm: { type: Boolean, default: true },
 			resources: { type: Boolean, default: true },
+			richContent: { type: Boolean, default: false },
 		},
 		{ _id: false }
 	);
@@ -224,6 +226,7 @@ export interface ITrainingPage extends Document {
 	supportSection: ITrainingSupportSection;
 	inquirySection: ITrainingInquirySection;
 	resourcesSection: ITrainingResourcesSection;
+	richContent?: string;
 	seo: ITrainingPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -241,6 +244,7 @@ const TrainingPageSchema = new Schema<ITrainingPage>(
 				support: true,
 				inquiryForm: true,
 				resources: true,
+				richContent: false,
 			},
 		},
 		hero: { type: TrainingHeroSectionSchema, default: {} },
@@ -250,6 +254,7 @@ const TrainingPageSchema = new Schema<ITrainingPage>(
 		supportSection: { type: TrainingSupportSectionSchema, default: {} },
 		inquirySection: { type: TrainingInquirySectionSchema, default: {} },
 		resourcesSection: { type: TrainingResourcesSectionSchema, default: {} },
+		richContent: { type: String, default: "" },
 		seo: { type: TrainingPageSeoSchema, default: {} },
 	},
 	{

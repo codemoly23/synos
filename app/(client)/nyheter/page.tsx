@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getAllArticles, getAllCategories } from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
 import { NyheterListing } from "./_components/nyheter-listing";
+// import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
 /**
  * Nyheter (News) Listing Page
@@ -108,6 +109,8 @@ export default async function NyheterPage() {
 				basePath="/nyheter"
 				pageTitle="Nyheter"
 			/>
+
+			{/* Trustindex Reviews Widget - Temporarily disabled */}
 		</>
 	);
 }

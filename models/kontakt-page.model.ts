@@ -69,11 +69,26 @@ export interface IKontaktPageSeo {
 }
 
 /**
+ * Section Visibility interface
+ */
+export interface IKontaktSectionVisibility {
+	hero: boolean;
+	contactCards: boolean;
+	formSection: boolean;
+	officeSection: boolean;
+	faqSection: boolean;
+	richContent: boolean;
+}
+
+/**
  * KontaktPage interface extending Mongoose Document
  * Singleton model for contact page content
  */
 export interface IKontaktPage extends Document {
 	_id: mongoose.Types.ObjectId;
+
+	// Section Visibility
+	sectionVisibility: IKontaktSectionVisibility;
 
 	// Hero Section
 	hero: IKontaktHero;
@@ -91,6 +106,9 @@ export interface IKontaktPage extends Document {
 
 	// FAQ Section
 	faqSection: IKontaktFaqSection;
+
+	// Rich Content (HTML from text editor)
+	richContent?: string;
 
 	// SEO
 	seo: IKontaktPageSeo;
@@ -189,11 +207,37 @@ const KontaktPageSeoSchema = new Schema<IKontaktPageSeo>(
 );
 
 /**
+ * Section Visibility sub-schema
+ */
+const KontaktSectionVisibilitySchema = new Schema<IKontaktSectionVisibility>(
+	{
+		hero: { type: Boolean, default: true },
+		contactCards: { type: Boolean, default: true },
+		formSection: { type: Boolean, default: true },
+		officeSection: { type: Boolean, default: true },
+		faqSection: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: false },
+	},
+	{ _id: false }
+);
+
+/**
  * KontaktPage Schema
  * Singleton model - only one document should exist
  */
 const KontaktPageSchema = new Schema<IKontaktPage>(
 	{
+		sectionVisibility: {
+			type: KontaktSectionVisibilitySchema,
+			default: {
+				hero: true,
+				contactCards: true,
+				formSection: true,
+				officeSection: true,
+				faqSection: true,
+				richContent: false,
+			},
+		},
 		hero: {
 			type: KontaktHeroSchema,
 			required: true,
@@ -286,6 +330,10 @@ const KontaktPageSchema = new Schema<IKontaktPage>(
 					},
 				],
 			},
+		},
+		richContent: {
+			type: String,
+			default: "",
 		},
 		seo: {
 			type: KontaktPageSeoSchema,

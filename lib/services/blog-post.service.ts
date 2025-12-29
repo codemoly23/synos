@@ -13,6 +13,7 @@ import {
 	generateUniqueSlug,
 	sanitizeHtml,
 	isValidSlug,
+	normalizeSlug,
 } from "@/lib/utils/product-helpers";
 import type { IBlogPost, BlogPublishType } from "@/models/blog-post.model";
 import type {
@@ -120,7 +121,7 @@ class BlogPostService {
 		authorId: string
 	): Promise<IBlogPost> {
 		try {
-			// Generate slug if not provided
+			// Generate slug if not provided, or normalize if provided
 			let slug = data.slug;
 			if (!slug) {
 				const baseSlug = generateSlug(data.title);
@@ -128,6 +129,8 @@ class BlogPostService {
 					blogPostRepository.slugExists(s)
 				);
 			} else {
+				// Normalize slug (handles special chars like ₂ → 2)
+				slug = normalizeSlug(slug);
 				// Check if provided slug already exists
 				if (await blogPostRepository.slugExists(slug)) {
 					throw new ConflictError(`Slug "${slug}" already exists`);
@@ -238,11 +241,13 @@ class BlogPostService {
 				throw new NotFoundError("Blog post not found");
 			}
 
-			// If slug is being changed, check uniqueness
-			if (data.slug && data.slug !== post.slug) {
-				if (await blogPostRepository.slugExists(data.slug, id)) {
-					throw new ConflictError(`Slug "${data.slug}" already exists`);
+			// Normalize and check slug if being changed
+			let normalizedSlug = data.slug ? normalizeSlug(data.slug) : undefined;
+			if (normalizedSlug && normalizedSlug !== post.slug) {
+				if (await blogPostRepository.slugExists(normalizedSlug, id)) {
+					throw new ConflictError(`Slug "${normalizedSlug}" already exists`);
 				}
+				data = { ...data, slug: normalizedSlug };
 			}
 
 			// Validate categories exist if provided

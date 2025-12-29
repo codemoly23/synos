@@ -65,6 +65,7 @@ export const aboutSectionVisibilitySchema = z.object({
 	contactSection: z.boolean(),
 	featureCards: z.boolean(),
 	companyInfo: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 /**
@@ -82,6 +83,7 @@ export const aboutPageSeoSchema = z.object({
 export const updateAboutPageSchema = z.object({
 	sectionVisibility: aboutSectionVisibilitySchema.optional(),
 	hero: aboutHeroSectionSchema.optional(),
+	richContent: z.string().optional(), // HTML content from text editor
 	contentSections: z.array(aboutContentSectionSchema).optional(),
 	contactSection: aboutContactSectionSchema.optional(),
 	featureCards: z.array(aboutFeatureCardSchema).optional(),

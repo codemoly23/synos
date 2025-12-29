@@ -8,6 +8,7 @@ export const faqSectionVisibilitySchema = z.object({
 	faqContent: z.boolean(),
 	sidebar: z.boolean(),
 	newsletter: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================

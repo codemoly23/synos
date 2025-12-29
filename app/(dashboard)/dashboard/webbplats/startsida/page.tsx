@@ -61,6 +61,17 @@ import { SeoPreview } from "@/components/admin/seo/SeoPreview";
 import { Switch } from "@/components/ui/switch";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
+import dynamic from "next/dynamic";
+
+// Dynamically import TextEditor to avoid SSR issues
+const TextEditor = dynamic(() => import("@/components/common/TextEditor"), {
+	ssr: false,
+	loading: () => (
+		<div className="h-[300px] border rounded-md flex items-center justify-center text-muted-foreground">
+			Loading editor...
+		</div>
+	),
+});
 
 // Icon name to component mapping
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -217,6 +228,7 @@ const sectionVisibilitySchema = z.object({
 	about: z.boolean(),
 	testimonials: z.boolean(),
 	cta: z.boolean(),
+	richContent: z.boolean(),
 });
 
 // Form schema - all section fields optional to allow saving empty content
@@ -286,6 +298,9 @@ const homePageFormSchema = z.object({
 		})
 		.optional(),
 
+	// Rich Content (HTML from text editor)
+	richContent: z.string().optional(),
+
 	// SEO
 	seo: z
 		.object({
@@ -315,6 +330,7 @@ export default function StartsidaPage() {
 				about: true,
 				testimonials: true,
 				cta: true,
+				richContent: false,
 			},
 			hero: {
 				badge: "",
@@ -385,6 +401,7 @@ export default function StartsidaPage() {
 				formSubtitle: "",
 				formCtaText: "",
 			},
+			richContent: "",
 			seo: {
 				title: "",
 				description: "",
@@ -479,6 +496,7 @@ export default function StartsidaPage() {
 					about: true,
 					testimonials: true,
 					cta: true,
+					richContent: false,
 				};
 				const sectionVisibility = {
 					hero: content.sectionVisibility?.hero ?? defaultVisibility.hero,
@@ -500,6 +518,9 @@ export default function StartsidaPage() {
 						content.sectionVisibility?.testimonials ??
 						defaultVisibility.testimonials,
 					cta: content.sectionVisibility?.cta ?? defaultVisibility.cta,
+					richContent:
+						content.sectionVisibility?.richContent ??
+						defaultVisibility.richContent,
 				};
 
 				form.reset({
@@ -600,6 +621,7 @@ export default function StartsidaPage() {
 						formSubtitle: content.ctaSection?.formSubtitle || "",
 						formCtaText: content.ctaSection?.formCtaText || "",
 					},
+					richContent: content.richContent || "",
 					seo: {
 						title: content.seo?.title || "",
 						description: content.seo?.description || "",
@@ -776,6 +798,7 @@ export default function StartsidaPage() {
 							<TabsTrigger value="about">About</TabsTrigger>
 							<TabsTrigger value="testimonials">Testimonials</TabsTrigger>
 							<TabsTrigger value="cta">CTA</TabsTrigger>
+							<TabsTrigger value="rich-content">Rich Content</TabsTrigger>
 							<TabsTrigger value="seo">SEO</TabsTrigger>
 						</TabsList>
 
@@ -956,6 +979,28 @@ export default function StartsidaPage() {
 														</FormLabel>
 														<FormDescription>
 															Bottom call-to-action section.
+														</FormDescription>
+													</div>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="sectionVisibility.richContent"
+											render={({ field }) => (
+												<FormItem className="flex items-center justify-between rounded-lg border p-4">
+													<div className="space-y-0.5">
+														<FormLabel className="text-base">
+															Rich Content
+														</FormLabel>
+														<FormDescription>
+															Flexible HTML content from text editor.
 														</FormDescription>
 													</div>
 													<FormControl>
@@ -3148,6 +3193,42 @@ export default function StartsidaPage() {
 											)}
 										/>
 									</div>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Rich Content Tab */}
+						<TabsContent value="rich-content" className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle>Rich Content Editor</CardTitle>
+									<CardDescription>
+										Use the text editor to create flexible HTML content. This content will be rendered as-is on the page.
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<FormField
+										control={form.control}
+										name="richContent"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Content</FormLabel>
+												<FormControl>
+													<TextEditor
+														defaultValue={field.value || ""}
+														onChange={field.onChange}
+														variant="advanceFull"
+														height="500px"
+														placeholder="Enter your content here..."
+													/>
+												</FormControl>
+												<FormDescription>
+													Use the toolbar to format text, add images, tables, links, and more.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 								</CardContent>
 							</Card>
 						</TabsContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Clock } from "lucide-react";
 import type { IKontaktOfficeSection } from "@/models/kontakt-page.model";
@@ -11,33 +11,214 @@ interface AnimatedOfficeLocationsProps {
 	addresses: IOffice[];
 }
 
+/**
+ * Parse various Google Maps input formats and return a valid embed URL.
+ * Supports:
+ * - Full embed URLs: https://www.google.com/maps/embed?pb=...
+ * - Short share links: https://maps.app.goo.gl/... or https://goo.gl/maps/...
+ * - Full iframe HTML: <iframe src="https://www.google.com/maps/embed?pb=...">
+ * - Coordinates: 59°25'10.6"N 17°57'43.3"E or 59.419611, 17.961750
+ * - Place URLs: https://www.google.com/maps/place/...
+ */
+function parseMapInput(input?: string): string | null {
+	if (!input || typeof input !== "string") return null;
+
+	const trimmed = input.trim();
+	if (!trimmed) return null;
+
+	// 1. Extract src from iframe HTML
+	const iframeSrcMatch = trimmed.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+	if (iframeSrcMatch) {
+		const src = iframeSrcMatch[1];
+		// If it's already an embed URL, use it directly
+		if (src.includes("google.com/maps/embed")) {
+			return src;
+		}
+	}
+
+	// 2. Already a valid embed URL
+	if (trimmed.includes("google.com/maps/embed")) {
+		return trimmed;
+	}
+
+	// 3. Google Maps place URL - extract coordinates and create embed
+	// Example: https://www.google.com/maps/place/.../@59.419611,17.961750,17z/...
+	const placeMatch = trimmed.match(
+		/google\.com\/maps\/place\/[^@]*@([-\d.]+),([-\d.]+)/
+	);
+	if (placeMatch) {
+		const lat = parseFloat(placeMatch[1]);
+		const lng = parseFloat(placeMatch[2]);
+		if (!isNaN(lat) && !isNaN(lng)) {
+			return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+		}
+	}
+
+	// 4. Short share links (maps.app.goo.gl or goo.gl/maps) - cannot be used directly in iframes
+	// These require server-side resolution, so we'll extract address info if stored alongside
+	if (
+		trimmed.includes("maps.app.goo.gl") ||
+		trimmed.includes("goo.gl/maps")
+	) {
+		// Short links don't work in iframes - return null to use fallback
+		return null;
+	}
+
+	// 5. DMS Coordinates: 59°25'10.6"N 17°57'43.3"E
+	const dmsMatch = trimmed.match(
+		/(\d+)[°]\s*(\d+)[′']\s*([\d.]+)[″"]?\s*([NS])\s*(\d+)[°]\s*(\d+)[′']\s*([\d.]+)[″"]?\s*([EW])/i
+	);
+	if (dmsMatch) {
+		const latDeg = parseFloat(dmsMatch[1]);
+		const latMin = parseFloat(dmsMatch[2]);
+		const latSec = parseFloat(dmsMatch[3]);
+		const latDir = dmsMatch[4].toUpperCase();
+		const lngDeg = parseFloat(dmsMatch[5]);
+		const lngMin = parseFloat(dmsMatch[6]);
+		const lngSec = parseFloat(dmsMatch[7]);
+		const lngDir = dmsMatch[8].toUpperCase();
+
+		let lat = latDeg + latMin / 60 + latSec / 3600;
+		let lng = lngDeg + lngMin / 60 + lngSec / 3600;
+
+		if (latDir === "S") lat = -lat;
+		if (lngDir === "W") lng = -lng;
+
+		return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+	}
+
+	// 6. Decimal coordinates: 59.419611, 17.961750 or 59.419611 17.961750
+	const decimalMatch = trimmed.match(/^([-\d.]+)[,\s]+([-\d.]+)$/);
+	if (decimalMatch) {
+		const lat = parseFloat(decimalMatch[1]);
+		const lng = parseFloat(decimalMatch[2]);
+		if (
+			!isNaN(lat) &&
+			!isNaN(lng) &&
+			lat >= -90 &&
+			lat <= 90 &&
+			lng >= -180 &&
+			lng <= 180
+		) {
+			return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+		}
+	}
+
+	// 7. URL with query parameters containing coordinates
+	// Example: https://maps.google.com/maps?q=59.419611,17.961750
+	const queryMatch = trimmed.match(/[?&]q=([-\d.]+),([-\d.]+)/);
+	if (queryMatch) {
+		const lat = parseFloat(queryMatch[1]);
+		const lng = parseFloat(queryMatch[2]);
+		if (!isNaN(lat) && !isNaN(lng)) {
+			return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Extract coordinates from various map input formats for external Google Maps link
+ */
+function extractCoordinates(
+	input?: string
+): { lat: number; lng: number } | null {
+	if (!input) return null;
+
+	const trimmed = input.trim();
+
+	// From embed URL pb parameter: !3d=lat !2d=lng
+	const pbLatMatch = trimmed.match(/!3d([-\d.]+)/);
+	const pbLngMatch = trimmed.match(/!2d([-\d.]+)/);
+	if (pbLatMatch && pbLngMatch) {
+		return { lat: parseFloat(pbLatMatch[1]), lng: parseFloat(pbLngMatch[1]) };
+	}
+
+	// From place URL: @lat,lng
+	const placeMatch = trimmed.match(/@([-\d.]+),([-\d.]+)/);
+	if (placeMatch) {
+		return { lat: parseFloat(placeMatch[1]), lng: parseFloat(placeMatch[2]) };
+	}
+
+	// From query parameter: q=lat,lng
+	const queryMatch = trimmed.match(/[?&]q=([-\d.]+),([-\d.]+)/);
+	if (queryMatch) {
+		return { lat: parseFloat(queryMatch[1]), lng: parseFloat(queryMatch[2]) };
+	}
+
+	// DMS Coordinates
+	const dmsMatch = trimmed.match(
+		/(\d+)[°]\s*(\d+)[′']\s*([\d.]+)[″"]?\s*([NS])\s*(\d+)[°]\s*(\d+)[′']\s*([\d.]+)[″"]?\s*([EW])/i
+	);
+	if (dmsMatch) {
+		const latDeg = parseFloat(dmsMatch[1]);
+		const latMin = parseFloat(dmsMatch[2]);
+		const latSec = parseFloat(dmsMatch[3]);
+		const latDir = dmsMatch[4].toUpperCase();
+		const lngDeg = parseFloat(dmsMatch[5]);
+		const lngMin = parseFloat(dmsMatch[6]);
+		const lngSec = parseFloat(dmsMatch[7]);
+		const lngDir = dmsMatch[8].toUpperCase();
+
+		let lat = latDeg + latMin / 60 + latSec / 3600;
+		let lng = lngDeg + lngMin / 60 + lngSec / 3600;
+
+		if (latDir === "S") lat = -lat;
+		if (lngDir === "W") lng = -lng;
+
+		return { lat, lng };
+	}
+
+	// Decimal coordinates
+	const decimalMatch = trimmed.match(/^([-\d.]+)[,\s]+([-\d.]+)$/);
+	if (decimalMatch) {
+		const lat = parseFloat(decimalMatch[1]);
+		const lng = parseFloat(decimalMatch[2]);
+		if (!isNaN(lat) && !isNaN(lng)) {
+			return { lat, lng };
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Generate address-based embed URL as fallback
+ */
+function generateAddressBasedEmbedUrl(address: IOffice): string {
+	const query = encodeURIComponent(
+		`${address.street}, ${address.postalCode} ${address.city}, ${address.country}`
+	);
+	return `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+}
+
 export function AnimatedOfficeLocations({
 	data,
 	addresses,
 }: AnimatedOfficeLocationsProps) {
 	const [activeTab, setActiveTab] = useState(0);
 
+	// Pre-process all addresses to get valid embed URLs
+	const processedAddresses = useMemo(() => {
+		return addresses.map((address) => {
+			const parsedUrl = parseMapInput(address.mapEmbedUrl);
+			// If parsing fails but we have address info, generate address-based embed
+			const embedUrl =
+				parsedUrl || generateAddressBasedEmbedUrl(address);
+			return {
+				...address,
+				processedEmbedUrl: embedUrl,
+			};
+		});
+	}, [addresses]);
+
 	// Guard against empty addresses
 	if (!addresses || addresses.length === 0) {
 		return null;
 	}
 
-	// Extract coordinates from embed URL if available
-	const extractCoordsFromEmbedUrl = (
-		embedUrl?: string
-	): { lat: number; lng: number } | null => {
-		if (!embedUrl) return null;
-		// Try to extract coordinates from embed URL patterns
-		// Example: https://www.google.com/maps/embed?pb=!1m18!...!2d17.9368!3d59.4392!...
-		const latMatch = embedUrl.match(/!3d([-\d.]+)/);
-		const lngMatch = embedUrl.match(/!2d([-\d.]+)/);
-		if (latMatch && lngMatch) {
-			return { lat: parseFloat(latMatch[1]), lng: parseFloat(lngMatch[1]) };
-		}
-		return null;
-	};
-
-	const activeAddress = addresses[activeTab];
+	const activeAddress = processedAddresses[activeTab];
 
 	return (
 		<motion.div
@@ -64,7 +245,7 @@ export function AnimatedOfficeLocations({
 			{/* Tabs */}
 			{addresses.length > 1 && (
 				<div className="mb-6 flex gap-2 rounded-xl bg-slate-100 p-1.5">
-					{addresses.map((address, index) => (
+					{processedAddresses.map((address, index) => (
 						<button
 							key={address.name}
 							onClick={() => setActiveTab(index)}
@@ -85,7 +266,7 @@ export function AnimatedOfficeLocations({
 				{/* Map Section - Show embed or placeholder */}
 				<div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
 					<div className="h-[400px] w-full">
-						{addresses.map((address, index) => (
+						{processedAddresses.map((address, index) => (
 							<motion.div
 								key={address.name}
 								initial={false}
@@ -100,27 +281,16 @@ export function AnimatedOfficeLocations({
 									zIndex: activeTab === index ? 1 : 0,
 								}}
 							>
-								{address.mapEmbedUrl ? (
-									<iframe
-										src={address.mapEmbedUrl}
-										width="100%"
-										height="100%"
-										style={{ border: 0 }}
-										allowFullScreen
-										loading="lazy"
-										referrerPolicy="no-referrer-when-downgrade"
-										title={`Map of ${address.name}`}
-									/>
-								) : (
-									<div className="flex h-full w-full items-center justify-center bg-slate-100">
-										<div className="text-center">
-											<MapPin className="mx-auto h-12 w-12 text-slate-400" />
-											<p className="mt-2 text-slate-500">
-												{address.street}, {address.city}
-											</p>
-										</div>
-									</div>
-								)}
+								<iframe
+									src={address.processedEmbedUrl}
+									width="100%"
+									height="100%"
+									style={{ border: 0 }}
+									allowFullScreen
+									loading="lazy"
+									referrerPolicy="no-referrer-when-downgrade"
+									title={`Map of ${address.name}`}
+								/>
 							</motion.div>
 						))}
 					</div>
@@ -197,7 +367,7 @@ export function AnimatedOfficeLocations({
 
 							{/* Google Maps link */}
 							{(() => {
-								const coords = extractCoordsFromEmbedUrl(activeAddress.mapEmbedUrl);
+								const coords = extractCoordinates(activeAddress.mapEmbedUrl);
 								const searchQuery = encodeURIComponent(
 									`${activeAddress.street}, ${activeAddress.postalCode} ${activeAddress.city}, ${activeAddress.country}`
 								);

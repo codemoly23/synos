@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getAllArticles, getAllCategories, getRecentArticles } from "@/lib/data/blog";
 import { siteConfig } from "@/config/site";
 import { BlogListingClient } from "./_components/blog-listing-client";
+// import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
 /**
  * Blog Listing Page
@@ -109,6 +110,8 @@ export default async function BlogPage() {
 				categories={categories}
 				recentArticles={recentArticles}
 			/>
+
+			{/* Trustindex Reviews Widget - Temporarily disabled */}
 		</>
 	);
 }
