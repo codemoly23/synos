@@ -11,6 +11,7 @@ export const trainingSectionVisibilitySchema = z.object({
 	support: z.boolean(),
 	inquiryForm: z.boolean(),
 	resources: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================

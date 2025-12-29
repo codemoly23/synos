@@ -9,6 +9,7 @@ export interface IFAQSectionVisibility {
 	faqContent: boolean;
 	sidebar: boolean;
 	newsletter: boolean;
+	richContent: boolean;
 }
 
 const FAQSectionVisibilitySchema = new Schema<IFAQSectionVisibility>(
@@ -17,6 +18,7 @@ const FAQSectionVisibilitySchema = new Schema<IFAQSectionVisibility>(
 		faqContent: { type: Boolean, default: true },
 		sidebar: { type: Boolean, default: true },
 		newsletter: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: false },
 	},
 	{ _id: false }
 );
@@ -247,6 +249,7 @@ export interface IFAQPage extends Document {
 	faqContent: IFAQContentSection;
 	sidebar: IFAQSidebarSection;
 	newsletter: IFAQNewsletterSection;
+	richContent?: string;
 	seo: IFAQPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -261,12 +264,14 @@ const FAQPageSchema = new Schema<IFAQPage>(
 				faqContent: true,
 				sidebar: true,
 				newsletter: true,
+				richContent: false,
 			},
 		},
 		hero: { type: FAQHeroSectionSchema, default: {} },
 		faqContent: { type: FAQContentSectionSchema, default: {} },
 		sidebar: { type: FAQSidebarSectionSchema, default: {} },
 		newsletter: { type: FAQNewsletterSectionSchema, default: {} },
+		richContent: { type: String, default: "" },
 		seo: { type: FAQPageSeoSchema, default: {} },
 	},
 	{

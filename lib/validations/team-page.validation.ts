@@ -10,6 +10,7 @@ export const teamSectionVisibilitySchema = z.object({
 	values: z.boolean(),
 	joinUs: z.boolean(),
 	contact: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================

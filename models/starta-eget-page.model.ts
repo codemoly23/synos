@@ -11,6 +11,7 @@ export interface IStartaEgetSectionVisibility {
 	features: boolean;
 	contactForm: boolean;
 	resources: boolean;
+	richContent: boolean;
 }
 
 const StartaEgetSectionVisibilitySchema =
@@ -22,6 +23,7 @@ const StartaEgetSectionVisibilitySchema =
 			features: { type: Boolean, default: true },
 			contactForm: { type: Boolean, default: true },
 			resources: { type: Boolean, default: true },
+			richContent: { type: Boolean, default: false },
 		},
 		{ _id: false }
 	);
@@ -185,6 +187,7 @@ export interface IStartaEgetPage extends Document {
 	benefits: IStartaEgetBenefitCard[];
 	featuresSection: IStartaEgetFeaturesSection;
 	resourcesSection: IStartaEgetResourcesSection;
+	richContent?: string;
 	seo: IStartaEgetPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -201,6 +204,7 @@ const StartaEgetPageSchema = new Schema<IStartaEgetPage>(
 				features: true,
 				contactForm: true,
 				resources: true,
+				richContent: false,
 			},
 		},
 		hero: { type: StartaEgetHeroSectionSchema, default: {} },
@@ -208,6 +212,7 @@ const StartaEgetPageSchema = new Schema<IStartaEgetPage>(
 		benefits: { type: [StartaEgetBenefitCardSchema], default: [] },
 		featuresSection: { type: StartaEgetFeaturesSectionSchema, default: {} },
 		resourcesSection: { type: StartaEgetResourcesSectionSchema, default: {} },
+		richContent: { type: String, default: "" },
 		seo: { type: StartaEgetPageSeoSchema, default: {} },
 	},
 	{

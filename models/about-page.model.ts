@@ -66,6 +66,7 @@ export interface IAboutSectionVisibility {
 	contactSection: boolean;
 	featureCards: boolean;
 	companyInfo: boolean;
+	richContent: boolean;
 }
 
 /**
@@ -88,6 +89,9 @@ export interface IAboutPage extends Document {
 
 	// Hero Section
 	hero: IAboutHeroSection;
+
+	// Rich Content (HTML from text editor - optional flexible content)
+	richContent?: string;
 
 	// Content Sections (array of text sections)
 	contentSections: IAboutContentSection[];
@@ -197,6 +201,7 @@ const AboutSectionVisibilitySchema = new Schema<IAboutSectionVisibility>(
 		contactSection: { type: Boolean, default: true },
 		featureCards: { type: Boolean, default: true },
 		companyInfo: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: true },
 	},
 	{ _id: false }
 );
@@ -226,11 +231,17 @@ const AboutPageSchema = new Schema<IAboutPage>(
 				contactSection: true,
 				featureCards: true,
 				companyInfo: true,
+				richContent: true,
 			},
 		},
 		hero: {
 			type: AboutHeroSectionSchema,
 			default: {},
+		},
+		// Rich Content - HTML from text editor for flexible content
+		richContent: {
+			type: String,
+			default: "",
 		},
 		contentSections: {
 			type: [AboutContentSectionSchema],

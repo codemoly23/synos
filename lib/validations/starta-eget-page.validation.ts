@@ -10,6 +10,7 @@ export const startaEgetSectionVisibilitySchema = z.object({
 	features: z.boolean(),
 	contactForm: z.boolean(),
 	resources: z.boolean(),
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================
