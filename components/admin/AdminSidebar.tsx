@@ -30,6 +30,9 @@ import {
 	Rocket,
 	GraduationCap,
 	HelpCircle,
+	Award,
+	BookOpen,
+	Presentation,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -97,6 +100,21 @@ const navSections: NavSection[] = [
 				title: "Start Business",
 				href: "/dashboard/webbplats/starta-eget",
 				icon: Rocket,
+			},
+			{
+				title: "Why Choose Synos",
+				href: "/dashboard/webbplats/varfor-valja-synos",
+				icon: Award,
+			},
+			{
+				title: "Buying Guide",
+				href: "/dashboard/webbplats/kopguide",
+				icon: BookOpen,
+			},
+			{
+				title: "Mini Training",
+				href: "/dashboard/webbplats/miniutbildning",
+				icon: Presentation,
 			},
 			{
 				title: "Training",

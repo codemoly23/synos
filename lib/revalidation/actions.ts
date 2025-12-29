@@ -209,9 +209,36 @@ export async function revalidateStartaEgetPage(): Promise<void> {
 	revalidateTag(CACHE_TAGS.STARTA_EGET_PAGE, "max");
 	revalidatePath(PATHS.STARTA_EGET);
 	// Also revalidate sub-pages
-	revalidatePath(`${PATHS.STARTA_EGET}/kopguide`);
-	revalidatePath(`${PATHS.STARTA_EGET}/miniutbildning`);
-	revalidatePath(`${PATHS.STARTA_EGET}/varfor-valja-synos`);
+	revalidatePath(PATHS.KOPGUIDE);
+	revalidatePath(PATHS.MINIUTBILDNING);
+	revalidatePath(PATHS.VARFOR_VALJA_SYNOS);
+}
+
+/**
+ * Revalidate Varför Välja Synos page
+ * Call this when the page content is updated
+ */
+export async function revalidateVarforValjaSynosPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.VARFOR_VALJA_SYNOS_PAGE, "max");
+	revalidatePath(PATHS.VARFOR_VALJA_SYNOS);
+}
+
+/**
+ * Revalidate Köpguide page
+ * Call this when the page content is updated
+ */
+export async function revalidateKopguidePage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.KOPGUIDE_PAGE, "max");
+	revalidatePath(PATHS.KOPGUIDE);
+}
+
+/**
+ * Revalidate Miniutbildning page
+ * Call this when the page content is updated
+ */
+export async function revalidateMiniutbildningPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.MINIUTBILDNING_PAGE, "max");
+	revalidatePath(PATHS.MINIUTBILDNING);
 }
 
 /**
