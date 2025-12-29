@@ -12,6 +12,7 @@ import { BlogContent } from "../_components/blog-content";
 import { BlogAuthor } from "../_components/blog-author";
 import { RelatedPosts } from "../_components/related-posts";
 import { BlogComments } from "../_components/blog-comments";
+// import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
 /**
  * Blog Detail Page
@@ -173,6 +174,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 					<BlogAuthor author={article.author} />
 				</div>
 			</section>
+
+			{/* Customer Reviews - Temporarily disabled */}
 
 			<BlogComments postId={article.id} />
 
