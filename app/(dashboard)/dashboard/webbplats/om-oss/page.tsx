@@ -51,6 +51,17 @@ import { Switch } from "@/components/ui/switch";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import dynamic from "next/dynamic";
+
+// Dynamically import TextEditor to avoid SSR issues
+const TextEditor = dynamic(() => import("@/components/common/TextEditor"), {
+	ssr: false,
+	loading: () => (
+		<div className="h-[300px] border rounded-md flex items-center justify-center text-muted-foreground">
+			Loading editor...
+		</div>
+	),
+});
 
 // Icon mapping
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -107,6 +118,7 @@ const sectionVisibilitySchema = z.object({
 	contactSection: z.boolean(),
 	featureCards: z.boolean(),
 	companyInfo: z.boolean(),
+	richContent: z.boolean(),
 });
 
 // Form schema
@@ -119,6 +131,8 @@ const aboutPageFormSchema = z.object({
 			subtitle: z.string().optional(),
 		})
 		.optional(),
+
+	richContent: z.string().optional(), // HTML content from text editor
 
 	contentSections: z.array(contentSectionSchema).optional(),
 
@@ -168,8 +182,10 @@ export default function AboutPageAdmin() {
 				contactSection: true,
 				featureCards: true,
 				companyInfo: true,
+				richContent: true,
 			},
 			hero: { title: "", subtitle: "" },
+			richContent: "",
 			contentSections: [],
 			contactSection: {
 				title: "",
@@ -229,8 +245,10 @@ export default function AboutPageAdmin() {
 						contactSection: true,
 						featureCards: true,
 						companyInfo: true,
+						richContent: true,
 					},
 					hero: data.hero || { title: "", subtitle: "" },
+					richContent: data.richContent || "",
 					contentSections: data.contentSections || [],
 					contactSection: data.contactSection || {},
 					featureCards: data.featureCards || [],
@@ -347,6 +365,7 @@ export default function AboutPageAdmin() {
 						<TabsList className="flex flex-wrap h-auto gap-1 justify-start">
 							<TabsTrigger value="visibility">Visibility</TabsTrigger>
 							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="rich-content">Rich Content</TabsTrigger>
 							<TabsTrigger value="content">Content</TabsTrigger>
 							<TabsTrigger value="features">Features</TabsTrigger>
 							<TabsTrigger value="company">Company</TabsTrigger>
@@ -465,6 +484,28 @@ export default function AboutPageAdmin() {
 											</FormItem>
 										)}
 									/>
+									<FormField
+										control={form.control}
+										name="sectionVisibility.richContent"
+										render={({ field }) => (
+											<FormItem className="flex items-center justify-between rounded-lg border p-4">
+												<div>
+													<FormLabel>
+														Rich Content (Text Editor)
+													</FormLabel>
+													<FormDescription>
+														Flexible HTML content from text editor
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
 								</CardContent>
 							</Card>
 						</TabsContent>
@@ -509,6 +550,42 @@ export default function AboutPageAdmin() {
 														placeholder="Sveriges främsta leverantör..."
 													/>
 												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Rich Content Tab */}
+						<TabsContent value="rich-content" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Rich Content Editor</CardTitle>
+									<CardDescription>
+										Use the text editor to create flexible HTML content. This content will be rendered as-is on the page.
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<FormField
+										control={form.control}
+										name="richContent"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Content</FormLabel>
+												<FormControl>
+													<TextEditor
+														defaultValue={field.value || ""}
+														onChange={field.onChange}
+														variant="advanceFull"
+														height="500px"
+														placeholder="Enter your content here..."
+													/>
+												</FormControl>
+												<FormDescription>
+													Use the toolbar to format text, add images, tables, links, and more.
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}

@@ -1,7 +1,7 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageProps, default as NextImage } from "next/image";
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 
 type IProps = Omit<ImageProps, "src"> & {
 	src: string | undefined | null; //| StaticImport | null
@@ -22,6 +22,12 @@ const ImageComponent = ({
 	const [loading, setLoading] = useState(true);
 	const [onErrorSrc, setOnErrorSrc] = useState<string | undefined>(undefined);
 
+	// Reset state when src changes
+	useEffect(() => {
+		setLoading(true);
+		setOnErrorSrc(undefined);
+	}, [src]);
+
 	const handleOnError = (
 		e: React.SyntheticEvent<HTMLImageElement, Event>
 	): void => {
@@ -31,11 +37,14 @@ const ImageComponent = ({
 		setLoading(false);
 	};
 
+	const imageSrc = (onErrorSrc || src || props.fallback) ?? "/placeholder.avif";
+
 	const imageElement = (
 		<NextImage
 			{...props}
+			key={src ?? "placeholder"}
 			fill={fill}
-			src={(onErrorSrc || src || props.fallback) ?? "/placeholder.avif"}
+			src={imageSrc}
 			onLoad={() => setLoading(false)}
 			onError={handleOnError}
 			width={fill ? undefined : props.width}

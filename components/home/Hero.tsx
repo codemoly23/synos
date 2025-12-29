@@ -47,10 +47,10 @@ export function Hero({ data }: HeroProps) {
 					)}
 
 					{/* Heading */}
-					<h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary leading-[1.1] tracking-tight">
+					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-[1.15] tracking-tight">
 						{data.title} <br />
 						{data.titleHighlight && (
-							<span className="text-gradient-primary sm:text-nowrap text-3xl sm:text-4xl">
+							<span className="text-gradient-primary text-2xl sm:text-3xl lg:text-4xl">
 								{data.titleHighlight}
 							</span>
 						)}
