@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { getArticlesByCategory } from "@/lib/data/blog";
 import { blogCategoryService } from "@/lib/services/blog-category.service";
 import { BlogCard } from "../../_components/blog-card";
@@ -52,7 +52,10 @@ export async function generateMetadata({
 	params,
 }: CategoryPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const category = await getCategoryBySlug(slug);
+	const [category, siteConfig] = await Promise.all([
+		getCategoryBySlug(slug),
+		getSiteConfig(),
+	]);
 
 	if (!category) {
 		return {

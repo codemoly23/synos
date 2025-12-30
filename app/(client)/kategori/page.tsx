@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import {
 	getPublishedProducts,
 	getActiveCategories,
@@ -35,26 +35,30 @@ import type { ICategory } from "@/models/category.model";
  * This is an alias for /klinikutrustning with "Kategori" branding
  */
 
-export const metadata: Metadata = {
-	title: `Kategori | ${siteConfig.name}`,
-	description:
-		"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
-	openGraph: {
-		title: `Kategori | ${siteConfig.name}`,
-		description:
-			"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-		url: `${siteConfig.url}/kategori`,
-		siteName: siteConfig.name,
-		locale: "sv_SE",
-		type: "website",
-	},
-	alternates: {
-		canonical: `${siteConfig.url}/kategori`,
-	},
-};
-
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
+
+export async function generateMetadata(): Promise<Metadata> {
+	const siteConfig = await getSiteConfig();
+
+	return {
+		title: `Kategori | ${siteConfig.name}`,
+		description:
+			"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
+		openGraph: {
+			title: `Kategori | ${siteConfig.name}`,
+			description:
+				"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
+			url: `${siteConfig.url}/kategori`,
+			siteName: siteConfig.name,
+			locale: "sv_SE",
+			type: "website",
+		},
+		alternates: {
+			canonical: `${siteConfig.url}/kategori`,
+		},
+	};
+}
 
 // Product Card Component for Database Products
 function ProductCardDB({

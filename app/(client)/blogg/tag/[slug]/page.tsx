@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { getArticlesByTag, getAllTags } from "@/lib/data/blog";
 import { BlogCard } from "../../_components/blog-card";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -58,7 +58,10 @@ export async function generateMetadata({
 }: TagPageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const tagName = formatTagName(slug);
-	const articles = await getArticlesByTag(slug);
+	const [articles, siteConfig] = await Promise.all([
+		getArticlesByTag(slug),
+		getSiteConfig(),
+	]);
 
 	if (articles.length === 0) {
 		return {

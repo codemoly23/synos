@@ -6,7 +6,7 @@ import {
 	getAllArticles,
 } from "@/lib/data/blog";
 import { blogPostService } from "@/lib/services/blog-post.service";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { BlogDetailHero } from "../_components/blog-detail-hero";
 import { BlogContent } from "../_components/blog-content";
 import { BlogAuthor } from "../_components/blog-author";
@@ -54,18 +54,21 @@ export async function generateMetadata({
 	params,
 }: BlogDetailPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const article = await getArticleBySlug(slug);
+	const [article, siteConfig] = await Promise.all([
+		getArticleBySlug(slug),
+		getSiteConfig(),
+	]);
 
 	if (!article) {
 		return {
-			title: "Artikel hittades inte | Synos Medical",
+			title: `Artikel hittades inte | ${siteConfig.name}`,
 		};
 	}
 
 	const ogImage = article.seo?.ogImage || article.featuredImage?.url;
 
 	return {
-		title: article.seo?.title || `${article.title} | Synos Medical`,
+		title: article.seo?.title || `${article.title} | ${siteConfig.name}`,
 		description: article.seo?.description || article.excerpt,
 		keywords: article.seo?.keywords || article.tags,
 		openGraph: {
@@ -112,7 +115,10 @@ export async function generateMetadata({
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 	const { slug } = await params;
-	const article = await getArticleBySlug(slug);
+	const [article, siteConfig] = await Promise.all([
+		getArticleBySlug(slug),
+		getSiteConfig(),
+	]);
 
 	if (!article) {
 		notFound();

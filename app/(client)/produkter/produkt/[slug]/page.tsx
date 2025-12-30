@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "./product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
@@ -33,8 +33,6 @@ export async function generateStaticParams() {
 	}
 }
 
-const BASE_URL = siteConfig.url;
-
 /**
  * Fetch product data server-side using repository directly
  * This avoids fetch calls during SSG which would fail (server not running)
@@ -61,7 +59,10 @@ export async function generateMetadata({
 	params,
 }: ProductPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const product = await getProduct(slug);
+	const [product, siteConfig] = await Promise.all([
+		getProduct(slug),
+		getSiteConfig(),
+	]);
 
 	if (!product) {
 		return {
@@ -71,7 +72,7 @@ export async function generateMetadata({
 		};
 	}
 
-	const productUrl = `${BASE_URL}/produkter/produkt/${product.slug}`;
+	const productUrl = `${siteConfig.url}/produkter/produkt/${product.slug}`;
 
 	// Determine the best image for OG
 	const ogImage =
@@ -83,7 +84,7 @@ export async function generateMetadata({
 	// Ensure image URL is absolute
 	const absoluteOgImage = ogImage?.startsWith("http")
 		? ogImage
-		: `${BASE_URL}${ogImage}`;
+		: `${siteConfig.url}${ogImage}`;
 
 	// Use SEO fields with fallbacks
 	const title = product.seo?.title || `${product.title} | ${siteConfig.name}`;
@@ -159,7 +160,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 	}
 
 	// Generate all JSON-LD schemas for this product
-	const jsonLdSchemas = generateProductPageJsonLd(product);
+	const jsonLdSchemas = await generateProductPageJsonLd(product);
 
 	return (
 		<>
