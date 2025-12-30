@@ -13,14 +13,17 @@
  * - Product categories: /klinikutrustning/[slug]/
  */
 
-import { siteConfig } from "@/config/site";
+import { getSiteUrl } from "@/config/site";
 
 // ============================================================================
 // Configuration
 // ============================================================================
 
+// Get base URL synchronously from environment (SITE_URL is still in .env)
+const baseUrl = getSiteUrl();
+
 export const SITEMAP_CONFIG = {
-	baseUrl: siteConfig.url,
+	baseUrl,
 	defaultChangeFreq: "weekly" as const,
 	revalidate: 3600, // 1 hour ISR
 
@@ -92,7 +95,10 @@ export function buildAuthorUrl(slug: string): string {
  * Build product URL
  * Pattern: /klinikutrustning/[category]/[slug]/
  */
-export function buildProductUrl(categorySlug: string, productSlug: string): string {
+export function buildProductUrl(
+	categorySlug: string,
+	productSlug: string
+): string {
 	return `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/${categorySlug}/${productSlug}`;
 }
 
