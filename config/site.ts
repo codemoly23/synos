@@ -1,12 +1,14 @@
 /**
- * Site Configuration - Server-Side Only
+ * Site Configuration - Database-Driven
  *
- * This file reads environment variables on the server and exports the config.
- * Use this in server components, API routes, and layouts.
- * For client components, pass config as props from the layout.
+ * All site configuration is now fetched from the database.
+ * This file provides type definitions and helper functions for
+ * backwards compatibility with existing code.
  */
 
-// Type for company address
+import { getLegacySiteConfig } from "@/lib/services/site-settings.service";
+
+// Type for company address (legacy format)
 export interface CompanyAddress {
 	name: string;
 	street: string;
@@ -17,7 +19,7 @@ export interface CompanyAddress {
 	lng: number;
 }
 
-// Site config type definition
+// Site config type definition (legacy format)
 export interface SiteConfigType {
 	name: string;
 	description: string;
@@ -38,45 +40,11 @@ export interface SiteConfigType {
 	};
 }
 
-// Default addresses (fallback if env not set)
-const defaultAddresses: CompanyAddress[] = [
-	{
-		name: "Stockholm",
-		street: "Turebergsvägen 5",
-		postalCode: "19147",
-		city: "Stockholm",
-		country: "Sverige",
-		lat: 59.4196154,
-		lng: 17.9620161,
-	},
-	{
-		name: "Linköping",
-		street: "Datalinjen 5",
-		postalCode: "58330",
-		city: "Linköping",
-		country: "Sverige",
-		lat: 58.4196154,
-		lng: 15.6620161,
-	},
-];
-
-// Parse addresses from environment variable
-function parseAddresses(): CompanyAddress[] {
-	const addressesEnv = process.env.COMPANY_ADDRESSES;
-	if (!addressesEnv) return defaultAddresses;
-
-	try {
-		// Remove surrounding quotes if present
-		const cleaned = addressesEnv.replace(/^['"]|['"]$/g, "");
-		return JSON.parse(cleaned) as CompanyAddress[];
-	} catch {
-		console.warn("Failed to parse COMPANY_ADDRESSES, using defaults");
-		return defaultAddresses;
-	}
-}
-
-// Get site URL with fallback
-function getSiteUrl(): string {
+/**
+ * Get site URL - the only value that still comes from environment
+ * This is required for Next.js auth and absolute URLs
+ */
+export function getSiteUrl(): string {
 	const url =
 		process.env.SITE_URL ||
 		process.env.BETTER_AUTH_URL ||
@@ -86,56 +54,69 @@ function getSiteUrl(): string {
 	return url.replace(/\/$/, "");
 }
 
-// Get OG image URL (ensure it's absolute)
-function getOgImage(): string {
-	const ogImage = process.env.OG_IMAGE || "/og-image.jpg";
-	const siteUrl = getSiteUrl();
+/**
+ * Get site configuration from database
+ * This is the primary way to fetch site config - all values come from DB
+ */
+export async function getSiteConfig(): Promise<SiteConfigType> {
+	const config = await getLegacySiteConfig();
 
-	// If it's already an absolute URL, return as-is
-	if (ogImage.startsWith("http")) {
-		return ogImage;
-	}
-
-	// Otherwise, prepend site URL
-	return `${siteUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
+	return {
+		name: config.name,
+		description: config.description,
+		url: getSiteUrl(),
+		ogImage: config.ogImage.startsWith("http")
+			? config.ogImage
+			: `${getSiteUrl()}${config.ogImage.startsWith("/") ? "" : "/"}${config.ogImage}`,
+		links: config.links,
+		company: {
+			name: config.company.name,
+			orgNumber: config.company.orgNumber,
+			email: config.company.email,
+			phone: config.company.phone,
+			noreplyEmail: config.company.noreplyEmail,
+			addresses: config.company.addresses,
+		},
+	};
 }
 
 /**
- * Server-side site configuration
- * Use this in server components and API routes
+ * @deprecated Use getSiteConfig() instead
+ * This synchronous export is kept for backwards compatibility during migration
+ * but will eventually be removed. All new code should use getSiteConfig().
  */
 export const siteConfig: SiteConfigType = {
-	// Site info
-	name: process.env.SITE_NAME || "Synos Medical",
+	// Fallback values - these will be overwritten at runtime
+	name: "Synos Medical",
 	description:
-		process.env.SITE_DESCRIPTION ||
 		"Sveriges ledande leverantör av MDR-certifierad klinikutrustning för laser, hårborttagning, tatueringsborttagning och hudföryngring.",
 	url: getSiteUrl(),
-	ogImage: getOgImage(),
-
-	// Social links
+	ogImage: `${getSiteUrl()}/og-image.jpg`,
 	links: {
-		facebook:
-			process.env.SOCIAL_FACEBOOK || "https://www.facebook.com/synosmedical",
-		instagram:
-			process.env.SOCIAL_INSTAGRAM ||
-			"https://www.instagram.com/synosmedical",
-		linkedin:
-			process.env.SOCIAL_LINKEDIN ||
-			"https://www.linkedin.com/company/synos-medical",
+		facebook: "https://www.facebook.com/synosmedical",
+		instagram: "https://www.instagram.com/synosmedical",
+		linkedin: "https://www.linkedin.com/company/synos-medical",
 	},
-
-	// Company info
 	company: {
-		name: process.env.COMPANY_NAME || "Synos Medical AB",
-		orgNumber: process.env.COMPANY_ORG_NUMBER || "556871-8075",
-		email: process.env.COMPANY_EMAIL || "info@synos.se",
-		phone: process.env.COMPANY_PHONE || "010-205 15 01",
-		noreplyEmail: process.env.NOREPLY_EMAIL || "noreply@synos.se",
-		addresses: parseAddresses(),
+		name: "Synos Medical AB",
+		orgNumber: "556871-8075",
+		email: "info@synos.se",
+		phone: "010-205 15 01",
+		noreplyEmail: "noreply@synos.se",
+		addresses: [
+			{
+				name: "Stockholm",
+				street: "Turebergsvägen 5",
+				postalCode: "19147",
+				city: "Stockholm",
+				country: "Sverige",
+				lat: 59.4196154,
+				lng: 17.9620161,
+			},
+		],
 	},
 };
 
-// Legacy export for backwards compatibility
+// Legacy type exports for backwards compatibility
 export type SiteConfig = SiteConfigType;
 export type CompanyAddressType = CompanyAddress;

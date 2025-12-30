@@ -1,25 +1,25 @@
 import { ProductType } from "@/types";
-import { siteConfig } from "@/config/site";
-
-const BASE_URL = siteConfig.url;
+import { getSiteConfig, getSiteUrl, type SiteConfigType } from "@/config/site";
 
 /**
  * Generate Product JSON-LD structured data
  * @see https://schema.org/Product
  */
-export function generateProductJsonLd(product: ProductType) {
-	const productUrl = `${BASE_URL}/produkter/produkt/${product.slug}`;
+export async function generateProductJsonLd(product: ProductType) {
+	const siteConfig = await getSiteConfig();
+	const baseUrl = siteConfig.url;
+	const productUrl = `${baseUrl}/produkter/produkt/${product.slug}`;
 	const images = product.productImages?.length
 		? product.productImages.map((img) =>
-				img.startsWith("http") ? img : `${BASE_URL}${img}`
-		  )
+				img.startsWith("http") ? img : `${baseUrl}${img}`
+			)
 		: product.overviewImage
-		? [
-				product.overviewImage.startsWith("http")
-					? product.overviewImage
-					: `${BASE_URL}${product.overviewImage}`,
-		  ]
-		: [];
+			? [
+					product.overviewImage.startsWith("http")
+						? product.overviewImage
+						: `${baseUrl}${product.overviewImage}`,
+				]
+			: [];
 
 	return {
 		"@context": "https://schema.org",
@@ -51,22 +51,23 @@ export function generateProductJsonLd(product: ProductType) {
  * Generate BreadcrumbList JSON-LD structured data
  * @see https://schema.org/BreadcrumbList
  */
-export function generateBreadcrumbJsonLd(
+export async function generateBreadcrumbJsonLd(
 	product: ProductType,
 	categoryName?: string
 ) {
+	const baseUrl = getSiteUrl();
 	const items = [
 		{
 			"@type": "ListItem" as const,
 			position: 1,
 			name: "Hem",
-			item: BASE_URL,
+			item: baseUrl,
 		},
 		{
 			"@type": "ListItem" as const,
 			position: 2,
 			name: "Produkter",
-			item: `${BASE_URL}/produkter`,
+			item: `${baseUrl}/produkter`,
 		},
 	];
 
@@ -76,20 +77,20 @@ export function generateBreadcrumbJsonLd(
 			"@type": "ListItem" as const,
 			position: 3,
 			name: categoryName,
-			item: `${BASE_URL}/produkter/kategori/${product.categories[0].slug}`,
+			item: `${baseUrl}/produkter/kategori/${product.categories[0].slug}`,
 		});
 		items.push({
 			"@type": "ListItem" as const,
 			position: 4,
 			name: product.title,
-			item: `${BASE_URL}/produkter/produkt/${product.slug}`,
+			item: `${baseUrl}/produkter/produkt/${product.slug}`,
 		});
 	} else {
 		items.push({
 			"@type": "ListItem" as const,
 			position: 3,
 			name: product.title,
-			item: `${BASE_URL}/produkter/produkt/${product.slug}`,
+			item: `${baseUrl}/produkter/produkt/${product.slug}`,
 		});
 	}
 
@@ -129,13 +130,16 @@ export function generateFaqJsonLd(
  * Generate Organization JSON-LD structured data
  * @see https://schema.org/Organization
  */
-export function generateOrganizationJsonLd() {
+export async function generateOrganizationJsonLd() {
+	const siteConfig = await getSiteConfig();
+	const baseUrl = siteConfig.url;
+
 	return {
 		"@context": "https://schema.org",
 		"@type": "Organization",
 		name: siteConfig.company.name,
-		url: BASE_URL,
-		logo: `${BASE_URL}/logo.png`,
+		url: baseUrl,
+		logo: `${baseUrl}/logo.png`,
 		contactPoint: {
 			"@type": "ContactPoint",
 			telephone: siteConfig.company.phone,
@@ -154,7 +158,7 @@ export function generateOrganizationJsonLd() {
 			siteConfig.links.facebook,
 			siteConfig.links.instagram,
 			siteConfig.links.linkedin,
-		],
+		].filter(Boolean),
 	};
 }
 
@@ -164,13 +168,15 @@ type JsonLdSchema = Record<string, any>;
 /**
  * Generate all product page JSON-LD schemas combined
  */
-export function generateProductPageJsonLd(
+export async function generateProductPageJsonLd(
 	product: ProductType
-): JsonLdSchema[] {
-	const schemas: JsonLdSchema[] = [
+): Promise<JsonLdSchema[]> {
+	const [productSchema, breadcrumbSchema] = await Promise.all([
 		generateProductJsonLd(product),
 		generateBreadcrumbJsonLd(product, product.categories?.[0]?.name),
-	];
+	]);
+
+	const schemas: JsonLdSchema[] = [productSchema, breadcrumbSchema];
 
 	// Add FAQ schema if product has Q&A
 	if (product.qa && product.qa.length > 0) {

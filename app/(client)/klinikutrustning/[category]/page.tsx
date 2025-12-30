@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -128,7 +128,10 @@ export async function generateMetadata({
 	params,
 }: CategoryPageProps): Promise<Metadata> {
 	const { category: categorySlug } = await params;
-	const category = await getCategory(categorySlug);
+	const [category, siteConfig] = await Promise.all([
+		getCategory(categorySlug),
+		getSiteConfig(),
+	]);
 
 	if (!category) {
 		return {

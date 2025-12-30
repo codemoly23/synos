@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import {
 	getNewestProducts,
 	getActiveCategories,
@@ -37,23 +37,27 @@ import type { ICategory } from "@/models/category.model";
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-	title: `Produkter | ${siteConfig.name}`,
-	description:
-		"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.",
-	openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+	const siteConfig = await getSiteConfig();
+
+	return {
 		title: `Produkter | ${siteConfig.name}`,
 		description:
-			"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet.",
-		url: `${siteConfig.url}/produkter`,
-		siteName: siteConfig.name,
-		locale: "sv_SE",
-		type: "website",
-	},
-	alternates: {
-		canonical: `${siteConfig.url}/produkter`,
-	},
-};
+			"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.",
+		openGraph: {
+			title: `Produkter | ${siteConfig.name}`,
+			description:
+				"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet.",
+			url: `${siteConfig.url}/produkter`,
+			siteName: siteConfig.name,
+			locale: "sv_SE",
+			type: "website",
+		},
+		alternates: {
+			canonical: `${siteConfig.url}/produkter`,
+		},
+	};
+}
 
 // Product Card Component
 function ProductCardDB({

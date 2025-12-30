@@ -45,6 +45,9 @@ export const CACHE_TAGS = {
 
 	// Sitemaps
 	SITEMAPS: "sitemaps",
+
+	// Site Settings (global settings affecting layout)
+	SITE_SETTINGS: "site-settings",
 } as const;
 
 // Revalidation paths

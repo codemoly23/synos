@@ -1,15 +1,22 @@
 import Link from "next/link";
 import { ImageComponent } from "./image-component";
 
+const DEFAULT_LOGO_URL = "/storage/synos-logo-beige-glow.svg";
+
 interface LogoProps {
 	asLink?: boolean;
 	className?: string;
+	logoUrl?: string;
 }
 
-const Logo = ({ asLink = true, className = "shrink-0" }: LogoProps) => {
+const Logo = ({
+	asLink = true,
+	className = "shrink-0",
+	logoUrl = DEFAULT_LOGO_URL,
+}: LogoProps) => {
 	const image = (
 		<ImageComponent
-			src="/storage/synos-logo-beige-glow.svg"
+			src={logoUrl || DEFAULT_LOGO_URL}
 			alt="Synos Medical"
 			width={0}
 			height={0}

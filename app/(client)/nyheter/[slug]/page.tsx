@@ -6,7 +6,7 @@ import {
 	getRelatedArticles,
 } from "@/lib/data/blog";
 import { blogPostService } from "@/lib/services/blog-post.service";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { NyheterDetailHero } from "../_components/nyheter-detail-hero";
 import { NyheterContent } from "../_components/nyheter-content";
 import { NyheterRelated } from "../_components/nyheter-related";
@@ -53,7 +53,10 @@ export async function generateMetadata({
 	params,
 }: NyheterDetailPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const article = await getArticleBySlug(slug);
+	const [article, siteConfig] = await Promise.all([
+		getArticleBySlug(slug),
+		getSiteConfig(),
+	]);
 
 	if (!article) {
 		return {
@@ -113,7 +116,10 @@ export default async function NyheterDetailPage({
 	params,
 }: NyheterDetailPageProps) {
 	const { slug } = await params;
-	const article = await getArticleBySlug(slug);
+	const [article, siteConfig] = await Promise.all([
+		getArticleBySlug(slug),
+		getSiteConfig(),
+	]);
 
 	if (!article) {
 		notFound();

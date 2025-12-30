@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { getAllArticles } from "@/lib/data/blog";
 import { NyheterCard } from "../../_components/nyheter-card";
 import { NyheterHero } from "../../_components/nyheter-hero";
@@ -86,7 +86,10 @@ export async function generateMetadata({
 	params,
 }: AuthorPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const { articles, author } = await getArticlesByAuthor(slug);
+	const [{ articles, author }, siteConfig] = await Promise.all([
+		getArticlesByAuthor(slug),
+		getSiteConfig(),
+	]);
 
 	if (!author || articles.length === 0) {
 		return {

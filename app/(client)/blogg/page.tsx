@@ -1,6 +1,10 @@
 import { Metadata } from "next";
-import { getAllArticles, getAllCategories, getRecentArticles } from "@/lib/data/blog";
-import { siteConfig } from "@/config/site";
+import {
+	getAllArticles,
+	getAllCategories,
+	getRecentArticles,
+} from "@/lib/data/blog";
+import { getSiteConfig } from "@/config/site";
 import { BlogListingClient } from "./_components/blog-listing-client";
 // import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
@@ -14,55 +18,57 @@ import { BlogListingClient } from "./_components/blog-listing-client";
 // ISR: Revalidate every 24 hours
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-	title: "Blogg – Nyheter & Artiklar | Synos Medical",
-	description:
-		"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
-	keywords: [
-		"blogg",
-		"nyheter",
-		"artiklar",
-		"hårborttagning",
-		"tatueringsborttagning",
-		"hudvård",
-		"laser",
-		"klinikutrustning",
-	],
-	openGraph: {
-		title: "Blogg – Nyheter & Artiklar | Synos Medical",
+export async function generateMetadata(): Promise<Metadata> {
+	const siteConfig = await getSiteConfig();
+
+	return {
+		title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
 		description:
-			"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-		url: `${siteConfig.url}/blogg`,
-		siteName: siteConfig.name,
-		images: [
-			{
-				url: `${siteConfig.url}/images/og/blogg.jpg`,
-				width: 1200,
-				height: 630,
-				alt: "Synos Medical Blogg",
-			},
+			"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
+		keywords: [
+			"blogg",
+			"nyheter",
+			"artiklar",
+			"hårborttagning",
+			"tatueringsborttagning",
+			"hudvård",
+			"laser",
+			"klinikutrustning",
 		],
-		locale: "sv_SE",
-		type: "website",
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Blogg – Nyheter & Artiklar | Synos Medical",
-		description:
-			"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-		images: [`${siteConfig.url}/images/og/blogg.jpg`],
-	},
-	alternates: {
-		canonical: `${siteConfig.url}/blogg`,
-	},
-};
+		openGraph: {
+			title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
+			description:
+				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+			url: `${siteConfig.url}/blogg`,
+			siteName: siteConfig.name,
+			images: [
+				{
+					url: `${siteConfig.url}/images/og/blogg.jpg`,
+					width: 1200,
+					height: 630,
+					alt: `${siteConfig.name} Blogg`,
+				},
+			],
+			locale: "sv_SE",
+			type: "website",
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
+			description:
+				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+			images: [`${siteConfig.url}/images/og/blogg.jpg`],
+		},
+		alternates: {
+			canonical: `${siteConfig.url}/blogg`,
+		},
+	};
+}
 
 export default async function BlogPage() {
-	const [articles, categories, recentArticles] = await Promise.all([
-		getAllArticles(),
-		getAllCategories(),
-		getRecentArticles(5),
-	]);
+	const [articles, categories, recentArticles, siteConfig] = await Promise.all(
+		[getAllArticles(), getAllCategories(), getRecentArticles(5), getSiteConfig()]
+	);
 
 	return (
 		<>
@@ -73,7 +79,7 @@ export default async function BlogPage() {
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
 						"@type": "Blog",
-						name: "Synos Medical Blogg",
+						name: `${siteConfig.name} Blogg`,
 						description:
 							"Nyheter och artiklar om klinikutrustning, laserbehandlingar och estetisk medicin.",
 						url: `${siteConfig.url}/blogg`,

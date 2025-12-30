@@ -3,10 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
-import { siteConfig } from "@/config/site";
 import { GTM_ID } from "@/lib/analytics/gtm";
 import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
 import { ToasterProvider } from "@/components/providers/toaster-provider";
+import { getSiteSettings } from "@/lib/services/site-settings.service";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -18,60 +18,89 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-	metadataBase: new URL(siteConfig.url),
-	title: {
-		default: `${siteConfig.name} - Sveriges ledande leverantör av MDR-certifierad klinikutrustning`,
-		template: `%s | ${siteConfig.name}`,
-	},
-	description: siteConfig.description,
-	keywords: [
-		"laser",
-		"medicinsk utrustning",
-		"hårborttagning",
-		"tatueringsborttagning",
-		"hudföryngring",
-		"MDR-certifierad",
-		"klinikutrustning",
-		"Soprano",
-		"Harmony XL PRO",
-	],
-	authors: [{ name: siteConfig.company.name }],
-	creator: siteConfig.company.name,
-	openGraph: {
-		type: "website",
-		locale: "sv_SE",
-		url: siteConfig.url,
-		title: siteConfig.name,
-		description: siteConfig.description,
-		siteName: siteConfig.name,
-		images: [
-			{
-				url: siteConfig.ogImage,
-				width: 1200,
-				height: 630,
-				alt: siteConfig.name,
-			},
-		],
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: siteConfig.name,
-		description: siteConfig.description,
-		images: [siteConfig.ogImage],
-	},
-	robots: {
-		index: true,
-		follow: true,
-		googleBot: {
+// Default keywords as fallback
+const DEFAULT_KEYWORDS = [
+	"laser",
+	"medicinsk utrustning",
+	"hårborttagning",
+	"tatueringsborttagning",
+	"hudföryngring",
+	"MDR-certifierad",
+	"klinikutrustning",
+	"Soprano",
+	"Harmony XL PRO",
+];
+
+/**
+ * Generate dynamic metadata from database site settings
+ */
+export async function generateMetadata(): Promise<Metadata> {
+	const settings = await getSiteSettings();
+
+	const siteUrl =
+		process.env.SITE_URL ||
+		process.env.BETTER_AUTH_URL ||
+		"http://localhost:3000";
+
+	const siteName = settings.seo?.siteName || "Synos Medical";
+	const siteDescription =
+		settings.seo?.siteDescription ||
+		"Sveriges ledande leverantör av MDR-certifierad klinikutrustning för laser, hårborttagning, tatueringsborttagning och hudföryngring.";
+	const ogImage = settings.seo?.ogImage || "/og-image.jpg";
+	const keywords =
+		settings.seo?.keywords && settings.seo.keywords.length > 0
+			? settings.seo.keywords
+			: DEFAULT_KEYWORDS;
+	const companyName = settings.companyName || "Synos Medical AB";
+
+	return {
+		metadataBase: new URL(siteUrl),
+		title: {
+			default: `${siteName} - Sveriges ledande leverantör av MDR-certifierad klinikutrustning`,
+			template: `%s | ${siteName}`,
+		},
+		description: siteDescription,
+		keywords,
+		authors: [{ name: companyName }],
+		creator: companyName,
+		openGraph: {
+			type: "website",
+			locale: "sv_SE",
+			url: siteUrl,
+			title: siteName,
+			description: siteDescription,
+			siteName: siteName,
+			images: ogImage
+				? [
+						{
+							url: ogImage,
+							width: 1200,
+							height: 630,
+							alt: siteName,
+						},
+				  ]
+				: [],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: siteName,
+			description: siteDescription,
+			images: ogImage ? [ogImage] : [],
+			creator: settings.seo?.twitterHandle,
+		},
+		robots: {
 			index: true,
 			follow: true,
-			"max-video-preview": -1,
-			"max-image-preview": "large",
-			"max-snippet": -1,
+			googleBot: {
+				index: true,
+				follow: true,
+				"max-video-preview": -1,
+				"max-image-preview": "large",
+				"max-snippet": -1,
+			},
 		},
-	},
-};
+	};
+}
 
 export default function RootLayout({
 	children,

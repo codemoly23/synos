@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { getAllArticles } from "@/lib/data/blog";
 import { BlogCard } from "../../_components/blog-card";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -87,7 +87,10 @@ export async function generateMetadata({
 	params,
 }: AuthorPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const { articles, author } = await getArticlesByAuthor(slug);
+	const [{ articles, author }, siteConfig] = await Promise.all([
+		getArticlesByAuthor(slug),
+		getSiteConfig(),
+	]);
 
 	if (!author || articles.length === 0) {
 		return {
@@ -162,11 +165,14 @@ export default async function BlogAuthorPage({ params }: AuthorPageProps) {
 							{author.role}
 						</p>
 						{author.bio && (
-							<p className="max-w-2xl text-muted-foreground">{author.bio}</p>
+							<p className="max-w-2xl text-muted-foreground">
+								{author.bio}
+							</p>
 						)}
 						<p className="mt-4 text-sm text-muted-foreground">
-							{articles.length} publicerad{articles.length !== 1 ? "e" : ""}{" "}
-							artikel{articles.length !== 1 ? "ar" : ""}
+							{articles.length} publicerad
+							{articles.length !== 1 ? "e" : ""} artikel
+							{articles.length !== 1 ? "ar" : ""}
 						</p>
 					</div>
 				</div>

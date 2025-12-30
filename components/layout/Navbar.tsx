@@ -28,9 +28,10 @@ import { NavbarSearch } from "./NavbarSearch";
 
 interface NavbarProps {
 	config: SiteConfigType;
+	logoUrl?: string;
 }
 
-export function Navbar({ config }: NavbarProps) {
+export function Navbar({ config, logoUrl }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 	const { data: navigationData } = useNavigation();
@@ -60,7 +61,7 @@ export function Navbar({ config }: NavbarProps) {
 					>
 						<div className="flex bg-none items-center justify-between gap-4">
 							{/* Logo */}
-							<Logo />
+							<Logo logoUrl={logoUrl} />
 
 							{/* Desktop Nav */}
 							<div className="hidden lg:flex items-center justify-center flex-1">

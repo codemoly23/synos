@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
@@ -105,7 +105,10 @@ export async function generateMetadata({
 	params,
 }: ProductPageProps): Promise<Metadata> {
 	const { category: categorySlug, slug } = await params;
-	const product = await getProduct(slug);
+	const [product, siteConfig] = await Promise.all([
+		getProduct(slug),
+		getSiteConfig(),
+	]);
 
 	if (!product) {
 		return {
@@ -196,7 +199,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 	}
 
 	// Generate JSON-LD schemas
-	const jsonLdSchemas = generateProductPageJsonLd(product);
+	const jsonLdSchemas = await generateProductPageJsonLd(product);
 
 	return (
 		<>

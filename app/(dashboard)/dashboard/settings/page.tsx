@@ -17,6 +17,9 @@ import {
 	Loader2,
 	Eye,
 	EyeOff,
+	Image,
+	LayoutGrid,
+	GripVertical,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -56,6 +59,12 @@ const officeSchema = z.object({
 	mapEmbedUrl: z.string().optional(),
 });
 
+const footerLinkSchema = z.object({
+	label: z.string().min(1, "Label is required"),
+	href: z.string().min(1, "URL is required"),
+	isExternal: z.boolean(),
+});
+
 const settingsFormSchema = z.object({
 	// Company
 	companyName: z.string().min(1, "Company name is required"),
@@ -86,6 +95,24 @@ const settingsFormSchema = z.object({
 		ogImage: z.string().optional(),
 		keywords: z.array(z.string()).optional(),
 		twitterHandle: z.string().optional(),
+	}),
+
+	// Branding
+	branding: z.object({
+		logoUrl: z.string().optional(),
+		faviconUrl: z.string().optional(),
+	}),
+
+	// Footer
+	footer: z.object({
+		quickLinksTitle: z.string().optional(),
+		contactTitle: z.string().optional(),
+		newsletterTitle: z.string().optional(),
+		quickLinks: z.array(footerLinkSchema).optional(),
+		newsletterDescription: z.string().optional(),
+		newsletterPlaceholder: z.string().optional(),
+		newsletterButtonText: z.string().optional(),
+		bottomLinks: z.array(footerLinkSchema).optional(),
 	}),
 });
 
@@ -119,12 +146,44 @@ export default function SettingsPage() {
 				keywords: [],
 				twitterHandle: "",
 			},
+			branding: {
+				logoUrl: "",
+				faviconUrl: "",
+			},
+			footer: {
+				quickLinksTitle: "Snabblänkar",
+				contactTitle: "Kontakta oss",
+				newsletterTitle: "Håll dig uppdaterad",
+				quickLinks: [],
+				newsletterDescription: "",
+				newsletterPlaceholder: "Din e-postadress",
+				newsletterButtonText: "Prenumerera",
+				bottomLinks: [],
+			},
 		},
 	});
 
 	const { fields, append, remove } = useFieldArray({
 		control: form.control,
 		name: "offices",
+	});
+
+	const {
+		fields: quickLinkFields,
+		append: appendQuickLink,
+		remove: removeQuickLink,
+	} = useFieldArray({
+		control: form.control,
+		name: "footer.quickLinks",
+	});
+
+	const {
+		fields: bottomLinkFields,
+		append: appendBottomLink,
+		remove: removeBottomLink,
+	} = useFieldArray({
+		control: form.control,
+		name: "footer.bottomLinks",
 	});
 
 	// Fetch settings on mount
@@ -163,6 +222,20 @@ export default function SettingsPage() {
 						ogImage: settings.seo?.ogImage || "",
 						keywords: settings.seo?.keywords || [],
 						twitterHandle: settings.seo?.twitterHandle || "",
+					},
+					branding: {
+						logoUrl: settings.branding?.logoUrl || "",
+						faviconUrl: settings.branding?.faviconUrl || "",
+					},
+					footer: {
+						quickLinksTitle: settings.footer?.quickLinksTitle || "Snabblänkar",
+						contactTitle: settings.footer?.contactTitle || "Kontakta oss",
+						newsletterTitle: settings.footer?.newsletterTitle || "Håll dig uppdaterad",
+						quickLinks: settings.footer?.quickLinks || [],
+						newsletterDescription: settings.footer?.newsletterDescription || "",
+						newsletterPlaceholder: settings.footer?.newsletterPlaceholder || "Din e-postadress",
+						newsletterButtonText: settings.footer?.newsletterButtonText || "Prenumerera",
+						bottomLinks: settings.footer?.bottomLinks || [],
 					},
 				});
 			} catch (error) {
@@ -226,7 +299,7 @@ export default function SettingsPage() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<Tabs defaultValue="company" className="space-y-6">
-						<TabsList className="grid w-full grid-cols-4">
+						<TabsList className="grid w-full grid-cols-6">
 							<TabsTrigger value="company" className="flex items-center gap-2">
 								<Building2 className="h-4 w-4" />
 								<span className="hidden sm:inline">Company</span>
@@ -242,6 +315,14 @@ export default function SettingsPage() {
 							<TabsTrigger value="seo" className="flex items-center gap-2">
 								<Search className="h-4 w-4" />
 								<span className="hidden sm:inline">SEO</span>
+							</TabsTrigger>
+							<TabsTrigger value="branding" className="flex items-center gap-2">
+								<Image className="h-4 w-4" />
+								<span className="hidden sm:inline">Branding</span>
+							</TabsTrigger>
+							<TabsTrigger value="footer" className="flex items-center gap-2">
+								<LayoutGrid className="h-4 w-4" />
+								<span className="hidden sm:inline">Footer</span>
 							</TabsTrigger>
 						</TabsList>
 
@@ -832,6 +913,372 @@ export default function SettingsPage() {
 									</CardContent>
 								</Card>
 							</div>
+						</TabsContent>
+
+						{/* Branding Tab */}
+						<TabsContent value="branding" className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Image className="h-5 w-5" />
+										Logo & Favicon
+									</CardTitle>
+									<CardDescription>
+										Upload your brand assets. These will be used across the website.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-6">
+									<FormField
+										control={form.control}
+										name="branding.logoUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Logo</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select logo image (SVG recommended)"
+														galleryTitle="Select Logo"
+													/>
+												</FormControl>
+												<FormDescription>
+													Recommended: SVG format for best quality at all sizes.
+													Used in navigation and footer.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="branding.faviconUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Favicon</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select favicon (ICO or PNG, 32x32px)"
+														galleryTitle="Select Favicon"
+													/>
+												</FormControl>
+												<FormDescription>
+													Recommended: 32x32px ICO or PNG file. This is the
+													small icon shown in browser tabs.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Footer Tab */}
+						<TabsContent value="footer" className="space-y-6">
+							{/* Section Headers Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Section Headers</CardTitle>
+									<CardDescription>
+										Customize the section titles shown in the footer.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid gap-4 sm:grid-cols-3">
+										<FormField
+											control={form.control}
+											name="footer.quickLinksTitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Quick Links Title</FormLabel>
+													<FormControl>
+														<Input placeholder="Snabblänkar" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="footer.contactTitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Contact Title</FormLabel>
+													<FormControl>
+														<Input placeholder="Kontakta oss" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="footer.newsletterTitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Newsletter Title</FormLabel>
+													<FormControl>
+														<Input placeholder="Håll dig uppdaterad" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Quick Links Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center justify-between">
+										<span>Quick Links</span>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												appendQuickLink({ label: "", href: "", isExternal: false })
+											}
+										>
+											<Plus className="h-4 w-4 mr-1" />
+											Add Link
+										</Button>
+									</CardTitle>
+									<CardDescription>
+										Links displayed in the footer quick links section.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{quickLinkFields.length === 0 ? (
+										<div className="text-center py-6 text-muted-foreground">
+											No quick links added yet. Click &quot;Add Link&quot; to add one.
+										</div>
+									) : (
+										quickLinkFields.map((field, index) => (
+											<div
+												key={field.id}
+												className="flex items-start gap-3 p-3 border rounded-lg"
+											>
+												<GripVertical className="h-5 w-5 text-muted-foreground mt-2" />
+												<div className="flex-1 grid gap-3 sm:grid-cols-2">
+													<FormField
+														control={form.control}
+														name={`footer.quickLinks.${index}.label`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel className="text-xs">Label</FormLabel>
+																<FormControl>
+																	<Input placeholder="Link label" {...field} />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`footer.quickLinks.${index}.href`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel className="text-xs">URL</FormLabel>
+																<FormControl>
+																	<Input placeholder="/page-url" {...field} />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+												</div>
+												<FormField
+													control={form.control}
+													name={`footer.quickLinks.${index}.isExternal`}
+													render={({ field }) => (
+														<FormItem className="flex items-center gap-2 space-y-0 mt-6">
+															<FormControl>
+																<Checkbox
+																	checked={field.value}
+																	onCheckedChange={field.onChange}
+																/>
+															</FormControl>
+															<FormLabel className="text-xs font-normal">
+																External
+															</FormLabel>
+														</FormItem>
+													)}
+												/>
+												<Button
+													type="button"
+													variant="ghost"
+													size="sm"
+													onClick={() => removeQuickLink(index)}
+													className="text-destructive hover:text-destructive mt-5"
+												>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
+										))
+									)}
+								</CardContent>
+							</Card>
+
+							{/* Newsletter Settings Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Newsletter Section</CardTitle>
+									<CardDescription>
+										Customize the newsletter signup section in the footer.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="footer.newsletterDescription"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Description</FormLabel>
+												<FormControl>
+													<Textarea
+														placeholder="Prenumerera på vårt nyhetsbrev..."
+														rows={2}
+														{...field}
+													/>
+												</FormControl>
+												<FormDescription>
+													Text shown above the email input field.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField
+											control={form.control}
+											name="footer.newsletterPlaceholder"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Input Placeholder</FormLabel>
+													<FormControl>
+														<Input placeholder="Din e-postadress" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="footer.newsletterButtonText"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Button Text</FormLabel>
+													<FormControl>
+														<Input placeholder="Prenumerera" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Bottom Links Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center justify-between">
+										<span>Bottom Links</span>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												appendBottomLink({ label: "", href: "", isExternal: false })
+											}
+										>
+											<Plus className="h-4 w-4 mr-1" />
+											Add Link
+										</Button>
+									</CardTitle>
+									<CardDescription>
+										Links displayed at the very bottom of the footer (privacy policy, terms, etc.).
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{bottomLinkFields.length === 0 ? (
+										<div className="text-center py-6 text-muted-foreground">
+											No bottom links added yet. Click &quot;Add Link&quot; to add one.
+										</div>
+									) : (
+										bottomLinkFields.map((field, index) => (
+											<div
+												key={field.id}
+												className="flex items-start gap-3 p-3 border rounded-lg"
+											>
+												<GripVertical className="h-5 w-5 text-muted-foreground mt-2" />
+												<div className="flex-1 grid gap-3 sm:grid-cols-2">
+													<FormField
+														control={form.control}
+														name={`footer.bottomLinks.${index}.label`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel className="text-xs">Label</FormLabel>
+																<FormControl>
+																	<Input placeholder="Link label" {...field} />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`footer.bottomLinks.${index}.href`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel className="text-xs">URL</FormLabel>
+																<FormControl>
+																	<Input placeholder="/page-url" {...field} />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+												</div>
+												<FormField
+													control={form.control}
+													name={`footer.bottomLinks.${index}.isExternal`}
+													render={({ field }) => (
+														<FormItem className="flex items-center gap-2 space-y-0 mt-6">
+															<FormControl>
+																<Checkbox
+																	checked={field.value}
+																	onCheckedChange={field.onChange}
+																/>
+															</FormControl>
+															<FormLabel className="text-xs font-normal">
+																External
+															</FormLabel>
+														</FormItem>
+													)}
+												/>
+												<Button
+													type="button"
+													variant="ghost"
+													size="sm"
+													onClick={() => removeBottomLink(index)}
+													className="text-destructive hover:text-destructive mt-5"
+												>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
+										))
+									)}
+								</CardContent>
+							</Card>
 						</TabsContent>
 					</Tabs>
 

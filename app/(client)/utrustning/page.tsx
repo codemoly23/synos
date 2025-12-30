@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -25,32 +25,36 @@ import type { ICategory } from "@/models/category.model";
  * Products link to their category-based URLs: /kategori/[category]/[slug]
  */
 
-export const metadata: Metadata = {
-	title: `Utrustning | ${siteConfig.name}`,
-	description:
-		"Utforska vårt kompletta sortiment av professionell klinikutrustning. MOTUS PRO, Again PRO PLUS, TORO Pico Laser och fler MDR-certifierade lasermaskiner.",
-	keywords: [
-		"utrustning",
-		"lasermaskiner",
-		"klinikutrustning",
-		"MOTUS PRO",
-		"DEKA",
-		"hårborttagning",
-		"tatueringsborttagning",
-	],
-	openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+	const siteConfig = await getSiteConfig();
+
+	return {
 		title: `Utrustning | ${siteConfig.name}`,
 		description:
-			"Utforska vårt kompletta sortiment av professionell klinikutrustning.",
-		url: `${siteConfig.url}/utrustning`,
-		siteName: siteConfig.name,
-		locale: "sv_SE",
-		type: "website",
-	},
-	alternates: {
-		canonical: `${siteConfig.url}/utrustning`,
-	},
-};
+			"Utforska vårt kompletta sortiment av professionell klinikutrustning. MOTUS PRO, Again PRO PLUS, TORO Pico Laser och fler MDR-certifierade lasermaskiner.",
+		keywords: [
+			"utrustning",
+			"lasermaskiner",
+			"klinikutrustning",
+			"MOTUS PRO",
+			"DEKA",
+			"hårborttagning",
+			"tatueringsborttagning",
+		],
+		openGraph: {
+			title: `Utrustning | ${siteConfig.name}`,
+			description:
+				"Utforska vårt kompletta sortiment av professionell klinikutrustning.",
+			url: `${siteConfig.url}/utrustning`,
+			siteName: siteConfig.name,
+			locale: "sv_SE",
+			type: "website",
+		},
+		alternates: {
+			canonical: `${siteConfig.url}/utrustning`,
+		},
+	};
+}
 
 // Revalidate every hour
 export const revalidate = 3600;

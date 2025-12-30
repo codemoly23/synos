@@ -8,11 +8,11 @@
  */
 
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/config/site";
-
-const BASE_URL = siteConfig.url;
+import { getSiteUrl } from "@/config/site";
 
 export default function robots(): MetadataRoute.Robots {
+	const baseUrl = getSiteUrl();
+
 	return {
 		rules: [
 			{
@@ -63,8 +63,8 @@ export default function robots(): MetadataRoute.Robots {
 			},
 		],
 		// Point to the dynamic sitemap
-		sitemap: `${BASE_URL}/sitemap.xml`,
+		sitemap: `${baseUrl}/sitemap.xml`,
 		// Optional: Add host directive for older crawlers
-		host: BASE_URL,
+		host: baseUrl,
 	};
 }
