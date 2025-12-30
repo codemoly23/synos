@@ -8,6 +8,8 @@ import {
 	type IOffice,
 	type ISocialMedia,
 	type ISeoSettings,
+	type IBrandingSettings,
+	type IFooterSettings,
 } from "@/models/site-settings.model";
 
 /**
@@ -23,6 +25,8 @@ export interface UpdateSiteSettingsInput {
 	offices?: IOffice[];
 	socialMedia?: Partial<ISocialMedia>;
 	seo?: Partial<ISeoSettings>;
+	branding?: Partial<IBrandingSettings>;
+	footer?: Partial<IFooterSettings>;
 }
 
 /**
@@ -113,6 +117,22 @@ class SiteSettingsRepository {
 				};
 			}
 
+			if (data.branding !== undefined) {
+				const existing = await this.get();
+				updateData.branding = {
+					...existing.branding,
+					...data.branding,
+				};
+			}
+
+			if (data.footer !== undefined) {
+				const existing = await this.get();
+				updateData.footer = {
+					...existing.footer,
+					...data.footer,
+				};
+			}
+
 			// Upsert: update if exists, create if not - use lean() to get plain object
 			const settings = await SiteSettings.findOneAndUpdate(
 				{},
@@ -188,6 +208,49 @@ class SiteSettingsRepository {
 	async getHeadquarters(): Promise<IOffice | undefined> {
 		const settings = await this.get();
 		return settings.offices.find((office) => office.isHeadquarters);
+	}
+
+	/**
+	 * Get branding settings only
+	 */
+	async getBranding(): Promise<IBrandingSettings> {
+		const settings = await this.get();
+		return (
+			settings.branding || {
+				logoUrl: "/storage/synos-logo-beige-glow.svg",
+			}
+		);
+	}
+
+	/**
+	 * Get footer settings only
+	 */
+	async getFooter(): Promise<IFooterSettings> {
+		const settings = await this.get();
+		return (
+			settings.footer || {
+				quickLinksTitle: "Snabblänkar",
+				contactTitle: "Kontakta oss",
+				newsletterTitle: "Håll dig uppdaterad",
+				quickLinks: [
+					{ label: "Om oss", href: "/om-oss" },
+					{ label: "Produkter", href: "/produkter" },
+					{ label: "Tjänster", href: "/service" },
+					{ label: "Utbildningar", href: "/utbildningar" },
+					{ label: "Nyheter", href: "/nyheter" },
+					{ label: "Kontakt", href: "/kontakt" },
+				],
+				newsletterDescription:
+					"Prenumerera på vårt nyhetsbrev för de senaste produktuppdateringarna och branschnyheter.",
+				newsletterPlaceholder: "Din e-postadress",
+				newsletterButtonText: "Prenumerera",
+				bottomLinks: [
+					{ label: "Integritetspolicy", href: "/integritetspolicy" },
+					{ label: "Villkor", href: "/villkor" },
+					{ label: "Sitemap", href: "/sitemap.xml" },
+				],
+			}
+		);
 	}
 }
 

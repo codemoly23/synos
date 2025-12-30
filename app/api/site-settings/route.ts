@@ -67,14 +67,34 @@ export async function PUT(request: NextRequest) {
 			updatedBy: session.user.id,
 		});
 
-		// Revalidate cache tag for all site settings queries
+		// Revalidate cache tag for all site settings queries (Next.js 16 requires second argument)
 		revalidateTag(SITE_SETTINGS_CACHE_TAG, "max");
 
-		// Revalidate pages that use site settings
+		// Revalidate the root layout - this affects navbar/footer on all pages
 		revalidatePath("/", "layout");
-		revalidatePath("/kontakt");
-		revalidatePath("/om-oss");
-		revalidatePath("/om-oss/juridisk-information");
+
+		// Revalidate key public pages that display site settings
+		const pathsToRevalidate = [
+			"/",
+			"/produkter",
+			"/nyheter",
+			"/blogg",
+			"/om-oss",
+			"/kontakt",
+			"/utbildningar",
+			"/starta-eget",
+			"/faq",
+			"/integritetspolicy",
+			"/villkor",
+		];
+
+		for (const path of pathsToRevalidate) {
+			revalidatePath(path);
+		}
+
+		logger.info("Site settings cache revalidated", {
+			paths: pathsToRevalidate.length,
+		});
 
 		return successResponse(settings, "Site settings updated successfully");
 	} catch (error: unknown) {

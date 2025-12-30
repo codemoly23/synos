@@ -39,6 +39,37 @@ export interface ISeoSettings {
 }
 
 /**
+ * Branding settings interface
+ */
+export interface IBrandingSettings {
+	logoUrl: string; // "/storage/synos-logo-beige-glow.svg"
+	faviconUrl?: string; // "/storage/favicon.ico"
+}
+
+/**
+ * Footer link interface
+ */
+export interface IFooterLink {
+	label: string;
+	href: string;
+	isExternal?: boolean;
+}
+
+/**
+ * Footer settings interface
+ */
+export interface IFooterSettings {
+	quickLinksTitle: string; // "Snabblänkar"
+	contactTitle: string; // "Kontakta oss"
+	newsletterTitle: string; // "Håll dig uppdaterad"
+	quickLinks: IFooterLink[];
+	newsletterDescription: string;
+	newsletterPlaceholder: string; // "Din e-postadress"
+	newsletterButtonText: string; // "Prenumerera"
+	bottomLinks: IFooterLink[];
+}
+
+/**
  * SiteSettings interface extending Mongoose Document
  * Singleton model for site-wide configuration
  */
@@ -63,6 +94,12 @@ export interface ISiteSettings extends Document {
 
 	// SEO Defaults
 	seo: ISeoSettings;
+
+	// Branding (logo, favicon)
+	branding: IBrandingSettings;
+
+	// Footer settings
+	footer: IFooterSettings;
 
 	// Timestamps
 	updatedAt: Date;
@@ -154,6 +191,103 @@ const SeoSettingsSchema = new Schema<ISeoSettings>(
 );
 
 /**
+ * Branding sub-schema
+ */
+const BrandingSettingsSchema = new Schema<IBrandingSettings>(
+	{
+		logoUrl: {
+			type: String,
+			trim: true,
+			default: "/storage/synos-logo-beige-glow.svg",
+		},
+		faviconUrl: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+/**
+ * Footer link sub-schema
+ */
+const FooterLinkSchema = new Schema<IFooterLink>(
+	{
+		label: {
+			type: String,
+			required: [true, "Link label is required"],
+			trim: true,
+		},
+		href: {
+			type: String,
+			required: [true, "Link URL is required"],
+			trim: true,
+		},
+		isExternal: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	{ _id: false }
+);
+
+/**
+ * Footer settings sub-schema
+ */
+const FooterSettingsSchema = new Schema<IFooterSettings>(
+	{
+		quickLinksTitle: {
+			type: String,
+			trim: true,
+			default: "Snabblänkar",
+		},
+		contactTitle: {
+			type: String,
+			trim: true,
+			default: "Kontakta oss",
+		},
+		newsletterTitle: {
+			type: String,
+			trim: true,
+			default: "Håll dig uppdaterad",
+		},
+		quickLinks: {
+			type: [FooterLinkSchema],
+			default: [
+				{ label: "Om oss", href: "/om-oss" },
+				{ label: "Produkter", href: "/produkter" },
+				{ label: "Tjänster", href: "/service" },
+				{ label: "Utbildningar", href: "/utbildningar" },
+				{ label: "Nyheter", href: "/nyheter" },
+				{ label: "Kontakt", href: "/kontakt" },
+			],
+		},
+		newsletterDescription: {
+			type: String,
+			trim: true,
+			default:
+				"Prenumerera på vårt nyhetsbrev för de senaste produktuppdateringarna och branschnyheter.",
+		},
+		newsletterPlaceholder: {
+			type: String,
+			trim: true,
+			default: "Din e-postadress",
+		},
+		newsletterButtonText: {
+			type: String,
+			trim: true,
+			default: "Prenumerera",
+		},
+		bottomLinks: {
+			type: [FooterLinkSchema],
+			default: [
+				{ label: "Integritetspolicy", href: "/integritetspolicy" },
+				{ label: "Villkor", href: "/villkor" },
+				{ label: "Sitemap", href: "/sitemap.xml" },
+			],
+		},
+	},
+	{ _id: false }
+);
+
+/**
  * SiteSettings Schema
  * Singleton model - only one document should exist
  */
@@ -231,6 +365,16 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
 				siteDescription:
 					"Sveriges ledande leverantör av MDR-certifierad klinikutrustning för laser, hårborttagning, tatueringsborttagning och hudföryngring.",
 			},
+		},
+		branding: {
+			type: BrandingSettingsSchema,
+			default: {
+				logoUrl: "/storage/synos-logo-beige-glow.svg",
+			},
+		},
+		footer: {
+			type: FooterSettingsSchema,
+			default: {},
 		},
 	},
 	{

@@ -3,7 +3,13 @@ import {
 	siteSettingsRepository,
 	type SiteSettingsData,
 } from "@/lib/repositories/site-settings.repository";
-import type { IOffice, ISocialMedia, ISeoSettings } from "@/models/site-settings.model";
+import type {
+	IOffice,
+	ISocialMedia,
+	ISeoSettings,
+	IBrandingSettings,
+	IFooterSettings,
+} from "@/models/site-settings.model";
 
 /**
  * Cache tag for site settings
@@ -98,6 +104,34 @@ export const getHeadquarters = unstable_cache(
 		return siteSettingsRepository.getHeadquarters();
 	},
 	["site-settings-headquarters"],
+	{
+		tags: [SITE_SETTINGS_CACHE_TAG],
+		revalidate: 3600,
+	}
+);
+
+/**
+ * Get branding settings only
+ */
+export const getBrandingSettings = unstable_cache(
+	async (): Promise<IBrandingSettings> => {
+		return siteSettingsRepository.getBranding();
+	},
+	["site-settings-branding"],
+	{
+		tags: [SITE_SETTINGS_CACHE_TAG],
+		revalidate: 3600,
+	}
+);
+
+/**
+ * Get footer settings only
+ */
+export const getFooterSettings = unstable_cache(
+	async (): Promise<IFooterSettings> => {
+		return siteSettingsRepository.getFooter();
+	},
+	["site-settings-footer"],
 	{
 		tags: [SITE_SETTINGS_CACHE_TAG],
 		revalidate: 3600,
