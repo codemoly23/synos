@@ -13,14 +13,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "../common/logo";
 import type { SiteConfigType } from "@/config/site";
+import type { IFooterSettings, IFooterLink } from "@/models/site-settings.model";
+
+// Default footer settings
+const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
+	quickLinksTitle: "Snabblänkar",
+	contactTitle: "Kontakta oss",
+	newsletterTitle: "Håll dig uppdaterad",
+	quickLinks: [
+		{ label: "Om oss", href: "/om-oss" },
+		{ label: "Produkter", href: "/produkter" },
+		{ label: "Tjänster", href: "/service" },
+		{ label: "Utbildningar", href: "/utbildningar" },
+		{ label: "Nyheter", href: "/nyheter" },
+		{ label: "Kontakt", href: "/kontakt" },
+	],
+	newsletterDescription:
+		"Prenumerera på vårt nyhetsbrev för de senaste produktuppdateringarna och branschnyheter.",
+	newsletterPlaceholder: "Din e-postadress",
+	newsletterButtonText: "Prenumerera",
+	bottomLinks: [
+		{ label: "Integritetspolicy", href: "/integritetspolicy" },
+		{ label: "Villkor", href: "/villkor" },
+		{ label: "Sitemap", href: "/sitemap.xml" },
+	],
+};
 
 interface FooterProps {
 	config: SiteConfigType;
+	footerSettings?: IFooterSettings;
+	logoUrl?: string;
 }
 
-export function Footer({ config }: FooterProps) {
+export function Footer({
+	config,
+	footerSettings,
+	logoUrl,
+}: FooterProps) {
 	const currentYear = new Date().getFullYear();
 	const primaryAddress = config.company.addresses[0];
+
+	// Merge provided settings with defaults
+	const settings = {
+		quickLinksTitle:
+			footerSettings?.quickLinksTitle || DEFAULT_FOOTER_SETTINGS.quickLinksTitle,
+		contactTitle:
+			footerSettings?.contactTitle || DEFAULT_FOOTER_SETTINGS.contactTitle,
+		newsletterTitle:
+			footerSettings?.newsletterTitle || DEFAULT_FOOTER_SETTINGS.newsletterTitle,
+		quickLinks:
+			footerSettings?.quickLinks?.length
+				? footerSettings.quickLinks
+				: DEFAULT_FOOTER_SETTINGS.quickLinks,
+		newsletterDescription:
+			footerSettings?.newsletterDescription ||
+			DEFAULT_FOOTER_SETTINGS.newsletterDescription,
+		newsletterPlaceholder:
+			footerSettings?.newsletterPlaceholder ||
+			DEFAULT_FOOTER_SETTINGS.newsletterPlaceholder,
+		newsletterButtonText:
+			footerSettings?.newsletterButtonText ||
+			DEFAULT_FOOTER_SETTINGS.newsletterButtonText,
+		bottomLinks:
+			footerSettings?.bottomLinks?.length
+				? footerSettings.bottomLinks
+				: DEFAULT_FOOTER_SETTINGS.bottomLinks,
+	};
 
 	// Social media icons mapping
 	const socialIcons = [
@@ -29,6 +87,26 @@ export function Footer({ config }: FooterProps) {
 		{ Icon: Linkedin, href: config.links.linkedin, label: "LinkedIn" },
 	];
 
+	const renderLink = (link: IFooterLink) => {
+		if (link.isExternal) {
+			return (
+				<a
+					href={link.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="hover:text-primary transition-colors"
+				>
+					{link.label}
+				</a>
+			);
+		}
+		return (
+			<Link href={link.href} className="hover:text-primary transition-colors">
+				{link.label}
+			</Link>
+		);
+	};
+
 	return (
 		<footer className="bg-secondary text-primary-foreground pt-16 pb-24 md:pb-8">
 			<div className="_container">
@@ -36,7 +114,7 @@ export function Footer({ config }: FooterProps) {
 					{/* Brand Column */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2 mb-4">
-							<Logo />
+							<Logo logoUrl={logoUrl} />
 						</div>
 						<p className="text-primary-foreground/70 text-sm leading-relaxed">
 							{config.description}
@@ -59,31 +137,17 @@ export function Footer({ config }: FooterProps) {
 
 					{/* Quick Links */}
 					<div>
-						<h4 className="font-bold text-lg mb-6">Snabblänkar</h4>
+						<h4 className="font-bold text-lg mb-6">{settings.quickLinksTitle}</h4>
 						<ul className="space-y-3 text-sm text-primary-foreground/70">
-							{[
-								{ label: "Om oss", href: "/om-oss" },
-								{ label: "Produkter", href: "/produkter" },
-								{ label: "Tjänster", href: "/service" },
-								{ label: "Utbildningar", href: "/utbildningar" },
-								{ label: "Nyheter", href: "/nyheter" },
-								{ label: "Kontakt", href: "/kontakt" },
-							].map((item) => (
-								<li key={item.href}>
-									<Link
-										href={item.href}
-										className="hover:text-primary transition-colors"
-									>
-										{item.label}
-									</Link>
-								</li>
+							{settings.quickLinks.map((item) => (
+								<li key={item.href}>{renderLink(item)}</li>
 							))}
 						</ul>
 					</div>
 
 					{/* Contact Info */}
 					<div>
-						<h4 className="font-bold text-lg mb-6">Kontakta oss</h4>
+						<h4 className="font-bold text-lg mb-6">{settings.contactTitle}</h4>
 						<ul className="space-y-4 text-sm text-primary-foreground/70">
 							{primaryAddress && (
 								<li className="flex items-start gap-3">
@@ -98,10 +162,7 @@ export function Footer({ config }: FooterProps) {
 							<li className="flex items-center gap-3">
 								<Phone className="h-5 w-5 text-primary shrink-0" />
 								<a
-									href={`tel:${config.company.phone.replace(
-										/\s/g,
-										""
-									)}`}
+									href={`tel:${config.company.phone.replace(/\s/g, "")}`}
 									className="hover:text-primary transition-colors"
 								>
 									{config.company.phone}
@@ -121,20 +182,17 @@ export function Footer({ config }: FooterProps) {
 
 					{/* Newsletter */}
 					<div>
-						<h4 className="font-bold text-lg mb-6">
-							Håll dig uppdaterad
-						</h4>
+						<h4 className="font-bold text-lg mb-6">{settings.newsletterTitle}</h4>
 						<p className="text-sm text-primary-foreground/70 mb-4">
-							Prenumerera på vårt nyhetsbrev för de senaste
-							produktuppdateringarna och branschnyheter.
+							{settings.newsletterDescription}
 						</p>
 						<div className="flex flex-col gap-3">
 							<Input
-								placeholder="Din e-postadress"
+								placeholder={settings.newsletterPlaceholder}
 								className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary"
 							/>
 							<Button className="bg-primary hover:bg-primary-hover text-white w-full">
-								Prenumerera
+								{settings.newsletterButtonText}
 							</Button>
 						</div>
 					</div>
@@ -148,15 +206,19 @@ export function Footer({ config }: FooterProps) {
 						förbehållna.
 					</p>
 					<div className="flex gap-6">
-						<Link href="/integritetspolicy" className="hover:text-white">
-							Integritetspolicy
-						</Link>
-						<Link href="/villkor" className="hover:text-white">
-							Villkor
-						</Link>
-						<Link href="/sitemap.xml" className="hover:text-white">
-							Sitemap
-						</Link>
+						{settings.bottomLinks.map((link) => (
+							<Link
+								key={link.href}
+								href={link.href}
+								className="hover:text-white"
+								{...(link.isExternal && {
+									target: "_blank",
+									rel: "noopener noreferrer",
+								})}
+							>
+								{link.label}
+							</Link>
+						))}
 					</div>
 				</div>
 			</div>
