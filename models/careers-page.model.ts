@@ -83,22 +83,39 @@ const CareersBenefitsSectionSchema = new Schema<ICareersBenefitsSection>(
 // JOB OPENING
 // ============================================================================
 export interface ICareersJobOpening {
+	_id?: string;
+	slug?: string;
 	title?: string;
 	location?: string;
-	type?: string;
-	description?: string;
+	workType?: string; // e.g., "Home-based", "On-site", "Hybrid", "Remote"
+	employmentType?: string; // e.g., "Full Time", "Part Time", "Contract"
+	shortDescription?: string; // Brief description for list view
+	featuredImage?: string; // Image URL for detail page hero
+	description?: string; // Full description (rich text) for detail page
+	requirements?: string[]; // List of requirements with checkmarks
+	responsibilities?: string[]; // List of responsibilities with checkmarks
 	applyLink?: string;
+	isActive?: boolean;
+	publishedAt?: Date | string;
 }
 
 const CareersJobOpeningSchema = new Schema<ICareersJobOpening>(
 	{
+		slug: { type: String, trim: true },
 		title: { type: String, trim: true },
 		location: { type: String, trim: true },
-		type: { type: String, trim: true },
+		workType: { type: String, trim: true },
+		employmentType: { type: String, trim: true },
+		shortDescription: { type: String, trim: true },
+		featuredImage: { type: String, trim: true },
 		description: { type: String, trim: true },
+		requirements: { type: [String], default: [] },
+		responsibilities: { type: [String], default: [] },
 		applyLink: { type: String, trim: true },
+		isActive: { type: Boolean, default: true },
+		publishedAt: { type: Date, default: Date.now },
 	},
-	{ _id: false }
+	{ _id: true }
 );
 
 // ============================================================================
@@ -140,6 +157,48 @@ const CareersValuesSectionSchema = new Schema<ICareersValuesSection>(
 );
 
 // ============================================================================
+// CONTACT SIDEBAR SECTION (Always Nearby)
+// ============================================================================
+export interface ICareersContactSidebar {
+	title?: string;
+	address?: string;
+	email?: string;
+	phone?: string;
+	secondaryPhone?: string;
+	formTitle?: string; // e.g., "Wave Hi!" or "Say, Hello!"
+}
+
+const CareersContactSidebarSchema = new Schema<ICareersContactSidebar>(
+	{
+		title: { type: String, trim: true, default: "Always Nearby" },
+		address: { type: String, trim: true },
+		email: { type: String, trim: true },
+		phone: { type: String, trim: true },
+		secondaryPhone: { type: String, trim: true },
+		formTitle: { type: String, trim: true, default: "Wave Hi!" },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// EXPERT CTA SECTION (Talk To A Trading Expert)
+// ============================================================================
+export interface ICareersExpertCta {
+	badge?: string;
+	title?: string;
+	subtitle?: string;
+}
+
+const CareersExpertCtaSchema = new Schema<ICareersExpertCta>(
+	{
+		badge: { type: String, trim: true, default: "We Support You" },
+		title: { type: String, trim: true, default: "Talk To An Expert" },
+		subtitle: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
 // SEO
 // ============================================================================
 export interface ICareersPageSeo {
@@ -167,6 +226,8 @@ export interface ICareersPage extends Document {
 	benefitsSection: ICareersBenefitsSection;
 	jobOpeningsSection: ICareersJobOpeningsSection;
 	valuesSection: ICareersValuesSection;
+	contactSidebar: ICareersContactSidebar;
+	expertCta: ICareersExpertCta;
 	seo: ICareersPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -188,6 +249,8 @@ const CareersPageSchema = new Schema<ICareersPage>(
 		benefitsSection: { type: CareersBenefitsSectionSchema, default: {} },
 		jobOpeningsSection: { type: CareersJobOpeningsSectionSchema, default: {} },
 		valuesSection: { type: CareersValuesSectionSchema, default: {} },
+		contactSidebar: { type: CareersContactSidebarSchema, default: {} },
+		expertCta: { type: CareersExpertCtaSchema, default: {} },
 		seo: { type: CareersPageSeoSchema, default: {} },
 	},
 	{

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { careersPageService } from "@/lib/services/careers-page.service";
-import { CareersPageClient } from "./careers-page-client";
+import { CareersListing } from "./_components/careers-listing";
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
-	const data = await careersPageService.getCareersPage();
+	const data = await careersPageService.getPublicCareersPage();
 
 	return {
 		title: data.seo?.title || "Lediga Tjänster | Synos Medical",
@@ -21,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LedigaTjansterPage() {
-	const data = await careersPageService.getCareersPage();
+	const data = await careersPageService.getPublicCareersPage();
 
-	return <CareersPageClient data={data} />;
+	return <CareersListing data={data} />;
 }
