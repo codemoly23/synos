@@ -4,13 +4,23 @@ import {
 	getAboutPageModelSync,
 	type IAboutPage,
 	type IAboutHeroSection,
-	type IAboutContentSection,
-	type IAboutContactSection,
-	type IAboutFeatureCard,
-	type IAboutCompanyInfo,
+	type IAboutMissionSection,
+	type IAboutStat,
+	type IAboutImageGallerySection,
+	type IAboutFaqSection,
+	type IAboutTestimonialsSection,
+	type IAboutPartnersSection,
+	type IAboutCtaSection,
 	type IAboutSectionVisibility,
 	type IAboutPageSeo,
 } from "@/models/about-page.model";
+
+/**
+ * Helper to convert Mongoose documents to plain serializable objects
+ */
+function toPlainObject<T>(data: T): T {
+	return JSON.parse(JSON.stringify(data));
+}
 
 /**
  * Type for updating about page
@@ -18,10 +28,13 @@ import {
 export interface UpdateAboutPageInput {
 	sectionVisibility?: IAboutSectionVisibility;
 	hero?: Partial<IAboutHeroSection>;
-	contentSections?: IAboutContentSection[];
-	contactSection?: Partial<IAboutContactSection>;
-	featureCards?: IAboutFeatureCard[];
-	companyInfo?: Partial<IAboutCompanyInfo>;
+	mission?: Partial<IAboutMissionSection>;
+	stats?: IAboutStat[];
+	imageGallery?: Partial<IAboutImageGallerySection>;
+	faq?: Partial<IAboutFaqSection>;
+	testimonials?: Partial<IAboutTestimonialsSection>;
+	partners?: Partial<IAboutPartnersSection>;
+	cta?: Partial<IAboutCtaSection>;
 	seo?: Partial<IAboutPageSeo>;
 }
 
@@ -48,7 +61,7 @@ class AboutPageRepository {
 			aboutPage = created.toObject() as AboutPageData;
 		}
 
-		return aboutPage;
+		return toPlainObject(aboutPage);
 	}
 
 	/**
@@ -72,26 +85,34 @@ class AboutPageRepository {
 			});
 		}
 
-		if (data.contentSections) {
-			updateData.contentSections = data.contentSections;
+		if (data.mission) {
+			updateData.mission = data.mission;
 		}
 
-		if (data.contactSection) {
-			Object.entries(data.contactSection).forEach(([key, value]) => {
+		if (data.stats) {
+			updateData.stats = data.stats;
+		}
+
+		if (data.imageGallery) {
+			updateData.imageGallery = data.imageGallery;
+		}
+
+		if (data.faq) {
+			updateData.faq = data.faq;
+		}
+
+		if (data.testimonials) {
+			updateData.testimonials = data.testimonials;
+		}
+
+		if (data.partners) {
+			updateData.partners = data.partners;
+		}
+
+		if (data.cta) {
+			Object.entries(data.cta).forEach(([key, value]) => {
 				if (value !== undefined) {
-					updateData[`contactSection.${key}`] = value;
-				}
-			});
-		}
-
-		if (data.featureCards) {
-			updateData.featureCards = data.featureCards;
-		}
-
-		if (data.companyInfo) {
-			Object.entries(data.companyInfo).forEach(([key, value]) => {
-				if (value !== undefined) {
-					updateData[`companyInfo.${key}`] = value;
+					updateData[`cta.${key}`] = value;
 				}
 			});
 		}
@@ -114,7 +135,7 @@ class AboutPageRepository {
 			throw new Error("Failed to update about page");
 		}
 
-		return aboutPage;
+		return toPlainObject(aboutPage);
 	}
 
 	/**

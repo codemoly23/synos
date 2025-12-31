@@ -1,214 +1,283 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 
-/**
- * CTA Button interface
- */
-export interface ICtaButton {
-	text?: string;
-	href?: string;
-	variant?: "primary" | "outline" | "secondary" | "ghost";
-}
-
-/**
- * Hero Section interface
- */
-export interface IAboutHeroSection {
-	title?: string;
-	subtitle?: string;
-}
-
-/**
- * Content Section interface (for the main text sections)
- */
-export interface IAboutContentSection {
-	title?: string;
-	content?: string; // Can contain multiple paragraphs separated by newlines
-	highlighted?: boolean; // If true, shows with background
-}
-
-/**
- * Feature Card interface
- */
-export interface IAboutFeatureCard {
-	icon?: string; // Lucide icon name
-	title?: string;
-	description?: string;
-	ctaText?: string;
-	ctaHref?: string;
-}
-
-/**
- * Contact Section interface
- */
-export interface IAboutContactSection {
-	title?: string;
-	description?: string;
-	primaryCta?: ICtaButton;
-	secondaryCta?: ICtaButton;
-}
-
-/**
- * Company Info interface
- */
-export interface IAboutCompanyInfo {
-	companyName?: string;
-	organizationNumber?: string;
-	addresses?: string[];
-}
-
-/**
- * Section Visibility interface
- */
+// ============================================================================
+// SECTION VISIBILITY
+// ============================================================================
 export interface IAboutSectionVisibility {
 	hero: boolean;
-	contentSections: boolean;
-	contactSection: boolean;
-	featureCards: boolean;
-	companyInfo: boolean;
-	richContent: boolean;
+	mission: boolean;
+	stats: boolean;
+	imageGallery: boolean;
+	faq: boolean;
+	testimonials: boolean;
+	partners: boolean;
+	cta: boolean;
 }
 
-/**
- * SEO Settings interface
- */
-export interface IAboutPageSeo {
-	title?: string;
-	description?: string;
-	ogImage?: string;
-}
-
-/**
- * AboutPage interface extending Mongoose Document
- */
-export interface IAboutPage extends Document {
-	_id: mongoose.Types.ObjectId;
-
-	// Section Visibility
-	sectionVisibility: IAboutSectionVisibility;
-
-	// Hero Section
-	hero: IAboutHeroSection;
-
-	// Rich Content (HTML from text editor - optional flexible content)
-	richContent?: string;
-
-	// Content Sections (array of text sections)
-	contentSections: IAboutContentSection[];
-
-	// Contact Section
-	contactSection: IAboutContactSection;
-
-	// Feature Cards
-	featureCards: IAboutFeatureCard[];
-
-	// Company Info
-	companyInfo: IAboutCompanyInfo;
-
-	// SEO
-	seo: IAboutPageSeo;
-
-	// Timestamps
-	updatedAt: Date;
-	createdAt: Date;
-}
-
-/**
- * CTA Button sub-schema
- */
-const CtaButtonSchema = new Schema<ICtaButton>(
+const AboutSectionVisibilitySchema = new Schema<IAboutSectionVisibility>(
 	{
-		text: { type: String, trim: true },
-		href: { type: String, trim: true },
-		variant: {
-			type: String,
-			enum: ["primary", "outline", "secondary", "ghost"],
-			default: "primary",
-		},
+		hero: { type: Boolean, default: true },
+		mission: { type: Boolean, default: true },
+		stats: { type: Boolean, default: true },
+		imageGallery: { type: Boolean, default: true },
+		faq: { type: Boolean, default: true },
+		testimonials: { type: Boolean, default: true },
+		partners: { type: Boolean, default: true },
+		cta: { type: Boolean, default: true },
 	},
 	{ _id: false }
 );
 
-/**
- * Hero Section sub-schema
- */
+// ============================================================================
+// HERO SECTION
+// ============================================================================
+export interface IAboutHeroSection {
+	badge?: string;
+	title?: string;
+	subtitle?: string;
+}
+
 const AboutHeroSectionSchema = new Schema<IAboutHeroSection>(
 	{
+		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 	},
 	{ _id: false }
 );
 
-/**
- * Content Section sub-schema
- */
-const AboutContentSectionSchema = new Schema<IAboutContentSection>(
-	{
-		title: { type: String, trim: true },
-		content: { type: String, trim: true },
-		highlighted: { type: Boolean, default: false },
-	},
-	{ _id: false }
-);
+// ============================================================================
+// MISSION SECTION
+// ============================================================================
+export interface IAboutMissionSection {
+	badge?: string;
+	title?: string;
+	description?: string;
+	image?: string;
+	features?: IAboutFeature[];
+}
 
-/**
- * Feature Card sub-schema
- */
-const AboutFeatureCardSchema = new Schema<IAboutFeatureCard>(
+export interface IAboutFeature {
+	icon?: string;
+	title?: string;
+	description?: string;
+}
+
+const AboutFeatureSchema = new Schema<IAboutFeature>(
 	{
 		icon: { type: String, trim: true },
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
-		ctaText: { type: String, trim: true },
-		ctaHref: { type: String, trim: true },
 	},
 	{ _id: false }
 );
 
-/**
- * Contact Section sub-schema
- */
-const AboutContactSectionSchema = new Schema<IAboutContactSection>(
+const AboutMissionSectionSchema = new Schema<IAboutMissionSection>(
+	{
+		badge: { type: String, trim: true },
+		title: { type: String, trim: true },
+		description: { type: String, trim: true },
+		image: { type: String, trim: true },
+		features: { type: [AboutFeatureSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// STATS SECTION
+// ============================================================================
+export interface IAboutStat {
+	value?: string;
+	label?: string;
+	suffix?: string;
+}
+
+const AboutStatSchema = new Schema<IAboutStat>(
+	{
+		value: { type: String, trim: true },
+		label: { type: String, trim: true },
+		suffix: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// IMAGE GALLERY SECTION
+// ============================================================================
+export interface IAboutGalleryImage {
+	src?: string;
+	alt?: string;
+}
+
+export interface IAboutImageGallerySection {
+	title?: string;
+	subtitle?: string;
+	images?: IAboutGalleryImage[];
+}
+
+const AboutGalleryImageSchema = new Schema<IAboutGalleryImage>(
+	{
+		src: { type: String, trim: true },
+		alt: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const AboutImageGallerySectionSchema = new Schema<IAboutImageGallerySection>(
+	{
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+		images: { type: [AboutGalleryImageSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// FAQ SECTION
+// ============================================================================
+export interface IAboutFaqItem {
+	question?: string;
+	answer?: string;
+}
+
+export interface IAboutFaqSection {
+	title?: string;
+	subtitle?: string;
+	items?: IAboutFaqItem[];
+}
+
+const AboutFaqItemSchema = new Schema<IAboutFaqItem>(
+	{
+		question: { type: String, trim: true },
+		answer: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const AboutFaqSectionSchema = new Schema<IAboutFaqSection>(
+	{
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+		items: { type: [AboutFaqItemSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// TESTIMONIALS SECTION
+// ============================================================================
+export interface IAboutTestimonial {
+	quote?: string;
+	author?: string;
+	role?: string;
+	company?: string;
+	image?: string;
+	rating?: number;
+}
+
+export interface IAboutTestimonialsSection {
+	title?: string;
+	subtitle?: string;
+	testimonials?: IAboutTestimonial[];
+}
+
+const AboutTestimonialSchema = new Schema<IAboutTestimonial>(
+	{
+		quote: { type: String, trim: true },
+		author: { type: String, trim: true },
+		role: { type: String, trim: true },
+		company: { type: String, trim: true },
+		image: { type: String, trim: true },
+		rating: { type: Number, min: 1, max: 5, default: 5 },
+	},
+	{ _id: false }
+);
+
+const AboutTestimonialsSectionSchema = new Schema<IAboutTestimonialsSection>(
+	{
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+		testimonials: { type: [AboutTestimonialSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// PARTNERS SECTION
+// ============================================================================
+export interface IAboutPartner {
+	name?: string;
+	logo?: string;
+	url?: string;
+}
+
+export interface IAboutPartnersSection {
+	title?: string;
+	subtitle?: string;
+	partners?: IAboutPartner[];
+}
+
+const AboutPartnerSchema = new Schema<IAboutPartner>(
+	{
+		name: { type: String, trim: true },
+		logo: { type: String, trim: true },
+		url: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const AboutPartnersSectionSchema = new Schema<IAboutPartnersSection>(
+	{
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+		partners: { type: [AboutPartnerSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// CTA SECTION
+// ============================================================================
+export interface IAboutCtaButton {
+	text?: string;
+	href?: string;
+}
+
+export interface IAboutCtaSection {
+	title?: string;
+	description?: string;
+	primaryCta?: IAboutCtaButton;
+	secondaryCta?: IAboutCtaButton;
+}
+
+const AboutCtaButtonSchema = new Schema<IAboutCtaButton>(
+	{
+		text: { type: String, trim: true },
+		href: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const AboutCtaSectionSchema = new Schema<IAboutCtaSection>(
 	{
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
-		primaryCta: { type: CtaButtonSchema },
-		secondaryCta: { type: CtaButtonSchema },
+		primaryCta: { type: AboutCtaButtonSchema },
+		secondaryCta: { type: AboutCtaButtonSchema },
 	},
 	{ _id: false }
 );
 
-/**
- * Company Info sub-schema
- */
-const AboutCompanyInfoSchema = new Schema<IAboutCompanyInfo>(
-	{
-		companyName: { type: String, trim: true },
-		organizationNumber: { type: String, trim: true },
-		addresses: [{ type: String, trim: true }],
-	},
-	{ _id: false }
-);
+// ============================================================================
+// SEO
+// ============================================================================
+export interface IAboutPageSeo {
+	title?: string;
+	description?: string;
+	ogImage?: string;
+}
 
-/**
- * Section Visibility sub-schema
- */
-const AboutSectionVisibilitySchema = new Schema<IAboutSectionVisibility>(
-	{
-		hero: { type: Boolean, default: true },
-		contentSections: { type: Boolean, default: true },
-		contactSection: { type: Boolean, default: true },
-		featureCards: { type: Boolean, default: true },
-		companyInfo: { type: Boolean, default: true },
-		richContent: { type: Boolean, default: true },
-	},
-	{ _id: false }
-);
-
-/**
- * SEO sub-schema
- */
 const AboutPageSeoSchema = new Schema<IAboutPageSeo>(
 	{
 		title: { type: String, trim: true },
@@ -218,51 +287,49 @@ const AboutPageSeoSchema = new Schema<IAboutPageSeo>(
 	{ _id: false }
 );
 
-/**
- * AboutPage Schema - Singleton model
- */
+// ============================================================================
+// MAIN ABOUT PAGE
+// ============================================================================
+export interface IAboutPage extends Document {
+	_id: mongoose.Types.ObjectId;
+	sectionVisibility: IAboutSectionVisibility;
+	hero: IAboutHeroSection;
+	mission: IAboutMissionSection;
+	stats: IAboutStat[];
+	imageGallery: IAboutImageGallerySection;
+	faq: IAboutFaqSection;
+	testimonials: IAboutTestimonialsSection;
+	partners: IAboutPartnersSection;
+	cta: IAboutCtaSection;
+	seo: IAboutPageSeo;
+	updatedAt: Date;
+	createdAt: Date;
+}
+
 const AboutPageSchema = new Schema<IAboutPage>(
 	{
 		sectionVisibility: {
 			type: AboutSectionVisibilitySchema,
 			default: {
 				hero: true,
-				contentSections: true,
-				contactSection: true,
-				featureCards: true,
-				companyInfo: true,
-				richContent: true,
+				mission: true,
+				stats: true,
+				imageGallery: true,
+				faq: true,
+				testimonials: true,
+				partners: true,
+				cta: true,
 			},
 		},
-		hero: {
-			type: AboutHeroSectionSchema,
-			default: {},
-		},
-		// Rich Content - HTML from text editor for flexible content
-		richContent: {
-			type: String,
-			default: "",
-		},
-		contentSections: {
-			type: [AboutContentSectionSchema],
-			default: [],
-		},
-		contactSection: {
-			type: AboutContactSectionSchema,
-			default: {},
-		},
-		featureCards: {
-			type: [AboutFeatureCardSchema],
-			default: [],
-		},
-		companyInfo: {
-			type: AboutCompanyInfoSchema,
-			default: {},
-		},
-		seo: {
-			type: AboutPageSeoSchema,
-			default: {},
-		},
+		hero: { type: AboutHeroSectionSchema, default: {} },
+		mission: { type: AboutMissionSectionSchema, default: {} },
+		stats: { type: [AboutStatSchema], default: [] },
+		imageGallery: { type: AboutImageGallerySectionSchema, default: {} },
+		faq: { type: AboutFaqSectionSchema, default: {} },
+		testimonials: { type: AboutTestimonialsSectionSchema, default: {} },
+		partners: { type: AboutPartnersSectionSchema, default: {} },
+		cta: { type: AboutCtaSectionSchema, default: {} },
+		seo: { type: AboutPageSeoSchema, default: {} },
 	},
 	{
 		timestamps: true,
