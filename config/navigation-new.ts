@@ -9,36 +9,40 @@ export interface NavItem {
 /**
  * Main Navigation Configuration
  *
- * Aligned with WordPress site structure for SEO consistency.
- * Old WordPress URLs are redirected in next.config.ts
+ * Updated per feedback:
+ * - All items in UPPERCASE
+ * - Produkter renamed to UTRUSTNING
+ * - Added KATEGORI
+ * - Team page under Om Oss
  *
- * WordPress URL → Our URL (redirects configured):
- * - /blogg/ → /nyheter/
- * - /om-oss/varfor-valja-synos/ → /starta-eget/varfor-valja-synos
- * - /kopguide/ → /starta-eget/kopguide
- * - /utbildningar/miniutbildning-online/ → /starta-eget/miniutbildning
- * - /om-oss/jobba-hos-oss/ → /om-oss/lediga-tjanster
- * - /om-oss/integritetspolicy/ → /integritetspolicy
+ * Navigation Order: NYHETER | UTRUSTNING | KATEGORI | STARTA EGET | UTBILDNINGAR | OM OSS | KONTAKT
+ *
+ * Old WordPress URLs are redirected in next.config.ts
  */
 export const mainNavNew: NavItem[] = [
-	// WordPress: "NYHETER OCH ARTIKLAR" → /blogg/
-	// Our site uses /nyheter/ with redirect from /blogg/
+	// NYHETER - News/Blog section
 	{
-		title: "Nyheter och artiklar",
+		title: "NYHETER",
 		href: "/nyheter",
 	},
 
-	// WordPress: "PRODUKTER" (dropdown with categories)
+	// UTRUSTNING (formerly Produkter) - Equipment/Products
 	{
-		title: "Produkter",
+		title: "UTRUSTNING",
 		href: "/produkter",
 		isDynamic: true, // This item loads categories/products from database
 	},
 
-	// WordPress: "STARTA EGET" (dropdown)
-	// Submenu items aligned with WordPress labels
+	// KATEGORI - Categories
 	{
-		title: "Starta Eget",
+		title: "KATEGORI",
+		href: "/kategori",
+		isDynamic: true, // This item loads categories from database
+	},
+
+	// STARTA EGET - Start Your Own Business
+	{
+		title: "STARTA EGET",
 		href: "/starta-eget",
 		items: [
 			{
@@ -56,18 +60,21 @@ export const mainNavNew: NavItem[] = [
 		],
 	},
 
-	// WordPress: "UTBILDNINGAR" → /utbildningar/
+	// UTBILDNINGAR - Training/Education
 	{
-		title: "Utbildningar",
+		title: "UTBILDNINGAR",
 		href: "/utbildningar",
 	},
 
-	// WordPress: "OM OSS" (dropdown)
-	// Submenu items aligned with WordPress labels
+	// OM OSS - About Us (with Team page as submenu)
 	{
-		title: "Om Oss",
+		title: "OM OSS",
 		href: "/om-oss",
 		items: [
+			{
+				title: "Vårt Team",
+				href: "/om-oss/team",
+			},
 			{
 				title: "FAQ",
 				href: "/faq",
@@ -83,9 +90,9 @@ export const mainNavNew: NavItem[] = [
 		],
 	},
 
-	// WordPress: "KONTAKT" → /kontakt/
+	// KONTAKT - Contact
 	{
-		title: "Kontakt",
+		title: "KONTAKT",
 		href: "/kontakt",
 	},
 ];

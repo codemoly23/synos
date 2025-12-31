@@ -23,10 +23,27 @@ export function Hero({ data }: HeroProps) {
 	const hasCertificationCard =
 		data.certificationCard?.title && data.certificationCard?.subtitle;
 	const hasMainImage = !!data.mainImage;
+	const hasMobileImage = !!data.mobileImage;
 
 	return (
-		<section className="relative w-full overflow-hidden bg-slate-100 padding-top pb-16 lg:pb-32">
+		<section className="relative w-full overflow-hidden bg-slate-100 padding-top pb-16 lg:pb-32 min-h-[100svh] lg:min-h-0">
 			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+
+			{/* Mobile Hero Image (full-height on mobile) */}
+			{hasMobileImage && (
+				<div className="lg:hidden absolute inset-0 z-0">
+					<ImageComponent
+						src={data.mobileImage!}
+						alt="Hero Mobile"
+						height={0}
+						width={0}
+						sizes="100vw"
+						wrapperClasses="w-full h-full"
+						className="object-cover w-full h-full"
+					/>
+					<div className="absolute inset-0 bg-gradient-to-t from-slate-100 via-slate-100/80 to-transparent" />
+				</div>
+			)}
 
 			<div className="relative z-20 _container grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 				{/* Left Content */}
