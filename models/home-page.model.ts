@@ -41,6 +41,8 @@ export interface IHeroSection {
 	secondaryCta?: ICtaButton;
 	backgroundImage?: string;
 	mainImage?: string;
+	/** Separate mobile image for responsive hero (full-height on mobile) */
+	mobileImage?: string;
 	trustIndicators?: Array<{
 		icon?: string;
 		text?: string;
@@ -303,6 +305,7 @@ const HeroSectionSchema = new Schema<IHeroSection>(
 		secondaryCta: { type: CtaButtonSchema },
 		backgroundImage: { type: String, trim: true },
 		mainImage: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
 		trustIndicators: [
 			{
 				icon: { type: String, trim: true },

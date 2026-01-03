@@ -53,13 +53,13 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 			<div className="fixed top-3 sm:top-6 left-0 z-50 w-full">
 				<header className={"_container"}>
 					<nav
-						className={`py-2 sm:py-3 transition-all backdrop-blur-md duration-300 rounded-full border ${
+						className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 ${
 							isScrolled
-								? "bg-slate-100/60 border-primary/10 shadow-lg px-3 pl-4 sm:px-4 sm:pl-6!"
+								? "bg-slate-100/60 border-primary/10 shadow-lg"
 								: "border-transparent"
 						}`}
 					>
-						<div className="flex bg-none items-center justify-between gap-4">
+						<div className="flex bg-none items-center justify-between gap-1 lg:gap-2">
 							{/* Logo */}
 							<Logo logoUrl={logoUrl} />
 
@@ -74,7 +74,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 													<>
 														<NavigationMenuTrigger
 															className={cn(
-																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-xs font-medium transition-colors h-8 px-2",
 																useLightText
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
@@ -151,7 +151,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 													<>
 														<NavigationMenuTrigger
 															className={cn(
-																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-sm font-medium transition-colors",
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-xs font-medium transition-colors h-8 px-2",
 																useLightText
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
@@ -185,7 +185,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														href={item.href}
 														className={cn(
 															navigationMenuTriggerStyle(),
-															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors",
+															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors text-xs h-8 px-2",
 															useLightText
 																? "text-white/90! hover:text-white! focus:text-white! active:text-white!"
 																: "text-secondary! hover:text-primary! focus:text-primary! active:text-primary!"
@@ -206,18 +206,18 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 							</div>
 
 							{/* Actions */}
-							<div className="hidden md:flex items-center gap-6 shrink-0">
-								<div className="space-y-2">
+							<div className="hidden xl:flex items-center gap-2 shrink-0">
+								<div className="space-y-0.5">
 									<a
 										href={`mailto:${config.company.email}`}
 										className={cn(
-											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
+											"flex items-center gap-1.5 text-[10px] font-medium hover:underline transition-colors whitespace-nowrap",
 											useLightText
 												? "text-white/90 hover:text-white"
 												: "text-primary"
 										)}
 									>
-										<Mail className="h-4 w-4" />
+										<Mail className="h-3 w-3" />
 										<span>{config.company.email}</span>
 									</a>
 									<a
@@ -226,19 +226,20 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 											""
 										)}`}
 										className={cn(
-											"flex items-center gap-2 text-xs font-medium hover:underline transition-colors whitespace-nowrap",
+											"flex items-center gap-1.5 text-[10px] font-medium hover:underline transition-colors whitespace-nowrap",
 											useLightText
 												? "text-white/90 hover:text-white"
 												: "text-primary hover:text-primary"
 										)}
 									>
-										<Phone className="h-4 w-4" />
+										<Phone className="h-3 w-3" />
 										<span>{config.company.phone}</span>
 									</a>
 								</div>
 								<Button
+									size="sm"
 									className={cn(
-										"rounded-full px-6 shadow-md",
+										"rounded-full px-3 py-1 h-7 text-xs shadow-sm",
 										useLightText
 											? "bg-white text-secondary hover:bg-white/90 shadow-black/10"
 											: "bg-primary hover:bg-primary text-white shadow-secondary/20"
