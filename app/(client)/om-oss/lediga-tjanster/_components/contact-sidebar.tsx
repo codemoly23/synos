@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { MapPin, Mail, Phone, Send, Loader2, User, CheckCircle2 } from "lucide-react";
+import { MapPin, Mail, Phone, Send, Loader2, User, CheckCircle2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ const quickContactSchema = z.object({
 	name: z.string().min(2, "Name is required"),
 	email: z.string().email("Valid email required"),
 	phone: z.string().min(6, "Phone number required"),
+	message: z.string().optional(),
 });
 
 type QuickContactData = z.infer<typeof quickContactSchema>;
@@ -56,6 +57,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 					fullName: formData.name,
 					email: formData.email,
 					phone: formData.phone,
+					message: formData.message,
 					pageUrl: window.location.href,
 				}),
 			});
@@ -93,12 +95,12 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 				{/* Address */}
 				{data?.address && (
 					<div className="flex items-start gap-3">
-						<div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-							<MapPin className="w-5 h-5 text-primary" />
+						<div className="w-12 h-12 rounded-xl bg-[#DFB294] flex items-center justify-center shrink-0">
+							<MapPin className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-semibold text-secondary text-sm">Reach Us</p>
-							<p className="text-muted-foreground text-sm whitespace-pre-line">
+							<p className="font-bold text-secondary text-base mb-1">Reach Us</p>
+							<p className="text-muted-foreground text-sm whitespace-pre-line leading-relaxed">
 								{data.address}
 							</p>
 						</div>
@@ -108,11 +110,11 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 				{/* Email */}
 				{data?.email && (
 					<div className="flex items-start gap-3">
-						<div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-							<Mail className="w-5 h-5 text-primary" />
+						<div className="w-12 h-12 rounded-xl bg-[#DFB294] flex items-center justify-center shrink-0">
+							<Mail className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-semibold text-secondary text-sm">Drop Us Mail</p>
+							<p className="font-bold text-secondary text-base mb-1">Drop Us Mail</p>
 							<a
 								href={`mailto:${data.email}`}
 								className="text-muted-foreground text-sm hover:text-primary transition-colors"
@@ -126,11 +128,11 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 				{/* Phone */}
 				{(data?.phone || data?.secondaryPhone) && (
 					<div className="flex items-start gap-3">
-						<div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-							<Phone className="w-5 h-5 text-primary" />
+						<div className="w-12 h-12 rounded-xl bg-[#DFB294] flex items-center justify-center shrink-0">
+							<Phone className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-semibold text-secondary text-sm">Connect Now</p>
+							<p className="font-bold text-secondary text-base mb-1">Connect Now</p>
 							{data?.phone && (
 								<a
 									href={`tel:${data.phone.replace(/\s/g, "")}`}
@@ -157,8 +159,8 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 
 			{/* Quick Contact Form */}
 			<div>
-				<h4 className="text-lg font-semibold text-secondary mb-4">
-					{data?.formTitle || "Wave Hi!"}
+				<h4 className="text-xl font-bold text-secondary mb-4">
+					{data?.formTitle || "Say, Hello !"}
 				</h4>
 
 				{isSuccess ? (
@@ -225,6 +227,25 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							</div>
 							{errors.phone && (
 								<p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+							)}
+						</div>
+
+						<div>
+							<div className="relative">
+								<MessageSquare className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+								<textarea
+									{...register("message")}
+									placeholder="Additional Message"
+									rows={4}
+									className={cn(
+										"w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors placeholder:text-slate-400",
+										errors.message && "border-red-500"
+									)}
+									disabled={isSubmitting}
+								/>
+							</div>
+							{errors.message && (
+								<p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
 							)}
 						</div>
 

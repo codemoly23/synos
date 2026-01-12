@@ -21,7 +21,7 @@ const Logo = ({
 			width={0}
 			height={0}
 			sizes="100vw"
-			className="h-10 w-28 sm:h-11 sm:w-[130px] lg:h-12 lg:w-[150px] p-2 py-1.5 rounded"
+			className="h-12 w-32 sm:h-14 sm:w-40 lg:h-14 lg:w-40 p-2 py-1.5 rounded"
 		/>
 	);
 

@@ -54,7 +54,9 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 							{/* Featured Image */}
 							{job.featuredImage && (
 								<motion.div
-									variants={fadeUp}
+									initial={{ opacity: 0, y: 60 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.8, ease: "easeOut" }}
 									className="mb-8 rounded-2xl overflow-hidden shadow-lg"
 								>
 									<Image

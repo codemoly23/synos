@@ -5,6 +5,7 @@ import { ArrowRight, ShieldCheck, Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ImageComponent } from "../common/image-component";
+import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import type { IHeroSection } from "@/models/home-page.model";
 
 // Icon mapping for trust indicators
@@ -25,9 +26,37 @@ export function Hero({ data }: HeroProps) {
 	const hasMainImage = !!data.mainImage;
 	const hasMobileImage = !!data.mobileImage;
 
+	// Check if we have a background image
+	const hasBackgroundImage = !!data.backgroundImage;
+	const isDarkBackground = hasBackgroundImage; // If background image exists, assume dark theme
+
+	// Set navbar variant based on background
+	useSetNavbarVariant(isDarkBackground ? "dark-hero" : "default");
+
 	return (
-		<section className="relative w-full overflow-hidden bg-slate-100 padding-top pb-16 lg:pb-32 min-h-[100svh] lg:min-h-0">
-			<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+		<section className={`relative w-full overflow-hidden padding-top pb-16 lg:pb-32 min-h-[100svh] lg:min-h-0 ${
+			isDarkBackground ? 'bg-slate-900' : 'bg-slate-100'
+		}`}>
+			{/* Background Image - if provided from CMS */}
+			{hasBackgroundImage && (
+				<div className="absolute inset-0 z-0">
+					<ImageComponent
+						src={data.backgroundImage!}
+						alt="Hero Background"
+						height={0}
+						width={0}
+						sizes="100vw"
+						wrapperClasses="w-full h-full"
+						className="object-cover w-full h-full opacity-40"
+					/>
+					<div className="absolute inset-0 bg-slate-900/60" />
+				</div>
+			)}
+
+			{/* Pattern Overlay - only show if no background image */}
+			{!hasBackgroundImage && (
+				<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+			)}
 
 			{/* Mobile Hero Image (full-height on mobile) */}
 			{hasMobileImage && (
@@ -64,7 +93,9 @@ export function Hero({ data }: HeroProps) {
 					)}
 
 					{/* Heading */}
-					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-[1.15] tracking-tight">
+					<h1 className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] tracking-tight ${
+						isDarkBackground ? 'text-white' : 'text-secondary'
+					}`}>
 						{data.title} <br />
 						{data.titleHighlight && (
 							<span className="text-gradient-primary text-2xl sm:text-3xl lg:text-4xl">
@@ -75,7 +106,9 @@ export function Hero({ data }: HeroProps) {
 
 					{/* Description */}
 					{data.subtitle && (
-						<p className="text-lg text-slate-600 leading-relaxed max-w-xl">
+						<p className={`text-lg leading-relaxed max-w-xl ${
+							isDarkBackground ? 'text-slate-200' : 'text-slate-600'
+						}`}>
 							{data.subtitle}
 						</p>
 					)}
@@ -99,7 +132,11 @@ export function Hero({ data }: HeroProps) {
 								asChild
 								variant="outline"
 								size="lg"
-								className="rounded-full px-8 h-12 text-base border-secondary/20 text-secondary hover:bg-secondary/5"
+								className={`rounded-full px-8 h-12 text-base ${
+									isDarkBackground
+										? 'border-white/30 text-white hover:bg-white/10 hover:border-white'
+										: 'border-secondary/20 text-secondary hover:bg-secondary/5'
+								}`}
 							>
 								<Link href={data.secondaryCta.href}>
 									{data.secondaryCta.text}
@@ -110,7 +147,9 @@ export function Hero({ data }: HeroProps) {
 
 					{/* Trust Indicators */}
 					{data.trustIndicators && data.trustIndicators.length > 0 && (
-						<div className="flex items-center gap-6 pt-6 text-sm text-slate-600">
+						<div className={`flex items-center gap-6 pt-6 text-sm ${
+							isDarkBackground ? 'text-slate-300' : 'text-slate-600'
+						}`}>
 							{data.trustIndicators
 								.filter((ind) => ind.icon && ind.text)
 								.map((indicator, index) => {

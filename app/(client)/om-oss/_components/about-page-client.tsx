@@ -199,48 +199,37 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 						</motion.div>
 					</div>
 
-					{/* Bottom curve transition */}
-					<div className="absolute bottom-0 left-0 right-0">
-						<svg
-							viewBox="0 0 1440 60"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-							className="w-full h-auto"
-							preserveAspectRatio="none"
-						>
-							<path
-								d="M0 60L1440 60L1440 30C1440 30 1320 0 1080 15C840 30 720 45 480 30C240 15 120 0 0 30L0 60Z"
-								fill="rgb(248 250 252)"
-							/>
-						</svg>
-					</div>
 				</section>
 			)}
 
-			{/* Stats Bar */}
+			{/* Stats Section */}
 			{visibility.stats && hasStats && (
-				<section className="bg-secondary py-8 -mt-1">
+				<section className="py-16 md:py-20 bg-slate-50">
 					<div className="_container">
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+							className="flex flex-wrap justify-center items-center gap-0 -mx-8"
 						>
 							{validStats.map((stat, index) => (
 								<motion.div
 									key={index}
 									variants={fadeUp}
-									className="text-center"
+									className="group relative w-72 h-72 -mx-8"
 								>
-									<p className="text-4xl font-bold text-primary">
-										{stat.value}
-										{stat.suffix && (
-											<span className="text-2xl">{stat.suffix}</span>
-										)}
-									</p>
-									<p className="text-white/70 mt-1">{stat.label}</p>
+									<div className="absolute inset-0 rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 border border-slate-200 group-hover:shadow-2xl group-hover:scale-105 group-hover:border-[#DBA480]">
+										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-[#DBA480]">
+											{stat.value}
+											{stat.suffix && (
+												<span className="text-3xl">{stat.suffix}</span>
+											)}
+										</p>
+										<p className="text-secondary font-medium text-center px-8 leading-relaxed">
+											{stat.label}
+										</p>
+									</div>
 								</motion.div>
 							))}
 						</motion.div>

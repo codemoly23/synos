@@ -32,13 +32,13 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
 		>
 			<Link href={href} className="block group">
 				<div className="relative bg-white rounded-xl border border-slate-200/80 p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 overflow-hidden">
-					{/* Left accent border on hover */}
-					<div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
+					{/* Gradient background on hover */}
+					<div className="absolute inset-0 bg-gradient-to-r from-[#DBA480] to-[#F1DCCF] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-					<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+					<div className="relative z-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 						<div className="flex-1">
 							{/* Job Title */}
-							<h3 className="text-lg font-bold text-secondary group-hover:text-primary transition-colors mb-2">
+							<h3 className="text-lg font-bold text-secondary transition-colors mb-2">
 								{job.title}
 							</h3>
 
@@ -67,8 +67,8 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
 
 						{/* Arrow Button */}
 						<div className="shrink-0 self-start sm:self-center">
-							<div className="w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:border-primary">
-								<ArrowRight className="w-4 h-4 text-slate-400 transition-all duration-300 group-hover:text-white group-hover:translate-x-0.5" />
+							<div className="w-10 h-10 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center transition-all duration-300 group-hover:bg-black group-hover:border-black">
+								<ArrowRight className="w-4 h-4 text-slate-400 transition-all duration-300 group-hover:text-[#F8EEE8] group-hover:-rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
 							</div>
 						</div>
 					</div>

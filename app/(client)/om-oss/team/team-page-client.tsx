@@ -219,37 +219,57 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 
 			{/* Team Grid */}
 			{visibility.teamMembers && hasTeamMembers && (
-				<section className="py-16 md:py-20 lg:py-24">
+				<section className="py-16 md:py-20 lg:py-24 bg-white">
 					<div className="_container">
+						{/* Section Header */}
+						<div className="text-center mb-12">
+							<div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-slate-100 text-sm font-medium text-secondary uppercase tracking-wider">
+								Team Members
+							</div>
+							<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-3">
+								Meet the talented team
+							</h2>
+							<p className="text-lg text-muted-foreground">
+								from our company
+							</p>
+						</div>
+
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+							className="flex flex-wrap justify-center gap-6 lg:gap-8"
 						>
-							{validTeamMembers.map((member, index) => (
+							{validTeamMembers.map((member, index) => {
+								// Calculate if this card should be in the offset row
+								const rowIndex = Math.floor(index / 3);
+								const isOffsetRow = rowIndex % 2 === 1;
+								const isFirstInOffsetRow = isOffsetRow && index % 3 === 0;
+
+								return (
 								<motion.div
 									key={index}
 									variants={fadeUp}
 									custom={index}
-									className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all hover:border-primary/30 hover:shadow-xl"
+									className="group relative overflow-hidden rounded-3xl bg-white border border-slate-100 shadow-md hover:shadow-xl transition-all duration-500 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.334rem)] max-w-[360px]"
+									style={isFirstInOffsetRow ? { marginLeft: 'calc(16.666% + 1rem)' } : {}}
 								>
-									{/* Image or Placeholder */}
-									<div className="relative aspect-square overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-slate-100">
+									{/* Image Container */}
+									<div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
 										{member.image ? (
 											<ImageComponent
 												src={member.image}
 												alt={member.name || "Team member"}
-												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-												height={400}
-												width={400}
+												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+												height={480}
+												width={360}
 												wrapperClasses="w-full h-full"
 											/>
 										) : (
 											<div className="absolute inset-0 flex items-center justify-center">
-												<div className="h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center">
-													<span className="text-4xl font-bold text-primary/60">
+												<div className="h-28 w-28 rounded-full bg-primary/10 flex items-center justify-center">
+													<span className="text-4xl font-bold text-primary/40">
 														{(member.name || "?")
 															.split(" ")
 															.map((n) => n[0])
@@ -258,16 +278,29 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 												</div>
 											</div>
 										)}
-										{/* Overlay on hover with social links */}
+
+										{/* Gradient Overlay on Hover */}
+										<div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+										{/* Plus Button - Bottom Center */}
+										<div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
+											<button className="w-12 h-12 rounded-full bg-secondary shadow-lg flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:rotate-90">
+												<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+												</svg>
+											</button>
+										</div>
+
+										{/* Social Links - Appear on Hover */}
 										{(member.email || member.linkedin || member.phone) && (
-											<div className="absolute inset-0 flex items-center justify-center gap-4 bg-secondary/90 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+											<div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-100">
 												{member.email && (
 													<a
 														href={`mailto:${member.email}`}
-														className="rounded-full bg-white p-3 text-secondary transition-transform hover:scale-110 shadow-lg"
+														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
 														aria-label={`Email ${member.name}`}
 													>
-														<Mail className="h-5 w-5" />
+														<Mail className="h-4 w-4" />
 													</a>
 												)}
 												{member.linkedin && (
@@ -275,19 +308,19 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 														href={member.linkedin}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="rounded-full bg-white p-3 text-secondary transition-transform hover:scale-110 shadow-lg"
+														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
 														aria-label={`LinkedIn profile of ${member.name}`}
 													>
-														<Linkedin className="h-5 w-5" />
+														<Linkedin className="h-4 w-4" />
 													</a>
 												)}
 												{member.phone && (
 													<a
 														href={`tel:${member.phone}`}
-														className="rounded-full bg-white p-3 text-secondary transition-transform hover:scale-110 shadow-lg"
+														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
 														aria-label={`Call ${member.name}`}
 													>
-														<Phone className="h-5 w-5" />
+														<Phone className="h-4 w-4" />
 													</a>
 												)}
 											</div>
@@ -295,26 +328,27 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 									</div>
 
 									{/* Content */}
-									<div className="p-6">
+									<div className="p-6 text-center bg-white">
 										{member.department && (
-											<div className="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+											<div className="mb-3 inline-block rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary uppercase tracking-wide">
 												{member.department}
 											</div>
 										)}
-										<h3 className="mb-1 text-xl font-bold text-secondary">
+										<h3 className="mb-1.5 text-xl font-bold text-secondary leading-tight">
 											{member.name}
 										</h3>
-										<p className="mb-3 text-sm font-medium text-primary">
+										<p className="text-sm font-medium text-primary mb-3">
 											{member.role}
 										</p>
 										{member.bio && (
-											<p className="text-sm text-muted-foreground line-clamp-3">
+											<p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
 												{member.bio}
 											</p>
 										)}
 									</div>
 								</motion.div>
-							))}
+								);
+							})}
 						</motion.div>
 					</div>
 				</section>

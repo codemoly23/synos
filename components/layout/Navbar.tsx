@@ -34,11 +34,16 @@ interface NavbarProps {
 export function Navbar({ config, logoUrl }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+	const [isMounted, setIsMounted] = useState(false);
 	const { data: navigationData } = useNavigation();
 	const { variant } = useNavbarVariant();
 
 	// Check if we should use light text (dark hero background and not scrolled)
 	const useLightText = variant === "dark-hero" && !isScrolled;
+
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -47,6 +52,31 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+	if (!isMounted) {
+		return (
+			<div>
+				<div className="fixed top-3 sm:top-6 left-0 z-50 w-full">
+					<header className={"_container"}>
+						<nav
+							className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 border-transparent`}
+						>
+							<div className="flex bg-none items-center justify-between gap-1 lg:gap-2">
+								<Logo logoUrl={logoUrl} />
+								<div className="hidden lg:flex items-center justify-center flex-1" />
+								<div className="hidden lg:flex items-center" />
+								<div className="hidden xl:flex items-center gap-2 shrink-0" />
+								<div className="hidden lg:block">
+									<ProtectedNavbar />
+								</div>
+								<MobileNavbar useLightText={false} />
+							</div>
+						</nav>
+					</header>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div>
