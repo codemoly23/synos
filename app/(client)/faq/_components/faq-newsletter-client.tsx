@@ -40,11 +40,137 @@ export function FAQNewsletterClient({ data }: FAQNewsletterClientProps) {
 	};
 
 	return (
-		<section className="py-20 bg-linear-to-br from-secondary/20 to-secondary/40 relative overflow-hidden">
-			{/* Background Pattern */}
-			<div className="absolute inset-0 opacity-10">
-				<div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary rounded-full blur-3xl -translate-y-1/2 -translate-x-1/4" />
-				<div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-tertiary rounded-full blur-3xl translate-y-1/2 translate-x-1/4" />
+		<section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+			{/* Triangulated Particles Animation */}
+			<div className="absolute inset-0 opacity-30">
+				<svg
+					className="absolute top-0 left-0 w-full h-full"
+					viewBox="0 0 1440 800"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					preserveAspectRatio="xMidYMid slice"
+				>
+					{/* Generate random particles with triangulated connections */}
+					{(() => {
+						// Generate particle positions
+						const particles = [...Array(25)].map(() => ({
+							x: Math.random() * 1440,
+							y: Math.random() * 800,
+							size: 2 + Math.random() * 2,
+						}));
+
+						// Create triangulation lines between nearby particles
+						const lines: JSX.Element[] = [];
+						particles.forEach((p1, i) => {
+							particles.slice(i + 1).forEach((p2, j) => {
+								const distance = Math.sqrt(
+									Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)
+								);
+								// Only connect particles within 200px distance
+								if (distance < 200) {
+									lines.push(
+										<motion.line
+											key={`line-${i}-${j}`}
+											x1={p1.x}
+											y1={p1.y}
+											x2={p2.x}
+											y2={p2.y}
+											stroke="white"
+											strokeWidth="0.5"
+											initial={{ opacity: 0 }}
+											animate={{
+												opacity: [0.1, 0.3, 0.1],
+											}}
+											transition={{
+												duration: 4 + Math.random() * 3,
+												repeat: Infinity,
+												delay: Math.random() * 2,
+											}}
+										/>
+									);
+								}
+							});
+						});
+
+						return (
+							<>
+								{/* Render connection lines */}
+								{lines}
+
+								{/* Render particles */}
+								{particles.map((particle, i) => (
+									<motion.g key={`particle-${i}`}>
+										{/* Particle glow */}
+										<motion.circle
+											cx={particle.x}
+											cy={particle.y}
+											r={particle.size * 3}
+											fill="white"
+											initial={{ opacity: 0.05 }}
+											animate={{
+												opacity: [0.05, 0.15, 0.05],
+												scale: [1, 1.3, 1],
+											}}
+											transition={{
+												duration: 3 + Math.random() * 2,
+												repeat: Infinity,
+												delay: Math.random() * 2,
+											}}
+										/>
+										{/* Particle core */}
+										<motion.circle
+											cx={particle.x}
+											cy={particle.y}
+											r={particle.size}
+											fill="white"
+											initial={{ opacity: 0.4 }}
+											animate={{
+												opacity: [0.4, 0.9, 0.4],
+												x: [0, (Math.random() - 0.5) * 30],
+												y: [0, (Math.random() - 0.5) * 30],
+											}}
+											transition={{
+												duration: 8 + Math.random() * 4,
+												repeat: Infinity,
+												repeatType: "reverse",
+												delay: Math.random() * 2,
+											}}
+										/>
+									</motion.g>
+								))}
+
+								{/* Add some triangular mesh patterns */}
+								{[...Array(8)].map((_, i) => {
+									const x = Math.random() * 1440;
+									const y = Math.random() * 800;
+									const size = 40 + Math.random() * 60;
+									return (
+										<motion.path
+											key={`triangle-${i}`}
+											d={`M${x} ${y} L${x + size} ${y + size * 0.5} L${x} ${y + size} Z`}
+											stroke="white"
+											strokeWidth="0.3"
+											fill="white"
+											fillOpacity="0.02"
+											initial={{ opacity: 0, rotate: 0 }}
+											animate={{
+												opacity: [0, 0.4, 0],
+												rotate: 360,
+												scale: [1, 1.2, 1],
+											}}
+											transition={{
+												duration: 15 + Math.random() * 10,
+												repeat: Infinity,
+												delay: Math.random() * 3,
+											}}
+											style={{ transformOrigin: `${x + size / 2}px ${y + size / 2}px` }}
+										/>
+									);
+								})}
+							</>
+						);
+					})()}
+				</svg>
 			</div>
 
 			<div className="_container relative z-10">

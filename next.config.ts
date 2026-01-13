@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	// Ignore nul file (Windows reserved device name issue)
+	webpack: (config, { isServer }) => {
+		config.watchOptions = {
+			...config.watchOptions,
+			ignored: ["**/nul", "**/node_modules/**", "**/.git/**", "**/.next/**"],
+		};
+		return config;
+	},
 	async redirects() {
 		return [
 			// Redirect /blogg to /nyheter

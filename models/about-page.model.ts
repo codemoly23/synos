@@ -62,6 +62,9 @@ export interface IAboutFeature {
 	icon?: string;
 	title?: string;
 	description?: string;
+	image?: string; // Background image for image-based card design
+	buttonText?: string; // Optional button text for image-based cards
+	buttonLink?: string; // Optional button link for image-based cards
 }
 
 const AboutFeatureSchema = new Schema<IAboutFeature>(
@@ -69,6 +72,9 @@ const AboutFeatureSchema = new Schema<IAboutFeature>(
 		icon: { type: String, trim: true },
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
+		image: { type: String, trim: true },
+		buttonText: { type: String, trim: true },
+		buttonLink: { type: String, trim: true },
 	},
 	{ _id: false }
 );

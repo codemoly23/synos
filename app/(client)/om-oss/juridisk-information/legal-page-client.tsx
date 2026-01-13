@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
 	Shield,
@@ -211,6 +212,72 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 					</div>
 				</section>
 			)}
+
+			{/* Featured Image Section - Integritetspolicy */}
+			<section className="py-16 md:py-24">
+				<div className="_container">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.6 }}
+						className="mx-auto max-w-6xl"
+					>
+						{/* Full Width Image */}
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6, delay: 0.2 }}
+							className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl mb-12"
+						>
+							<Image
+								src="/images/juridisk-information-featured.jpg"
+								alt="Juridisk Information - Integritetspolicy"
+								fill
+								className="object-cover"
+								priority
+							/>
+							<div className="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+								Featured Image
+							</div>
+						</motion.div>
+
+						{/* Content Below Image */}
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6, delay: 0.4 }}
+							className="max-w-4xl mx-auto"
+						>
+							<div className="mb-4 inline-block px-4 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary uppercase tracking-wider">
+								Integritetspolicy
+							</div>
+							<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-6">
+								Integritetspolicy
+							</h2>
+							<div className="prose prose-slate max-w-none">
+								<p className="text-lg text-muted-foreground mb-6">
+									Den här texten förklarar hur Synos Medical AB hanterar de uppgifter som vi samlar in om dig, i samband med att du använder våra webbplatser eller kommunicerar digitalt med oss.
+								</p>
+								<h3 className="text-xl font-bold text-secondary mt-8 mb-4">
+									Vem ansvarar för de personuppgifter vi samlar in?
+								</h3>
+								<p className="text-muted-foreground mb-6">
+									Synos Medical AB (org. nr. 556871-8075), S-Corp AB (org. nr. 559269-0407) och Revage AB (org. nr. 559322-6813) är personuppgiftsansvariga för de uppgifter du lämnar, när du använder vår webbplats eller kommunicerar digitalt med oss.
+								</p>
+								<h3 className="text-xl font-bold text-secondary mt-8 mb-4">
+									När samlar vi in information?
+								</h3>
+								<p className="text-muted-foreground">
+									Vi samlar in information om dig när du begär att få tillgång till material, kontaktar oss via mail, pop-ups eller formulär på webben, begär att bli uppringd av någon av våra produktspecialister, hör av dig via sms eller registrerar dig som prenumerant på våra nyhetsbrev. Vi använder cookies och pixlar (se nedan) på våra webbsidor för att spåra användardata och -beteenden.
+								</p>
+							</div>
+						</motion.div>
+					</motion.div>
+				</div>
+			</section>
 
 			{/* Legal Sections Grid */}
 			{visibility.legalCards && hasLegalCards && (
