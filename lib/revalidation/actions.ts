@@ -12,10 +12,10 @@ export async function revalidateProduct(
 	categorySlug?: string
 ): Promise<void> {
 	// Revalidate product-specific tag (Next.js 16 requires second argument)
-	revalidateTag(CACHE_TAGS.PRODUCT(slug), "max");
+	revalidateTag(CACHE_TAGS.PRODUCT(slug));
 
 	// Revalidate products list
-	revalidateTag(CACHE_TAGS.PRODUCTS, "max");
+	revalidateTag(CACHE_TAGS.PRODUCTS);
 
 	// Revalidate product detail pages for the specific category
 	if (categorySlug) {
@@ -38,7 +38,7 @@ export async function revalidateProduct(
 	revalidatePath(PATHS.KLINIKUTRUSTNING);
 
 	// Revalidate sitemaps
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -46,11 +46,11 @@ export async function revalidateProduct(
  * Call this when bulk operations are performed
  */
 export async function revalidateAllProducts(): Promise<void> {
-	revalidateTag(CACHE_TAGS.PRODUCTS, "max");
+	revalidateTag(CACHE_TAGS.PRODUCTS);
 	revalidatePath(PATHS.PRODUCTS);
 	revalidatePath(PATHS.KATEGORI);
 	revalidatePath(PATHS.KLINIKUTRUSTNING);
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -59,14 +59,14 @@ export async function revalidateAllProducts(): Promise<void> {
  */
 export async function revalidateCategory(slug?: string): Promise<void> {
 	if (slug) {
-		revalidateTag(CACHE_TAGS.CATEGORY(slug), "max");
+		revalidateTag(CACHE_TAGS.CATEGORY(slug));
 		revalidatePath(`${PATHS.KATEGORI}/${slug}`);
 		revalidatePath(`${PATHS.KLINIKUTRUSTNING}/${slug}`);
 	}
-	revalidateTag(CACHE_TAGS.CATEGORIES, "max");
+	revalidateTag(CACHE_TAGS.CATEGORIES);
 	revalidatePath(PATHS.KATEGORI);
 	revalidatePath(PATHS.KLINIKUTRUSTNING);
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -75,10 +75,10 @@ export async function revalidateCategory(slug?: string): Promise<void> {
  */
 export async function revalidateBlogPost(slug: string): Promise<void> {
 	// Revalidate post-specific tag
-	revalidateTag(CACHE_TAGS.BLOG_POST(slug), "max");
+	revalidateTag(CACHE_TAGS.BLOG_POST(slug));
 
 	// Revalidate blog posts list
-	revalidateTag(CACHE_TAGS.BLOG_POSTS, "max");
+	revalidateTag(CACHE_TAGS.BLOG_POSTS);
 
 	// Revalidate blog detail pages (both /blogg and /nyheter use same content)
 	revalidatePath(`${PATHS.BLOG}/${slug}`);
@@ -89,7 +89,7 @@ export async function revalidateBlogPost(slug: string): Promise<void> {
 	revalidatePath(PATHS.NEWS);
 
 	// Revalidate sitemaps
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -97,10 +97,10 @@ export async function revalidateBlogPost(slug: string): Promise<void> {
  * Call this when bulk operations are performed
  */
 export async function revalidateAllBlogPosts(): Promise<void> {
-	revalidateTag(CACHE_TAGS.BLOG_POSTS, "max");
+	revalidateTag(CACHE_TAGS.BLOG_POSTS);
 	revalidatePath(PATHS.BLOG);
 	revalidatePath(PATHS.NEWS);
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -108,13 +108,13 @@ export async function revalidateAllBlogPosts(): Promise<void> {
  * Call this when a blog category is created, updated, or deleted
  */
 export async function revalidateBlogCategory(slug: string): Promise<void> {
-	revalidateTag(CACHE_TAGS.BLOG_CATEGORY(slug), "max");
-	revalidateTag(CACHE_TAGS.BLOG_CATEGORIES, "max");
+	revalidateTag(CACHE_TAGS.BLOG_CATEGORY(slug));
+	revalidateTag(CACHE_TAGS.BLOG_CATEGORIES);
 	revalidatePath(`${PATHS.BLOG}/category/${slug}`);
 	revalidatePath(`${PATHS.NEWS}/category/${slug}`);
 	revalidatePath(PATHS.BLOG);
 	revalidatePath(PATHS.NEWS);
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -122,8 +122,8 @@ export async function revalidateBlogCategory(slug: string): Promise<void> {
  * Call this when posts with tags are created/updated/deleted
  */
 export async function revalidateBlogTags(): Promise<void> {
-	revalidateTag(CACHE_TAGS.BLOG_TAGS, "max");
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.BLOG_TAGS);
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 /**
@@ -131,8 +131,8 @@ export async function revalidateBlogTags(): Promise<void> {
  * Call this when author info changes or posts by author change
  */
 export async function revalidateAuthor(authorId: string): Promise<void> {
-	revalidateTag(CACHE_TAGS.AUTHOR(authorId), "max");
-	revalidateTag(CACHE_TAGS.AUTHORS, "max");
+	revalidateTag(CACHE_TAGS.AUTHOR(authorId));
+	revalidateTag(CACHE_TAGS.AUTHORS);
 	revalidatePath(`${PATHS.BLOG}/author/${authorId}`);
 	revalidatePath(`${PATHS.NEWS}/author/${authorId}`);
 }
@@ -142,7 +142,7 @@ export async function revalidateAuthor(authorId: string): Promise<void> {
  * Call this when homepage content is updated
  */
 export async function revalidateHomePage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.HOME_PAGE, "max");
+	revalidateTag(CACHE_TAGS.HOME_PAGE);
 	revalidatePath(PATHS.HOME);
 }
 
@@ -151,7 +151,7 @@ export async function revalidateHomePage(): Promise<void> {
  * Call this when any content that affects sitemaps changes
  */
 export async function revalidateSitemaps(): Promise<void> {
-	revalidateTag(CACHE_TAGS.SITEMAPS, "max");
+	revalidateTag(CACHE_TAGS.SITEMAPS);
 }
 
 // ============ Static Page Revalidation Functions ============
@@ -161,7 +161,7 @@ export async function revalidateSitemaps(): Promise<void> {
  * Call this when about page content is updated
  */
 export async function revalidateAboutPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.ABOUT_PAGE, "max");
+	revalidateTag(CACHE_TAGS.ABOUT_PAGE);
 	revalidatePath(PATHS.ABOUT);
 }
 
@@ -170,7 +170,7 @@ export async function revalidateAboutPage(): Promise<void> {
  * Call this when team page content is updated
  */
 export async function revalidateTeamPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.TEAM_PAGE, "max");
+	revalidateTag(CACHE_TAGS.TEAM_PAGE);
 	revalidatePath(PATHS.TEAM);
 }
 
@@ -179,7 +179,7 @@ export async function revalidateTeamPage(): Promise<void> {
  * Call this when legal page content is updated
  */
 export async function revalidateLegalPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.LEGAL_PAGE, "max");
+	revalidateTag(CACHE_TAGS.LEGAL_PAGE);
 	revalidatePath(PATHS.LEGAL);
 }
 
@@ -188,7 +188,7 @@ export async function revalidateLegalPage(): Promise<void> {
  * Call this when privacy policy content is updated
  */
 export async function revalidatePrivacyPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.PRIVACY_PAGE, "max");
+	revalidateTag(CACHE_TAGS.PRIVACY_PAGE);
 	revalidatePath(PATHS.PRIVACY);
 }
 
@@ -197,7 +197,7 @@ export async function revalidatePrivacyPage(): Promise<void> {
  * Call this when careers page content is updated
  */
 export async function revalidateCareersPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.CAREERS_PAGE, "max");
+	revalidateTag(CACHE_TAGS.CAREERS_PAGE);
 	revalidatePath(PATHS.CAREERS);
 }
 
@@ -206,7 +206,7 @@ export async function revalidateCareersPage(): Promise<void> {
  * Call this when start business page content is updated
  */
 export async function revalidateStartaEgetPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.STARTA_EGET_PAGE, "max");
+	revalidateTag(CACHE_TAGS.STARTA_EGET_PAGE);
 	revalidatePath(PATHS.STARTA_EGET);
 	// Also revalidate sub-pages
 	revalidatePath(PATHS.KOPGUIDE);
@@ -219,7 +219,7 @@ export async function revalidateStartaEgetPage(): Promise<void> {
  * Call this when the page content is updated
  */
 export async function revalidateVarforValjaSynosPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.VARFOR_VALJA_SYNOS_PAGE, "max");
+	revalidateTag(CACHE_TAGS.VARFOR_VALJA_SYNOS_PAGE);
 	revalidatePath(PATHS.VARFOR_VALJA_SYNOS);
 }
 
@@ -228,7 +228,7 @@ export async function revalidateVarforValjaSynosPage(): Promise<void> {
  * Call this when the page content is updated
  */
 export async function revalidateKopguidePage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.KOPGUIDE_PAGE, "max");
+	revalidateTag(CACHE_TAGS.KOPGUIDE_PAGE);
 	revalidatePath(PATHS.KOPGUIDE);
 }
 
@@ -237,7 +237,7 @@ export async function revalidateKopguidePage(): Promise<void> {
  * Call this when the page content is updated
  */
 export async function revalidateMiniutbildningPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.MINIUTBILDNING_PAGE, "max");
+	revalidateTag(CACHE_TAGS.MINIUTBILDNING_PAGE);
 	revalidatePath(PATHS.MINIUTBILDNING);
 }
 
@@ -246,7 +246,7 @@ export async function revalidateMiniutbildningPage(): Promise<void> {
  * Call this when training/education page content is updated
  */
 export async function revalidateTrainingPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.TRAINING_PAGE, "max");
+	revalidateTag(CACHE_TAGS.TRAINING_PAGE);
 	revalidatePath(PATHS.TRAINING);
 }
 
@@ -255,7 +255,7 @@ export async function revalidateTrainingPage(): Promise<void> {
  * Call this when FAQ page content is updated
  */
 export async function revalidateFaqPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.FAQ_PAGE, "max");
+	revalidateTag(CACHE_TAGS.FAQ_PAGE);
 	revalidatePath(PATHS.FAQ);
 }
 
@@ -264,6 +264,6 @@ export async function revalidateFaqPage(): Promise<void> {
  * Call this when contact page content is updated
  */
 export async function revalidateContactPage(): Promise<void> {
-	revalidateTag(CACHE_TAGS.CONTACT_PAGE, "max");
+	revalidateTag(CACHE_TAGS.CONTACT_PAGE);
 	revalidatePath(PATHS.CONTACT);
 }

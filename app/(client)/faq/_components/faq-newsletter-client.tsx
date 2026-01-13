@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import type { IFAQNewsletterSection } from "@/models/faq-page.model";

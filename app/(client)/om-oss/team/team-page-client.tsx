@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Users, Mail, Linkedin, Phone, Home, ChevronRight } from "lucide-react";
@@ -427,7 +428,7 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 								}));
 
 								// Create triangulation lines between nearby particles
-								const lines: JSX.Element[] = [];
+								const lines: React.JSX.Element[] = [];
 								particles.forEach((p1, i) => {
 									particles.slice(i + 1).forEach((p2, j) => {
 										const distance = Math.sqrt(

@@ -51,12 +51,14 @@ const TeamHeroSectionSchema = new Schema<ITeamHeroSection>(
 export interface ITeamStat {
 	value?: string;
 	label?: string;
+	suffix?: string;
 }
 
 const TeamStatSchema = new Schema<ITeamStat>(
 	{
 		value: { type: String, trim: true },
 		label: { type: String, trim: true },
+		suffix: { type: String, trim: true },
 	},
 	{ _id: false }
 );

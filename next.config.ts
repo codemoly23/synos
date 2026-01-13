@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	// Empty turbopack config to silence the webpack/turbopack warning in Next.js 16
+	turbopack: {},
 	// Ignore nul file (Windows reserved device name issue)
 	webpack: (config, { isServer }) => {
 		config.watchOptions = {

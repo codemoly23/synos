@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest) {
 		});
 
 		// Revalidate cache tag for all home page queries
-		revalidateTag(HOME_PAGE_CACHE_TAG, "max");
+		revalidateTag(HOME_PAGE_CACHE_TAG);
 
 		// Revalidate home page
 		revalidatePath("/", "page");
