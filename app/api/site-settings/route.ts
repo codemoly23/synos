@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest) {
 		});
 
 		// Revalidate cache tag for all site settings queries (Next.js 16 requires second argument)
-		revalidateTag(SITE_SETTINGS_CACHE_TAG);
+		revalidateTag(SITE_SETTINGS_CACHE_TAG, "default");
 
 		// Revalidate the root layout - this affects navbar/footer on all pages
 		revalidatePath("/", "layout");

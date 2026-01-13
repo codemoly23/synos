@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest) {
 		});
 
 		// Revalidate cache tag for all kontakt page queries
-		revalidateTag(KONTAKT_PAGE_CACHE_TAG);
+		revalidateTag(KONTAKT_PAGE_CACHE_TAG, "default");
 
 		// Revalidate kontakt page
 		revalidatePath("/kontakt", "page");
