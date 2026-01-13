@@ -931,12 +931,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 								<Accordion type="single" collapsible className="space-y-4">
 									<AccordionItem
 										value="faq-1"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden"
+										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5">
+										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
 											Vad ingår i utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5">
+										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
 											Vår utbildning omfattar både teoretisk och praktisk
 											undervisning. Du lär dig allt från säker hantering av
 											utrustningen till optimala behandlingsprotokoll för olika
@@ -945,12 +945,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-2"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden"
+										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5">
+										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
 											Hur lång är utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5">
+										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
 											Utbildningens längd varierar beroende på vilken maskin du
 											köper och dina förkunskaper. Vanligtvis 2-5 dagar intensiv
 											utbildning följt av uppföljning och support.
@@ -958,12 +958,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-3"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden"
+										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5">
+										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
 											Får jag certifikat efter utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5">
+										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
 											Ja, efter genomförd utbildning får du ett certifikat som
 											visar att du är utbildad på den specifika utrustningen.
 											Detta är viktigt för din legitimitet som behandlare.
@@ -971,12 +971,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-4"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden"
+										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5">
+										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
 											Finns det möjlighet till uppföljningsutbildning?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5">
+										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
 											Absolut! Vi erbjuder kontinuerlig support och möjlighet
 											till fördjupad utbildning. Du kan alltid kontakta oss för
 											att boka uppföljning eller lära dig nya tekniker.

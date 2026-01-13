@@ -241,75 +241,126 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 			{visibility.mission && hasMission && (
 				<section className="py-16 md:py-20 lg:py-24">
 					<div className="_container">
-						<div className="grid gap-12 lg:grid-cols-2 items-center">
-							{/* Left - Image */}
-							{data.mission?.image && (
+						{/* Header */}
+						<motion.div
+							variants={staggerContainer}
+							initial="initial"
+							whileInView="animate"
+							viewport={{ once: true }}
+							className="text-center mb-12"
+						>
+							{data.mission?.badge && (
 								<motion.div
-									initial={{ opacity: 0, x: -30 }}
-									whileInView={{ opacity: 1, x: 0 }}
-									viewport={{ once: true }}
-									transition={{ duration: 0.6 }}
-									className="relative"
+									variants={fadeUp}
+									className="mb-4 inline-flex items-center gap-2 text-sm text-primary font-medium"
 								>
-									<div className="rounded-2xl overflow-hidden shadow-2xl">
-										<ImageComponent
-											src={data.mission.image}
-											alt="Vår mission"
-											width={600}
-											height={500}
-											className="w-full h-auto object-cover"
-										/>
-									</div>
-									{/* Decorative element */}
-									<div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/10 rounded-2xl -z-10" />
+									<span className="w-8 h-px bg-primary" />
+									{data.mission.badge}
 								</motion.div>
 							)}
 
-							{/* Right - Content */}
+							{data.mission?.title && (
+								<motion.h2
+									variants={fadeUp}
+									className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+								>
+									{data.mission.title}
+								</motion.h2>
+							)}
+
+							{data.mission?.description && (
+								<motion.p
+									variants={fadeUp}
+									className="text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+								>
+									{data.mission.description}
+								</motion.p>
+							)}
+						</motion.div>
+
+						{/* 2-Column Layout: Image on Left, Cards on Right */}
+						<div className="grid gap-8 lg:grid-cols-2 items-center">
+							{/* Left - Large Image */}
 							<motion.div
-								variants={staggerContainer}
-								initial="initial"
-								whileInView="animate"
+								initial={{ opacity: 0, x: -30 }}
+								whileInView={{ opacity: 1, x: 0 }}
 								viewport={{ once: true }}
+								transition={{ duration: 0.6 }}
+								className="relative h-full"
 							>
-								{data.mission?.badge && (
-									<motion.div
-										variants={fadeUp}
-										className="mb-4 inline-flex items-center gap-2 text-sm text-primary font-medium"
-									>
-										<span className="w-8 h-px bg-primary" />
-										{data.mission.badge}
-									</motion.div>
-								)}
+								<div className="rounded-2xl overflow-hidden shadow-2xl h-full min-h-[600px]">
+									<ImageComponent
+										src="/images/mission-section-image.jpg"
+										alt="Vår mission"
+										width={600}
+										height={800}
+										className="w-full h-full object-cover"
+									/>
+								</div>
+							</motion.div>
 
-								{data.mission?.title && (
-									<motion.h2
-										variants={fadeUp}
-										className="text-3xl md:text-4xl font-bold text-secondary mb-4"
-									>
-										{data.mission.title}
-									</motion.h2>
-								)}
-
-								{data.mission?.description && (
-									<motion.p
-										variants={fadeUp}
-										className="text-muted-foreground mb-8 leading-relaxed"
-									>
-										{data.mission.description}
-									</motion.p>
-								)}
-
-								{/* Features Grid */}
-								{validFeatures.length > 0 && (
-									<motion.div
-										variants={fadeUp}
-										className="grid gap-4 sm:grid-cols-2"
-									>
-										{validFeatures.map((feature, index) => {
+							{/* Right - Features Grid (2x2) */}
+							{validFeatures.length > 0 && (
+								<div className="grid gap-6 sm:grid-cols-2">
+									{validFeatures.map((feature, index) => {
 											const IconComponent = feature.icon
 												? ICON_MAP[feature.icon] || CheckCircle
 												: CheckCircle;
+
+											// Check if this is an image-based card
+											if (feature.image) {
+												return (
+													<div
+														key={index}
+														className="relative rounded-xl overflow-hidden group cursor-pointer h-[280px]"
+													>
+														{/* Background Image with Overlay */}
+														<div className="absolute inset-0">
+															<ImageComponent
+																src={feature.image}
+																alt={feature.title || ""}
+																width={600}
+																height={400}
+																className="w-full h-full object-cover"
+															/>
+															<div className="absolute inset-0 bg-gradient-to-br from-secondary/90 via-secondary/80 to-secondary/70" />
+														</div>
+
+														{/* Content */}
+														<div className="relative h-full flex flex-col justify-between p-6">
+															{/* Icon in speech bubble style */}
+															<div className="inline-flex w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm items-center justify-center">
+																<IconComponent className="w-7 h-7 text-white" />
+															</div>
+
+															{/* Title and Description */}
+															<div className="mt-auto">
+																<h3 className="text-2xl font-bold text-white mb-3">
+																	{feature.title}
+																</h3>
+																{feature.description && (
+																	<p className="text-white/80 text-sm leading-relaxed mb-4">
+																		{feature.description}
+																	</p>
+																)}
+
+																{/* Discover More Button */}
+																{feature.buttonText && (
+																	<Link
+																		href={feature.buttonLink || "#"}
+																		className="inline-flex items-center gap-2 text-white font-medium text-sm group-hover:gap-3 transition-all"
+																	>
+																		{feature.buttonText}
+																		<ArrowRight className="w-4 h-4" />
+																	</Link>
+																)}
+															</div>
+														</div>
+													</div>
+												);
+											}
+
+											// Regular card design
 											return (
 												<div
 													key={index}
@@ -330,10 +381,9 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 													</div>
 												</div>
 											);
-										})}
-									</motion.div>
-								)}
-							</motion.div>
+									})}
+								</div>
+							)}
 						</div>
 					</div>
 				</section>
@@ -439,12 +489,12 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										<AccordionItem
 											key={index}
 											value={`faq-${index}`}
-											className="bg-white rounded-xl border border-slate-200/80 px-6 overflow-hidden"
+											className="bg-white rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
 										>
-											<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5">
+											<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
 												{item.question}
 											</AccordionTrigger>
-											<AccordionContent className="text-muted-foreground pb-5">
+											<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
 												{item.answer}
 											</AccordionContent>
 										</AccordionItem>

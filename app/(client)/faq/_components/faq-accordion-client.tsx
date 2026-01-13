@@ -83,8 +83,8 @@ export function FAQAccordionClient({
 									rounded-md border transition-all duration-300 overflow-hidden
 									${
 										openIndex === index
-											? "border-primary/30 bg-linear-to-r from-primary/5 via-tertiary/10 to-primary/5 shadow-sm"
-											: "border-secondary/20 bg-white/80 backdrop-blur-sm hover:border-primary/20 hover:bg-linear-to-r hover:from-primary/5 hover:via-tertiary/10 hover:to-transparent"
+											? "border-[#DBA480] bg-[#DBA480] shadow-sm"
+											: "border-secondary/20 bg-white/80 backdrop-blur-sm hover:border-primary/20"
 									}
 								`}
 							>
@@ -95,7 +95,9 @@ export function FAQAccordionClient({
 									aria-expanded={openIndex === index}
 									aria-controls={`faq-answer-${index}`}
 								>
-									<span className="font-semibold text-secondary text-base sm:text-lg flex-1 leading-snug wrap-break-word">
+									<span className={`font-semibold text-base sm:text-lg flex-1 leading-snug wrap-break-word ${
+										openIndex === index ? "text-white" : "text-secondary"
+									}`}>
 										{faq.question}
 									</span>
 									<motion.div
@@ -108,7 +110,7 @@ export function FAQAccordionClient({
 										<ChevronDown
 											className={`h-6 w-6 transition-colors duration-300 ${
 												openIndex === index
-													? "text-primary"
+													? "text-white"
 													: "text-secondary/40 group-hover:text-primary"
 											}`}
 										/>
@@ -130,8 +132,8 @@ export function FAQAccordionClient({
 											className="overflow-hidden"
 										>
 											<div className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-												<div className="border-t border-secondary/10 pt-3 sm:pt-4">
-													<p className="text-secondary/80 leading-relaxed">
+												<div className="border-t border-white/20 pt-3 sm:pt-4">
+													<p className="text-white/90 leading-relaxed">
 														{faq.answer}
 													</p>
 												</div>

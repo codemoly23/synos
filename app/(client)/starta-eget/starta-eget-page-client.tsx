@@ -53,6 +53,7 @@ import {
 } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
+import { ImageComponent } from "@/components/common/image-component";
 import { cn } from "@/lib/utils";
 import type { StartaEgetPageData } from "@/lib/repositories/starta-eget-page.repository";
 
@@ -472,29 +473,60 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 								</motion.div>
 							)}
 
-							{/* Features Section */}
+							{/* Features Section - Vi hjälper dig förverkliga din dröm */}
 							{visibility.features && hasFeatures && (
 								<motion.div variants={fadeUp}>
 									<div className="rounded-2xl bg-secondary p-8 md:p-10 text-white">
+										{/* Image Section - Inside Card */}
+										<motion.div
+											initial={{ opacity: 0, y: 30 }}
+											whileInView={{ opacity: 1, y: 0 }}
+											viewport={{ once: true }}
+											transition={{ duration: 0.6 }}
+											className="mb-8"
+										>
+											<div className="relative rounded-xl overflow-hidden shadow-2xl h-[400px] md:h-[500px]">
+												<ImageComponent
+													src="/images/career-details-img-03.jpg"
+													alt="Vi hjälper dig förverkliga din dröm"
+													width={1200}
+													height={600}
+													className="w-full h-full object-cover"
+												/>
+											</div>
+										</motion.div>
+
 										{data.featuresSection?.title && (
-											<h2 className="mb-4 text-2xl font-bold">
+											<motion.h2
+												initial={{ opacity: 0, y: 30 }}
+												whileInView={{ opacity: 1, y: 0 }}
+												viewport={{ once: true }}
+												transition={{ duration: 0.6 }}
+												className="mb-4 text-2xl font-bold"
+											>
 												{data.featuresSection.title}
-											</h2>
+											</motion.h2>
 										)}
 										{data.featuresSection?.intro && (
-											<p className="mb-8 text-white/80 leading-relaxed">
+											<motion.p
+												initial={{ opacity: 0, y: 30 }}
+												whileInView={{ opacity: 1, y: 0 }}
+												viewport={{ once: true }}
+												transition={{ duration: 0.6, delay: 0.1 }}
+												className="mb-8 text-white/80 leading-relaxed"
+											>
 												{data.featuresSection.intro}
-											</p>
+											</motion.p>
 										)}
 										{validFeatures.length > 0 && (
 											<div className="space-y-4">
 												{validFeatures.map((feature, index) => (
 													<motion.div
 														key={index}
-														initial={{ opacity: 0, x: -20 }}
-														whileInView={{ opacity: 1, x: 0 }}
+														initial={{ opacity: 0, y: 30 }}
+														whileInView={{ opacity: 1, y: 0 }}
 														viewport={{ once: true }}
-														transition={{ delay: index * 0.1 }}
+														transition={{ duration: 0.5, delay: index * 0.1 }}
 														className="flex gap-4 p-4 rounded-xl bg-white/10"
 													>
 														<div className="shrink-0 w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
