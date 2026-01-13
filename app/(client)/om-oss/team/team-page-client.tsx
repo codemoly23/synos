@@ -170,46 +170,37 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							)}
 						</motion.div>
 					</div>
-
-					{/* Bottom curve transition */}
-					<div className="absolute bottom-0 left-0 right-0">
-						<svg
-							viewBox="0 0 1440 60"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-							className="w-full h-auto"
-							preserveAspectRatio="none"
-						>
-							<path
-								d="M0 60L1440 60L1440 30C1440 30 1320 0 1080 15C840 30 720 45 480 30C240 15 120 0 0 30L0 60Z"
-								fill="rgb(248 250 252)"
-							/>
-						</svg>
-					</div>
 				</section>
 			)}
 
 			{/* Stats Section */}
 			{visibility.stats && hasStats && (
-				<section className="bg-secondary py-8 -mt-1">
+				<section className="py-16 md:py-20 bg-slate-50">
 					<div className="_container">
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+							className="flex flex-wrap justify-center items-center gap-0 -mx-8"
 						>
 							{validStats.map((stat, index) => (
 								<motion.div
 									key={index}
 									variants={fadeUp}
-									className="text-center"
+									className="group relative w-72 h-72 -mx-8"
 								>
-									<p className="text-4xl font-bold text-primary">
-										{stat.value}
-									</p>
-									<p className="text-white/70 mt-1">{stat.label}</p>
+									<div className="absolute inset-0 rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 border border-slate-200 group-hover:shadow-2xl group-hover:scale-105 group-hover:border-primary">
+										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-primary">
+											{stat.value}
+											{stat.suffix && (
+												<span className="text-3xl">{stat.suffix}</span>
+											)}
+										</p>
+										<p className="text-secondary font-medium text-center px-8 leading-relaxed">
+											{stat.label}
+										</p>
+									</div>
 								</motion.div>
 							))}
 						</motion.div>
@@ -239,112 +230,112 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="flex flex-wrap justify-center gap-6 lg:gap-8"
+							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-[1200px] mx-auto"
 						>
 							{validTeamMembers.map((member, index) => {
-								// Calculate if this card should be in the offset row
+								// Calculate row position for alternating layout
 								const rowIndex = Math.floor(index / 3);
 								const isOffsetRow = rowIndex % 2 === 1;
-								const isFirstInOffsetRow = isOffsetRow && index % 3 === 0;
+								const positionInRow = index % 3;
+
+								// First row: normal (left aligned)
+								// Second row: offset right (add left margin to first item)
+								const shouldOffset = isOffsetRow && positionInRow === 0;
 
 								return (
 								<motion.div
 									key={index}
 									variants={fadeUp}
 									custom={index}
-									className="group relative overflow-hidden rounded-3xl bg-white border border-slate-100 shadow-md hover:shadow-xl transition-all duration-500 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.334rem)] max-w-[360px]"
-									style={isFirstInOffsetRow ? { marginLeft: 'calc(16.666% + 1rem)' } : {}}
+									className="group relative overflow-visible bg-white rounded-[10px] transition-all duration-500"
+									style={shouldOffset ? {
+										gridColumnStart: '2',
+									} : {}}
 								>
-									{/* Image Container */}
-									<div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
-										{member.image ? (
-											<ImageComponent
-												src={member.image}
-												alt={member.name || "Team member"}
-												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-												height={480}
-												width={360}
-												wrapperClasses="w-full h-full"
-											/>
-										) : (
-											<div className="absolute inset-0 flex items-center justify-center">
-												<div className="h-28 w-28 rounded-full bg-primary/10 flex items-center justify-center">
-													<span className="text-4xl font-bold text-primary/40">
-														{(member.name || "?")
-															.split(" ")
-															.map((n) => n[0])
-															.join("")}
-													</span>
+									{/* Image Container with Wrapper */}
+									<div className="relative">
+										<div className="thumb relative overflow-hidden rounded-[10px]">
+											{member.image ? (
+												<ImageComponent
+													src={member.image}
+													alt={member.name || "Team member"}
+													className="w-full h-auto object-cover border-none rounded-[10px] max-w-full"
+													height={480}
+													width={360}
+													wrapperClasses="w-full"
+												/>
+											) : (
+												<div className="aspect-[3/4] flex items-center justify-center bg-slate-100 rounded-[10px]">
+													<div className="h-28 w-28 rounded-full bg-primary/10 flex items-center justify-center">
+														<span className="text-4xl font-bold text-primary/40">
+															{(member.name || "?")
+																.split(" ")
+																.map((n) => n[0])
+																.join("")}
+														</span>
+													</div>
 												</div>
+											)}
+
+											{/* Plus Button - Bottom Right (slightly left from edge) */}
+											<div className="absolute bottom-4 right-4 z-10">
+												<button className="w-14 h-14 rounded-full bg-secondary shadow-xl flex items-center justify-center transform transition-all duration-300 group-hover:bg-primary">
+													<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+													</svg>
+												</button>
 											</div>
-										)}
 
-										{/* Gradient Overlay on Hover */}
-										<div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-										{/* Plus Button - Bottom Center */}
-										<div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-											<button className="w-12 h-12 rounded-full bg-secondary shadow-lg flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:rotate-90">
-												<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-												</svg>
-											</button>
+											{/* Social Overlay - Appear on Hover */}
+											{(member.email || member.linkedin || member.phone) && (
+												<div className="social-overlay absolute inset-0 bg-secondary/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[10px] flex items-center justify-center gap-3">
+													{member.linkedin && (
+														<a
+															href={member.linkedin}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
+															aria-label={`LinkedIn profile of ${member.name}`}
+														>
+															<Linkedin className="h-5 w-5" />
+														</a>
+													)}
+													{member.email && (
+														<a
+															href={`mailto:${member.email}`}
+															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
+															aria-label={`Email ${member.name}`}
+														>
+															<Mail className="h-5 w-5" />
+														</a>
+													)}
+													{member.phone && (
+														<a
+															href={`tel:${member.phone}`}
+															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
+															aria-label={`Call ${member.name}`}
+														>
+															<Phone className="h-5 w-5" />
+														</a>
+													)}
+												</div>
+											)}
 										</div>
-
-										{/* Social Links - Appear on Hover */}
-										{(member.email || member.linkedin || member.phone) && (
-											<div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-100">
-												{member.email && (
-													<a
-														href={`mailto:${member.email}`}
-														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
-														aria-label={`Email ${member.name}`}
-													>
-														<Mail className="h-4 w-4" />
-													</a>
-												)}
-												{member.linkedin && (
-													<a
-														href={member.linkedin}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
-														aria-label={`LinkedIn profile of ${member.name}`}
-													>
-														<Linkedin className="h-4 w-4" />
-													</a>
-												)}
-												{member.phone && (
-													<a
-														href={`tel:${member.phone}`}
-														className="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-secondary transition-all hover:scale-110 hover:bg-primary hover:text-white shadow-md"
-														aria-label={`Call ${member.name}`}
-													>
-														<Phone className="h-4 w-4" />
-													</a>
-												)}
-											</div>
-										)}
 									</div>
 
-									{/* Content */}
-									<div className="p-6 text-center bg-white">
+									{/* Info - Content Below Image */}
+									<div className="info pt-6 text-center">
 										{member.department && (
-											<div className="mb-3 inline-block rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary uppercase tracking-wide">
+											<div className="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wide">
 												{member.department}
 											</div>
 										)}
-										<h3 className="mb-1.5 text-xl font-bold text-secondary leading-tight">
+										<h3 className="mb-1 text-xl font-bold text-secondary leading-tight">
 											{member.name}
 										</h3>
-										<p className="text-sm font-medium text-primary mb-3">
+										<p className="text-sm font-medium text-primary">
 											{member.role}
 										</p>
-										{member.bio && (
-											<p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
-												{member.bio}
-											</p>
-										)}
 									</div>
 								</motion.div>
 								);
@@ -416,8 +407,140 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 
 			{/* Join Us CTA */}
 			{visibility.joinUs && hasJoinUs && (
-				<section className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
-					<div className="_container">
+				<section className="relative py-16 md:py-20 lg:py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+					{/* Triangulated Particles Animation */}
+					<div className="absolute inset-0 opacity-30">
+						<svg
+							className="absolute top-0 left-0 w-full h-full"
+							viewBox="0 0 1440 800"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							preserveAspectRatio="xMidYMid slice"
+						>
+							{/* Generate random particles with triangulated connections */}
+							{(() => {
+								// Generate particle positions
+								const particles = [...Array(25)].map(() => ({
+									x: Math.random() * 1440,
+									y: Math.random() * 800,
+									size: 2 + Math.random() * 2,
+								}));
+
+								// Create triangulation lines between nearby particles
+								const lines: JSX.Element[] = [];
+								particles.forEach((p1, i) => {
+									particles.slice(i + 1).forEach((p2, j) => {
+										const distance = Math.sqrt(
+											Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)
+										);
+										// Only connect particles within 200px distance
+										if (distance < 200) {
+											lines.push(
+												<motion.line
+													key={`line-${i}-${j}`}
+													x1={p1.x}
+													y1={p1.y}
+													x2={p2.x}
+													y2={p2.y}
+													stroke="white"
+													strokeWidth="0.5"
+													initial={{ opacity: 0 }}
+													animate={{
+														opacity: [0.1, 0.3, 0.1],
+													}}
+													transition={{
+														duration: 4 + Math.random() * 3,
+														repeat: Infinity,
+														delay: Math.random() * 2,
+													}}
+												/>
+											);
+										}
+									});
+								});
+
+								return (
+									<>
+										{/* Render connection lines */}
+										{lines}
+
+										{/* Render particles */}
+										{particles.map((particle, i) => (
+											<motion.g key={`particle-${i}`}>
+												{/* Particle glow */}
+												<motion.circle
+													cx={particle.x}
+													cy={particle.y}
+													r={particle.size * 3}
+													fill="white"
+													initial={{ opacity: 0.05 }}
+													animate={{
+														opacity: [0.05, 0.15, 0.05],
+														scale: [1, 1.3, 1],
+													}}
+													transition={{
+														duration: 3 + Math.random() * 2,
+														repeat: Infinity,
+														delay: Math.random() * 2,
+													}}
+												/>
+												{/* Particle core */}
+												<motion.circle
+													cx={particle.x}
+													cy={particle.y}
+													r={particle.size}
+													fill="white"
+													initial={{ opacity: 0.4 }}
+													animate={{
+														opacity: [0.4, 0.9, 0.4],
+														x: [0, (Math.random() - 0.5) * 30],
+														y: [0, (Math.random() - 0.5) * 30],
+													}}
+													transition={{
+														duration: 8 + Math.random() * 4,
+														repeat: Infinity,
+														repeatType: "reverse",
+														delay: Math.random() * 2,
+													}}
+												/>
+											</motion.g>
+										))}
+
+										{/* Add some triangular mesh patterns */}
+										{[...Array(8)].map((_, i) => {
+											const x = Math.random() * 1440;
+											const y = Math.random() * 800;
+											const size = 40 + Math.random() * 60;
+											return (
+												<motion.path
+													key={`triangle-${i}`}
+													d={`M${x} ${y} L${x + size} ${y + size * 0.5} L${x} ${y + size} Z`}
+													stroke="white"
+													strokeWidth="0.3"
+													fill="white"
+													fillOpacity="0.02"
+													initial={{ opacity: 0, rotate: 0 }}
+													animate={{
+														opacity: [0, 0.4, 0],
+														rotate: 360,
+														scale: [1, 1.2, 1],
+													}}
+													transition={{
+														duration: 15 + Math.random() * 10,
+														repeat: Infinity,
+														delay: Math.random() * 3,
+													}}
+													style={{ transformOrigin: `${x + size / 2}px ${y + size / 2}px` }}
+												/>
+											);
+										})}
+									</>
+								);
+							})()}
+						</svg>
+					</div>
+
+					<div className="_container relative z-10">
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
@@ -425,12 +548,12 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							className="max-w-3xl mx-auto text-center"
 						>
 							{data.joinUs?.title && (
-								<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+								<h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
 									{data.joinUs.title}
 								</h2>
 							)}
 							{data.joinUs?.description && (
-								<p className="text-muted-foreground mb-8 text-lg">
+								<p className="text-white/80 mb-8 text-lg">
 									{data.joinUs.description}
 								</p>
 							)}
@@ -445,7 +568,7 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 									)}
 									{data.joinUs?.secondaryCta?.text &&
 										data.joinUs?.secondaryCta?.href && (
-											<Button asChild variant="outline" size="lg">
+											<Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-secondary">
 												<Link href={data.joinUs.secondaryCta.href}>
 													{data.joinUs.secondaryCta.text}
 												</Link>
