@@ -27,11 +27,11 @@ interface AnimatedHeroProps {
 
 export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 	return (
-		<section className="relative overflow-hidden bg-linear-to-b from-slate-200 to-primary/20 padding-top pb-24">
+		<section className="relative overflow-hidden bg-secondary padding-top pb-24">
 			{/* Background Pattern */}
 			{/* <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" /> */}
-			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary/20 blur-3xl" />
-			<div className="absolute bottom-0 left-0 h-[400px] w-[400px] translate-y-1/3 -translate-x-1/3 rounded-full bg-white/5 blur-3xl" />
+			<div className="absolute right-0 top-0 h-[600px] w-[600px] -translate-y-1/3 translate-x-1/3 rounded-full bg-primary/20 blur-3xl" />
+			<div className="absolute bottom-0 left-0 h-[400px] w-[400px] translate-y-1/3 -translate-x-1/3 rounded-full bg-white/10 blur-3xl" />
 
 			<div className="_container relative z-10">
 				<motion.div
@@ -44,10 +44,10 @@ export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 					{data.badge && (
 						<motion.div
 							variants={fadeUp}
-							className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
+							className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-sm"
 						>
 							<MessageCircle className="h-4 w-4 text-primary" />
-							<span className="text-sm font-medium text-black">
+							<span className="text-sm font-medium text-white">
 								{data.badge}
 							</span>
 						</motion.div>
@@ -56,7 +56,7 @@ export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 					{/* Heading */}
 					<motion.h1
 						variants={fadeUp}
-						className="mb-6 text-4xl font-bold tracking-tight text-primary md:text-5xl lg:text-6xl"
+						className="mb-6 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl"
 					>
 						{data.title}
 					</motion.h1>
@@ -64,7 +64,7 @@ export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 					{/* Description */}
 					<motion.p
 						variants={fadeUp}
-						className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-black md:text-xl"
+						className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl"
 					>
 						{data.subtitle}
 					</motion.p>

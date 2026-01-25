@@ -53,7 +53,7 @@ export function AnimatedContactCards({
 	const SocialIcon = iconMap[socialCard.icon] || MessageCircle;
 
 	return (
-		<section className="relative -mt-16 pb-20">
+		<section className="relative -mt-16 pb-20 bg-secondary">
 			<div className="_container">
 				<motion.div
 					initial="initial"

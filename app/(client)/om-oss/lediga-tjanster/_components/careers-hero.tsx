@@ -81,10 +81,18 @@ export function CareersHero({
 					variants={staggerContainer}
 					className="max-w-4xl mx-auto text-center"
 				>
+					{/* Title */}
+					<motion.h1
+						variants={fadeUp}
+						className="text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl mb-6"
+					>
+						{title}
+					</motion.h1>
+
 					{/* Breadcrumb */}
 					<motion.nav
 						variants={fadeUp}
-						className="mb-6 flex items-center justify-center gap-2 text-sm"
+						className="flex items-center justify-center gap-2 text-sm"
 						aria-label="Breadcrumb"
 					>
 						<Link
@@ -110,14 +118,6 @@ export function CareersHero({
 							</span>
 						))}
 					</motion.nav>
-
-					{/* Title */}
-					<motion.h1
-						variants={fadeUp}
-						className="text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl"
-					>
-						{title}
-					</motion.h1>
 				</motion.div>
 			</div>
 

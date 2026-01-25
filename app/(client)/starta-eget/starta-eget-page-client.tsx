@@ -383,21 +383,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 						</motion.div>
 					</div>
 
-					{/* Bottom curve transition */}
-					<div className="absolute bottom-0 left-0 right-0">
-						<svg
-							viewBox="0 0 1440 60"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-							className="w-full h-auto"
-							preserveAspectRatio="none"
-						>
-							<path
-								d="M0 60L1440 60L1440 30C1440 30 1320 0 1080 15C840 30 720 45 480 30C240 15 120 0 0 30L0 60Z"
-								fill="rgb(248 250 252)"
-							/>
-						</svg>
-					</div>
 				</section>
 			)}
 

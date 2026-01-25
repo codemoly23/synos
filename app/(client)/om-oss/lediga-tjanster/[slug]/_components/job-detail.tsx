@@ -52,22 +52,20 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 							variants={staggerContainer}
 						>
 							{/* Featured Image */}
-							{job.featuredImage && (
-								<motion.div
-									initial={{ opacity: 0, y: 60 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.8, ease: "easeOut" }}
-									className="mb-8 rounded-2xl overflow-hidden shadow-lg"
-								>
-									<Image
-										src={job.featuredImage}
-										alt={job.title || "Job image"}
-										width={800}
-										height={450}
-										className="w-full h-auto object-cover aspect-video"
-									/>
-								</motion.div>
-							)}
+							<motion.div
+								initial={{ opacity: 0, y: 60 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.8, ease: "easeOut" }}
+								className="mb-8 rounded-2xl overflow-hidden shadow-lg"
+							>
+								<Image
+									src={job.featuredImage || "/images/career-details-img-04.jpg"}
+									alt={job.title || "Job image"}
+									width={800}
+									height={450}
+									className="w-full h-auto object-cover aspect-video"
+								/>
+							</motion.div>
 
 							{/* Job Description */}
 							{job.description && (

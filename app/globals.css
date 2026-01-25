@@ -191,6 +191,18 @@
       transform: translateX(100%);
     }
   }
+
+  /* Spin slow animation for gradient border rotation */
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  --animate-spin-slow: spin-slow 2s linear infinite;
 }
 
 /* ============================================
@@ -224,6 +236,44 @@
 @layer utilities {
   ._container {
     @apply max-w-[1440px] w-full mx-auto px-3 sm:px-5;
+  }
+
+  /* Stat circle gradient border rotation animation */
+  .stat-gradient-border {
+    animation: spin-slow 2s linear infinite;
+    animation-play-state: paused;
+  }
+
+  .group:hover .stat-gradient-border {
+    animation-play-state: running;
+  }
+
+  /* Team card social overlay curved edges */
+  .social-overlay .icon {
+    position: relative;
+    z-index: 1;
+  }
+
+  .social-overlay .icon::before {
+    position: absolute;
+    left: -28px;
+    bottom: 22px;
+    content: "";
+    height: 40px;
+    width: 22px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 20px 0 0 #ffffff;
+  }
+
+  .social-overlay .icon::after {
+    position: absolute;
+    right: -17px;
+    bottom: 22px;
+    content: "";
+    height: 27px;
+    width: 8px;
+    border-bottom-left-radius: 10px;
+    box-shadow: 0 20px 0 0 #ffffff;
   }
 
   /* page top padding to adjust the navbar height */

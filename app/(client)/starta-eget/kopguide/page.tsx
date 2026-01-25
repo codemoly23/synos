@@ -122,31 +122,32 @@ export default async function KopguidePage() {
 		<div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
 			{/* Hero Section */}
 			{visibility.hero && (
-				<section className="relative overflow-hidden bg-linear-to-br from-primary/10 via-slate-100 to-white pt-32 pb-16">
+				<section className="relative overflow-hidden bg-secondary pt-32 pb-16">
 					<div className="_container">
 						<Breadcrumb
 							items={[
 								{ label: "Starta Eget", href: "/starta-eget" },
 								{ label: "Köpguide" },
 							]}
+							variant="light"
 						/>
 
 						<div className="mt-8 max-w-4xl">
-							<div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+							<div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
 								<BookOpen className="h-4 w-4 text-primary" />
-								<span className="text-sm font-semibold text-primary">
+								<span className="text-sm font-semibold text-white">
 									{hero.badge || "Köpguide"}
 								</span>
 							</div>
 
-							<h1 className="mb-6 text-4xl font-bold tracking-tight text-secondary md:text-5xl lg:text-6xl">
+							<h1 className="mb-6 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
 								{hero.title || "Din guide till rätt"}{" "}
-								<span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+								<span className="text-primary">
 									{hero.titleHighlight || "klinikutrustning"}
 								</span>
 							</h1>
 
-							<p className="text-lg text-muted-foreground md:text-xl max-w-2xl">
+							<p className="text-lg text-white/80 md:text-xl max-w-2xl">
 								{hero.subtitle ||
 									"Att investera i klinikutrustning är ett stort beslut. Den här guiden hjälper dig att navigera processen och göra ett välgrundat val."}
 							</p>

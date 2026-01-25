@@ -38,8 +38,8 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 	const { data: navigationData } = useNavigation();
 	const { variant } = useNavbarVariant();
 
-	// Check if we should use light text (dark hero background and not scrolled)
-	const useLightText = variant === "dark-hero" && !isScrolled;
+	// Always use light text since navbar is always dark
+	const useLightText = true;
 
 	useEffect(() => {
 		setIsMounted(true);
@@ -83,10 +83,10 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 			<div className="fixed top-3 sm:top-6 left-0 z-50 w-full">
 				<header className={"_container"}>
 					<nav
-						className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 ${
+						className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 bg-secondary shadow-lg ${
 							isScrolled
-								? "bg-slate-100/60 border-primary/10 shadow-lg"
-								: "border-transparent"
+								? "border-secondary/80"
+								: "border-secondary/50"
 						}`}
 					>
 						<div className="flex bg-none items-center justify-between gap-1 lg:gap-2">

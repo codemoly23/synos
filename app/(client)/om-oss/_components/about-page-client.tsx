@@ -219,8 +219,18 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									variants={fadeUp}
 									className="group relative w-72 h-72 -mx-8"
 								>
-									<div className="absolute inset-0 rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 border border-slate-200 group-hover:shadow-2xl group-hover:scale-105 group-hover:border-[#DBA480]">
-										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-[#DBA480]">
+									{/* Rotating gradient border on hover */}
+									<div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden">
+										<div
+											className="stat-gradient-border absolute inset-0 rounded-full"
+											style={{
+												background: "conic-gradient(from 0deg, #DCA783, #2C2D38, #DCA783, #2C2D38, #DCA783)",
+											}}
+										/>
+									</div>
+									{/* Inner white circle content */}
+									<div className="absolute inset-[6px] rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 group-hover:shadow-2xl group-hover:scale-[1.02]">
+										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-primary">
 											{stat.value}
 											{stat.suffix && (
 												<span className="text-3xl">{stat.suffix}</span>
@@ -239,30 +249,87 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 			{/* Mission Section */}
 			{visibility.mission && hasMission && (
-				<section className="py-16 md:py-20 lg:py-24">
-					<div className="_container">
+				<section className="relative py-16 md:py-20 lg:py-24 bg-secondary overflow-hidden">
+					{/* Wave Pattern Background */}
+					<div className="absolute inset-0 opacity-20">
+						<svg
+							className="absolute top-0 left-0 w-full h-full"
+							viewBox="0 0 1440 800"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							preserveAspectRatio="xMidYMid slice"
+						>
+							<motion.path
+								d="M-100 400 Q 200 200, 400 400 T 800 400 T 1200 400 T 1600 400"
+								stroke="currentColor"
+								strokeWidth="1"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								whileInView={{ pathLength: 1, opacity: 0.6 }}
+								viewport={{ once: true }}
+								transition={{ duration: 2, ease: "easeInOut" }}
+							/>
+							<motion.path
+								d="M-100 450 Q 250 250, 500 450 T 900 450 T 1300 450 T 1700 450"
+								stroke="currentColor"
+								strokeWidth="0.5"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								whileInView={{ pathLength: 1, opacity: 0.4 }}
+								viewport={{ once: true }}
+								transition={{ duration: 2.5, ease: "easeInOut", delay: 0.3 }}
+							/>
+							<motion.path
+								d="M-100 350 Q 150 150, 350 350 T 750 350 T 1150 350 T 1550 350"
+								stroke="currentColor"
+								strokeWidth="0.5"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								whileInView={{ pathLength: 1, opacity: 0.3 }}
+								viewport={{ once: true }}
+								transition={{ duration: 2.5, ease: "easeInOut", delay: 0.5 }}
+							/>
+							<motion.path
+								d="M-100 500 Q 300 300, 600 500 T 1000 500 T 1400 500 T 1800 500"
+								stroke="currentColor"
+								strokeWidth="0.3"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								whileInView={{ pathLength: 1, opacity: 0.2 }}
+								viewport={{ once: true }}
+								transition={{ duration: 3, ease: "easeInOut", delay: 0.7 }}
+							/>
+						</svg>
+					</div>
+
+					<div className="_container relative z-10">
 						{/* Header */}
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="text-center mb-12"
+							className="text-left mb-12"
 						>
 							{data.mission?.badge && (
 								<motion.div
 									variants={fadeUp}
-									className="mb-4 inline-flex items-center gap-2 text-sm text-primary font-medium"
+									className="mb-4 inline-flex items-center gap-2 text-sm text-white font-medium"
 								>
-									<span className="w-8 h-px bg-primary" />
+									<span className="text-primary">●</span>
 									{data.mission.badge}
+									<span className="text-primary">●</span>
 								</motion.div>
 							)}
 
 							{data.mission?.title && (
 								<motion.h2
 									variants={fadeUp}
-									className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+									className="text-3xl md:text-4xl font-bold text-white mb-4"
 								>
 									{data.mission.title}
 								</motion.h2>
@@ -271,7 +338,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							{data.mission?.description && (
 								<motion.p
 									variants={fadeUp}
-									className="text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+									className="text-white/70 max-w-3xl leading-relaxed"
 								>
 									{data.mission.description}
 								</motion.p>
@@ -364,17 +431,17 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											return (
 												<div
 													key={index}
-													className="flex items-start gap-3 p-4 rounded-xl bg-white border border-slate-200/80 hover:border-primary/30 transition-colors"
+													className="flex items-start gap-3 p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 hover:border-primary/30 transition-colors"
 												>
-													<div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+													<div className="shrink-0 w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
 														<IconComponent className="w-5 h-5 text-primary" />
 													</div>
 													<div>
-														<h3 className="font-semibold text-secondary">
+														<h3 className="font-semibold text-white">
 															{feature.title}
 														</h3>
 														{feature.description && (
-															<p className="text-sm text-muted-foreground mt-1">
+															<p className="text-sm text-white/70 mt-1">
 																{feature.description}
 															</p>
 														)}

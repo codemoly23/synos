@@ -174,6 +174,36 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 				</section>
 			)}
 
+			{/* Mission Quote Section */}
+			<section className="py-16 md:py-20 bg-slate-100">
+				<div className="_container">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.6 }}
+						className="max-w-4xl mx-auto text-center"
+					>
+						{/* Badge */}
+						<div className="mb-6 inline-flex items-center gap-2">
+							<span className="text-secondary">●</span>
+							<span className="text-sm font-medium text-secondary uppercase tracking-wider">
+								Vårt Uppdrag
+							</span>
+							<span className="text-secondary">●</span>
+						</div>
+
+						{/* Quote */}
+						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary leading-tight">
+							Vårt erfarna team levererar skräddarsydd{" "}
+							<span className="text-primary">service</span> och{" "}
+							<span className="text-primary">smarta lösningar</span>{" "}
+							för att hjälpa kliniker att växa effektivt.
+						</h2>
+					</motion.div>
+				</div>
+			</section>
+
 			{/* Stats Section */}
 			{visibility.stats && hasStats && (
 				<section className="py-16 md:py-20 bg-slate-50">
@@ -191,7 +221,17 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 									variants={fadeUp}
 									className="group relative w-72 h-72 -mx-8"
 								>
-									<div className="absolute inset-0 rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 border border-slate-200 group-hover:shadow-2xl group-hover:scale-105 group-hover:border-primary">
+									{/* Rotating gradient border on hover */}
+									<div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden">
+										<div
+											className="stat-gradient-border absolute inset-0 rounded-full"
+											style={{
+												background: "conic-gradient(from 0deg, #DCA783, #2C2D38, #DCA783, #2C2D38, #DCA783)",
+											}}
+										/>
+									</div>
+									{/* Inner white circle content */}
+									<div className="absolute inset-[6px] rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 group-hover:shadow-2xl group-hover:scale-[1.02]">
 										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-primary">
 											{stat.value}
 											{stat.suffix && (
@@ -255,18 +295,20 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 								>
 									{/* Image Container with Wrapper */}
 									<div className="relative">
-										<div className="thumb relative overflow-hidden rounded-[10px]">
+										<div className="thumb relative overflow-visible rounded-[10px]">
 											{member.image ? (
-												<ImageComponent
-													src={member.image}
-													alt={member.name || "Team member"}
-													className="w-full h-auto object-cover border-none rounded-[10px] max-w-full"
-													height={480}
-													width={360}
-													wrapperClasses="w-full"
-												/>
+												<div className="aspect-[8/9] overflow-hidden rounded-[10px]">
+													<ImageComponent
+														src={member.image}
+														alt={member.name || "Team member"}
+														className="w-full h-full object-cover object-top border-none rounded-[10px]"
+														height={450}
+														width={400}
+														wrapperClasses="w-full h-full"
+													/>
+												</div>
 											) : (
-												<div className="aspect-[3/4] flex items-center justify-center bg-slate-100 rounded-[10px]">
+												<div className="aspect-[8/9] flex items-center justify-center bg-slate-100 rounded-[10px]">
 													<div className="h-28 w-28 rounded-full bg-primary/10 flex items-center justify-center">
 														<span className="text-4xl font-bold text-primary/40">
 															{(member.name || "?")
@@ -278,65 +320,71 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 												</div>
 											)}
 
-											{/* Plus Button - Bottom Right (slightly left from edge) */}
-											<div className="absolute bottom-4 right-4 z-10">
-												<button className="w-14 h-14 rounded-full bg-secondary shadow-xl flex items-center justify-center transform transition-all duration-300 group-hover:bg-primary">
-													<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-													</svg>
-												</button>
-											</div>
-
-											{/* Social Overlay - Appear on Hover */}
-											{(member.email || member.linkedin || member.phone) && (
-												<div className="social-overlay absolute inset-0 bg-secondary/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[10px] flex items-center justify-center gap-3">
+											{/* Social Overlay - Bottom right of image */}
+											<div className="social-overlay absolute right-[50px] -bottom-[32px] z-10">
+												{/* Social Icons */}
+												<ul className="flex flex-col items-center mb-0">
 													{member.linkedin && (
-														<a
-															href={member.linkedin}
-															target="_blank"
-															rel="noopener noreferrer"
-															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
-															aria-label={`LinkedIn profile of ${member.name}`}
-														>
-															<Linkedin className="h-5 w-5" />
-														</a>
+														<li className="block text-center mb-2.5">
+															<a
+																href={member.linkedin}
+																target="_blank"
+																rel="noopener noreferrer"
+																className="inline-block"
+															>
+																<span className="inline-flex items-center justify-center h-[45px] w-[45px] bg-[#0077B5] text-white rounded-full opacity-0 invisible translate-y-10 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 delay-[60ms]">
+																	<Linkedin className="h-5 w-5" />
+																</span>
+															</a>
+														</li>
 													)}
 													{member.email && (
-														<a
-															href={`mailto:${member.email}`}
-															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
-															aria-label={`Email ${member.name}`}
-														>
-															<Mail className="h-5 w-5" />
-														</a>
+														<li className="block text-center mb-2.5">
+															<a
+																href={`mailto:${member.email}`}
+																className="inline-block"
+															>
+																<span className="inline-flex items-center justify-center h-[45px] w-[45px] bg-[#ea4c89] text-white rounded-full opacity-0 invisible translate-y-10 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 delay-[45ms]">
+																	<Mail className="h-5 w-5" />
+																</span>
+															</a>
+														</li>
 													)}
 													{member.phone && (
-														<a
-															href={`tel:${member.phone}`}
-															className="w-12 h-12 rounded-full bg-white text-secondary flex items-center justify-center transition-all hover:bg-primary hover:text-white"
-															aria-label={`Call ${member.name}`}
-														>
-															<Phone className="h-5 w-5" />
-														</a>
+														<li className="block text-center mb-2.5">
+															<a
+																href={`tel:${member.phone}`}
+																className="inline-block"
+															>
+																<span className="inline-flex items-center justify-center h-[45px] w-[45px] bg-[#3B5998] text-white rounded-full opacity-0 invisible translate-y-10 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 delay-[30ms]">
+																	<Phone className="h-5 w-5" />
+																</span>
+															</a>
+														</li>
 													)}
+												</ul>
+												{/* Plus Icon with curved edges */}
+												<div className="icon bg-white rounded-[60px] border-[10px] border-white relative z-[1]">
+													<span className="inline-flex items-center justify-center h-[45px] w-[45px] bg-secondary text-white rounded-full cursor-pointer transition-all duration-300 group-hover:rotate-45 group-hover:bg-primary">
+														<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+															<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+														</svg>
+													</span>
 												</div>
-											)}
+											</div>
 										</div>
 									</div>
 
-									{/* Info - Content Below Image */}
-									<div className="info pt-6 text-center">
-										{member.department && (
-											<div className="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wide">
-												{member.department}
-											</div>
+									{/* Info - Content Below Image, Left aligned */}
+									<div className="info pt-8 text-left">
+										{member.role && (
+											<p className="text-sm text-muted-foreground mb-1">
+												{member.role}
+											</p>
 										)}
-										<h3 className="mb-1 text-xl font-bold text-secondary leading-tight">
+										<h3 className="text-xl font-bold text-secondary leading-tight">
 											{member.name}
 										</h3>
-										<p className="text-sm font-medium text-primary">
-											{member.role}
-										</p>
 									</div>
 								</motion.div>
 								);
