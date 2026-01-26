@@ -271,17 +271,24 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-[1200px] mx-auto"
+							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-[1400px] mx-auto"
 						>
 							{validTeamMembers.map((member, index) => {
-								// Calculate row position for alternating layout
+								// Calculate row position for alternating layout (3 cards per row visually)
 								const rowIndex = Math.floor(index / 3);
 								const isOffsetRow = rowIndex % 2 === 1;
 								const positionInRow = index % 3;
 
-								// First row: normal (left aligned)
-								// Second row: offset right (add left margin to first item)
-								const shouldOffset = isOffsetRow && positionInRow === 0;
+								// Row 1: columns 1, 2, 3 (left aligned, column 4 empty)
+								// Row 2: columns 2, 3, 4 (right aligned, column 1 empty)
+								let gridColumn: string;
+								if (isOffsetRow) {
+									// Offset rows: start from column 2
+									gridColumn = `${positionInRow + 2}`;
+								} else {
+									// Normal rows: start from column 1
+									gridColumn = `${positionInRow + 1}`;
+								}
 
 								return (
 								<motion.div
@@ -289,9 +296,9 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 									variants={fadeUp}
 									custom={index}
 									className="group relative overflow-visible bg-white rounded-[10px] transition-all duration-500"
-									style={shouldOffset ? {
-										gridColumnStart: '2',
-									} : {}}
+									style={{
+										gridColumn: gridColumn,
+									}}
 								>
 									{/* Image Container with Wrapper */}
 									<div className="relative">

@@ -7,6 +7,12 @@ import { CareersHero } from "../../_components/careers-hero";
 import { ContactSidebar } from "../../_components/contact-sidebar";
 import { ExpertCtaSection } from "./expert-cta-section";
 import { staggerContainer, fadeUp } from "@/lib/animations";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
 import type { JobOpeningData } from "@/lib/repositories/careers-page.repository";
 import type {
 	ICareersContactSidebar,
@@ -170,6 +176,88 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 					{/* Mobile Contact Sidebar */}
 					<div className="lg:hidden mt-12">
 						<ContactSidebar data={contactSidebar} />
+					</div>
+				</div>
+			</section>
+
+			{/* FAQ Section */}
+			<section className="py-16 md:py-20 bg-white">
+				<div className="_container">
+					<div className="max-w-3xl mx-auto">
+						<motion.div
+							variants={staggerContainer}
+							initial="initial"
+							whileInView="animate"
+							viewport={{ once: true }}
+							className="text-center mb-12"
+						>
+							<motion.h2
+								variants={fadeUp}
+								className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+							>
+								Vanliga frågor om tjänsten
+							</motion.h2>
+							<motion.p variants={fadeUp} className="text-muted-foreground">
+								Här hittar du svar på de vanligaste frågorna om denna tjänst.
+							</motion.p>
+						</motion.div>
+
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+						>
+							<Accordion type="single" collapsible className="space-y-4">
+								<AccordionItem
+									value="faq-1"
+									className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+								>
+									<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+										Vad innebär rollen som Teknisk Supportspecialist?
+									</AccordionTrigger>
+									<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+										Som Teknisk Supportspecialist hos Synos Medical hjälper du våra kunder med teknisk assistans.
+										Du arbetar med både support på distans och servicebesök hos kunder, och blir en viktig del av vårt serviceteam.
+									</AccordionContent>
+								</AccordionItem>
+								<AccordionItem
+									value="faq-2"
+									className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+								>
+									<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+										Vilka kvalifikationer krävs för tjänsten?
+									</AccordionTrigger>
+									<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+										Vi söker dig med teknisk utbildning eller motsvarande erfarenhet, erfarenhet av kundservice/support,
+										god problemlösningsförmåga, B-körkort för servicebesök, samt flytande svenska och god engelska.
+									</AccordionContent>
+								</AccordionItem>
+								<AccordionItem
+									value="faq-3"
+									className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+								>
+									<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+										Vad ingår i arbetsuppgifterna?
+									</AccordionTrigger>
+									<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+										Du kommer att ge teknisk support via telefon och e-post, genomföra servicebesök och installationer hos kunder,
+										dokumentera supportärenden och lösningar, utbilda kunder i användning av utrustning, samt bidra till förbättring av supportprocesser.
+									</AccordionContent>
+								</AccordionItem>
+								<AccordionItem
+									value="faq-4"
+									className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+								>
+									<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+										Hur ansöker jag till tjänsten?
+									</AccordionTrigger>
+									<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+										Du kan ansöka genom att fylla i kontaktformuläret på denna sida eller skicka din ansökan direkt till oss.
+										Bifoga ditt CV och ett personligt brev där du beskriver varför du passar för rollen.
+									</AccordionContent>
+								</AccordionItem>
+							</Accordion>
+						</motion.div>
 					</div>
 				</div>
 			</section>

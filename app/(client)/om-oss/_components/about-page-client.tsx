@@ -186,19 +186,41 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									{data.hero.title}
 								</motion.h1>
 							)}
-
-							{/* Subtitle */}
-							{data.hero?.subtitle && (
-								<motion.p
-									variants={fadeUp}
-									className="mt-4 text-lg text-white/70 max-w-2xl mx-auto"
-								>
-									{data.hero.subtitle}
-								</motion.p>
-							)}
 						</motion.div>
 					</div>
 
+				</section>
+			)}
+
+			{/* Mission Quote Section - Above Stats */}
+			{data.hero?.subtitle && (
+				<section className="py-16 md:py-20 lg:py-24 bg-slate-50">
+					<div className="_container">
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6 }}
+							className="max-w-5xl mx-auto text-center"
+						>
+							{/* Badge */}
+							<div className="mb-8 inline-flex items-center gap-3">
+								<span className="text-secondary/60">●</span>
+								<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+									Vårt Uppdrag
+								</span>
+								<span className="text-secondary/60">●</span>
+							</div>
+
+							{/* Quote - Italic with highlighted words */}
+							<h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-secondary leading-relaxed italic">
+								Sveriges ledande leverantör av professionell{" "}
+								<span className="text-primary">klinikutrustning</span> och{" "}
+								<span className="text-primary">lasermaskiner</span>. Vi kombinerar
+								kvalitetsprodukter med utbildning och support i världsklass.
+							</h2>
+						</motion.div>
+					</div>
 				</section>
 			)}
 
@@ -516,6 +538,96 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 				</section>
 			)}
 
+			{/* Trusted Business Partner Section */}
+			<section className="py-16 md:py-20 lg:py-24 bg-slate-100 overflow-hidden">
+				<div className="_container">
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.6 }}
+						className="text-center mb-12"
+					>
+						{/* Badge */}
+						<div className="mb-4 inline-flex items-center gap-3">
+							<span className="text-secondary/60">●</span>
+							<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+								Our Company
+							</span>
+							<span className="text-secondary/60">●</span>
+						</div>
+						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary">
+							Trusted Business Partner
+						</h2>
+					</motion.div>
+				</div>
+
+				{/* Marquee Container */}
+				<div className="space-y-6">
+					{/* Row 1 - Left to Right */}
+					<div className="partner-marquee">
+						<div className="partner-marquee-track animate-marquee-left">
+							{[...Array(2)].map((_, setIndex) => (
+								<div key={setIndex} className="flex gap-6">
+									{[
+										"Growth",
+										"Hertz",
+										"GrowTech",
+										"Company",
+										"Finance Plus",
+										"Narrow",
+										"TeamWork",
+										"TechCorp",
+										"MediaFlow",
+										"DataSync",
+									].map((name, index) => (
+										<div
+											key={`${setIndex}-${index}`}
+											className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
+										>
+											<span className="text-xl font-bold text-slate-400">
+												{name}
+											</span>
+										</div>
+									))}
+								</div>
+							))}
+						</div>
+					</div>
+
+					{/* Row 2 - Right to Left */}
+					<div className="partner-marquee">
+						<div className="partner-marquee-track animate-marquee-right">
+							{[...Array(2)].map((_, setIndex) => (
+								<div key={setIndex} className="flex gap-6">
+									{[
+										"CloudBase",
+										"NetPro",
+										"SecureIT",
+										"AppWorks",
+										"DigiLab",
+										"SmartBiz",
+										"CoreTech",
+										"FlexSoft",
+										"WebFlow",
+										"CodeCraft",
+									].map((name, index) => (
+										<div
+											key={`${setIndex}-${index}`}
+											className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
+										>
+											<span className="text-xl font-bold text-slate-400">
+												{name}
+											</span>
+										</div>
+									))}
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</section>
+
 			{/* FAQ Section */}
 			{visibility.faq && hasFaq && (
 				<section className="py-16 md:py-20 lg:py-24">
@@ -556,12 +668,12 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										<AccordionItem
 											key={index}
 											value={`faq-${index}`}
-											className="bg-white rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
+											className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
 										>
-											<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
+											<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
 												{item.question}
 											</AccordionTrigger>
-											<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
+											<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
 												{item.answer}
 											</AccordionContent>
 										</AccordionItem>
