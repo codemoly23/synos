@@ -14,6 +14,10 @@ import {
 	Award,
 	Users,
 	Sparkles,
+	MessageCircle,
+	Phone,
+	Mail,
+	MapPin,
 	type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -630,65 +634,258 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 			{/* FAQ Section */}
 			{visibility.faq && hasFaq && (
-				<section className="py-16 md:py-20 lg:py-24">
+				<section className="py-16 md:py-20 lg:py-24 bg-slate-50">
 					<div className="_container">
-						<div className="max-w-3xl mx-auto">
-							<motion.div
-								variants={staggerContainer}
-								initial="initial"
-								whileInView="animate"
-								viewport={{ once: true }}
-								className="text-center mb-12"
-							>
-								{data.faq?.title && (
-									<motion.h2
+						<div className="grid gap-8 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]">
+							{/* Left Column - FAQ */}
+							<div>
+								{/* Header */}
+								<motion.div
+									variants={staggerContainer}
+									initial="initial"
+									whileInView="animate"
+									viewport={{ once: true }}
+									className="mb-10"
+								>
+									{/* Badge */}
+									<motion.div
 										variants={fadeUp}
-										className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+										className="mb-4 inline-flex items-center gap-3"
 									>
-										{data.faq.title}
-									</motion.h2>
-								)}
-								{data.faq?.subtitle && (
-									<motion.p
-										variants={fadeUp}
-										className="text-muted-foreground"
-									>
-										{data.faq.subtitle}
-									</motion.p>
-								)}
-							</motion.div>
+										<span className="text-secondary/60">●</span>
+										<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+											Our Faq
+										</span>
+										<span className="text-secondary/60">●</span>
+									</motion.div>
 
-							<motion.div
-								initial={{ opacity: 0, y: 20 }}
-								whileInView={{ opacity: 1, y: 0 }}
-								viewport={{ once: true }}
-							>
-								<Accordion type="single" collapsible className="space-y-4">
-									{validFaqItems.map((item, index) => (
-										<AccordionItem
-											key={index}
-											value={`faq-${index}`}
-											className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+									{data.faq?.title && (
+										<motion.h2
+											variants={fadeUp}
+											className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
 										>
-											<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
-												{item.question}
-											</AccordionTrigger>
-											<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
-												{item.answer}
-											</AccordionContent>
-										</AccordionItem>
-									))}
-								</Accordion>
+											Answers To <span className="text-primary">Your</span> Questions
+										</motion.h2>
+									)}
+									{data.faq?.subtitle && (
+										<motion.p
+											variants={fadeUp}
+											className="text-muted-foreground max-w-xl"
+										>
+											{data.faq.subtitle}
+										</motion.p>
+									)}
+								</motion.div>
+
+								{/* FAQ Accordion */}
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+								>
+									<Accordion type="single" collapsible className="space-y-4">
+										{validFaqItems.map((item, index) => (
+											<AccordionItem
+												key={index}
+												value={`faq-${index}`}
+												className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+											>
+												<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+													{item.question}
+												</AccordionTrigger>
+												<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+													{item.answer}
+												</AccordionContent>
+											</AccordionItem>
+										))}
+									</Accordion>
+								</motion.div>
+							</div>
+
+							{/* Right Column - Contact Card */}
+							<motion.div
+								initial={{ opacity: 0, x: 30 }}
+								whileInView={{ opacity: 1, x: 0 }}
+								viewport={{ once: true }}
+								transition={{ duration: 0.6 }}
+								className="hidden lg:block"
+							>
+								<div className="sticky top-32 rounded-2xl overflow-hidden bg-white shadow-xl p-8">
+									{/* Title */}
+									<h3 className="text-xl font-bold text-secondary mb-6">
+										Alltid nära dig
+									</h3>
+
+									{/* Contact Info */}
+									<div className="space-y-5 mb-8">
+										{/* Location */}
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<MapPin className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Reach Us</p>
+												<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
+											</div>
+										</div>
+
+										{/* Email */}
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Mail className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Drop Us Mail</p>
+												<p className="text-sm text-muted-foreground">karriar@synos.se</p>
+											</div>
+										</div>
+
+										{/* Phone */}
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Phone className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Connect Now</p>
+												<p className="text-sm text-muted-foreground">010-205 15 01</p>
+											</div>
+										</div>
+									</div>
+
+									{/* Divider */}
+									<div className="border-t border-slate-200 my-6" />
+
+									{/* Contact Form */}
+									<h4 className="text-lg font-bold text-secondary mb-4">
+										Säg hej!
+									</h4>
+
+									<form className="space-y-4">
+										{/* Name */}
+										<div className="relative">
+											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+												<Users className="w-4 h-4" />
+											</div>
+											<input
+												type="text"
+												placeholder="Your Name*"
+												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+											/>
+										</div>
+
+										{/* Email */}
+										<div className="relative">
+											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+												<Mail className="w-4 h-4" />
+											</div>
+											<input
+												type="email"
+												placeholder="Email Address*"
+												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+											/>
+										</div>
+
+										{/* Phone */}
+										<div className="relative">
+											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+												<Phone className="w-4 h-4" />
+											</div>
+											<input
+												type="tel"
+												placeholder="Your Number*"
+												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+											/>
+										</div>
+
+										{/* Message */}
+										<div className="relative">
+											<div className="absolute left-4 top-4 text-muted-foreground">
+												<MessageCircle className="w-4 h-4" />
+											</div>
+											<textarea
+												placeholder="Additional Message"
+												rows={4}
+												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+											/>
+										</div>
+
+										{/* Submit Button */}
+										<Button className="w-full bg-primary hover:bg-primary/90 text-white">
+											Send Message
+											<ArrowRight className="ml-2 h-4 w-4" />
+										</Button>
+									</form>
+								</div>
 							</motion.div>
 						</div>
+
+						{/* Mobile Contact Card */}
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							className="lg:hidden mt-12"
+						>
+							<div className="rounded-2xl overflow-hidden bg-white shadow-xl p-8">
+								{/* Title */}
+								<h3 className="text-xl font-bold text-secondary mb-6">
+									Alltid nära dig
+								</h3>
+
+								{/* Contact Info */}
+								<div className="space-y-5 mb-8">
+									{/* Location */}
+									<div className="flex items-center gap-4">
+										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+											<MapPin className="w-5 h-5 text-primary" />
+										</div>
+										<div>
+											<p className="font-semibold text-secondary">Reach Us</p>
+											<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
+										</div>
+									</div>
+
+									{/* Email */}
+									<div className="flex items-center gap-4">
+										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+											<Mail className="w-5 h-5 text-primary" />
+										</div>
+										<div>
+											<p className="font-semibold text-secondary">Drop Us Mail</p>
+											<p className="text-sm text-muted-foreground">karriar@synos.se</p>
+										</div>
+									</div>
+
+									{/* Phone */}
+									<div className="flex items-center gap-4">
+										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+											<Phone className="w-5 h-5 text-primary" />
+										</div>
+										<div>
+											<p className="font-semibold text-secondary">Connect Now</p>
+											<p className="text-sm text-muted-foreground">010-205 15 01</p>
+										</div>
+									</div>
+								</div>
+
+								{/* Contact Button */}
+								<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
+									<Link href="/kontakt">
+										Kontakta Oss
+										<ArrowRight className="ml-2 h-4 w-4" />
+									</Link>
+								</Button>
+							</div>
+						</motion.div>
 					</div>
 				</section>
 			)}
 
 			{/* Testimonials Section */}
 			{visibility.testimonials && hasTestimonials && (
-				<section className="py-16 md:py-20 lg:py-24 bg-secondary">
+				<section className="py-16 md:py-20 lg:py-24 bg-slate-50">
 					<div className="_container">
+						{/* Header */}
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
@@ -696,91 +893,297 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							viewport={{ once: true }}
 							className="text-center mb-12"
 						>
+							{/* Badge */}
+							<motion.div
+								variants={fadeUp}
+								className="mb-4 inline-flex items-center gap-3"
+							>
+								<span className="text-secondary/60">●</span>
+								<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+									Testimonial
+								</span>
+								<span className="text-secondary/60">●</span>
+							</motion.div>
+
 							{data.testimonials?.title && (
 								<motion.h2
 									variants={fadeUp}
-									className="text-3xl md:text-4xl font-bold text-white mb-4"
+									className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
 								>
-									{data.testimonials.title}
+									Hear What Our Clients Say
 								</motion.h2>
 							)}
 							{data.testimonials?.subtitle && (
 								<motion.p
 									variants={fadeUp}
-									className="text-white/70 max-w-2xl mx-auto"
+									className="text-muted-foreground max-w-2xl mx-auto"
 								>
 									{data.testimonials.subtitle}
 								</motion.p>
 							)}
 						</motion.div>
 
+						{/* Main 2 Column Layout - Review Card (left) + Rating/Cooperation (right) */}
 						<motion.div
-							variants={staggerContainer}
-							initial="initial"
-							whileInView="animate"
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
-							className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+							transition={{ duration: 0.6 }}
+							className="grid gap-5 lg:grid-cols-[1fr_280px]"
 						>
-							{validTestimonials.map((testimonial, index) => (
-								<motion.div
-									key={index}
-									variants={fadeUp}
-									className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20"
-								>
-									{/* Rating */}
-									{testimonial.rating && (
-										<div className="flex gap-1 mb-4">
-											{[...Array(5)].map((_, i) => (
-												<Star
-													key={i}
-													className={`w-4 h-4 ${
-														i < (testimonial.rating || 0)
-															? "text-yellow-400 fill-yellow-400"
-															: "text-white/20"
-													}`}
-												/>
-											))}
-										</div>
-									)}
-
-									{/* Quote */}
-									<Quote className="w-8 h-8 text-primary/40 mb-3" />
-									<p className="text-white/90 mb-6 leading-relaxed">
-										{testimonial.quote}
-									</p>
-
-									{/* Author */}
-									<div className="flex items-center gap-4">
-										{testimonial.image ? (
-											<Image
-												src={testimonial.image}
-												alt={testimonial.author || ""}
-												width={48}
-												height={48}
-												className="rounded-full object-cover"
-											/>
-										) : (
-											<div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-												<span className="text-lg font-bold text-primary">
-													{(testimonial.author || "?")[0]}
-												</span>
+							{/* Left Column - Review Card with 3 internal columns */}
+							<div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+								<div className="grid lg:grid-cols-[280px_1fr_1fr] h-[600px]">
+									{/* Inner Column 1 - CTA */}
+									<div className="p-8 relative overflow-hidden flex flex-col border-r border-slate-100">
+										{/* Grid pattern background */}
+										<div className="absolute inset-0 opacity-30">
+											<div className="grid grid-cols-6 grid-rows-8 h-full w-full">
+												{[...Array(48)].map((_, i) => (
+													<div
+														key={i}
+														className={`border border-primary/10 ${
+															[5, 11, 17, 23, 29, 35].includes(i) ? "bg-primary/20" : ""
+														}`}
+													/>
+												))}
 											</div>
-										)}
-										<div>
-											<p className="font-semibold text-white">
-												{testimonial.author}
+										</div>
+
+										<div className="relative z-10 h-full flex flex-col justify-center">
+											<h3 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
+												Trusted By Over 1300 Loyal Clients
+											</h3>
+											<p className="text-muted-foreground mb-6 text-sm">
+												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
 											</p>
-											{(testimonial.role || testimonial.company) && (
-												<p className="text-sm text-white/60">
-													{testimonial.role}
-													{testimonial.role && testimonial.company && " - "}
-													{testimonial.company}
-												</p>
-											)}
+											<Button asChild className="w-fit bg-primary hover:bg-primary/90 text-white">
+												<Link href="/kontakt">
+													Contact Us
+													<ArrowRight className="ml-2 h-4 w-4" />
+												</Link>
+											</Button>
 										</div>
 									</div>
-								</motion.div>
-							))}
+
+									{/* Inner Column 2 - Reviews (Top to Bottom) */}
+									<div className="overflow-hidden relative border-r border-slate-100">
+										<div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+										<div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+
+										<div className="testimonial-marquee-vertical h-full p-4">
+											<div className="testimonial-marquee-track-down space-y-4">
+												{[
+													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director", avatar: "/images/testimonial-avatar-2.jpg" },
+													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager", avatar: "/images/testimonial-avatar-4.jpg" },
+													{ quote: "Donec rhoncus eros lobortis nulla molestie mattis scelerisque. Purus est efficitur laoreet.", name: "Editha Kristin", role: "CEO", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Euismod quam justo lectus commodo augue arcu dignissim. Porttitor ullamcorper.", name: "Operations Manager", role: "CEO", avatar: "/images/testimonial-avatar-2.jpg" },
+												].map((item, index) => (
+													<div key={index} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-6 h-6 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																<Image
+																	src={item.avatar}
+																	alt={item.name}
+																	width={36}
+																	height={36}
+																	className="object-cover w-full h-full"
+																/>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+												{/* Duplicate for seamless loop */}
+												{[
+													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director", avatar: "/images/testimonial-avatar-2.jpg" },
+													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager", avatar: "/images/testimonial-avatar-4.jpg" },
+													{ quote: "Donec rhoncus eros lobortis nulla molestie mattis scelerisque. Purus est efficitur laoreet.", name: "Editha Kristin", role: "CEO", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Euismod quam justo lectus commodo augue arcu dignissim. Porttitor ullamcorper.", name: "Operations Manager", role: "CEO", avatar: "/images/testimonial-avatar-2.jpg" },
+												].map((item, index) => (
+													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-6 h-6 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																<Image
+																	src={item.avatar}
+																	alt={item.name}
+																	width={36}
+																	height={36}
+																	className="object-cover w-full h-full"
+																/>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									</div>
+
+									{/* Inner Column 3 - Reviews (Bottom to Top) */}
+									<div className="overflow-hidden relative">
+										<div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+										<div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+
+										<div className="testimonial-marquee-vertical h-full p-4">
+											<div className="testimonial-marquee-track-up space-y-4">
+												{[
+													{ quote: "Urna tempor pulvinar vivamus fringilla lacus nec metus. Lacinia integer nunc posuere.", name: "Kay Ludger", role: "Finance Director", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director", avatar: "/images/testimonial-avatar-4.jpg" },
+													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Taciti sociosqu ad litora torquent per conubia nostra. Et magnis dis parturient scelerisque.", name: "Edelgard Gisa", role: "HR Director", avatar: "/images/testimonial-avatar-2.jpg" },
+													{ quote: "Viverra ac tincidunt nam porta elementum a enim. Arcu dignissim velit aliquam imperdiet mollis.", name: "Arnold Willy", role: "Sales Director", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Duis convallis tempus leo eu aenean sed diam. Nec metus bibendum egestas et magnis iaculis.", name: "Frieda Janine", role: "CEO", avatar: "/images/testimonial-avatar-4.jpg" },
+												].map((item, index) => (
+													<div key={index} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-6 h-6 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																<Image
+																	src={item.avatar}
+																	alt={item.name}
+																	width={36}
+																	height={36}
+																	className="object-cover w-full h-full"
+																/>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+												{/* Duplicate for seamless loop */}
+												{[
+													{ quote: "Urna tempor pulvinar vivamus fringilla lacus nec metus. Lacinia integer nunc posuere.", name: "Kay Ludger", role: "Finance Director", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director", avatar: "/images/testimonial-avatar-4.jpg" },
+													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager", avatar: "/images/testimonial-avatar-1.jpg" },
+													{ quote: "Taciti sociosqu ad litora torquent per conubia nostra. Et magnis dis parturient scelerisque.", name: "Edelgard Gisa", role: "HR Director", avatar: "/images/testimonial-avatar-2.jpg" },
+													{ quote: "Viverra ac tincidunt nam porta elementum a enim. Arcu dignissim velit aliquam imperdiet mollis.", name: "Arnold Willy", role: "Sales Director", avatar: "/images/testimonial-avatar-3.jpg" },
+													{ quote: "Duis convallis tempus leo eu aenean sed diam. Nec metus bibendum egestas et magnis iaculis.", name: "Frieda Janine", role: "CEO", avatar: "/images/testimonial-avatar-4.jpg" },
+												].map((item, index) => (
+													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-6 h-6 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																<Image
+																	src={item.avatar}
+																	alt={item.name}
+																	width={36}
+																	height={36}
+																	className="object-cover w-full h-full"
+																/>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Right Column - Rating Card + Group Cooperation (stacked vertically) */}
+							<div className="flex flex-col gap-5">
+								{/* Rating Card */}
+								<div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center flex-1">
+									<p className="text-5xl font-bold text-secondary mb-2">4.80</p>
+									<div className="flex gap-0.5 mb-3">
+										{[...Array(5)].map((_, i) => (
+											<Star
+												key={i}
+												className="w-5 h-5 text-yellow-400 fill-yellow-400"
+											/>
+										))}
+									</div>
+									<p className="text-sm text-muted-foreground mb-4">
+										2,568 Reviews and counting
+									</p>
+									<div className="flex items-center gap-4">
+										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
+											<span className="text-lg">🍎</span>
+										</div>
+										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
+											<span className="text-lg font-bold text-blue-500">G</span>
+										</div>
+										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
+											<span className="text-lg text-red-500">▶</span>
+										</div>
+									</div>
+								</div>
+
+								{/* Group Cooperation Card */}
+								<div className="rounded-2xl p-6 shadow-sm relative overflow-hidden flex-1">
+									{/* Background Image */}
+									<div className="absolute inset-0">
+										<Image
+											src="/images/group-cooperation-bg.jpg"
+											alt=""
+											fill
+											className="object-cover"
+										/>
+										{/* Gradient Overlay */}
+										<div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/50 to-green-400/60" />
+									</div>
+
+									<div className="relative z-10 h-full flex flex-col justify-between min-h-[180px]">
+										<h4 className="text-xl font-bold text-secondary">
+											Group<br />Cooperation
+										</h4>
+
+										<div className="flex items-center mt-auto">
+											<div className="flex -space-x-3">
+												{[1, 2, 3].map((i) => (
+													<div
+														key={i}
+														className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"
+													>
+														<Image
+															src={`/images/team-avatar-${i}.jpg`}
+															alt=""
+															width={40}
+															height={40}
+															className="object-cover"
+														/>
+													</div>
+												))}
+											</div>
+											<div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center ml-1">
+												<span className="text-white text-lg">+</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</motion.div>
 					</div>
 				</section>

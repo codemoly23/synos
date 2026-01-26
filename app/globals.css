@@ -287,6 +287,16 @@
     background: linear-gradient(135deg, #DCA783 0%, #C4956F 50%, #B5865F 100%);
   }
 
+  /* Dark FAQ Accordion (for dark backgrounds) */
+  .faq-accordion-item-dark {
+    background: linear-gradient(135deg, #3E414B 0%, #2C2D38 100%);
+    transition: all 0.3s ease;
+  }
+
+  .faq-accordion-item-dark[data-state="open"] {
+    background: linear-gradient(135deg, #DCA783 0%, #C4956F 50%, #B5865F 100%);
+  }
+
   /* Partner Marquee Animation */
   .partner-marquee {
     width: 100%;
@@ -322,6 +332,41 @@
     }
     100% {
       transform: translateX(0);
+    }
+  }
+
+  /* Testimonial Vertical Marquee Animation */
+  .testimonial-marquee-vertical {
+    overflow: hidden;
+  }
+
+  .testimonial-marquee-track-down {
+    display: flex;
+    flex-direction: column;
+    animation: marquee-down 40s linear infinite;
+  }
+
+  .testimonial-marquee-track-up {
+    display: flex;
+    flex-direction: column;
+    animation: marquee-up 40s linear infinite;
+  }
+
+  @keyframes marquee-down {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+
+  @keyframes marquee-up {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
     }
   }
 
