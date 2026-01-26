@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,6 +36,8 @@ import {
 	CheckCircle2,
 	ExternalLink,
 	ArrowRight,
+	Upload,
+	ChevronDown,
 	type LucideIcon,
 } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/animations";
@@ -318,26 +320,101 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 							variants={staggerContainer}
 							className="space-y-16"
 						>
+							{/* Veritatisin Reprehenderit Section */}
+							<motion.div variants={fadeUp}>
+								<div className="relative rounded-2xl overflow-hidden">
+									{/* Image */}
+									<div className="aspect-[16/10] relative">
+										<ImageComponent
+											src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=500&fit=crop"
+											alt="Professional training session"
+											fill
+											className="object-cover"
+										/>
+									</div>
+								</div>
+
+								{/* Content Below Image */}
+								<div className="mt-8">
+									<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
+										Veritatisin Reprehenderit
+									</h2>
+									<p className="text-muted-foreground mb-8">
+										Vel aliquid dolores id dolor quis nam labore voluptatem sit architecto itaque aut consectetur nulla. Nam neque labore ab sunt sequi est praesentium voluptatem aut internos voluptas a molestiae consequatur non eligendi dolor et libero quod.
+									</p>
+
+									<h3 className="text-xl font-semibold text-secondary mb-4">
+										Dignissi Nostrum
+									</h3>
+
+									{/* Checkmark List */}
+									<div className="space-y-3 mb-8">
+										<div className="flex items-start gap-3">
+											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+											</div>
+											<p className="text-muted-foreground">
+												Ab sunt sequi est praesentium voluptatem aut internos voluptas.
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+											</div>
+											<p className="text-muted-foreground">
+												A molestiae consequatur non eligendi dolor et libero quod.
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+											</div>
+											<p className="text-muted-foreground">
+												Nam neque labore ab sunt sequi est praesentium voluptatem.
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+											</div>
+											<p className="text-muted-foreground">
+												Aut internos voluptas a molestiae consequatur non eligendi.
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+											</div>
+											<p className="text-muted-foreground">
+												Dolor et libero quod vel aliquid dolores id dolor quis nam.
+											</p>
+										</div>
+									</div>
+
+									<p className="text-muted-foreground">
+										Vel aliquid dolores id dolor quis nam labore voluptatem sit architecto itaque aut consectetur nulla. Nam neque labore ab sunt sequi est praesentium voluptatem aut internos voluptas a molestiae consequatur non eligendi dolor et libero quod.
+									</p>
+								</div>
+							</motion.div>
+
 							{/* Main Content Section */}
 							{visibility.mainContent && hasMainContent && (
 								<motion.div variants={fadeUp}>
-									<div className="rounded-2xl bg-white border border-slate-200/80 p-8 md:p-10 shadow-sm">
-										{data.mainContent?.title && (
-											<h2 className="mb-6 text-2xl md:text-3xl font-bold text-secondary">
-												{data.mainContent.title}
-											</h2>
-										)}
-										{validParagraphsMain.length > 0 && (
-											<div className="space-y-4 text-muted-foreground leading-relaxed">
-												{validParagraphsMain.map((paragraph, index) => (
-													<p
-														key={index}
-														dangerouslySetInnerHTML={{ __html: paragraph }}
-													/>
-												))}
-											</div>
-										)}
-									</div>
+									{data.mainContent?.title && (
+										<h2 className="mb-4 text-2xl md:text-3xl font-bold text-secondary">
+											{data.mainContent.title}
+										</h2>
+									)}
+									{validParagraphsMain.length > 0 && (
+										<div className="space-y-4 text-muted-foreground leading-relaxed">
+											{validParagraphsMain.map((paragraph, index) => (
+												<p
+													key={index}
+													dangerouslySetInnerHTML={{ __html: paragraph }}
+												/>
+											))}
+										</div>
+									)}
 								</motion.div>
 							)}
 
@@ -916,12 +993,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 								<Accordion type="single" collapsible className="space-y-4">
 									<AccordionItem
 										value="faq-1"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
+										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
+										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
 											Vad ingår i utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
+										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
 											Vår utbildning omfattar både teoretisk och praktisk
 											undervisning. Du lär dig allt från säker hantering av
 											utrustningen till optimala behandlingsprotokoll för olika
@@ -930,12 +1007,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-2"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
+										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
+										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
 											Hur lång är utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
+										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
 											Utbildningens längd varierar beroende på vilken maskin du
 											köper och dina förkunskaper. Vanligtvis 2-5 dagar intensiv
 											utbildning följt av uppföljning och support.
@@ -943,12 +1020,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-3"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
+										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
+										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
 											Får jag certifikat efter utbildningen?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
+										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
 											Ja, efter genomförd utbildning får du ett certifikat som
 											visar att du är utbildad på den specifika utrustningen.
 											Detta är viktigt för din legitimitet som behandlare.
@@ -956,12 +1033,12 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									</AccordionItem>
 									<AccordionItem
 										value="faq-4"
-										className="bg-slate-50 rounded-xl border border-slate-200/80 px-6 overflow-hidden transition-all duration-300 data-[state=open]:bg-[#DBA480] data-[state=open]:border-[#DBA480]"
+										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
 									>
-										<AccordionTrigger className="text-left font-semibold text-secondary hover:text-primary py-5 data-[state=open]:text-white">
+										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
 											Finns det möjlighet till uppföljningsutbildning?
 										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 data-[state=open]:text-white/90">
+										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
 											Absolut! Vi erbjuder kontinuerlig support och möjlighet
 											till fördjupad utbildning. Du kan alltid kontakta oss för
 											att boka uppföljning eller lära dig nya tekniker.
@@ -973,6 +1050,9 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 					</div>
 				</section>
 			)}
+
+			{/* Application Form Section */}
+			<ApplicationFormSection />
 
 			{/* CTA Section */}
 			<section className="bg-secondary py-16 md:py-20 lg:py-24 relative overflow-hidden">
@@ -1053,5 +1133,263 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 				</div>
 			</section>
 		</div>
+	);
+}
+
+/**
+ * Application Form Section Component
+ */
+function ApplicationFormSection() {
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		careerType: "",
+		message: "",
+	});
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const careerTypes = [
+		"Account Manager",
+		"Sales Representative",
+		"Technical Support",
+		"Marketing Specialist",
+		"Software Developer",
+		"Other",
+	];
+
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			setSelectedFile(e.target.files[0]);
+		}
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		// Form submission logic here
+		console.log("Form submitted:", { ...formData, file: selectedFile });
+	};
+
+	return (
+		<section className="py-16 md:py-20 bg-slate-50">
+			<div className="_container">
+				<div className="max-w-4xl mx-auto">
+					{/* Header */}
+					<motion.div
+						variants={staggerContainer}
+						initial="initial"
+						whileInView="animate"
+						viewport={{ once: true }}
+						className="text-center mb-12"
+					>
+						<motion.div variants={fadeUp} className="mb-4">
+							<span className="inline-block px-4 py-1.5 bg-[#DCA783]/10 text-[#DCA783] rounded-full text-sm font-medium">
+								Get Answers Instantly
+							</span>
+						</motion.div>
+						<motion.h2
+							variants={fadeUp}
+							className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+						>
+							Tell Us What You Need
+						</motion.h2>
+						<motion.p
+							variants={fadeUp}
+							className="text-muted-foreground max-w-2xl mx-auto"
+						>
+							Fill out the form below and we&apos;ll get back to you as soon as
+							possible regarding your inquiry.
+						</motion.p>
+					</motion.div>
+
+					{/* Form */}
+					<motion.form
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						onSubmit={handleSubmit}
+						className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 shadow-sm"
+					>
+						<div className="grid gap-6 md:grid-cols-2">
+							{/* Your Name */}
+							<div>
+								<label
+									htmlFor="name"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Your Name <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="text"
+									id="name"
+									name="name"
+									value={formData.name}
+									onChange={handleInputChange}
+									placeholder="Enter your name"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Email Address */}
+							<div>
+								<label
+									htmlFor="email"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Email Address <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="email"
+									id="email"
+									name="email"
+									value={formData.email}
+									onChange={handleInputChange}
+									placeholder="Enter your email"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Your Number */}
+							<div>
+								<label
+									htmlFor="phone"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Your Number <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="tel"
+									id="phone"
+									name="phone"
+									value={formData.phone}
+									onChange={handleInputChange}
+									placeholder="Enter your phone number"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Choose Careers Type */}
+							<div className="relative">
+								<label
+									htmlFor="careerType"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Choose Careers Type <span className="text-red-500">*</span>
+								</label>
+								<button
+									type="button"
+									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-left flex items-center justify-between bg-white"
+								>
+									<span
+										className={
+											formData.careerType
+												? "text-secondary"
+												: "text-muted-foreground/50"
+										}
+									>
+										{formData.careerType || "Select career type"}
+									</span>
+									<ChevronDown
+										className={`w-5 h-5 text-muted-foreground transition-transform ${
+											isDropdownOpen ? "rotate-180" : ""
+										}`}
+									/>
+								</button>
+								{isDropdownOpen && (
+									<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
+										{careerTypes.map((type) => (
+											<button
+												key={type}
+												type="button"
+												onClick={() => {
+													setFormData((prev) => ({ ...prev, careerType: type }));
+													setIsDropdownOpen(false);
+												}}
+												className="w-full px-4 py-2.5 text-left text-secondary hover:bg-slate-50 transition-colors"
+											>
+												{type}
+											</button>
+										))}
+									</div>
+								)}
+							</div>
+						</div>
+
+						{/* Additional Message */}
+						<div className="mt-6">
+							<label
+								htmlFor="message"
+								className="block text-sm font-medium text-secondary mb-2"
+							>
+								Additional Message
+							</label>
+							<textarea
+								id="message"
+								name="message"
+								value={formData.message}
+								onChange={handleInputChange}
+								placeholder="Tell us more about yourself and why you're interested in this position..."
+								rows={5}
+								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none"
+							/>
+						</div>
+
+						{/* File Upload and Submit Row */}
+						<div className="mt-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+							{/* File Upload */}
+							<div>
+								<div className="flex items-center">
+									<input
+										type="file"
+										ref={fileInputRef}
+										onChange={handleFileChange}
+										accept=".pdf,.doc,.docx,.jpg,.png"
+										className="hidden"
+									/>
+									<button
+										type="button"
+										onClick={() => fileInputRef.current?.click()}
+										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200"
+									>
+										<Upload className="w-4 h-4" />
+										Upload
+									</button>
+									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
+										<span className="text-muted-foreground text-sm">
+											{selectedFile ? selectedFile.name : "No file chosen"}
+										</span>
+									</div>
+								</div>
+								<p className="text-muted-foreground text-xs mt-2">
+									*Upload your resume in pdf, jpg, png, or doc format.
+								</p>
+							</div>
+
+							{/* Submit Button */}
+							<button
+								type="submit"
+								className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25"
+							>
+								Submit
+								<ArrowRight className="w-5 h-5" />
+							</button>
+						</div>
+					</motion.form>
+				</div>
+			</div>
+		</section>
 	);
 }
