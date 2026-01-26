@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, Upload, ChevronDown, ArrowRight } from "lucide-react";
 import { CareersHero } from "../../_components/careers-hero";
 import { ContactSidebar } from "../../_components/contact-sidebar";
 import { ExpertCtaSection } from "./expert-cta-section";
@@ -262,8 +263,269 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 				</div>
 			</section>
 
+			{/* Application Form Section */}
+			<ApplicationFormSection jobTitle={job.title} />
+
 			{/* Expert CTA Section */}
 			<ExpertCtaSection data={expertCta} />
 		</div>
+	);
+}
+
+/**
+ * Application Form Section Component
+ */
+function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		careerType: "",
+		message: "",
+	});
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const careerTypes = [
+		"Account Manager",
+		"Sales Representative",
+		"Technical Support",
+		"Marketing Specialist",
+		"Software Developer",
+		"Other",
+	];
+
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			setSelectedFile(e.target.files[0]);
+		}
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		// Form submission logic here
+		console.log("Form submitted:", { ...formData, file: selectedFile });
+	};
+
+	return (
+		<section className="py-16 md:py-20 bg-slate-50">
+			<div className="_container">
+				<div className="max-w-4xl mx-auto">
+					{/* Header */}
+					<motion.div
+						variants={staggerContainer}
+						initial="initial"
+						whileInView="animate"
+						viewport={{ once: true }}
+						className="text-center mb-12"
+					>
+						<motion.div variants={fadeUp} className="mb-4">
+							<span className="inline-block px-4 py-1.5 bg-[#DCA783]/10 text-[#DCA783] rounded-full text-sm font-medium">
+								Get Answers Instantly
+							</span>
+						</motion.div>
+						<motion.h2
+							variants={fadeUp}
+							className="text-3xl md:text-4xl font-bold text-secondary mb-4"
+						>
+							Tell Us What You Need
+						</motion.h2>
+						<motion.p
+							variants={fadeUp}
+							className="text-muted-foreground max-w-2xl mx-auto"
+						>
+							Fill out the form below and we&apos;ll get back to you as soon as
+							possible regarding your application for {jobTitle || "this position"}.
+						</motion.p>
+					</motion.div>
+
+					{/* Form */}
+					<motion.form
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						onSubmit={handleSubmit}
+						className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 shadow-sm"
+					>
+						<div className="grid gap-6 md:grid-cols-2">
+							{/* Your Name */}
+							<div>
+								<label
+									htmlFor="name"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Your Name <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="text"
+									id="name"
+									name="name"
+									value={formData.name}
+									onChange={handleInputChange}
+									placeholder="Enter your name"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Email Address */}
+							<div>
+								<label
+									htmlFor="email"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Email Address <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="email"
+									id="email"
+									name="email"
+									value={formData.email}
+									onChange={handleInputChange}
+									placeholder="Enter your email"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Your Number */}
+							<div>
+								<label
+									htmlFor="phone"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Your Number <span className="text-red-500">*</span>
+								</label>
+								<input
+									type="tel"
+									id="phone"
+									name="phone"
+									value={formData.phone}
+									onChange={handleInputChange}
+									placeholder="Enter your phone number"
+									required
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+								/>
+							</div>
+
+							{/* Choose Careers Type */}
+							<div className="relative">
+								<label
+									htmlFor="careerType"
+									className="block text-sm font-medium text-secondary mb-2"
+								>
+									Choose Careers Type <span className="text-red-500">*</span>
+								</label>
+								<button
+									type="button"
+									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-left flex items-center justify-between bg-white"
+								>
+									<span
+										className={
+											formData.careerType
+												? "text-secondary"
+												: "text-muted-foreground/50"
+										}
+									>
+										{formData.careerType || "Select career type"}
+									</span>
+									<ChevronDown
+										className={`w-5 h-5 text-muted-foreground transition-transform ${
+											isDropdownOpen ? "rotate-180" : ""
+										}`}
+									/>
+								</button>
+								{isDropdownOpen && (
+									<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
+										{careerTypes.map((type) => (
+											<button
+												key={type}
+												type="button"
+												onClick={() => {
+													setFormData((prev) => ({ ...prev, careerType: type }));
+													setIsDropdownOpen(false);
+												}}
+												className="w-full px-4 py-2.5 text-left text-secondary hover:bg-slate-50 transition-colors"
+											>
+												{type}
+											</button>
+										))}
+									</div>
+								)}
+							</div>
+						</div>
+
+						{/* Additional Message */}
+						<div className="mt-6">
+							<label
+								htmlFor="message"
+								className="block text-sm font-medium text-secondary mb-2"
+							>
+								Additional Message
+							</label>
+							<textarea
+								id="message"
+								name="message"
+								value={formData.message}
+								onChange={handleInputChange}
+								placeholder="Tell us more about yourself and why you're interested in this position..."
+								rows={5}
+								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none"
+							/>
+						</div>
+
+						{/* File Upload and Submit Row */}
+						<div className="mt-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+							{/* File Upload */}
+							<div>
+								<div className="flex items-center">
+									<input
+										type="file"
+										ref={fileInputRef}
+										onChange={handleFileChange}
+										accept=".pdf,.doc,.docx,.jpg,.png"
+										className="hidden"
+									/>
+									<button
+										type="button"
+										onClick={() => fileInputRef.current?.click()}
+										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200"
+									>
+										<Upload className="w-4 h-4" />
+										Upload
+									</button>
+									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
+										<span className="text-muted-foreground text-sm">
+											{selectedFile ? selectedFile.name : "No file chosen"}
+										</span>
+									</div>
+								</div>
+								<p className="text-muted-foreground text-xs mt-2">
+									*Upload your resume in pdf, jpg, png, or doc format.
+								</p>
+							</div>
+
+							{/* Submit Button */}
+							<button
+								type="submit"
+								className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25"
+							>
+								Submit
+								<ArrowRight className="w-5 h-5" />
+							</button>
+						</div>
+					</motion.form>
+				</div>
+			</div>
+		</section>
 	);
 }
