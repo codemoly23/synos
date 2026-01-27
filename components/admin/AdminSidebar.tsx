@@ -53,7 +53,7 @@ interface NavSection {
 	items: NavItem[];
 }
 
-// Grouped navigation sections
+// Grouped navigation sections cccccg
 const navSections: NavSection[] = [
 	{
 		title: "Overview",
