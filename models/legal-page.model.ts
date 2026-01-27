@@ -229,6 +229,136 @@ const LegalCtaSectionSchema = new Schema<ILegalCtaSection>(
 );
 
 // ============================================================================
+// FEATURED IMAGE
+// ============================================================================
+export interface ILegalFeaturedImage {
+	url?: string;
+	alt?: string;
+}
+
+const LegalFeaturedImageSchema = new Schema<ILegalFeaturedImage>(
+	{
+		url: { type: String, trim: true },
+		alt: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// STATS SECTION (Purus Est Efficitur Laoreet)
+// ============================================================================
+export interface ILegalStat {
+	value?: string;
+	label?: string;
+}
+
+const LegalStatSchema = new Schema<ILegalStat>(
+	{
+		value: { type: String, trim: true },
+		label: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+export interface ILegalStatsSection {
+	image?: { url?: string; alt?: string };
+	title?: string;
+	description?: string;
+	stats?: ILegalStat[];
+	bottomText?: string;
+}
+
+const LegalStatsSectionSchema = new Schema<ILegalStatsSection>(
+	{
+		image: {
+			type: new Schema(
+				{
+					url: { type: String, trim: true },
+					alt: { type: String, trim: true },
+				},
+				{ _id: false }
+			),
+		},
+		title: { type: String, trim: true },
+		description: { type: String, trim: true },
+		stats: { type: [LegalStatSchema], default: [] },
+		bottomText: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// FEATURES SECTION (Arcu Dignissim Velit Aliquam)
+// ============================================================================
+export interface ILegalFeature {
+	icon?: string;
+	title?: string;
+	description?: string;
+}
+
+const LegalFeatureSchema = new Schema<ILegalFeature>(
+	{
+		icon: { type: String, trim: true },
+		title: { type: String, trim: true },
+		description: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+export interface ILegalFeaturesSection {
+	title?: string;
+	description?: string;
+	features?: ILegalFeature[];
+	image?: { url?: string; alt?: string };
+	bottomText?: string;
+}
+
+const LegalFeaturesSectionSchema = new Schema<ILegalFeaturesSection>(
+	{
+		title: { type: String, trim: true },
+		description: { type: String, trim: true },
+		features: { type: [LegalFeatureSchema], default: [] },
+		image: {
+			type: new Schema(
+				{
+					url: { type: String, trim: true },
+					alt: { type: String, trim: true },
+				},
+				{ _id: false }
+			),
+		},
+		bottomText: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// VIDEO SECTION
+// ============================================================================
+export interface ILegalVideoSection {
+	thumbnail?: { url?: string; alt?: string };
+	videoUrl?: string;
+	bottomText?: string;
+}
+
+const LegalVideoSectionSchema = new Schema<ILegalVideoSection>(
+	{
+		thumbnail: {
+			type: new Schema(
+				{
+					url: { type: String, trim: true },
+					alt: { type: String, trim: true },
+				},
+				{ _id: false }
+			),
+		},
+		videoUrl: { type: String, trim: true },
+		bottomText: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
 // SEO
 // ============================================================================
 export interface ILegalPageSeo {
@@ -253,6 +383,10 @@ export interface ILegalPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	sectionVisibility: ILegalSectionVisibility;
 	hero: ILegalHeroSection;
+	featuredImage?: ILegalFeaturedImage;
+	statsSection?: ILegalStatsSection;
+	featuresSection?: ILegalFeaturesSection;
+	videoSection?: ILegalVideoSection;
 	legalCards: ILegalCard[];
 	companyInfo: ILegalCompanyInfo;
 	termsSection: ILegalTermsSection;
@@ -277,6 +411,10 @@ const LegalPageSchema = new Schema<ILegalPage>(
 			},
 		},
 		hero: { type: LegalHeroSectionSchema, default: {} },
+		featuredImage: { type: LegalFeaturedImageSchema },
+		statsSection: { type: LegalStatsSectionSchema },
+		featuresSection: { type: LegalFeaturesSectionSchema },
+		videoSection: { type: LegalVideoSectionSchema },
 		legalCards: { type: [LegalCardSchema], default: [] },
 		companyInfo: { type: LegalCompanyInfoSchema, default: {} },
 		termsSection: { type: LegalTermsSectionSchema, default: {} },

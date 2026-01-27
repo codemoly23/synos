@@ -207,24 +207,23 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 						className="mx-auto max-w-6xl"
 					>
 						{/* Full Width Image */}
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.6, delay: 0.2 }}
-							className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl mb-12"
-						>
-							<Image
-								src="/images/juridisk-information-featured.jpg"
-								alt="Juridisk Information - Integritetspolicy"
-								fill
-								className="object-cover"
-								priority
-							/>
-							<div className="absolute top-4 right-4 bg-primary text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-								Featured Image
-							</div>
-						</motion.div>
+						{data.featuredImage?.url && (
+							<motion.div
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ duration: 0.6, delay: 0.2 }}
+								className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl mb-12"
+							>
+								<Image
+									src={data.featuredImage.url}
+									alt={data.featuredImage.alt || "Featured image"}
+									fill
+									className="object-cover"
+									priority
+								/>
+							</motion.div>
+						)}
 
 						{/* Content Below Image */}
 						<motion.div
@@ -263,244 +262,244 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 			</section>
 
 			{/* Stats Section with Image */}
-			<section className="py-16 md:py-20 bg-slate-100">
-				<div className="_container">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className="mx-auto max-w-6xl"
-					>
-						<div className="grid gap-12 lg:grid-cols-2 items-center">
-							{/* Left Column - Image */}
-							<motion.div
-								initial={{ opacity: 0, x: -30 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.6, delay: 0.2 }}
-								className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
-							>
-								<Image
-									src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop"
-									alt="Business meeting"
-									fill
-									className="object-cover"
-								/>
-							</motion.div>
-
-							{/* Right Column - Content */}
-							<motion.div
-								initial={{ opacity: 0, x: 30 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.6, delay: 0.3 }}
-							>
-								<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
-									Purus Est Efficitur Laoreet.
-								</h2>
-								<p className="text-muted-foreground mb-8">
-									Dui felis venenatis ultrices proin libero feugiat tristique. Suspendisse sodales consequat magna ante debitis. Aut commodi nisi et illo quae vel voluptatum consequuntur. Et minima laudantium et tempore minima eum exercitationem consequatur eos quidem nobis et dolor officia ut.
-								</p>
-
-								{/* Horizontal Line above Stats */}
-								<div className="border-t border-slate-300 pt-8">
-									{/* Stats Grid */}
-									<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-										<div>
-											<p className="text-3xl md:text-4xl font-bold text-secondary">
-												+75<span className="text-primary">%</span>
-											</p>
-											<p className="text-sm text-muted-foreground mt-1">Margin Expansion</p>
-										</div>
-										<div>
-											<p className="text-3xl md:text-4xl font-bold text-secondary">
-												+85<span className="text-primary">%</span>
-											</p>
-											<p className="text-sm text-muted-foreground mt-1">Investment Return</p>
-										</div>
-										<div>
-											<p className="text-3xl md:text-4xl font-bold text-secondary">
-												+90<span className="text-primary">%</span>
-											</p>
-											<p className="text-sm text-muted-foreground mt-1">Operational Gains</p>
-										</div>
-										<div>
-											<p className="text-3xl md:text-4xl font-bold text-secondary">
-												+98<span className="text-primary">%</span>
-											</p>
-											<p className="text-sm text-muted-foreground mt-1">Order Booked</p>
-										</div>
-									</div>
-								</div>
-							</motion.div>
-						</div>
-
-						{/* Text Below Stats Section */}
-						<motion.p
-							initial={{ opacity: 0, y: 20 }}
+			{(data.statsSection?.image?.url || data.statsSection?.title || (data.statsSection?.stats && data.statsSection.stats.length > 0)) && (
+				<section className="py-16 md:py-20 bg-slate-100">
+					<div className="_container">
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
-							transition={{ duration: 0.6, delay: 0.4 }}
-							className="mt-12 text-muted-foreground"
+							transition={{ duration: 0.6 }}
+							className="mx-auto max-w-6xl"
 						>
-							Habitant morbi senectus netus suscipit enim et dolores omnis ut quibusdam architecto. Est beatae sequi eos repellat galisum qui beatae quis aut rerum consequatur qui molestiae Quis et sint suscipit et aliquam aliquid. Aut numquam voluptates et esse porro ab dolorem eligendi qui impedit placeat. Ut vitae nesciunt ab quia voluptatibus sed maiores.
-						</motion.p>
-					</motion.div>
-				</div>
-			</section>
+							<div className="grid gap-12 lg:grid-cols-2 items-center">
+								{/* Left Column - Image */}
+								{data.statsSection?.image?.url && (
+									<motion.div
+										initial={{ opacity: 0, x: -30 }}
+										whileInView={{ opacity: 1, x: 0 }}
+										viewport={{ once: true }}
+										transition={{ duration: 0.6, delay: 0.2 }}
+										className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
+									>
+										<Image
+											src={data.statsSection.image.url}
+											alt={data.statsSection.image.alt || "Stats section image"}
+											fill
+											className="object-cover"
+										/>
+									</motion.div>
+								)}
+
+								{/* Right Column - Content */}
+								<motion.div
+									initial={{ opacity: 0, x: 30 }}
+									whileInView={{ opacity: 1, x: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.3 }}
+								>
+									{data.statsSection?.title && (
+										<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+											{data.statsSection.title}
+										</h2>
+									)}
+									{data.statsSection?.description && (
+										<p className="text-muted-foreground mb-8">
+											{data.statsSection.description}
+										</p>
+									)}
+
+									{/* Horizontal Line above Stats */}
+									{data.statsSection?.stats && data.statsSection.stats.length > 0 && (
+										<div className="border-t border-slate-300 pt-8">
+											{/* Stats Grid */}
+											<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+												{data.statsSection.stats.map((stat, index) => (
+													<div key={index}>
+														{stat.value && (
+															<p className="text-3xl md:text-4xl font-bold text-secondary">
+																{stat.value}
+															</p>
+														)}
+														{stat.label && (
+															<p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
+														)}
+													</div>
+												))}
+											</div>
+										</div>
+									)}
+								</motion.div>
+							</div>
+
+							{/* Text Below Stats Section */}
+							{data.statsSection?.bottomText && (
+								<motion.p
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.4 }}
+									className="mt-12 text-muted-foreground"
+								>
+									{data.statsSection.bottomText}
+								</motion.p>
+							)}
+						</motion.div>
+					</div>
+				</section>
+			)}
 
 			{/* Features Section with Image */}
-			<section className="py-16 md:py-20 bg-slate-100">
-				<div className="_container">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className="mx-auto max-w-6xl"
-					>
-						<div className="grid gap-12 lg:grid-cols-2 items-center">
-							{/* Left Column - Content */}
-							<motion.div
-								initial={{ opacity: 0, x: -30 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.6, delay: 0.2 }}
-							>
-								<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
-									Arcu Dignissim Velit Aliquam?
-								</h2>
-								<p className="text-muted-foreground mb-10">
-									Duis convallis tempus leo eu aenean laboriosam maxime eos eligendi voluptatibus et voluptate voluptas in corporis quas. Est eius possimus et temporibus temporibus et voluptas quod.
-								</p>
-
-								{/* Feature Cards */}
-								<div className="grid grid-cols-3 gap-6">
-									{/* Planned Strategy */}
-									<div>
-										<div className="w-16 h-16 rounded-2xl bg-[#DCA783]/10 flex items-center justify-center mb-4">
-											<svg className="w-8 h-8 text-[#DCA783]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-												<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-												<circle cx="9" cy="7" r="4" />
-												<path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-												<path d="M16 3.13a4 4 0 0 1 0 7.75" />
-											</svg>
-										</div>
-										<h3 className="font-bold text-secondary mb-2">Planned Strategy</h3>
-										<p className="text-sm text-muted-foreground">
-											Venenatis ultrices proin porro eveniet animiet consequatur.
-										</p>
-									</div>
-
-									{/* Trade Optimization */}
-									<div>
-										<div className="w-16 h-16 rounded-2xl bg-[#DCA783]/10 flex items-center justify-center mb-4">
-											<svg className="w-8 h-8 text-[#DCA783]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-												<rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-												<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-											</svg>
-										</div>
-										<h3 className="font-bold text-secondary mb-2">Trade Optimization</h3>
-										<p className="text-sm text-muted-foreground">
-											Porta quia omnis et debi tis doloresut possimus.
-										</p>
-									</div>
-
-									{/* Revenue Insights */}
-									<div>
-										<div className="w-16 h-16 rounded-2xl bg-[#DCA783]/10 flex items-center justify-center mb-4">
-											<svg className="w-8 h-8 text-[#DCA783]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-												<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-												<circle cx="12" cy="7" r="4" />
-											</svg>
-										</div>
-										<h3 className="font-bold text-secondary mb-2">Revenue Insights</h3>
-										<p className="text-sm text-muted-foreground">
-											Sed neque modi nam quia odioestivelit aperiam.
-										</p>
-									</div>
-								</div>
-							</motion.div>
-
-							{/* Right Column - Image */}
-							<motion.div
-								initial={{ opacity: 0, x: 30 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.6, delay: 0.3 }}
-								className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
-							>
-								<Image
-									src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop"
-									alt="Team collaboration"
-									fill
-									className="object-cover"
-								/>
-							</motion.div>
-						</div>
-
-						{/* Text Below Features Section */}
-						<motion.p
-							initial={{ opacity: 0, y: 20 }}
+			{(data.featuresSection?.image?.url || data.featuresSection?.title || (data.featuresSection?.features && data.featuresSection.features.length > 0)) && (
+				<section className="py-16 md:py-20 bg-slate-100">
+					<div className="_container">
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
-							transition={{ duration: 0.6, delay: 0.4 }}
-							className="mt-12 text-muted-foreground"
+							transition={{ duration: 0.6 }}
+							className="mx-auto max-w-6xl"
 						>
-							Habitant morbi senectus netus suscipit enim et dolores omnis ut quibusdam architecto. Est beatae sequi eos repellat galisum qui beatae quis aut rerum consequatur qui molestiae Quis et sint suscipit et aliquam aliquid. Aut numquam voluptates et esse porro ab dolorem eligendi qui impedit placeat. Ut vitae nesciunt ab quia voluptatibus sed maiores.
-						</motion.p>
-					</motion.div>
-				</div>
-			</section>
+							<div className="grid gap-12 lg:grid-cols-2 items-center">
+								{/* Left Column - Content */}
+								<motion.div
+									initial={{ opacity: 0, x: -30 }}
+									whileInView={{ opacity: 1, x: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.2 }}
+								>
+									{data.featuresSection?.title && (
+										<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+											{data.featuresSection.title}
+										</h2>
+									)}
+									{data.featuresSection?.description && (
+										<p className="text-muted-foreground mb-10">
+											{data.featuresSection.description}
+										</p>
+									)}
+
+									{/* Feature Cards */}
+									{data.featuresSection?.features && data.featuresSection.features.length > 0 && (
+										<div className="grid grid-cols-3 gap-6">
+											{data.featuresSection.features.map((feature, index) => (
+												<div key={index}>
+													<div className="w-16 h-16 rounded-2xl bg-[#DCA783]/10 flex items-center justify-center mb-4">
+														<svg className="w-8 h-8 text-[#DCA783]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+															<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+															<circle cx="12" cy="7" r="4" />
+														</svg>
+													</div>
+													{feature.title && (
+														<h3 className="font-bold text-secondary mb-2">{feature.title}</h3>
+													)}
+													{feature.description && (
+														<p className="text-sm text-muted-foreground">
+															{feature.description}
+														</p>
+													)}
+												</div>
+											))}
+										</div>
+									)}
+								</motion.div>
+
+								{/* Right Column - Image */}
+								{data.featuresSection?.image?.url && (
+									<motion.div
+										initial={{ opacity: 0, x: 30 }}
+										whileInView={{ opacity: 1, x: 0 }}
+										viewport={{ once: true }}
+										transition={{ duration: 0.6, delay: 0.3 }}
+										className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
+									>
+										<Image
+											src={data.featuresSection.image.url}
+											alt={data.featuresSection.image.alt || "Features section image"}
+											fill
+											className="object-cover"
+										/>
+									</motion.div>
+								)}
+							</div>
+
+							{/* Text Below Features Section */}
+							{data.featuresSection?.bottomText && (
+								<motion.p
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.4 }}
+									className="mt-12 text-muted-foreground"
+								>
+									{data.featuresSection.bottomText}
+								</motion.p>
+							)}
+						</motion.div>
+					</div>
+				</section>
+			)}
 
 			{/* Video Section */}
-			<section className="py-16 md:py-20 bg-slate-100">
-				<div className="_container">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className="mx-auto max-w-6xl"
-					>
-						{/* Video Container */}
+			{(data.videoSection?.thumbnail?.url || data.videoSection?.videoUrl) && (
+				<section className="py-16 md:py-20 bg-slate-100">
+					<div className="_container">
 						<motion.div
-							initial={{ opacity: 0, y: 20 }}
+							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
-							transition={{ duration: 0.6, delay: 0.2 }}
-							className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl mb-8"
+							transition={{ duration: 0.6 }}
+							className="mx-auto max-w-6xl"
 						>
-							<Image
-								src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=1200&h=675&fit=crop"
-								alt="Business meeting video"
-								fill
-								className="object-cover"
-							/>
-							{/* Play Button Overlay */}
-							<div className="absolute inset-0 flex items-center justify-center">
-								<button className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-									<svg className="w-8 h-8 text-[#4CAF50] ml-1" viewBox="0 0 24 24" fill="currentColor">
-										<path d="M8 5v14l11-7z" />
-									</svg>
-								</button>
-							</div>
-						</motion.div>
+							{/* Video Container */}
+							{data.videoSection?.thumbnail?.url && (
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.2 }}
+									className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl mb-8"
+								>
+									<Image
+										src={data.videoSection.thumbnail.url}
+										alt={data.videoSection.thumbnail.alt || "Video thumbnail"}
+										fill
+										className="object-cover"
+									/>
+									{/* Play Button Overlay */}
+									{data.videoSection?.videoUrl && (
+										<a
+											href={data.videoSection.videoUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="absolute inset-0 flex items-center justify-center"
+										>
+											<span className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+												<svg className="w-8 h-8 text-[#4CAF50] ml-1" viewBox="0 0 24 24" fill="currentColor">
+													<path d="M8 5v14l11-7z" />
+												</svg>
+											</span>
+										</a>
+									)}
+								</motion.div>
+							)}
 
-						{/* Text Below Video */}
-						<motion.p
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.6, delay: 0.3 }}
-							className="text-muted-foreground"
-						>
-							Vitae pellentesque sem placerat magni qui beatae amet eum aliquid aspernatur in quibusdam culpa ut eius nemo non ipsam nulla. Quo maxime nostrum ut nobis voluptas ab quis aspernatur a modi unde ut obcaecati repudiandae. Qui autem error rem magni quis et enim galisum et optio nihil ut corrupti aperiam ab dolorem nobis id voluptatem nostrum. Aut vitae dolorem et minima impedit et ipsa deleniti sed alias voluptas et quasi quidem.Et impedit porro sit eveniet animi et consequatur odio est possimus delectus. Est voluptatum iure non itaque voluptatem.
-						</motion.p>
-					</motion.div>
-				</div>
-			</section>
+							{/* Text Below Video */}
+							{data.videoSection?.bottomText && (
+								<motion.p
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.6, delay: 0.3 }}
+									className="text-muted-foreground"
+								>
+									{data.videoSection.bottomText}
+								</motion.p>
+							)}
+						</motion.div>
+					</div>
+				</section>
+			)}
 
 			{/* Legal Sections Grid */}
 			{visibility.legalCards && hasLegalCards && validLegalCards.length > 0 && (
