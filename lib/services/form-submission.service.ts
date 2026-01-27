@@ -13,12 +13,14 @@ import {
 	callbackRequestSchema,
 	tourRequestSchema,
 	quoteRequestSchema,
+	jobApplicationSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
 	type CallbackRequestInput,
 	type TourRequestInput,
 	type QuoteRequestInput,
+	type JobApplicationInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -400,6 +402,62 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Quote request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a job application submission
+	 */
+	async createJobApplication(
+		data: JobApplicationInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = jobApplicationSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "job_application" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: "+46",
+			countryName: "Sweden",
+			subject: this.sanitizeInput(validData.subject) || `Job Application - ${validData.jobTitle || "Position"}`,
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			jobTitle: this.sanitizeInput(validData.jobTitle) || null,
+			careerType: this.sanitizeInput(validData.careerType) || null,
+			resumeUrl: validData.resumeUrl || null,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Job application created: ${submission._id} for ${validData.jobTitle || "General Position"}`);
 
 		return submission;
 	}

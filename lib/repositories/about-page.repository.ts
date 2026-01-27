@@ -102,7 +102,19 @@ class AboutPageRepository {
 		}
 
 		if (data.testimonials) {
-			updateData.testimonials = data.testimonials;
+			// Set each field explicitly to ensure nested objects like groupCooperation are saved
+			if (data.testimonials.title !== undefined) {
+				updateData["testimonials.title"] = data.testimonials.title;
+			}
+			if (data.testimonials.subtitle !== undefined) {
+				updateData["testimonials.subtitle"] = data.testimonials.subtitle;
+			}
+			if (data.testimonials.testimonials !== undefined) {
+				updateData["testimonials.testimonials"] = data.testimonials.testimonials;
+			}
+			if (data.testimonials.groupCooperation !== undefined) {
+				updateData["testimonials.groupCooperation"] = data.testimonials.groupCooperation;
+			}
 		}
 
 		if (data.partners) {

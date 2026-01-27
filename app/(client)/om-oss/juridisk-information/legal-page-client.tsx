@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,6 +22,42 @@ import { fadeUp, staggerContainer } from "@/lib/animations";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import type { LegalPageData } from "@/lib/repositories/legal-page.repository";
 
+// Helper function to convert YouTube URL to embed URL
+function getYouTubeEmbedUrl(url: string): string | null {
+	const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+	const match = url.match(regExp);
+	if (match && match[2].length === 11) {
+		return `https://www.youtube.com/embed/${match[2]}?autoplay=1`;
+	}
+	return null;
+}
+
+// Helper function to convert Vimeo URL to embed URL
+function getVimeoEmbedUrl(url: string): string | null {
+	const regExp = /vimeo\.com\/(\d+)/;
+	const match = url.match(regExp);
+	if (match && match[1]) {
+		return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
+	}
+	return null;
+}
+
+// Get embed URL for supported platforms
+function getEmbedUrl(url: string): string | null {
+	const youtubeUrl = getYouTubeEmbedUrl(url);
+	if (youtubeUrl) return youtubeUrl;
+
+	const vimeoUrl = getVimeoEmbedUrl(url);
+	if (vimeoUrl) return vimeoUrl;
+
+	// For direct video URLs, return as-is
+	if (url.match(/\.(mp4|webm|ogg)$/i)) {
+		return url;
+	}
+
+	return null;
+}
+
 // Icon mapping
 const ICON_MAP: Record<string, LucideIcon> = {
 	Shield,
@@ -36,6 +73,9 @@ interface LegalPageClientProps {
 export function LegalPageClient({ data }: LegalPageClientProps) {
 	// Set navbar to dark-hero variant
 	useSetNavbarVariant("dark-hero");
+
+	// State for video playback
+	const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
 	const visibility = data.sectionVisibility || {
 		hero: true,
@@ -452,37 +492,72 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 							className="mx-auto max-w-6xl"
 						>
 							{/* Video Container */}
-							{data.videoSection?.thumbnail?.url && (
-								<motion.div
-									initial={{ opacity: 0, y: 20 }}
-									whileInView={{ opacity: 1, y: 0 }}
-									viewport={{ once: true }}
-									transition={{ duration: 0.6, delay: 0.2 }}
-									className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl mb-8"
-								>
-									<Image
-										src={data.videoSection.thumbnail.url}
-										alt={data.videoSection.thumbnail.alt || "Video thumbnail"}
-										fill
-										className="object-cover"
-									/>
-									{/* Play Button Overlay */}
-									{data.videoSection?.videoUrl && (
-										<a
-											href={data.videoSection.videoUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="absolute inset-0 flex items-center justify-center"
-										>
-											<span className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-												<svg className="w-8 h-8 text-[#4CAF50] ml-1" viewBox="0 0 24 24" fill="currentColor">
-													<path d="M8 5v14l11-7z" />
-												</svg>
-											</span>
-										</a>
-									)}
-								</motion.div>
-							)}
+							<motion.div
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ duration: 0.6, delay: 0.2 }}
+								className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl mb-8"
+							>
+								{isVideoPlaying && data.videoSection?.videoUrl ? (
+									// Embedded Video Player
+									(() => {
+										const embedUrl = getEmbedUrl(data.videoSection.videoUrl);
+										const isDirectVideo = data.videoSection.videoUrl.match(/\.(mp4|webm|ogg)$/i);
+
+										if (isDirectVideo) {
+											return (
+												<video
+													src={data.videoSection.videoUrl}
+													className="w-full h-full object-cover"
+													controls
+													autoPlay
+												/>
+											);
+										} else if (embedUrl) {
+											return (
+												<iframe
+													src={embedUrl}
+													className="w-full h-full"
+													allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+													allowFullScreen
+													title="Video player"
+												/>
+											);
+										} else {
+											// Fallback for unsupported URLs - open in new tab
+											window.open(data.videoSection.videoUrl, '_blank');
+											setIsVideoPlaying(false);
+											return null;
+										}
+									})()
+								) : (
+									// Thumbnail with Play Button
+									<>
+										{data.videoSection?.thumbnail?.url && (
+											<Image
+												src={data.videoSection.thumbnail.url}
+												alt={data.videoSection.thumbnail.alt || "Video thumbnail"}
+												fill
+												className="object-cover"
+											/>
+										)}
+										{/* Play Button Overlay */}
+										{data.videoSection?.videoUrl && (
+											<button
+												onClick={() => setIsVideoPlaying(true)}
+												className="absolute inset-0 flex items-center justify-center cursor-pointer"
+											>
+												<span className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+													<svg className="w-8 h-8 text-[#4CAF50] ml-1" viewBox="0 0 24 24" fill="currentColor">
+														<path d="M8 5v14l11-7z" />
+													</svg>
+												</span>
+											</button>
+										)}
+									</>
+								)}
+							</motion.div>
 
 							{/* Text Below Video */}
 							{data.videoSection?.bottomText && (

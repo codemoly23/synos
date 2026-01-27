@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Check, Upload, ChevronDown, ArrowRight } from "lucide-react";
+import { Check, Upload, ChevronDown, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { CareersHero } from "../../_components/careers-hero";
 import { ContactSidebar } from "../../_components/contact-sidebar";
 import { ExpertCtaSection } from "./expert-cta-section";
@@ -285,6 +286,8 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 	});
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isSuccess, setIsSuccess] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const careerTypes = [
@@ -305,14 +308,90 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
-			setSelectedFile(e.target.files[0]);
+			const file = e.target.files[0];
+			// Validate file size (max 10MB)
+			if (file.size > 10 * 1024 * 1024) {
+				toast.error("File size must be less than 10MB");
+				return;
+			}
+			setSelectedFile(file);
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Form submission logic here
-		console.log("Form submitted:", { ...formData, file: selectedFile });
+
+		// Validate required fields
+		if (!formData.name || !formData.email || !formData.phone || !formData.careerType) {
+			toast.error("Please fill in all required fields");
+			return;
+		}
+
+		setIsSubmitting(true);
+
+		try {
+			// Upload file first if exists
+			let fileUrl = "";
+			if (selectedFile) {
+				const uploadFormData = new FormData();
+				uploadFormData.append("file", selectedFile);
+
+				const uploadResponse = await fetch("/api/upload", {
+					method: "POST",
+					body: uploadFormData,
+				});
+
+				if (!uploadResponse.ok) {
+					throw new Error("Failed to upload file");
+				}
+
+				const uploadResult = await uploadResponse.json();
+				fileUrl = uploadResult.url;
+			}
+
+			// Submit form data
+			const response = await fetch("/api/form-submissions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: "job_application",
+					subject: `Job Application - ${jobTitle || "Position"}`,
+					fullName: formData.name,
+					email: formData.email,
+					phone: formData.phone,
+					careerType: formData.careerType,
+					message: formData.message,
+					resumeUrl: fileUrl,
+					jobTitle: jobTitle,
+					pageUrl: typeof window !== "undefined" ? window.location.href : "",
+				}),
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				setIsSuccess(true);
+				setFormData({
+					name: "",
+					email: "",
+					phone: "",
+					careerType: "",
+					message: "",
+				});
+				setSelectedFile(null);
+				toast.success("Application submitted successfully! We'll get back to you soon.");
+
+				// Reset success state after 10 seconds
+				setTimeout(() => setIsSuccess(false), 10000);
+			} else {
+				toast.error(result.message || "Something went wrong. Please try again.");
+			}
+		} catch (error) {
+			console.error("Error submitting application:", error);
+			toast.error("Failed to submit application. Please try again later.");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -348,13 +427,26 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 					</motion.div>
 
 					{/* Form */}
-					<motion.form
+					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
-						onSubmit={handleSubmit}
 						className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 shadow-sm"
 					>
+						{isSuccess ? (
+							<div className="text-center py-12">
+								<div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+									<CheckCircle2 className="w-8 h-8 text-green-600" />
+								</div>
+								<h3 className="text-2xl font-bold text-secondary mb-2">
+									Application Submitted!
+								</h3>
+								<p className="text-muted-foreground max-w-md mx-auto">
+									Thank you for your application. We&apos;ll review your details and get back to you as soon as possible.
+								</p>
+							</div>
+						) : (
+						<form onSubmit={handleSubmit}>
 						<div className="grid gap-6 md:grid-cols-2">
 							{/* Your Name */}
 							<div>
@@ -372,7 +464,8 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									onChange={handleInputChange}
 									placeholder="Enter your name"
 									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+									disabled={isSubmitting}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
 								/>
 							</div>
 
@@ -392,7 +485,8 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									onChange={handleInputChange}
 									placeholder="Enter your email"
 									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+									disabled={isSubmitting}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
 								/>
 							</div>
 
@@ -412,7 +506,8 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									onChange={handleInputChange}
 									placeholder="Enter your phone number"
 									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
+									disabled={isSubmitting}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
 								/>
 							</div>
 
@@ -426,8 +521,9 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 								</label>
 								<button
 									type="button"
-									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-left flex items-center justify-between bg-white"
+									onClick={() => !isSubmitting && setIsDropdownOpen(!isDropdownOpen)}
+									disabled={isSubmitting}
+									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-left flex items-center justify-between bg-white disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									<span
 										className={
@@ -444,7 +540,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 										}`}
 									/>
 								</button>
-								{isDropdownOpen && (
+								{isDropdownOpen && !isSubmitting && (
 									<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
 										{careerTypes.map((type) => (
 											<button
@@ -479,7 +575,8 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 								onChange={handleInputChange}
 								placeholder="Tell us more about yourself and why you're interested in this position..."
 								rows={5}
-								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none"
+								disabled={isSubmitting}
+								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
 							/>
 						</div>
 
@@ -494,36 +591,50 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 										onChange={handleFileChange}
 										accept=".pdf,.doc,.docx,.jpg,.png"
 										className="hidden"
+										disabled={isSubmitting}
 									/>
 									<button
 										type="button"
 										onClick={() => fileInputRef.current?.click()}
-										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200"
+										disabled={isSubmitting}
+										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
 									>
 										<Upload className="w-4 h-4" />
 										Upload
 									</button>
 									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
-										<span className="text-muted-foreground text-sm">
+										<span className="text-muted-foreground text-sm truncate max-w-[200px] block">
 											{selectedFile ? selectedFile.name : "No file chosen"}
 										</span>
 									</div>
 								</div>
 								<p className="text-muted-foreground text-xs mt-2">
-									*Upload your resume in pdf, jpg, png, or doc format.
+									*Upload your resume in pdf, jpg, png, or doc format (max 10MB).
 								</p>
 							</div>
 
 							{/* Submit Button */}
 							<button
 								type="submit"
-								className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25"
+								disabled={isSubmitting}
+								className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
 							>
-								Submit
-								<ArrowRight className="w-5 h-5" />
+								{isSubmitting ? (
+									<>
+										<Loader2 className="w-5 h-5 animate-spin" />
+										Submitting...
+									</>
+								) : (
+									<>
+										Submit
+										<ArrowRight className="w-5 h-5" />
+									</>
+								)}
 							</button>
 						</div>
-					</motion.form>
+						</form>
+						)}
+					</motion.div>
 				</div>
 			</div>
 		</section>

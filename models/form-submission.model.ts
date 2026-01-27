@@ -11,7 +11,8 @@ export type FormSubmissionType =
 	| "demo_request"
 	| "quote_request"
 	| "callback_request"
-	| "tour_request";
+	| "tour_request"
+	| "job_application";
 
 /**
  * Form submission status
@@ -93,6 +94,11 @@ export interface IFormSubmission extends Document {
 	preferredDate?: Date;
 	preferredTime?: string;
 
+	// Job Application Specific
+	jobTitle?: string;
+	careerType?: string;
+	resumeUrl?: string;
+
 	// Metadata
 	metadata: IFormSubmissionMetadata;
 
@@ -145,7 +151,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		// Form Type
 		type: {
 			type: String,
-			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request"],
+			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application"],
 			required: [true, "Form type is required"],
 			index: true,
 		},
@@ -290,6 +296,26 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			type: String,
 			trim: true,
 			maxlength: [10, "Time cannot exceed 10 characters"],
+			default: null,
+		},
+
+		// Job Application Specific
+		jobTitle: {
+			type: String,
+			trim: true,
+			maxlength: [200, "Job title cannot exceed 200 characters"],
+			default: null,
+		},
+		careerType: {
+			type: String,
+			trim: true,
+			maxlength: [100, "Career type cannot exceed 100 characters"],
+			default: null,
+		},
+		resumeUrl: {
+			type: String,
+			trim: true,
+			maxlength: [500, "Resume URL cannot exceed 500 characters"],
 			default: null,
 		},
 
