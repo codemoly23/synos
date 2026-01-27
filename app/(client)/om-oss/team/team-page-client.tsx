@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Users, Mail, Linkedin, Phone, Home, ChevronRight } from "lucide-react";
@@ -12,6 +12,125 @@ import { ImageComponent } from "@/components/common/image-component";
 
 interface TeamPageClientProps {
 	data: TeamPageData;
+}
+
+interface TeamMember {
+	name?: string;
+	role?: string;
+	image?: string;
+	linkedin?: string;
+	email?: string;
+	phone?: string;
+}
+
+// Mobile Team Card Component with click toggle for social icons
+function TeamMemberMobileCard({ member, index }: { member: TeamMember; index: number }) {
+	const [isOpen, setIsOpen] = useState(false);
+
+	return (
+		<motion.div
+			variants={fadeUp}
+			custom={index}
+			className="relative overflow-visible bg-white rounded-[10px] transition-all duration-500"
+		>
+			{/* Image Container */}
+			<div className="relative">
+				<div className="thumb relative overflow-visible rounded-[10px]">
+					{member.image ? (
+						<div className="aspect-[8/9] overflow-hidden rounded-[10px]">
+							<ImageComponent
+								src={member.image}
+								alt={member.name || "Team member"}
+								className="w-full h-full object-cover object-top border-none rounded-[10px]"
+								height={350}
+								width={300}
+								wrapperClasses="w-full h-full"
+							/>
+						</div>
+					) : (
+						<div className="aspect-[8/9] flex items-center justify-center bg-slate-100 rounded-[10px]">
+							<div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+								<span className="text-2xl font-bold text-primary/40">
+									{(member.name || "?")
+										.split(" ")
+										.map((n) => n[0])
+										.join("")}
+								</span>
+							</div>
+						</div>
+					)}
+
+					{/* Social Overlay - Bottom right of image */}
+					<div className="social-overlay absolute right-[30px] sm:right-[40px] -bottom-[28px] z-10">
+						{/* Social Icons */}
+						<ul className="flex flex-col items-center mb-0">
+							{member.linkedin && (
+								<li className="block text-center mb-2">
+									<a
+										href={member.linkedin}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-block"
+									>
+										<span className={`inline-flex items-center justify-center h-[40px] w-[40px] bg-[#0077B5] text-white rounded-full transition-all duration-300 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-8'}`} style={{ transitionDelay: isOpen ? '60ms' : '0ms' }}>
+											<Linkedin className="h-4 w-4" />
+										</span>
+									</a>
+								</li>
+							)}
+							{member.email && (
+								<li className="block text-center mb-2">
+									<a
+										href={`mailto:${member.email}`}
+										className="inline-block"
+									>
+										<span className={`inline-flex items-center justify-center h-[40px] w-[40px] bg-[#ea4c89] text-white rounded-full transition-all duration-300 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-8'}`} style={{ transitionDelay: isOpen ? '45ms' : '0ms' }}>
+											<Mail className="h-4 w-4" />
+										</span>
+									</a>
+								</li>
+							)}
+							{member.phone && (
+								<li className="block text-center mb-2">
+									<a
+										href={`tel:${member.phone}`}
+										className="inline-block"
+									>
+										<span className={`inline-flex items-center justify-center h-[40px] w-[40px] bg-[#3B5998] text-white rounded-full transition-all duration-300 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-8'}`} style={{ transitionDelay: isOpen ? '30ms' : '0ms' }}>
+											<Phone className="h-4 w-4" />
+										</span>
+									</a>
+								</li>
+							)}
+						</ul>
+						{/* Plus Icon with curved edges - Click to toggle */}
+						<button
+							onClick={() => setIsOpen(!isOpen)}
+							className="icon bg-white rounded-[60px] border-[8px] border-white relative z-[1]"
+						>
+							<span className={`inline-flex items-center justify-center h-[40px] w-[40px] bg-secondary text-white rounded-full cursor-pointer transition-all duration-300 ${isOpen ? 'rotate-45 bg-primary' : ''}`}>
+								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+								</svg>
+							</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			{/* Info - Content Below Image */}
+			<div className="info pt-6 text-left">
+				{member.role && (
+					<p className="text-xs sm:text-sm text-muted-foreground mb-1">
+						{member.role}
+					</p>
+				)}
+				<h3 className="text-base sm:text-lg font-bold text-secondary leading-tight">
+					{member.name}
+				</h3>
+			</div>
+		</motion.div>
+	);
 }
 
 export function TeamPageClient({ data }: TeamPageClientProps) {
@@ -266,12 +385,13 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							</p>
 						</div>
 
+						{/* Desktop Grid - 4 columns with offset rows */}
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-[1400px] mx-auto"
+							className="hidden lg:grid grid-cols-4 gap-6 lg:gap-8 max-w-[1400px] mx-auto"
 						>
 							{validTeamMembers.map((member, index) => {
 								// Calculate row position for alternating layout (3 cards per row visually)
@@ -396,6 +516,19 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 								</motion.div>
 								);
 							})}
+						</motion.div>
+
+						{/* Mobile/Tablet Grid - 2 columns with click toggle */}
+						<motion.div
+							variants={staggerContainer}
+							initial="initial"
+							whileInView="animate"
+							viewport={{ once: true }}
+							className="lg:hidden grid grid-cols-2 gap-4 sm:gap-6 max-w-[600px] mx-auto"
+						>
+							{validTeamMembers.map((member, index) => (
+								<TeamMemberMobileCard key={index} member={member} index={index} />
+							))}
 						</motion.div>
 					</div>
 				</section>

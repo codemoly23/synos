@@ -97,7 +97,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 		<div className="min-h-screen bg-slate-50">
 			{/* Dark Hero Section */}
 			{visibility.hero && hasHero && (
-				<section className="relative overflow-hidden bg-secondary pt-32 pb-20 md:pt-36 md:pb-24">
+				<section className="relative overflow-hidden bg-secondary pt-28 pb-8 md:pt-36 md:pb-16 lg:pb-20">
 					{/* Abstract Geometric Overlay */}
 					<div className="absolute inset-0 opacity-10">
 						<svg
@@ -198,7 +198,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 			{/* Mission Quote Section - Above Stats */}
 			{data.hero?.subtitle && (
-				<section className="py-16 md:py-20 lg:py-24 bg-slate-50">
+				<section className="py-6 md:py-12 lg:py-16 bg-slate-50">
 					<div className="_container">
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
@@ -208,7 +208,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							className="max-w-5xl mx-auto text-center"
 						>
 							{/* Badge */}
-							<div className="mb-8 inline-flex items-center gap-3">
+							<div className="mb-4 md:mb-8 inline-flex items-center gap-3">
 								<span className="text-secondary/60">●</span>
 								<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
 									Vårt Uppdrag
@@ -217,7 +217,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							</div>
 
 							{/* Quote - Italic with highlighted words */}
-							<h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-secondary leading-relaxed italic">
+							<h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-secondary leading-relaxed italic">
 								Sveriges ledande leverantör av professionell{" "}
 								<span className="text-primary">klinikutrustning</span> och{" "}
 								<span className="text-primary">lasermaskiner</span>. Vi kombinerar
@@ -230,20 +230,20 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 			{/* Stats Section */}
 			{visibility.stats && hasStats && (
-				<section className="py-16 md:py-20 bg-slate-50">
+				<section className="py-6 md:py-12 lg:py-16 bg-slate-50">
 					<div className="_container">
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
 							whileInView="animate"
 							viewport={{ once: true }}
-							className="flex flex-wrap justify-center items-center gap-0 -mx-8"
+							className="flex flex-wrap justify-center items-center gap-4 md:gap-0 md:-mx-8"
 						>
 							{validStats.map((stat, index) => (
 								<motion.div
 									key={index}
 									variants={fadeUp}
-									className="group relative w-72 h-72 -mx-8"
+									className="group relative w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72 md:-mx-8"
 								>
 									{/* Rotating gradient border on hover */}
 									<div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden">
@@ -256,13 +256,13 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									</div>
 									{/* Inner white circle content */}
 									<div className="absolute inset-[6px] rounded-full bg-white shadow-lg flex flex-col items-center justify-center transition-all duration-500 group-hover:shadow-2xl group-hover:scale-[1.02]">
-										<p className="text-5xl font-bold mb-3 transition-colors duration-300 text-secondary group-hover:text-primary">
+										<p className="text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3 transition-colors duration-300 text-secondary group-hover:text-primary">
 											{stat.value}
 											{stat.suffix && (
-												<span className="text-3xl">{stat.suffix}</span>
+												<span className="text-xl md:text-2xl lg:text-3xl">{stat.suffix}</span>
 											)}
 										</p>
-										<p className="text-secondary font-medium text-center px-8 leading-relaxed">
+										<p className="text-secondary font-medium text-center px-4 md:px-8 leading-relaxed text-xs md:text-sm lg:text-base">
 											{stat.label}
 										</p>
 									</div>
@@ -933,7 +933,8 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 						>
 							{/* Left Column - Review Card with 3 internal columns */}
 							<div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-								<div className="grid lg:grid-cols-[280px_1fr_1fr] h-[600px]">
+								{/* Desktop Layout - 3 columns */}
+								<div className="hidden lg:grid lg:grid-cols-[280px_1fr_1fr] h-[600px]">
 									{/* Inner Column 1 - CTA */}
 									<div className="p-8 relative overflow-hidden flex flex-col border-r border-slate-100">
 										{/* Grid pattern background */}
@@ -1110,10 +1111,109 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										</div>
 									</div>
 								</div>
+
+								{/* Mobile Layout - Single column with CTA and reviews */}
+								<div className="lg:hidden">
+									{/* CTA Section */}
+									<div className="p-6 relative overflow-hidden border-b border-slate-100">
+										<div className="relative z-10">
+											<h3 className="text-xl font-bold text-secondary mb-3">
+												Trusted By Over 1300 Loyal Clients
+											</h3>
+											<p className="text-muted-foreground mb-4 text-sm">
+												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
+											</p>
+											<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
+												<Link href="/kontakt">
+													Contact Us
+													<ArrowRight className="ml-2 h-4 w-4" />
+												</Link>
+											</Button>
+										</div>
+									</div>
+
+									{/* Mobile Reviews - Single column scrolling up */}
+									<div className="overflow-hidden relative h-[400px]">
+										<div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+										<div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+
+										<div className="testimonial-marquee-vertical h-full p-4">
+											<div className="testimonial-marquee-track-up space-y-4">
+												{[
+													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder" },
+													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director" },
+													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner" },
+													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager" },
+													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director" },
+													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager" },
+												].map((item, index) => (
+													<div key={index} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-5 h-5 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																<span className="text-xs font-semibold text-secondary">{item.name.charAt(0)}</span>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+												{/* Duplicate for seamless loop */}
+												{[
+													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder" },
+													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director" },
+													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner" },
+													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager" },
+													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director" },
+													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager" },
+												].map((item, index) => (
+													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
+														<Quote className="w-5 h-5 text-secondary mb-2" />
+														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
+															{item.quote}
+														</p>
+														<div className="flex items-center gap-3">
+															<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																<span className="text-xs font-semibold text-secondary">{item.name.charAt(0)}</span>
+															</div>
+															<div>
+																<p className="font-semibold text-secondary text-sm">{item.name}</p>
+																<p className="text-xs text-muted-foreground">{item.role}</p>
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									</div>
+
+									{/* Mobile Rating Bar */}
+									<div className="p-4 border-t border-slate-100 flex items-center justify-between">
+										<div className="flex items-center gap-3">
+											<p className="text-2xl font-bold text-secondary">4.80</p>
+											<div className="flex gap-0.5">
+												{[...Array(5)].map((_, i) => (
+													<Star
+														key={i}
+														className="w-4 h-4 text-yellow-400 fill-yellow-400"
+													/>
+												))}
+											</div>
+										</div>
+										<p className="text-xs text-muted-foreground">
+											2,568 Reviews
+										</p>
+									</div>
+								</div>
 							</div>
 
-							{/* Right Column - Rating Card + Group Cooperation (stacked vertically) */}
-							<div className="flex flex-col gap-5">
+							{/* Right Column - Rating Card + Group Cooperation (stacked vertically) - Hidden on mobile */}
+							<div className="hidden lg:flex flex-col gap-5">
 								{/* Rating Card */}
 								<div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center flex-1">
 									<p className="text-5xl font-bold text-secondary mb-2">4.80</p>
