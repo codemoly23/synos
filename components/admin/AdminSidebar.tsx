@@ -39,6 +39,8 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/common/logo";
 
+//test
+
 interface NavItem {
 	title: string;
 	href: string;
