@@ -19,7 +19,7 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 
 /**
  * Container - Responsive container component with consistent horizontal padding
- *
+ 
  * Provides consistent spacing and max-width constraints across breakpoints.
  *
  * @example
