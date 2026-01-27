@@ -103,8 +103,8 @@ export function NyheterListing({
 		<>
 			<NyheterHero pageTitle={pageTitle} />
 
-			<section className="py-12 md:py-16 lg:py-20 bg-slate-50/50">
-				<div className="_container">
+			<section className="py-12 md:py-16 lg:py-20 bg-slate-50/50 w-full max-w-full overflow-hidden">
+				<div className="_container overflow-hidden">
 					{/* Grid: Sidebar Left, Content Right */}
 					<div className="grid gap-8 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr]">
 						{/* Left Sidebar - Hidden on mobile, shown at lg */}
@@ -120,7 +120,7 @@ export function NyheterListing({
 						</div>
 
 						{/* Main Content */}
-						<div>
+						<div className="min-w-0 w-full">
 							{/* Results Count */}
 							<div className="mb-6 flex flex-wrap items-center justify-between gap-4">
 								<p className="text-sm text-muted-foreground">
@@ -168,7 +168,7 @@ export function NyheterListing({
 									initial="initial"
 									animate="animate"
 									variants={staggerContainer}
-									className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+									className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-3"
 								>
 									{paginatedArticles.map((article, index) => (
 										<NyheterCard

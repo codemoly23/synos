@@ -20,7 +20,7 @@ export function NyheterHero({ pageTitle = "Nyheter" }: NyheterHeroProps) {
 	useSetNavbarVariant("dark-hero");
 
 	return (
-		<section className="relative overflow-hidden bg-secondary pt-32 pb-28 md:pt-36 md:pb-40 lg:pb-48">
+		<section className="relative overflow-hidden bg-secondary pt-32 pb-28 md:pt-36 md:pb-40 lg:pb-48 w-full max-w-full">
 			{/* Abstract Image Overlay */}
 			<div className="absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 

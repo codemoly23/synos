@@ -235,7 +235,7 @@
 
 @layer utilities {
   ._container {
-    @apply max-w-[1440px] w-full mx-auto px-3 sm:px-5;
+    @apply max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   /* Stat circle gradient border rotation animation */
