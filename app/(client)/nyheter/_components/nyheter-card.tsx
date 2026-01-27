@@ -39,10 +39,10 @@ export function NyheterCard({
 			whileInView="animate"
 			viewport={{ once: true, margin: "-50px" }}
 			transition={{ delay: index * 0.08 }}
-			className="group h-full"
+			className="group h-full w-full min-w-0"
 		>
-			<Link href={`${basePath}/${article.slug}`} className="block h-full">
-				<div className="relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:shadow-lg hover:shadow-primary/10">
+			<Link href={`${basePath}/${article.slug}`} className="block h-full w-full">
+				<div className="relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:shadow-lg hover:shadow-primary/10 w-full max-w-full">
 					{/* Image */}
 					{/* {article.featuredImage && ( */}
 					<div className="relative aspect-4/3 w-full overflow-hidden">
@@ -69,7 +69,7 @@ export function NyheterCard({
 						</div>
 
 						{/* Title */}
-						<h3 className="mb-auto text-base leading-snug font-semibold text-secondary transition-colors duration-300 group-hover:text-primary line-clamp-2 text-wrap">
+						<h3 className="mb-auto text-base leading-snug font-semibold text-secondary transition-colors duration-300 group-hover:text-primary line-clamp-2 wrap-break-word overflow-hidden">
 							{article.title}
 						</h3>
 
