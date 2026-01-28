@@ -111,6 +111,7 @@ const formSchema = z.object({
 			title: z.string().max(200).optional(),
 			subtitle: z.string().max(500).optional(),
 			noJobsMessage: z.string().max(500).optional(),
+			featuredImage: z.string().max(500).optional(),
 			jobOpenings: z
 				.array(
 					z.object({
@@ -432,6 +433,30 @@ export default function CareersPageAdmin() {
 											)}
 										/>
 									</div>
+
+									{/* Featured Image for listings page */}
+									<FormField
+										control={form.control}
+										name="jobOpeningsSection.featuredImage"
+										render={({ field }) => (
+											<FormItem className="mb-6">
+												<FormLabel>Featured Image</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select featured image for careers listing page"
+														galleryTitle="Select Featured Image"
+													/>
+												</FormControl>
+												<FormDescription>
+													Image displayed above the job listings (16:9 recommended)
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
 									{/* Job Listings */}
 									<div className="space-y-3">

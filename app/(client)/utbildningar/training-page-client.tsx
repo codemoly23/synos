@@ -122,6 +122,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 
 	const visibility = data.sectionVisibility || {
 		hero: true,
+		featuredSection: true,
 		mainContent: true,
 		benefits: true,
 		process: true,
@@ -320,82 +321,62 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 							variants={staggerContainer}
 							className="space-y-16"
 						>
-							{/* Veritatisin Reprehenderit Section */}
-							<motion.div variants={fadeUp}>
-								<div className="relative rounded-2xl overflow-hidden">
-									{/* Image */}
-									<div className="aspect-[16/10] relative">
-										<ImageComponent
-											src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=500&fit=crop"
-											alt="Professional training session"
-											fill
-											className="object-cover"
-										/>
-									</div>
-								</div>
-
-								{/* Content Below Image */}
-								<div className="mt-8">
-									<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
-										Veritatisin Reprehenderit
-									</h2>
-									<p className="text-muted-foreground mb-8">
-										Vel aliquid dolores id dolor quis nam labore voluptatem sit architecto itaque aut consectetur nulla. Nam neque labore ab sunt sequi est praesentium voluptatem aut internos voluptas a molestiae consequatur non eligendi dolor et libero quod.
-									</p>
-
-									<h3 className="text-xl font-semibold text-secondary mb-4">
-										Dignissi Nostrum
-									</h3>
-
-									{/* Checkmark List */}
-									<div className="space-y-3 mb-8">
-										<div className="flex items-start gap-3">
-											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-											</div>
-											<p className="text-muted-foreground">
-												Ab sunt sequi est praesentium voluptatem aut internos voluptas.
-											</p>
-										</div>
-										<div className="flex items-start gap-3">
-											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-											</div>
-											<p className="text-muted-foreground">
-												A molestiae consequatur non eligendi dolor et libero quod.
-											</p>
-										</div>
-										<div className="flex items-start gap-3">
-											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-											</div>
-											<p className="text-muted-foreground">
-												Nam neque labore ab sunt sequi est praesentium voluptatem.
-											</p>
-										</div>
-										<div className="flex items-start gap-3">
-											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-											</div>
-											<p className="text-muted-foreground">
-												Aut internos voluptas a molestiae consequatur non eligendi.
-											</p>
-										</div>
-										<div className="flex items-start gap-3">
-											<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-												<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-											</div>
-											<p className="text-muted-foreground">
-												Dolor et libero quod vel aliquid dolores id dolor quis nam.
-											</p>
+							{/* Featured Section (Veritatisin Reprehenderit) */}
+							{visibility.featuredSection && (
+								<motion.div variants={fadeUp}>
+									<div className="relative rounded-2xl overflow-hidden">
+										{/* Image */}
+										<div className="aspect-[16/10] relative">
+											<ImageComponent
+												src={data.featuredSection?.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=500&fit=crop"}
+												alt={data.featuredSection?.title || "Professional training session"}
+												fill
+												className="object-cover"
+											/>
 										</div>
 									</div>
 
-									<p className="text-muted-foreground">
-										Vel aliquid dolores id dolor quis nam labore voluptatem sit architecto itaque aut consectetur nulla. Nam neque labore ab sunt sequi est praesentium voluptatem aut internos voluptas a molestiae consequatur non eligendi dolor et libero quod.
-									</p>
-								</div>
-							</motion.div>
+									{/* Content Below Image */}
+									<div className="mt-8">
+										<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
+											{data.featuredSection?.title || "Veritatisin Reprehenderit"}
+										</h2>
+										{data.featuredSection?.description && (
+											<p className="text-muted-foreground mb-8">
+												{data.featuredSection.description}
+											</p>
+										)}
+
+										{data.featuredSection?.subTitle && (
+											<h3 className="text-xl font-semibold text-secondary mb-4">
+												{data.featuredSection.subTitle}
+											</h3>
+										)}
+
+										{/* Checkmark List */}
+										{data.featuredSection?.checklistItems && data.featuredSection.checklistItems.length > 0 && (
+											<div className="space-y-3 mb-8">
+												{data.featuredSection.checklistItems.filter(item => item.text).map((item, index) => (
+													<div key={index} className="flex items-start gap-3">
+														<div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+															<CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+														</div>
+														<p className="text-muted-foreground">
+															{item.text}
+														</p>
+													</div>
+												))}
+											</div>
+										)}
+
+										{data.featuredSection?.bottomDescription && (
+											<p className="text-muted-foreground">
+												{data.featuredSection.bottomDescription}
+											</p>
+										)}
+									</div>
+								</motion.div>
+							)}
 
 							{/* Main Content Section */}
 							{visibility.mainContent && hasMainContent && (
@@ -991,59 +972,28 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 								viewport={{ once: true }}
 							>
 								<Accordion type="single" collapsible className="space-y-4">
-									<AccordionItem
-										value="faq-1"
-										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
-									>
-										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
-											Vad ingår i utbildningen?
-										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
-											Vår utbildning omfattar både teoretisk och praktisk
-											undervisning. Du lär dig allt från säker hantering av
-											utrustningen till optimala behandlingsprotokoll för olika
-											hudtyper och tillstånd.
-										</AccordionContent>
-									</AccordionItem>
-									<AccordionItem
-										value="faq-2"
-										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
-									>
-										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
-											Hur lång är utbildningen?
-										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
-											Utbildningens längd varierar beroende på vilken maskin du
-											köper och dina förkunskaper. Vanligtvis 2-5 dagar intensiv
-											utbildning följt av uppföljning och support.
-										</AccordionContent>
-									</AccordionItem>
-									<AccordionItem
-										value="faq-3"
-										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
-									>
-										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
-											Får jag certifikat efter utbildningen?
-										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
-											Ja, efter genomförd utbildning får du ett certifikat som
-											visar att du är utbildad på den specifika utrustningen.
-											Detta är viktigt för din legitimitet som behandlare.
-										</AccordionContent>
-									</AccordionItem>
-									<AccordionItem
-										value="faq-4"
-										className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
-									>
-										<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
-											Finns det möjlighet till uppföljningsutbildning?
-										</AccordionTrigger>
-										<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
-											Absolut! Vi erbjuder kontinuerlig support och möjlighet
-											till fördjupad utbildning. Du kan alltid kontakta oss för
-											att boka uppföljning eller lära dig nya tekniker.
-										</AccordionContent>
-									</AccordionItem>
+									{(data.inquirySection?.faqItems && data.inquirySection.faqItems.length > 0
+										? data.inquirySection.faqItems.filter(item => item.question || item.answer)
+										: [
+											{ question: "Vad ingår i utbildningen?", answer: "Vår utbildning omfattar både teoretisk och praktisk undervisning. Du lär dig allt från säker hantering av utrustningen till optimala behandlingsprotokoll för olika hudtyper och tillstånd." },
+											{ question: "Hur lång är utbildningen?", answer: "Utbildningens längd varierar beroende på vilken maskin du köper och dina förkunskaper. Vanligtvis 2-5 dagar intensiv utbildning följt av uppföljning och support." },
+											{ question: "Får jag certifikat efter utbildningen?", answer: "Ja, efter genomförd utbildning får du ett certifikat som visar att du är utbildad på den specifika utrustningen. Detta är viktigt för din legitimitet som behandlare." },
+											{ question: "Finns det möjlighet till uppföljningsutbildning?", answer: "Absolut! Vi erbjuder kontinuerlig support och möjlighet till fördjupad utbildning. Du kan alltid kontakta oss för att boka uppföljning eller lära dig nya tekniker." },
+										]
+									).map((faq, index) => (
+										<AccordionItem
+											key={index}
+											value={`faq-${index}`}
+											className="faq-accordion-item rounded-xl border border-slate-200/80 px-6 transition-all duration-300 hover:border-[#DCA783] data-[state=open]:border-[#DCA783] group/faq"
+										>
+											<AccordionTrigger className="text-left text-lg font-semibold text-secondary hover:no-underline py-5 group-hover/faq:text-white data-[state=open]:text-white [&>svg]:group-hover/faq:text-white [&>svg]:data-[state=open]:text-white">
+												{faq.question}
+											</AccordionTrigger>
+											<AccordionContent className="text-muted-foreground pb-5 group-hover/faq:text-white/90 data-[state=open]:text-white/90">
+												{faq.answer}
+											</AccordionContent>
+										</AccordionItem>
+									))}
 								</Accordion>
 							</motion.div>
 						</div>

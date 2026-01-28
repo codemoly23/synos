@@ -5,6 +5,7 @@ import { z } from "zod";
 // ============================================================================
 export const trainingSectionVisibilitySchema = z.object({
 	hero: z.boolean(),
+	featuredSection: z.boolean(),
 	mainContent: z.boolean(),
 	benefits: z.boolean(),
 	process: z.boolean(),
@@ -21,6 +22,22 @@ export const trainingHeroSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	titleHighlight: z.string().max(200).optional(),
 	subtitle: z.string().max(1000).optional(),
+});
+
+// ============================================================================
+// FEATURED SECTION (Veritatisin Reprehenderit)
+// ============================================================================
+export const trainingFeaturedChecklistItemSchema = z.object({
+	text: z.string().max(500).optional(),
+});
+
+export const trainingFeaturedSectionSchema = z.object({
+	image: z.string().optional(),
+	title: z.string().max(200).optional(),
+	description: z.string().max(2000).optional(),
+	subTitle: z.string().max(200).optional(),
+	checklistItems: z.array(trainingFeaturedChecklistItemSchema).optional(),
+	bottomDescription: z.string().max(2000).optional(),
 });
 
 // ============================================================================
@@ -69,12 +86,21 @@ export const trainingSupportSectionSchema = z.object({
 });
 
 // ============================================================================
+// FAQ ITEM
+// ============================================================================
+export const trainingFaqItemSchema = z.object({
+	question: z.string().max(500).optional(),
+	answer: z.string().max(2000).optional(),
+});
+
+// ============================================================================
 // INQUIRY SECTION
 // ============================================================================
 export const trainingInquirySectionSchema = z.object({
 	badge: z.string().max(100).optional(),
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
+	faqItems: z.array(trainingFaqItemSchema).optional(),
 });
 
 // ============================================================================
@@ -111,6 +137,7 @@ export const trainingPageSeoSchema = z.object({
 export const updateTrainingPageSchema = z.object({
 	sectionVisibility: trainingSectionVisibilitySchema.optional(),
 	hero: trainingHeroSectionSchema.optional(),
+	featuredSection: trainingFeaturedSectionSchema.optional(),
 	mainContent: trainingMainContentSectionSchema.optional(),
 	benefits: z.array(trainingBenefitCardSchema).optional(),
 	processSection: trainingProcessSectionSchema.optional(),
@@ -125,6 +152,8 @@ export type TrainingSectionVisibilityInput = z.infer<
 	typeof trainingSectionVisibilitySchema
 >;
 export type TrainingHeroSectionInput = z.infer<typeof trainingHeroSectionSchema>;
+export type TrainingFeaturedChecklistItemInput = z.infer<typeof trainingFeaturedChecklistItemSchema>;
+export type TrainingFeaturedSectionInput = z.infer<typeof trainingFeaturedSectionSchema>;
 export type TrainingMainContentSectionInput = z.infer<
 	typeof trainingMainContentSectionSchema
 >;
@@ -136,6 +165,7 @@ export type TrainingProcessSectionInput = z.infer<
 export type TrainingSupportSectionInput = z.infer<
 	typeof trainingSupportSectionSchema
 >;
+export type TrainingFaqItemInput = z.infer<typeof trainingFaqItemSchema>;
 export type TrainingInquirySectionInput = z.infer<
 	typeof trainingInquirySectionSchema
 >;
