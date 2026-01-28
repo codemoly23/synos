@@ -78,7 +78,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 		data.testimonials.testimonials.filter((t) => t.quote).length > 0;
 	const hasPartners =
 		data.partners?.partners &&
-		data.partners.partners.filter((p) => p.logo).length > 0;
+		data.partners.partners.filter((p) => p.logo || p.name).length > 0;
 	const hasCta =
 		data.cta?.title ||
 		data.cta?.description ||
@@ -90,7 +90,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 	const validTestimonials = (data.testimonials?.testimonials || []).filter(
 		(t) => t.quote
 	);
-	const validPartners = (data.partners?.partners || []).filter((p) => p.logo);
+	const validPartners = (data.partners?.partners || []).filter((p) => p.logo || p.name);
 	const validFeatures = (data.mission?.features || []).filter((f) => f.title);
 
 	return (
@@ -383,7 +383,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							>
 								<div className="rounded-2xl overflow-hidden shadow-2xl h-full min-h-[600px]">
 									<ImageComponent
-										src="/images/mission-section-image.jpg"
+										src={data.mission?.image || "/images/mission-section-image.jpg"}
 										alt="Vår mission"
 										width={600}
 										height={800}
@@ -543,94 +543,94 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 			)}
 
 			{/* Trusted Business Partner Section */}
-			<section className="py-16 md:py-20 lg:py-24 bg-slate-100 overflow-hidden">
-				<div className="_container">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className="text-center mb-12"
-					>
-						{/* Badge */}
-						<div className="mb-4 inline-flex items-center gap-3">
-							<span className="text-secondary/60">●</span>
-							<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
-								Our Company
-							</span>
-							<span className="text-secondary/60">●</span>
-						</div>
-						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary">
-							Trusted Business Partner
-						</h2>
-					</motion.div>
-				</div>
-
-				{/* Marquee Container */}
-				<div className="space-y-6">
-					{/* Row 1 - Left to Right */}
-					<div className="partner-marquee">
-						<div className="partner-marquee-track animate-marquee-left">
-							{[...Array(2)].map((_, setIndex) => (
-								<div key={setIndex} className="flex gap-6">
-									{[
-										"Growth",
-										"Hertz",
-										"GrowTech",
-										"Company",
-										"Finance Plus",
-										"Narrow",
-										"TeamWork",
-										"TechCorp",
-										"MediaFlow",
-										"DataSync",
-									].map((name, index) => (
-										<div
-											key={`${setIndex}-${index}`}
-											className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
-										>
-											<span className="text-xl font-bold text-slate-400">
-												{name}
-											</span>
-										</div>
-									))}
-								</div>
-							))}
-						</div>
+			{validPartners.length > 0 && (
+				<section className="py-16 md:py-20 lg:py-24 bg-slate-100 overflow-hidden">
+					<div className="_container">
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6 }}
+							className="text-center mb-12"
+						>
+							{/* Badge */}
+							<div className="mb-4 inline-flex items-center gap-3">
+								<span className="text-secondary/60">●</span>
+								<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+									Our Company
+								</span>
+								<span className="text-secondary/60">●</span>
+							</div>
+							<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary">
+								Trusted Business Partner
+							</h2>
+						</motion.div>
 					</div>
 
-					{/* Row 2 - Right to Left */}
-					<div className="partner-marquee">
-						<div className="partner-marquee-track animate-marquee-right">
-							{[...Array(2)].map((_, setIndex) => (
-								<div key={setIndex} className="flex gap-6">
-									{[
-										"CloudBase",
-										"NetPro",
-										"SecureIT",
-										"AppWorks",
-										"DigiLab",
-										"SmartBiz",
-										"CoreTech",
-										"FlexSoft",
-										"WebFlow",
-										"CodeCraft",
-									].map((name, index) => (
-										<div
-											key={`${setIndex}-${index}`}
-											className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
-										>
-											<span className="text-xl font-bold text-slate-400">
-												{name}
-											</span>
-										</div>
-									))}
-								</div>
-							))}
+					{/* Marquee Container */}
+					<div className="space-y-6">
+						{/* Row 1 - Left to Right */}
+						<div className="partner-marquee">
+							<div className="partner-marquee-track animate-marquee-left">
+								{[...Array(2)].map((_, setIndex) => (
+									<div key={setIndex} className="flex gap-6">
+										{validPartners.slice(0, Math.ceil(validPartners.length / 2)).map((partner, index) => (
+											<div
+												key={`${setIndex}-${index}`}
+												className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
+											>
+												{partner.logo ? (
+													<Image
+														src={partner.logo}
+														alt={partner.name || `Partner ${index + 1}`}
+														width={150}
+														height={60}
+														className="max-h-12 w-auto object-contain"
+													/>
+												) : (
+													<span className="text-xl font-bold text-slate-400">
+														{partner.name}
+													</span>
+												)}
+											</div>
+										))}
+									</div>
+								))}
+							</div>
+						</div>
+
+						{/* Row 2 - Right to Left */}
+						<div className="partner-marquee">
+							<div className="partner-marquee-track animate-marquee-right">
+								{[...Array(2)].map((_, setIndex) => (
+									<div key={setIndex} className="flex gap-6">
+										{validPartners.slice(Math.ceil(validPartners.length / 2)).map((partner, index) => (
+											<div
+												key={`${setIndex}-${index}`}
+												className="flex-shrink-0 w-[200px] h-[100px] bg-white rounded-xl flex items-center justify-center px-6 shadow-sm"
+											>
+												{partner.logo ? (
+													<Image
+														src={partner.logo}
+														alt={partner.name || `Partner ${index + 1}`}
+														width={150}
+														height={60}
+														className="max-h-12 w-auto object-contain"
+													/>
+												) : (
+													<span className="text-xl font-bold text-slate-400">
+														{partner.name}
+													</span>
+												)}
+											</div>
+										))}
+									</div>
+								))}
+							</div>
 						</div>
 					</div>
-				</div>
-			</section>
+				</section>
+			)}
 
 			{/* FAQ Section */}
 			{visibility.faq && hasFaq && (
@@ -905,14 +905,12 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<span className="text-secondary/60">●</span>
 							</motion.div>
 
-							{data.testimonials?.title && (
-								<motion.h2
-									variants={fadeUp}
-									className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
-								>
-									Hear What Our Clients Say
-								</motion.h2>
-							)}
+							<motion.h2
+								variants={fadeUp}
+								className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
+							>
+								{data.testimonials?.title || "Hear What Our Clients Say"}
+							</motion.h2>
 							{data.testimonials?.subtitle && (
 								<motion.p
 									variants={fadeUp}
@@ -974,63 +972,61 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 										<div className="testimonial-marquee-vertical h-full p-4">
 											<div className="testimonial-marquee-track-down space-y-4">
-												{[
-													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director", avatar: "/images/testimonial-avatar-2.jpg" },
-													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager", avatar: "/images/testimonial-avatar-4.jpg" },
-													{ quote: "Donec rhoncus eros lobortis nulla molestie mattis scelerisque. Purus est efficitur laoreet.", name: "Editha Kristin", role: "CEO", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Euismod quam justo lectus commodo augue arcu dignissim. Porttitor ullamcorper.", name: "Operations Manager", role: "CEO", avatar: "/images/testimonial-avatar-2.jpg" },
-												].map((item, index) => (
+												{validTestimonials.slice(0, Math.ceil(validTestimonials.length / 2)).map((item, index) => (
 													<div key={index} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-6 h-6 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-																<Image
-																	src={item.avatar}
-																	alt={item.name}
-																	width={36}
-																	height={36}
-																	className="object-cover w-full h-full"
-																/>
-															</div>
+															{item.image ? (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={36}
+																		height={36}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
 												))}
 												{/* Duplicate for seamless loop */}
-												{[
-													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director", avatar: "/images/testimonial-avatar-2.jpg" },
-													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager", avatar: "/images/testimonial-avatar-4.jpg" },
-													{ quote: "Donec rhoncus eros lobortis nulla molestie mattis scelerisque. Purus est efficitur laoreet.", name: "Editha Kristin", role: "CEO", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Euismod quam justo lectus commodo augue arcu dignissim. Porttitor ullamcorper.", name: "Operations Manager", role: "CEO", avatar: "/images/testimonial-avatar-2.jpg" },
-												].map((item, index) => (
+												{validTestimonials.slice(0, Math.ceil(validTestimonials.length / 2)).map((item, index) => (
 													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-6 h-6 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-																<Image
-																	src={item.avatar}
-																	alt={item.name}
-																	width={36}
-																	height={36}
-																	className="object-cover w-full h-full"
-																/>
-															</div>
+															{item.image ? (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={36}
+																		height={36}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
@@ -1046,63 +1042,61 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 										<div className="testimonial-marquee-vertical h-full p-4">
 											<div className="testimonial-marquee-track-up space-y-4">
-												{[
-													{ quote: "Urna tempor pulvinar vivamus fringilla lacus nec metus. Lacinia integer nunc posuere.", name: "Kay Ludger", role: "Finance Director", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director", avatar: "/images/testimonial-avatar-4.jpg" },
-													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Taciti sociosqu ad litora torquent per conubia nostra. Et magnis dis parturient scelerisque.", name: "Edelgard Gisa", role: "HR Director", avatar: "/images/testimonial-avatar-2.jpg" },
-													{ quote: "Viverra ac tincidunt nam porta elementum a enim. Arcu dignissim velit aliquam imperdiet mollis.", name: "Arnold Willy", role: "Sales Director", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Duis convallis tempus leo eu aenean sed diam. Nec metus bibendum egestas et magnis iaculis.", name: "Frieda Janine", role: "CEO", avatar: "/images/testimonial-avatar-4.jpg" },
-												].map((item, index) => (
+												{validTestimonials.slice(Math.ceil(validTestimonials.length / 2)).map((item, index) => (
 													<div key={index} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-6 h-6 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-																<Image
-																	src={item.avatar}
-																	alt={item.name}
-																	width={36}
-																	height={36}
-																	className="object-cover w-full h-full"
-																/>
-															</div>
+															{item.image ? (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={36}
+																		height={36}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
 												))}
 												{/* Duplicate for seamless loop */}
-												{[
-													{ quote: "Urna tempor pulvinar vivamus fringilla lacus nec metus. Lacinia integer nunc posuere.", name: "Kay Ludger", role: "Finance Director", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director", avatar: "/images/testimonial-avatar-4.jpg" },
-													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager", avatar: "/images/testimonial-avatar-1.jpg" },
-													{ quote: "Taciti sociosqu ad litora torquent per conubia nostra. Et magnis dis parturient scelerisque.", name: "Edelgard Gisa", role: "HR Director", avatar: "/images/testimonial-avatar-2.jpg" },
-													{ quote: "Viverra ac tincidunt nam porta elementum a enim. Arcu dignissim velit aliquam imperdiet mollis.", name: "Arnold Willy", role: "Sales Director", avatar: "/images/testimonial-avatar-3.jpg" },
-													{ quote: "Duis convallis tempus leo eu aenean sed diam. Nec metus bibendum egestas et magnis iaculis.", name: "Frieda Janine", role: "CEO", avatar: "/images/testimonial-avatar-4.jpg" },
-												].map((item, index) => (
+												{validTestimonials.slice(Math.ceil(validTestimonials.length / 2)).map((item, index) => (
 													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-6 h-6 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-																<Image
-																	src={item.avatar}
-																	alt={item.name}
-																	width={36}
-																	height={36}
-																	className="object-cover w-full h-full"
-																/>
-															</div>
+															{item.image ? (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={36}
+																		height={36}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-9 h-9 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
@@ -1139,51 +1133,61 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 										<div className="testimonial-marquee-vertical h-full p-4">
 											<div className="testimonial-marquee-track-up space-y-4">
-												{[
-													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder" },
-													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director" },
-													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner" },
-													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager" },
-													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director" },
-													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager" },
-												].map((item, index) => (
+												{validTestimonials.map((item, index) => (
 													<div key={index} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-5 h-5 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
-																<span className="text-xs font-semibold text-secondary">{item.name.charAt(0)}</span>
-															</div>
+															{item.image ? (
+																<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={32}
+																		height={32}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
 												))}
 												{/* Duplicate for seamless loop */}
-												{[
-													{ quote: "Luctus nibh finibus facilisis dapibus etiam interdum tortor. Tincidunt nam porta elementum.", name: "Nicole Saskia", role: "Founder" },
-													{ quote: "Nulla molestie mattis scelerisque maximus eget fermentum odio. Mauris pharetra.", name: "Angela Ursel", role: "Managing Director" },
-													{ quote: "Cras eleifend turpis fames primis vulputate ornare sagittis. Proin libero feugiat tristique.", name: "Gretel Nicole", role: "Business Owner" },
-													{ quote: "Pretium tellus duis convallis tempus leo eu aenean. Fringilla lacus nec metus bibendum egestas.", name: "Marie Esther", role: "Senior Manager" },
-													{ quote: "Fermentum odio phasellus non purus est efficitur laoreet. Blandit quis suspendisse.", name: "Lili Alexa", role: "Marketing Director" },
-													{ quote: "Porta elementum a enim euismod quam justo lectus. Imperdiet mollis nullam volutpat porttitor.", name: "Mario Pascal", role: "Project Manager" },
-												].map((item, index) => (
+												{validTestimonials.map((item, index) => (
 													<div key={`dup-${index}`} className="bg-slate-50 rounded-xl p-4">
 														<Quote className="w-5 h-5 text-secondary mb-2" />
 														<p className="text-muted-foreground text-sm leading-relaxed mb-3">
 															{item.quote}
 														</p>
 														<div className="flex items-center gap-3">
-															<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
-																<span className="text-xs font-semibold text-secondary">{item.name.charAt(0)}</span>
-															</div>
+															{item.image ? (
+																<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+																	<Image
+																		src={item.image}
+																		alt={item.author || ""}
+																		width={32}
+																		height={32}
+																		className="object-cover w-full h-full"
+																	/>
+																</div>
+															) : (
+																<div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+																	<span className="text-xs font-semibold text-secondary">{item.author?.charAt(0) || "?"}</span>
+																</div>
+															)}
 															<div>
-																<p className="font-semibold text-secondary text-sm">{item.name}</p>
-																<p className="text-xs text-muted-foreground">{item.role}</p>
+																<p className="font-semibold text-secondary text-sm">{item.author}</p>
+																<p className="text-xs text-muted-foreground">{item.role}{item.company ? `, ${item.company}` : ""}</p>
 															</div>
 														</div>
 													</div>
@@ -1245,35 +1249,45 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<div className="rounded-2xl p-6 shadow-sm relative overflow-hidden flex-1">
 									{/* Background Image */}
 									<div className="absolute inset-0">
-										<Image
-											src="/images/group-cooperation-bg.jpg"
-											alt=""
-											fill
-											className="object-cover"
-										/>
+										{data.testimonials?.groupCooperation?.backgroundImage ? (
+											<Image
+												src={data.testimonials.groupCooperation.backgroundImage}
+												alt=""
+												fill
+												className="object-cover"
+											/>
+										) : (
+											<div className="w-full h-full bg-slate-200" />
+										)}
 										{/* Gradient Overlay */}
 										<div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/50 to-green-400/60" />
 									</div>
 
 									<div className="relative z-10 h-full flex flex-col justify-between min-h-[180px]">
 										<h4 className="text-xl font-bold text-secondary">
-											Group<br />Cooperation
+											{data.testimonials?.groupCooperation?.title || "Group\nCooperation"}
 										</h4>
 
 										<div className="flex items-center mt-auto">
 											<div className="flex -space-x-3">
-												{[1, 2, 3].map((i) => (
+												{(data.testimonials?.groupCooperation?.teamMembers || []).slice(0, 3).map((member, i) => (
 													<div
 														key={i}
 														className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden"
 													>
-														<Image
-															src={`/images/team-avatar-${i}.jpg`}
-															alt=""
-															width={40}
-															height={40}
-															className="object-cover"
-														/>
+														{member.image ? (
+															<Image
+																src={member.image}
+																alt={member.name || ""}
+																width={40}
+																height={40}
+																className="object-cover"
+															/>
+														) : (
+															<div className="w-full h-full flex items-center justify-center bg-slate-300">
+																<span className="text-xs font-semibold text-secondary">{member.name?.charAt(0) || "?"}</span>
+															</div>
+														)}
 													</div>
 												))}
 											</div>

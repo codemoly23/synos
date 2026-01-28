@@ -182,10 +182,22 @@ export interface IAboutTestimonial {
 	rating?: number;
 }
 
+export interface IAboutTeamMember {
+	image?: string;
+	name?: string;
+}
+
+export interface IAboutGroupCooperation {
+	backgroundImage?: string;
+	title?: string;
+	teamMembers?: IAboutTeamMember[];
+}
+
 export interface IAboutTestimonialsSection {
 	title?: string;
 	subtitle?: string;
 	testimonials?: IAboutTestimonial[];
+	groupCooperation?: IAboutGroupCooperation;
 }
 
 const AboutTestimonialSchema = new Schema<IAboutTestimonial>(
@@ -200,11 +212,29 @@ const AboutTestimonialSchema = new Schema<IAboutTestimonial>(
 	{ _id: false }
 );
 
+const AboutTeamMemberSchema = new Schema<IAboutTeamMember>(
+	{
+		image: { type: String, trim: true },
+		name: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const AboutGroupCooperationSchema = new Schema<IAboutGroupCooperation>(
+	{
+		backgroundImage: { type: String, trim: true },
+		title: { type: String, trim: true },
+		teamMembers: { type: [AboutTeamMemberSchema], default: [] },
+	},
+	{ _id: false }
+);
+
 const AboutTestimonialsSectionSchema = new Schema<IAboutTestimonialsSection>(
 	{
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		testimonials: { type: [AboutTestimonialSchema], default: [] },
+		groupCooperation: { type: AboutGroupCooperationSchema, default: {} },
 	},
 	{ _id: false }
 );

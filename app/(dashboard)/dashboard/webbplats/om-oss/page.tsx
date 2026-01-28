@@ -119,6 +119,20 @@ const formSchema = z.object({
 				})
 			)
 			.optional(),
+		groupCooperation: z
+			.object({
+				backgroundImage: z.string().optional(),
+				title: z.string().optional(),
+				teamMembers: z
+					.array(
+						z.object({
+							image: z.string().optional(),
+							name: z.string().optional(),
+						})
+					)
+					.optional(),
+			})
+			.optional(),
 	}),
 	partners: z.object({
 		title: z.string().optional(),
@@ -193,7 +207,7 @@ export default function AboutPageCMS() {
 			stats: [],
 			imageGallery: { images: [] },
 			faq: { items: [] },
-			testimonials: { testimonials: [] },
+			testimonials: { testimonials: [], groupCooperation: { teamMembers: [] } },
 			partners: { partners: [] },
 			cta: {},
 			seo: {},
@@ -237,6 +251,12 @@ export default function AboutPageCMS() {
 		remove: removePartner,
 	} = useFieldArray({ control: form.control, name: "partners.partners" });
 
+	const {
+		fields: teamMemberFields,
+		append: appendTeamMember,
+		remove: removeTeamMember,
+	} = useFieldArray({ control: form.control, name: "testimonials.groupCooperation.teamMembers" });
+
 	// Fetch initial data
 	useEffect(() => {
 		const fetchData = async () => {
@@ -279,6 +299,11 @@ export default function AboutPageCMS() {
 						title: data.testimonials?.title || "",
 						subtitle: data.testimonials?.subtitle || "",
 						testimonials: data.testimonials?.testimonials || [],
+						groupCooperation: {
+							backgroundImage: data.testimonials?.groupCooperation?.backgroundImage || "",
+							title: data.testimonials?.groupCooperation?.title || "",
+							teamMembers: data.testimonials?.groupCooperation?.teamMembers || [],
+						},
 					},
 					partners: {
 						title: data.partners?.title || "",
@@ -996,6 +1021,91 @@ export default function AboutPageCMS() {
 										</div>
 									</div>
 								))}
+							</div>
+
+							{/* Group Cooperation Card Section */}
+							<div className="border-t pt-6 mt-6">
+								<h3 className="text-lg font-semibold mb-4">Group Cooperation Card</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									This card appears in the testimonials section sidebar with a background image and team member avatars.
+								</p>
+
+								<div className="space-y-4">
+									<div className="grid gap-4 md:grid-cols-2">
+										<div className="space-y-2">
+											<Label>Card Title</Label>
+											<Input
+												{...form.register("testimonials.groupCooperation.title")}
+												placeholder="e.g., Group Cooperation"
+											/>
+										</div>
+										<div className="space-y-2">
+											<Label>Background Image</Label>
+											<MediaPicker
+												type="image"
+												value={form.watch("testimonials.groupCooperation.backgroundImage") || null}
+												onChange={(url) =>
+													form.setValue("testimonials.groupCooperation.backgroundImage", url || "")
+												}
+												placeholder="Select background image"
+												galleryTitle="Select Background Image"
+											/>
+										</div>
+									</div>
+
+									{/* Team Members */}
+									<div className="space-y-4">
+										<div className="flex items-center justify-between">
+											<Label className="text-base">Team Member Avatars (max 3 shown)</Label>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={() => appendTeamMember({ image: "", name: "" })}
+											>
+												<Plus className="mr-2 h-4 w-4" />
+												Add Member
+											</Button>
+										</div>
+
+										<div className="grid gap-4 md:grid-cols-3">
+											{teamMemberFields.map((field, index) => (
+												<div key={field.id} className="rounded-lg border p-4 space-y-3">
+													<div className="flex items-center justify-between">
+														<span className="text-sm font-medium">Member {index + 1}</span>
+														<Button
+															type="button"
+															variant="ghost"
+															size="sm"
+															onClick={() => removeTeamMember(index)}
+														>
+															<Trash2 className="h-4 w-4 text-destructive" />
+														</Button>
+													</div>
+													<div className="space-y-2">
+														<Label>Name</Label>
+														<Input
+															{...form.register(`testimonials.groupCooperation.teamMembers.${index}.name`)}
+															placeholder="Member name"
+														/>
+													</div>
+													<div className="space-y-2">
+														<Label>Avatar Image</Label>
+														<MediaPicker
+															type="image"
+															value={form.watch(`testimonials.groupCooperation.teamMembers.${index}.image`) || null}
+															onChange={(url) =>
+																form.setValue(`testimonials.groupCooperation.teamMembers.${index}.image`, url || "")
+															}
+															placeholder="Select avatar"
+															galleryTitle="Select Avatar"
+														/>
+													</div>
+												</div>
+											))}
+										</div>
+									</div>
+								</div>
 							</div>
 						</CardContent>
 					</Card>

@@ -76,6 +76,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "job_application") {
+			submission = await formSubmissionService.createJobApplication(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

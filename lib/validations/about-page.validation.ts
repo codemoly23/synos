@@ -89,10 +89,22 @@ export const aboutTestimonialSchema = z.object({
 	rating: z.number().min(1).max(5).optional(),
 });
 
+export const aboutTeamMemberSchema = z.object({
+	image: z.string().optional(),
+	name: z.string().max(100).optional(),
+});
+
+export const aboutGroupCooperationSchema = z.object({
+	backgroundImage: z.string().optional(),
+	title: z.string().max(200).optional(),
+	teamMembers: z.array(aboutTeamMemberSchema).optional(),
+});
+
 export const aboutTestimonialsSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	testimonials: z.array(aboutTestimonialSchema).optional(),
+	groupCooperation: aboutGroupCooperationSchema.optional(),
 });
 
 // ============================================================================
@@ -163,6 +175,8 @@ export type AboutImageGallerySectionInput = z.infer<typeof aboutImageGallerySect
 export type AboutFaqItemInput = z.infer<typeof aboutFaqItemSchema>;
 export type AboutFaqSectionInput = z.infer<typeof aboutFaqSectionSchema>;
 export type AboutTestimonialInput = z.infer<typeof aboutTestimonialSchema>;
+export type AboutTeamMemberInput = z.infer<typeof aboutTeamMemberSchema>;
+export type AboutGroupCooperationInput = z.infer<typeof aboutGroupCooperationSchema>;
 export type AboutTestimonialsSectionInput = z.infer<typeof aboutTestimonialsSectionSchema>;
 export type AboutPartnerInput = z.infer<typeof aboutPartnerSchema>;
 export type AboutPartnersSectionInput = z.infer<typeof aboutPartnersSectionSchema>;

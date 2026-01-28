@@ -12,6 +12,7 @@ export const formSubmissionTypes = [
 	"quote_request",
 	"callback_request",
 	"tour_request",
+	"job_application",
 ] as const;
 
 /**
@@ -407,6 +408,65 @@ export const quoteRequestSchema = z
 		}
 	);
 
+/**
+ * Job Application Form Schema
+ * For job applications on careers page
+ */
+export const jobApplicationSchema = z.object({
+	fullName: z
+		.string()
+		.min(2, "Namnet måste vara minst 2 tecken")
+		.max(100, "Namnet får inte överstiga 100 tecken")
+		.trim(),
+
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(20, "Telefonnummer får inte överstiga 20 siffror")
+		.trim(),
+
+	careerType: z
+		.string()
+		.min(1, "Välj en karriärtyp")
+		.max(100, "Karriärtyp får inte överstiga 100 tecken")
+		.trim(),
+
+	message: z
+		.string()
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	resumeUrl: z
+		.string()
+		.max(500, "Resume URL får inte överstiga 500 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	jobTitle: z
+		.string()
+		.max(200, "Jobbtitel får inte överstiga 200 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	subject: z
+		.string()
+		.max(200, "Ämne får inte överstiga 200 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+});
+
 // Type exports
 export type ProductInquiryInput = z.infer<typeof productInquirySchema>;
 export type TrainingInquiryInput = z.infer<typeof trainingInquirySchema>;
@@ -414,6 +474,7 @@ export type ContactInquiryInput = z.infer<typeof contactInquirySchema>;
 export type CallbackRequestInput = z.infer<typeof callbackRequestSchema>;
 export type TourRequestInput = z.infer<typeof tourRequestSchema>;
 export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
+export type JobApplicationInput = z.infer<typeof jobApplicationSchema>;
 export type FormSubmissionListQuery = z.infer<
 	typeof formSubmissionListQuerySchema
 >;

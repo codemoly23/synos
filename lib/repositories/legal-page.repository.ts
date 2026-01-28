@@ -5,6 +5,10 @@ import {
 	type ILegalPage,
 	type ILegalSectionVisibility,
 	type ILegalHeroSection,
+	type ILegalFeaturedImage,
+	type ILegalStatsSection,
+	type ILegalFeaturesSection,
+	type ILegalVideoSection,
 	type ILegalCard,
 	type ILegalCompanyInfo,
 	type ILegalTermsSection,
@@ -19,6 +23,10 @@ import {
 export interface UpdateLegalPageInput {
 	sectionVisibility?: ILegalSectionVisibility;
 	hero?: Partial<ILegalHeroSection>;
+	featuredImage?: Partial<ILegalFeaturedImage>;
+	statsSection?: Partial<ILegalStatsSection>;
+	featuresSection?: Partial<ILegalFeaturesSection>;
+	videoSection?: Partial<ILegalVideoSection>;
 	legalCards?: ILegalCard[];
 	companyInfo?: Partial<ILegalCompanyInfo>;
 	termsSection?: Partial<ILegalTermsSection>;
@@ -76,6 +84,26 @@ class LegalPageRepository {
 					updateData[`hero.${key}`] = value;
 				}
 			});
+		}
+
+		if (data.featuredImage) {
+			// Save featuredImage as a whole object to ensure it persists
+			updateData.featuredImage = data.featuredImage;
+		}
+
+		if (data.statsSection) {
+			// Save statsSection as a whole object to ensure it persists
+			updateData.statsSection = data.statsSection;
+		}
+
+		if (data.featuresSection) {
+			// Save featuresSection as a whole object to ensure it persists
+			updateData.featuresSection = data.featuresSection;
+		}
+
+		if (data.videoSection) {
+			// Save videoSection as a whole object to ensure it persists
+			updateData.videoSection = data.videoSection;
 		}
 
 		if (data.legalCards) {

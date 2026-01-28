@@ -28,9 +28,13 @@ export async function PUT(request: NextRequest) {
 	try {
 		const body = await request.json();
 
+		// Debug: Log incoming testimonials data
+		console.log("[DEBUG] PUT /api/about-page - testimonials:", JSON.stringify(body.testimonials, null, 2));
+
 		// Validate input
 		const validationResult = updateAboutPageSchema.safeParse(body);
 		if (!validationResult.success) {
+			console.log("[DEBUG] Validation failed:", validationResult.error.flatten());
 			return NextResponse.json(
 				{
 					error: "Validation failed",
@@ -39,6 +43,9 @@ export async function PUT(request: NextRequest) {
 				{ status: 400 }
 			);
 		}
+
+		// Debug: Log validated testimonials data
+		console.log("[DEBUG] After validation - testimonials:", JSON.stringify(validationResult.data.testimonials, null, 2));
 
 		const updatedPage = await updateAboutPage(validationResult.data);
 

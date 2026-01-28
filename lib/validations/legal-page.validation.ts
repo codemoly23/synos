@@ -105,6 +105,70 @@ export const legalCtaSectionSchema = z.object({
 });
 
 // ============================================================================
+// FEATURED IMAGE
+// ============================================================================
+export const legalFeaturedImageSchema = z.object({
+	url: z.string().max(500).optional(),
+	alt: z.string().max(200).optional(),
+});
+
+// ============================================================================
+// IMAGE SCHEMA (reusable)
+// ============================================================================
+export const legalImageSchema = z.object({
+	url: z.string().max(500).optional(),
+	alt: z.string().max(200).optional(),
+});
+
+// ============================================================================
+// STAT (for Stats Section)
+// ============================================================================
+export const legalStatSchema = z.object({
+	value: z.string().max(50).optional(),
+	label: z.string().max(200).optional(),
+});
+
+// ============================================================================
+// STATS SECTION (Purus Est Efficitur Laoreet)
+// ============================================================================
+export const legalStatsSectionSchema = z.object({
+	image: legalImageSchema.optional(),
+	title: z.string().max(200).optional(),
+	description: z.string().max(1000).optional(),
+	stats: z.array(legalStatSchema).optional(),
+	bottomText: z.string().max(500).optional(),
+});
+
+// ============================================================================
+// FEATURE (for Features Section)
+// ============================================================================
+export const legalFeatureSchema = z.object({
+	icon: z.string().max(50).optional(),
+	title: z.string().max(200).optional(),
+	description: z.string().max(500).optional(),
+});
+
+// ============================================================================
+// FEATURES SECTION (Arcu Dignissim Velit Aliquam)
+// ============================================================================
+export const legalFeaturesSectionSchema = z.object({
+	title: z.string().max(200).optional(),
+	description: z.string().max(1000).optional(),
+	features: z.array(legalFeatureSchema).optional(),
+	image: legalImageSchema.optional(),
+	bottomText: z.string().max(500).optional(),
+});
+
+// ============================================================================
+// VIDEO SECTION
+// ============================================================================
+export const legalVideoSectionSchema = z.object({
+	thumbnail: legalImageSchema.optional(),
+	videoUrl: z.string().max(500).optional(),
+	bottomText: z.string().max(500).optional(),
+});
+
+// ============================================================================
 // SEO
 // ============================================================================
 export const legalPageSeoSchema = z.object({
@@ -119,6 +183,10 @@ export const legalPageSeoSchema = z.object({
 export const updateLegalPageSchema = z.object({
 	sectionVisibility: legalSectionVisibilitySchema.optional(),
 	hero: legalHeroSectionSchema.optional(),
+	featuredImage: legalFeaturedImageSchema.optional(),
+	statsSection: legalStatsSectionSchema.optional(),
+	featuresSection: legalFeaturesSectionSchema.optional(),
+	videoSection: legalVideoSectionSchema.optional(),
 	legalCards: z.array(legalCardSchema).optional(),
 	companyInfo: legalCompanyInfoSchema.optional(),
 	termsSection: legalTermsSectionSchema.optional(),
@@ -138,5 +206,12 @@ export type LegalTermsSectionInput = z.infer<typeof legalTermsSectionSchema>;
 export type LegalGdprRightInput = z.infer<typeof legalGdprRightSchema>;
 export type LegalGdprSectionInput = z.infer<typeof legalGdprSectionSchema>;
 export type LegalCtaSectionInput = z.infer<typeof legalCtaSectionSchema>;
+export type LegalFeaturedImageInput = z.infer<typeof legalFeaturedImageSchema>;
+export type LegalImageInput = z.infer<typeof legalImageSchema>;
+export type LegalStatInput = z.infer<typeof legalStatSchema>;
+export type LegalStatsSectionInput = z.infer<typeof legalStatsSectionSchema>;
+export type LegalFeatureInput = z.infer<typeof legalFeatureSchema>;
+export type LegalFeaturesSectionInput = z.infer<typeof legalFeaturesSectionSchema>;
+export type LegalVideoSectionInput = z.infer<typeof legalVideoSectionSchema>;
 export type LegalPageSeoInput = z.infer<typeof legalPageSeoSchema>;
 export type UpdateLegalPageInput = z.infer<typeof updateLegalPageSchema>;

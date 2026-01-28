@@ -91,6 +91,25 @@ const ctaSchema = z.object({
 	href: z.string().optional(),
 });
 
+// Image schema
+const imageSchema = z.object({
+	url: z.string().optional(),
+	alt: z.string().optional(),
+});
+
+// Stat schema
+const statSchema = z.object({
+	value: z.string().optional(),
+	label: z.string().optional(),
+});
+
+// Feature schema
+const featureSchema = z.object({
+	icon: z.string().optional(),
+	title: z.string().optional(),
+	description: z.string().optional(),
+});
+
 // Form schema
 const legalPageFormSchema = z.object({
 	sectionVisibility: sectionVisibilitySchema,
@@ -100,6 +119,41 @@ const legalPageFormSchema = z.object({
 			badge: z.string().optional(),
 			title: z.string().optional(),
 			subtitle: z.string().optional(),
+		})
+		.optional(),
+
+	featuredImage: z
+		.object({
+			url: z.string().optional(),
+			alt: z.string().optional(),
+		})
+		.optional(),
+
+	statsSection: z
+		.object({
+			image: imageSchema.optional(),
+			title: z.string().optional(),
+			description: z.string().optional(),
+			stats: z.array(statSchema).optional(),
+			bottomText: z.string().optional(),
+		})
+		.optional(),
+
+	featuresSection: z
+		.object({
+			title: z.string().optional(),
+			description: z.string().optional(),
+			features: z.array(featureSchema).optional(),
+			image: imageSchema.optional(),
+			bottomText: z.string().optional(),
+		})
+		.optional(),
+
+	videoSection: z
+		.object({
+			thumbnail: imageSchema.optional(),
+			videoUrl: z.string().optional(),
+			bottomText: z.string().optional(),
 		})
 		.optional(),
 
@@ -171,6 +225,26 @@ export default function LegalPageAdmin() {
 				cta: true,
 			},
 			hero: {},
+			featuredImage: { url: "", alt: "" },
+			statsSection: {
+				image: { url: "", alt: "" },
+				title: "",
+				description: "",
+				stats: [],
+				bottomText: "",
+			},
+			featuresSection: {
+				title: "",
+				description: "",
+				features: [],
+				image: { url: "", alt: "" },
+				bottomText: "",
+			},
+			videoSection: {
+				thumbnail: { url: "", alt: "" },
+				videoUrl: "",
+				bottomText: "",
+			},
 			legalCards: [],
 			companyInfo: { offices: [] },
 			termsSection: { terms: [] },
@@ -216,6 +290,24 @@ export default function LegalPageAdmin() {
 		name: "gdprSection.rights",
 	});
 
+	const {
+		fields: statsFields,
+		append: appendStat,
+		remove: removeStat,
+	} = useFieldArray({
+		control: form.control,
+		name: "statsSection.stats",
+	});
+
+	const {
+		fields: featuresFields,
+		append: appendFeature,
+		remove: removeFeature,
+	} = useFieldArray({
+		control: form.control,
+		name: "featuresSection.features",
+	});
+
 	// Fetch data
 	useEffect(() => {
 		async function fetchData() {
@@ -234,6 +326,38 @@ export default function LegalPageAdmin() {
 						cta: true,
 					},
 					hero: data.hero || {},
+					featuredImage: {
+						url: data.featuredImage?.url || "",
+						alt: data.featuredImage?.alt || "",
+					},
+					statsSection: {
+						image: {
+							url: data.statsSection?.image?.url || "",
+							alt: data.statsSection?.image?.alt || "",
+						},
+						title: data.statsSection?.title || "",
+						description: data.statsSection?.description || "",
+						stats: data.statsSection?.stats || [],
+						bottomText: data.statsSection?.bottomText || "",
+					},
+					featuresSection: {
+						title: data.featuresSection?.title || "",
+						description: data.featuresSection?.description || "",
+						features: data.featuresSection?.features || [],
+						image: {
+							url: data.featuresSection?.image?.url || "",
+							alt: data.featuresSection?.image?.alt || "",
+						},
+						bottomText: data.featuresSection?.bottomText || "",
+					},
+					videoSection: {
+						thumbnail: {
+							url: data.videoSection?.thumbnail?.url || "",
+							alt: data.videoSection?.thumbnail?.alt || "",
+						},
+						videoUrl: data.videoSection?.videoUrl || "",
+						bottomText: data.videoSection?.bottomText || "",
+					},
 					legalCards: data.legalCards || [],
 					companyInfo: {
 						...data.companyInfo,
@@ -342,6 +466,9 @@ export default function LegalPageAdmin() {
 						<TabsList className="flex flex-wrap h-auto gap-1 justify-start">
 							<TabsTrigger value="visibility">Visibility</TabsTrigger>
 							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="stats">Stats</TabsTrigger>
+							<TabsTrigger value="features">Features</TabsTrigger>
+							<TabsTrigger value="video">Video</TabsTrigger>
 							<TabsTrigger value="cards">Cards</TabsTrigger>
 							<TabsTrigger value="company">Company</TabsTrigger>
 							<TabsTrigger value="terms">Terms</TabsTrigger>
@@ -537,6 +664,523 @@ export default function LegalPageAdmin() {
 														value={field.value || ""}
 														placeholder="Beskriv sidan..."
 														rows={3}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+
+							{/* Featured Image Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Featured Image</CardTitle>
+									<CardDescription>
+										Main image displayed below the hero section
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="featuredImage.url"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select featured image"
+														galleryTitle="Select Featured Image"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuredImage.alt"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image Alt Text</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="Describe the image for accessibility"
+														{...field}
+														value={field.value || ""}
+													/>
+												</FormControl>
+												<FormDescription>
+													Describe the image for screen readers and SEO
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Stats Section Tab */}
+						<TabsContent value="stats" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Stats Section</CardTitle>
+									<CardDescription>
+										&quot;Purus Est Efficitur Laoreet&quot; section with image and statistics
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="statsSection.image.url"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Section Image (Left)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select stats section image"
+														galleryTitle="Select Stats Image"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="statsSection.image.alt"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image Alt Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Describe the image"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="statsSection.title"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Title</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="t.ex. Purus Est Efficitur Laoreet."
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="statsSection.description"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Description</FormLabel>
+												<FormControl>
+													<Textarea
+														{...field}
+														value={field.value || ""}
+														placeholder="Section description..."
+														rows={3}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="statsSection.bottomText"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Bottom Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Text below statistics"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+
+							<Card>
+								<CardHeader className="flex flex-row items-center justify-between">
+									<div>
+										<CardTitle>Statistics</CardTitle>
+										<CardDescription>Add statistics items</CardDescription>
+									</div>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() =>
+											appendStat({ value: "", label: "" })
+										}
+									>
+										<Plus className="mr-2 h-4 w-4" />
+										Add Stat
+									</Button>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{statsFields.length === 0 && (
+										<p className="text-center text-muted-foreground py-8">
+											No statistics added. Click &quot;Add Stat&quot; to begin.
+										</p>
+									)}
+									{statsFields.map((field, index) => (
+										<div
+											key={field.id}
+											className="flex items-start gap-4 rounded-lg border p-4"
+										>
+											<div className="grid flex-1 gap-4 sm:grid-cols-2">
+												<FormField
+													control={form.control}
+													name={`statsSection.stats.${index}.value`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Value</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={field.value || ""}
+																	placeholder="t.ex. 99%"
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+												<FormField
+													control={form.control}
+													name={`statsSection.stats.${index}.label`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Label</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={field.value || ""}
+																	placeholder="t.ex. Customer Satisfaction"
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+											</div>
+											<Button
+												type="button"
+												variant="ghost"
+												size="icon"
+												onClick={async () => {
+													const confirmed = await confirm({
+														title: "Remove Stat",
+														description:
+															"Are you sure you want to remove this stat?",
+														confirmText: "Remove",
+													});
+													if (confirmed) removeStat(index);
+												}}
+											>
+												<Trash2 className="h-4 w-4 text-destructive" />
+											</Button>
+										</div>
+									))}
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Features Section Tab */}
+						<TabsContent value="features" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Features Section</CardTitle>
+									<CardDescription>
+										&quot;Arcu Dignissim Velit Aliquam?&quot; section with features and image
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="featuresSection.title"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Title</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="t.ex. Arcu Dignissim Velit Aliquam?"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuresSection.description"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Description</FormLabel>
+												<FormControl>
+													<Textarea
+														{...field}
+														value={field.value || ""}
+														placeholder="Section description..."
+														rows={3}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuresSection.image.url"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Section Image (Right)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select features section image"
+														galleryTitle="Select Features Image"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuresSection.image.alt"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image Alt Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Describe the image"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuresSection.bottomText"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Bottom Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Text below features"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+
+							<Card>
+								<CardHeader className="flex flex-row items-center justify-between">
+									<div>
+										<CardTitle>Features</CardTitle>
+										<CardDescription>Add feature items</CardDescription>
+									</div>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() =>
+											appendFeature({ icon: "", title: "", description: "" })
+										}
+									>
+										<Plus className="mr-2 h-4 w-4" />
+										Add Feature
+									</Button>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{featuresFields.length === 0 && (
+										<p className="text-center text-muted-foreground py-8">
+											No features added. Click &quot;Add Feature&quot; to begin.
+										</p>
+									)}
+									{featuresFields.map((field, index) => (
+										<div
+											key={field.id}
+											className="rounded-lg border p-4 space-y-4"
+										>
+											<div className="flex items-center justify-between">
+												<span className="font-medium">Feature {index + 1}</span>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={async () => {
+														const confirmed = await confirm({
+															title: "Remove Feature",
+															description:
+																"Are you sure you want to remove this feature?",
+															confirmText: "Remove",
+														});
+														if (confirmed) removeFeature(index);
+													}}
+												>
+													<Trash2 className="h-4 w-4 text-destructive" />
+												</Button>
+											</div>
+											<div className="grid gap-4 sm:grid-cols-2">
+												<FormField
+													control={form.control}
+													name={`featuresSection.features.${index}.icon`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Icon</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={field.value || ""}
+																	placeholder="t.ex. CheckCircle"
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+												<FormField
+													control={form.control}
+													name={`featuresSection.features.${index}.title`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Title</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={field.value || ""}
+																	placeholder="Feature title"
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+												<FormField
+													control={form.control}
+													name={`featuresSection.features.${index}.description`}
+													render={({ field }) => (
+														<FormItem className="sm:col-span-2">
+															<FormLabel>Description</FormLabel>
+															<FormControl>
+																<Textarea
+																	{...field}
+																	value={field.value || ""}
+																	placeholder="Feature description..."
+																	rows={2}
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+											</div>
+										</div>
+									))}
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Video Section Tab */}
+						<TabsContent value="video" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Video Section</CardTitle>
+									<CardDescription>
+										Video section with thumbnail and video URL
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="videoSection.thumbnail.url"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Video Thumbnail</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select video thumbnail"
+														galleryTitle="Select Video Thumbnail"
+													/>
+												</FormControl>
+												<FormDescription>
+													Image shown before video plays
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="videoSection.thumbnail.alt"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Thumbnail Alt Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Describe the thumbnail"
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="videoSection.videoUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Video URL</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="t.ex. https://www.youtube.com/watch?v=..."
+													/>
+												</FormControl>
+												<FormDescription>
+													YouTube, Vimeo, or direct video URL
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="videoSection.bottomText"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Bottom Text</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="Text below video"
 													/>
 												</FormControl>
 											</FormItem>
