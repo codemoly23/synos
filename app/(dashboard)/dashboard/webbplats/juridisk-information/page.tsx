@@ -94,6 +94,7 @@ const ctaSchema = z.object({
 // Image schema
 const imageSchema = z.object({
 	url: z.string().optional(),
+	mobileUrl: z.string().optional(),
 	alt: z.string().optional(),
 });
 
@@ -125,6 +126,7 @@ const legalPageFormSchema = z.object({
 	featuredImage: z
 		.object({
 			url: z.string().optional(),
+			mobileUrl: z.string().optional(),
 			alt: z.string().optional(),
 		})
 		.optional(),
@@ -225,9 +227,9 @@ export default function LegalPageAdmin() {
 				cta: true,
 			},
 			hero: {},
-			featuredImage: { url: "", alt: "" },
+			featuredImage: { url: "", mobileUrl: "", alt: "" },
 			statsSection: {
-				image: { url: "", alt: "" },
+				image: { url: "", mobileUrl: "", alt: "" },
 				title: "",
 				description: "",
 				stats: [],
@@ -237,7 +239,7 @@ export default function LegalPageAdmin() {
 				title: "",
 				description: "",
 				features: [],
-				image: { url: "", alt: "" },
+				image: { url: "", mobileUrl: "", alt: "" },
 				bottomText: "",
 			},
 			videoSection: {
@@ -328,11 +330,13 @@ export default function LegalPageAdmin() {
 					hero: data.hero || {},
 					featuredImage: {
 						url: data.featuredImage?.url || "",
+						mobileUrl: data.featuredImage?.mobileUrl || "",
 						alt: data.featuredImage?.alt || "",
 					},
 					statsSection: {
 						image: {
 							url: data.statsSection?.image?.url || "",
+							mobileUrl: data.statsSection?.image?.mobileUrl || "",
 							alt: data.statsSection?.image?.alt || "",
 						},
 						title: data.statsSection?.title || "",
@@ -346,6 +350,7 @@ export default function LegalPageAdmin() {
 						features: data.featuresSection?.features || [],
 						image: {
 							url: data.featuresSection?.image?.url || "",
+							mobileUrl: data.featuresSection?.image?.mobileUrl || "",
 							alt: data.featuresSection?.image?.alt || "",
 						},
 						bottomText: data.featuresSection?.bottomText || "",
@@ -686,16 +691,40 @@ export default function LegalPageAdmin() {
 										name="featuredImage.url"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Image</FormLabel>
+												<FormLabel>Image (Desktop)</FormLabel>
 												<FormControl>
 													<MediaPicker
 														type="image"
 														value={field.value || null}
 														onChange={(url) => field.onChange(url || "")}
-														placeholder="Select featured image"
-														galleryTitle="Select Featured Image"
+														placeholder="Select featured image for desktop"
+														galleryTitle="Select Featured Image (Desktop)"
 													/>
 												</FormControl>
+												<FormDescription>
+													This image will be shown on desktop/tablet screens
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuredImage.mobileUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image (Mobile)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select featured image for mobile"
+														galleryTitle="Select Featured Image (Mobile)"
+													/>
+												</FormControl>
+												<FormDescription>
+													This image will be shown on mobile screens (portrait recommended)
+												</FormDescription>
 											</FormItem>
 										)}
 									/>
@@ -737,16 +766,40 @@ export default function LegalPageAdmin() {
 										name="statsSection.image.url"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Section Image (Left)</FormLabel>
+												<FormLabel>Section Image (Desktop)</FormLabel>
 												<FormControl>
 													<MediaPicker
 														type="image"
 														value={field.value || null}
 														onChange={(url) => field.onChange(url || "")}
-														placeholder="Select stats section image"
-														galleryTitle="Select Stats Image"
+														placeholder="Select stats section image for desktop"
+														galleryTitle="Select Stats Image (Desktop)"
 													/>
 												</FormControl>
+												<FormDescription>
+													This image will be shown on desktop/tablet screens
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="statsSection.image.mobileUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Section Image (Mobile)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select stats section image for mobile"
+														galleryTitle="Select Stats Image (Mobile)"
+													/>
+												</FormControl>
+												<FormDescription>
+													This image will be shown on mobile screens (portrait recommended)
+												</FormDescription>
 											</FormItem>
 										)}
 									/>
@@ -951,16 +1004,40 @@ export default function LegalPageAdmin() {
 										name="featuresSection.image.url"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Section Image (Right)</FormLabel>
+												<FormLabel>Section Image (Desktop)</FormLabel>
 												<FormControl>
 													<MediaPicker
 														type="image"
 														value={field.value || null}
 														onChange={(url) => field.onChange(url || "")}
-														placeholder="Select features section image"
-														galleryTitle="Select Features Image"
+														placeholder="Select features section image for desktop"
+														galleryTitle="Select Features Image (Desktop)"
 													/>
 												</FormControl>
+												<FormDescription>
+													This image will be shown on desktop/tablet screens
+												</FormDescription>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="featuresSection.image.mobileUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Section Image (Mobile)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select features section image for mobile"
+														galleryTitle="Select Features Image (Mobile)"
+													/>
+												</FormControl>
+												<FormDescription>
+													This image will be shown on mobile screens (portrait recommended)
+												</FormDescription>
 											</FormItem>
 										)}
 									/>

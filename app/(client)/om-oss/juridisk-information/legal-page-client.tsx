@@ -255,13 +255,24 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 								transition={{ duration: 0.6, delay: 0.2 }}
 								className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl mb-12"
 							>
+								{/* Desktop Image */}
 								<Image
 									src={data.featuredImage.url}
 									alt={data.featuredImage.alt || "Featured image"}
 									fill
-									className="object-cover"
+									className={`object-cover ${data.featuredImage.mobileUrl ? "hidden md:block" : ""}`}
 									priority
 								/>
+								{/* Mobile Image */}
+								{data.featuredImage.mobileUrl && (
+									<Image
+										src={data.featuredImage.mobileUrl}
+										alt={data.featuredImage.alt || "Featured image"}
+										fill
+										className="object-cover md:hidden"
+										priority
+									/>
+								)}
 							</motion.div>
 						)}
 
@@ -322,12 +333,22 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 										transition={{ duration: 0.6, delay: 0.2 }}
 										className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
 									>
+										{/* Desktop Image */}
 										<Image
 											src={data.statsSection.image.url}
 											alt={data.statsSection.image.alt || "Stats section image"}
 											fill
-											className="object-cover"
+											className={`object-cover ${data.statsSection.image.mobileUrl ? "hidden md:block" : ""}`}
 										/>
+										{/* Mobile Image */}
+										{data.statsSection.image.mobileUrl && (
+											<Image
+												src={data.statsSection.image.mobileUrl}
+												alt={data.statsSection.image.alt || "Stats section image"}
+												fill
+												className="object-cover md:hidden"
+											/>
+										)}
 									</motion.div>
 								)}
 
@@ -453,12 +474,22 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 										transition={{ duration: 0.6, delay: 0.3 }}
 										className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl"
 									>
+										{/* Desktop Image */}
 										<Image
 											src={data.featuresSection.image.url}
 											alt={data.featuresSection.image.alt || "Features section image"}
 											fill
-											className="object-cover"
+											className={`object-cover ${data.featuresSection.image.mobileUrl ? "hidden md:block" : ""}`}
 										/>
+										{/* Mobile Image */}
+										{data.featuresSection.image.mobileUrl && (
+											<Image
+												src={data.featuresSection.image.mobileUrl}
+												alt={data.featuresSection.image.alt || "Features section image"}
+												fill
+												className="object-cover md:hidden"
+											/>
+										)}
 									</motion.div>
 								)}
 							</div>

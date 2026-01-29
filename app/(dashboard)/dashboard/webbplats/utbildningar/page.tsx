@@ -48,15 +48,24 @@ const ICONS = [
 // Local Zod schema
 const formSchema = z.object({
 	sectionVisibility: z.object({
-		hero: z.boolean().default(true),
-		featuredSection: z.boolean().default(true),
-		mainContent: z.boolean().default(true),
-		benefits: z.boolean().default(true),
-		process: z.boolean().default(true),
-		support: z.boolean().default(true),
-		inquiryForm: z.boolean().default(true),
-		resources: z.boolean().default(true),
-	}).optional(),
+		hero: z.boolean(),
+		featuredSection: z.boolean(),
+		mainContent: z.boolean(),
+		benefits: z.boolean(),
+		process: z.boolean(),
+		support: z.boolean(),
+		inquiryForm: z.boolean(),
+		resources: z.boolean(),
+	}).default({
+		hero: true,
+		featuredSection: true,
+		mainContent: true,
+		benefits: true,
+		process: true,
+		support: true,
+		inquiryForm: true,
+		resources: true,
+	}),
 	hero: z.object({
 		title: z.string().max(200).optional(),
 		titleHighlight: z.string().max(200).optional(),
@@ -64,6 +73,7 @@ const formSchema = z.object({
 	}).optional(),
 	featuredSection: z.object({
 		image: z.string().optional(),
+		mobileImage: z.string().optional(),
 		title: z.string().max(200).optional(),
 		description: z.string().max(2000).optional(),
 		subTitle: z.string().max(200).optional(),
@@ -129,8 +139,9 @@ export default function TrainingPageAdmin() {
 	const [isSaving, setIsSaving] = useState(false);
 	const { confirm, ConfirmModal } = useConfirmModal({ variant: "destructive" });
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const form = useForm<FormValues>({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
 			sectionVisibility: {
 				hero: true, featuredSection: true, mainContent: true, benefits: true, process: true,
@@ -171,7 +182,15 @@ export default function TrainingPageAdmin() {
 							...data.sectionVisibility,
 						},
 						hero: data.hero || {},
-						featuredSection: data.featuredSection || { checklistItems: [] },
+						featuredSection: {
+							image: data.featuredSection?.image || "",
+							mobileImage: data.featuredSection?.mobileImage || "",
+							title: data.featuredSection?.title || "",
+							description: data.featuredSection?.description || "",
+							subTitle: data.featuredSection?.subTitle || "",
+							checklistItems: data.featuredSection?.checklistItems || [],
+							bottomDescription: data.featuredSection?.bottomDescription || "",
+						},
 						mainContent: data.mainContent || { paragraphs: [] },
 						benefits: data.benefits || [],
 						processSection: data.processSection || { steps: [] },
@@ -341,16 +360,37 @@ export default function TrainingPageAdmin() {
 								<CardContent className="space-y-6">
 									<FormField control={form.control} name="featuredSection.image" render={({ field }) => (
 										<FormItem>
-											<FormLabel>Featured Image</FormLabel>
+											<FormLabel>Featured Image (Desktop)</FormLabel>
 											<FormControl>
 												<MediaPicker
 													type="image"
 													value={field.value || null}
 													onChange={(url) => field.onChange(url || "")}
-													placeholder="Select featured image"
-													galleryTitle="Select Featured Image"
+													placeholder="Select featured image for desktop"
+													galleryTitle="Select Featured Image (Desktop)"
 												/>
 											</FormControl>
+											<FormDescription>
+												This image will be shown on desktop/tablet screens
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<FormField control={form.control} name="featuredSection.mobileImage" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Featured Image (Mobile)</FormLabel>
+											<FormControl>
+												<MediaPicker
+													type="image"
+													value={field.value || null}
+													onChange={(url) => field.onChange(url || "")}
+													placeholder="Select featured image for mobile"
+													galleryTitle="Select Featured Image (Mobile)"
+												/>
+											</FormControl>
+											<FormDescription>
+												This image will be shown on mobile screens (portrait recommended)
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)} />

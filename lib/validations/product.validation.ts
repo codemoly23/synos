@@ -96,6 +96,15 @@ const purchaseInfoSchema = z.object({
 });
 
 /**
+ * SEO Accordion Schema
+ */
+const seoAccordionSchema = z.object({
+	title: z.string().min(1, "Title is required").max(200),
+	content: z.string().min(1, "Content is required"),
+	order: z.number().default(0),
+});
+
+/**
  * SEO Schema
  */
 const seoSchema = z.object({
@@ -135,6 +144,7 @@ export const createProductDraftSchema = z.object({
 	categories: z.array(z.string()).optional().default([]),
 	primaryCategory: z.string().optional(),
 	qa: z.array(qnaSchema).optional().default([]),
+	seoAccordions: z.array(seoAccordionSchema).optional().default([]),
 	youtubeUrl: optionalUrlSchema,
 	rubric: z.string().max(1000).optional(),
 	publishType: z.enum(["publish", "draft", "pending", "private"]).default("draft"),
@@ -164,6 +174,7 @@ export const updateProductSchema = z.object({
 	categories: z.array(z.string()).optional(),
 	primaryCategory: z.string().optional(),
 	qa: z.array(qnaSchema).optional(),
+	seoAccordions: z.array(seoAccordionSchema).optional(),
 	youtubeUrl: optionalUrlSchema,
 	rubric: z.string().max(1000).optional(),
 	publishType: z.enum(["publish", "draft", "pending", "private"]).optional(),

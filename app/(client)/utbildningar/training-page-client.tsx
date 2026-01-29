@@ -327,12 +327,22 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 									<div className="relative rounded-2xl overflow-hidden">
 										{/* Image */}
 										<div className="aspect-[16/10] relative">
+											{/* Desktop Image */}
 											<ImageComponent
 												src={data.featuredSection?.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=500&fit=crop"}
 												alt={data.featuredSection?.title || "Professional training session"}
 												fill
-												className="object-cover"
+												className={`object-cover ${data.featuredSection?.mobileImage ? "hidden md:block" : ""}`}
 											/>
+											{/* Mobile Image */}
+											{data.featuredSection?.mobileImage && (
+												<ImageComponent
+													src={data.featuredSection.mobileImage}
+													alt={data.featuredSection?.title || "Professional training session"}
+													fill
+													className="object-cover md:hidden"
+												/>
+											)}
 										</div>
 									</div>
 

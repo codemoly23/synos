@@ -61,6 +61,7 @@ const formSchema = z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
 		image: z.string().optional(),
+		mobileImage: z.string().optional(),
 		features: z
 			.array(
 				z.object({
@@ -87,6 +88,7 @@ const formSchema = z.object({
 			.array(
 				z.object({
 					src: z.string().optional(),
+					mobileSrc: z.string().optional(),
 					alt: z.string().optional(),
 				})
 			)
@@ -282,6 +284,7 @@ export default function AboutPageCMS() {
 						title: data.mission?.title || "",
 						description: data.mission?.description || "",
 						image: data.mission?.image || "",
+						mobileImage: data.mission?.mobileImage || "",
 						features: data.mission?.features || [],
 					},
 					stats: data.stats || [],
@@ -554,14 +557,31 @@ export default function AboutPageCMS() {
 							</div>
 
 							<div className="space-y-2">
-								<Label>Featured Image</Label>
+								<Label>Featured Image (Desktop)</Label>
 								<MediaPicker
 									type="image"
 									value={form.watch("mission.image") || null}
 									onChange={(url) => form.setValue("mission.image", url || "")}
-									placeholder="Select featured image"
-									galleryTitle="Select Image"
+									placeholder="Select featured image for desktop"
+									galleryTitle="Select Image (Desktop)"
 								/>
+								<p className="text-sm text-muted-foreground">
+									This image will be shown on desktop/tablet screens
+								</p>
+							</div>
+
+							<div className="space-y-2">
+								<Label>Featured Image (Mobile)</Label>
+								<MediaPicker
+									type="image"
+									value={form.watch("mission.mobileImage") || null}
+									onChange={(url) => form.setValue("mission.mobileImage", url || "")}
+									placeholder="Select featured image for mobile"
+									galleryTitle="Select Image (Mobile)"
+								/>
+								<p className="text-sm text-muted-foreground">
+									This image will be shown on mobile screens (portrait recommended)
+								</p>
 							</div>
 
 							{/* Features */}
@@ -766,15 +786,30 @@ export default function AboutPageCMS() {
 													<Trash2 className="h-4 w-4 text-destructive" />
 												</Button>
 											</div>
-											<MediaPicker
-												type="image"
-												value={form.watch(`imageGallery.images.${index}.src`) || null}
-												onChange={(url) =>
-													form.setValue(`imageGallery.images.${index}.src`, url || "")
-												}
-												placeholder="Select image"
-												galleryTitle="Select Gallery Image"
-											/>
+											<div className="space-y-1">
+												<Label className="text-xs">Desktop Image</Label>
+												<MediaPicker
+													type="image"
+													value={form.watch(`imageGallery.images.${index}.src`) || null}
+													onChange={(url) =>
+														form.setValue(`imageGallery.images.${index}.src`, url || "")
+													}
+													placeholder="Select image for desktop"
+													galleryTitle="Select Gallery Image (Desktop)"
+												/>
+											</div>
+											<div className="space-y-1">
+												<Label className="text-xs">Mobile Image</Label>
+												<MediaPicker
+													type="image"
+													value={form.watch(`imageGallery.images.${index}.mobileSrc`) || null}
+													onChange={(url) =>
+														form.setValue(`imageGallery.images.${index}.mobileSrc`, url || "")
+													}
+													placeholder="Select image for mobile"
+													galleryTitle="Select Gallery Image (Mobile)"
+												/>
+											</div>
 											<Input
 												{...form.register(`imageGallery.images.${index}.alt`)}
 												placeholder="Alt text"

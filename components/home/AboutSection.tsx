@@ -10,6 +10,7 @@ interface AboutSectionProps {
 
 const AboutSection = ({ data }: AboutSectionProps) => {
 	const hasImage = !!data.image;
+	const hasMobileImage = !!data.mobileImage;
 	const hasCertificationBadge =
 		data.certificationBadge?.title && data.certificationBadge?.description;
 
@@ -19,15 +20,28 @@ const AboutSection = ({ data }: AboutSectionProps) => {
 				{/* Only render image section if we have an image */}
 				{hasImage && (
 					<div className="relative h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
+						{/* Desktop Image */}
 						<ImageComponent
 							src={data.image!}
 							alt="About Section Image"
 							height={0}
 							width={0}
 							sizes="100vw"
-							wrapperClasses="w-full h-full"
+							wrapperClasses={`w-full h-full ${hasMobileImage ? "hidden md:block" : ""}`}
 							className="object-cover w-full h-full"
 						/>
+						{/* Mobile Image */}
+						{hasMobileImage && (
+							<ImageComponent
+								src={data.mobileImage!}
+								alt="About Section Image"
+								height={0}
+								width={0}
+								sizes="100vw"
+								wrapperClasses="w-full h-full md:hidden"
+								className="object-cover w-full h-full"
+							/>
+						)}
 
 						{/* Decorative elements */}
 						<div className="absolute inset-0 bg-linear-to-t from-secondary/60 via-transparent to-transparent" />

@@ -59,6 +59,7 @@ export interface ITrainingFeaturedChecklistItem {
 
 export interface ITrainingFeaturedSection {
 	image?: string;
+	mobileImage?: string;
 	title?: string;
 	description?: string;
 	subTitle?: string;
@@ -76,6 +77,7 @@ const TrainingFeaturedChecklistItemSchema = new Schema<ITrainingFeaturedChecklis
 const TrainingFeaturedSectionSchema = new Schema<ITrainingFeaturedSection>(
 	{
 		image: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
 		subTitle: { type: String, trim: true },

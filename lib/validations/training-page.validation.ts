@@ -33,6 +33,7 @@ export const trainingFeaturedChecklistItemSchema = z.object({
 
 export const trainingFeaturedSectionSchema = z.object({
 	image: z.string().optional(),
+	mobileImage: z.string().optional(),
 	title: z.string().max(200).optional(),
 	description: z.string().max(2000).optional(),
 	subTitle: z.string().max(200).optional(),
