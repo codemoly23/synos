@@ -66,6 +66,7 @@ export const careersJobOpeningsSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	noJobsMessage: z.string().max(500).optional(),
+	featuredImage: z.string().max(500).optional(),
 	jobOpenings: z.array(careersJobOpeningSchema).optional(),
 });
 

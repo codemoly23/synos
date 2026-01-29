@@ -167,6 +167,7 @@ const productShowcaseItemSchema = z.object({
 	description: z.string().optional(),
 	status: z.string().optional(),
 	image: z.string().optional(),
+	mobileImage: z.string().optional(),
 	href: z.string().optional(),
 });
 
@@ -182,6 +183,7 @@ const productShowcaseSectionSchema = z.object({
 // Gallery Image schema - optional fields
 const galleryImageSchema = z.object({
 	src: z.string().optional(),
+	mobileSrc: z.string().optional(),
 	title: z.string().optional(),
 	subtitle: z.string().optional(),
 });
@@ -247,6 +249,7 @@ const homePageFormSchema = z.object({
 			secondaryCta: ctaButtonSchema.optional(),
 			backgroundImage: z.string().optional(),
 			mainImage: z.string().optional(),
+			mobileImage: z.string().optional(),
 			trustIndicators: z.array(trustIndicatorSchema).optional(),
 			floatingCard: heroFloatingCardSchema.optional(),
 			certificationCard: heroCertificationCardSchema.optional(),
@@ -273,6 +276,7 @@ const homePageFormSchema = z.object({
 			titleHighlight: z.string().optional(),
 			content: z.string().optional(),
 			image: z.string().optional(),
+			mobileImage: z.string().optional(),
 			benefits: z.array(z.string()).optional(),
 			primaryCta: ctaButtonSchema.optional(),
 			secondaryCta: ctaButtonSchema.optional(),
@@ -341,6 +345,7 @@ export default function StartsidaPage() {
 				secondaryCta: { text: "", href: "", variant: "outline" },
 				backgroundImage: "",
 				mainImage: "",
+				mobileImage: "",
 				trustIndicators: [],
 				floatingCard: { image: "", label: "" },
 				certificationCard: {
@@ -380,6 +385,7 @@ export default function StartsidaPage() {
 				titleHighlight: "",
 				content: "",
 				image: "",
+				mobileImage: "",
 				benefits: [],
 				primaryCta: { text: "", href: "", variant: "secondary" },
 				secondaryCta: { text: "", href: "", variant: "outline" },
@@ -542,6 +548,7 @@ export default function StartsidaPage() {
 						},
 						backgroundImage: content.hero?.backgroundImage || "",
 						mainImage: content.hero?.mainImage || "",
+						mobileImage: content.hero?.mobileImage || "",
 						trustIndicators: content.hero?.trustIndicators || [],
 						floatingCard: content.hero?.floatingCard || {
 							image: "",
@@ -584,6 +591,7 @@ export default function StartsidaPage() {
 						titleHighlight: content.aboutSection?.titleHighlight || "",
 						content: content.aboutSection?.content || "",
 						image: content.aboutSection?.image || "",
+						mobileImage: content.aboutSection?.mobileImage || "",
 						benefits: content.aboutSection?.benefits || [],
 						primaryCta: content.aboutSection?.primaryCta || {
 							text: "",
@@ -1255,13 +1263,13 @@ export default function StartsidaPage() {
 										</div>
 									</div>
 
-									{/* Main Image */}
+									{/* Main Image (Desktop) */}
 									<FormField
 										control={form.control}
 										name="hero.mainImage"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Main Image</FormLabel>
+												<FormLabel>Main Image (Desktop)</FormLabel>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -1269,10 +1277,39 @@ export default function StartsidaPage() {
 														onChange={(url) =>
 															field.onChange(url || "")
 														}
-														placeholder="Select main image for the hero section"
-														galleryTitle="Select Hero Image"
+														placeholder="Select main image for desktop view"
+														galleryTitle="Select Hero Image (Desktop)"
 													/>
 												</FormControl>
+												<FormDescription>
+													This image will be shown on desktop/tablet screens
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									{/* Mobile Image */}
+									<FormField
+										control={form.control}
+										name="hero.mobileImage"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Mobile Image</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) =>
+															field.onChange(url || "")
+														}
+														placeholder="Select image for mobile view"
+														galleryTitle="Select Hero Image (Mobile)"
+													/>
+												</FormControl>
+												<FormDescription>
+													This image will be shown on mobile screens (portrait recommended)
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -2006,7 +2043,7 @@ export default function StartsidaPage() {
 														name={`productShowcase.products.${index}.image`}
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Image</FormLabel>
+																<FormLabel>Image (Desktop)</FormLabel>
 																<FormControl>
 																	<MediaPicker
 																		type="image"
@@ -2018,10 +2055,41 @@ export default function StartsidaPage() {
 																				url || ""
 																			)
 																		}
-																		placeholder="Select product image"
-																		galleryTitle="Select Product Image"
+																		placeholder="Select product image for desktop"
+																		galleryTitle="Select Product Image (Desktop)"
 																	/>
 																</FormControl>
+																<FormDescription>
+																	This image will be shown on desktop/tablet
+																</FormDescription>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`productShowcase.products.${index}.mobileImage`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Image (Mobile)</FormLabel>
+																<FormControl>
+																	<MediaPicker
+																		type="image"
+																		value={
+																			field.value || null
+																		}
+																		onChange={(url) =>
+																			field.onChange(
+																				url || ""
+																			)
+																		}
+																		placeholder="Select product image for mobile"
+																		galleryTitle="Select Product Image (Mobile)"
+																	/>
+																</FormControl>
+																<FormDescription>
+																	This image will be shown on mobile (portrait recommended)
+																</FormDescription>
 																<FormMessage />
 															</FormItem>
 														)}
@@ -2223,7 +2291,7 @@ export default function StartsidaPage() {
 														name={`imageGallery.images.${index}.src`}
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Image</FormLabel>
+																<FormLabel>Image (Desktop)</FormLabel>
 																<FormControl>
 																	<MediaPicker
 																		type="image"
@@ -2235,10 +2303,41 @@ export default function StartsidaPage() {
 																				url || ""
 																			)
 																		}
-																		placeholder="Select gallery image"
-																		galleryTitle="Select Gallery Image"
+																		placeholder="Select gallery image for desktop"
+																		galleryTitle="Select Gallery Image (Desktop)"
 																	/>
 																</FormControl>
+																<FormDescription>
+																	This image will be shown on desktop/tablet
+																</FormDescription>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`imageGallery.images.${index}.mobileSrc`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Image (Mobile)</FormLabel>
+																<FormControl>
+																	<MediaPicker
+																		type="image"
+																		value={
+																			field.value || null
+																		}
+																		onChange={(url) =>
+																			field.onChange(
+																				url || ""
+																			)
+																		}
+																		placeholder="Select gallery image for mobile"
+																		galleryTitle="Select Gallery Image (Mobile)"
+																	/>
+																</FormControl>
+																<FormDescription>
+																	This image will be shown on mobile (portrait recommended)
+																</FormDescription>
 																<FormMessage />
 															</FormItem>
 														)}
@@ -2635,7 +2734,7 @@ export default function StartsidaPage() {
 										name="aboutSection.image"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Image</FormLabel>
+												<FormLabel>Image (Desktop)</FormLabel>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -2643,10 +2742,38 @@ export default function StartsidaPage() {
 														onChange={(url) =>
 															field.onChange(url || "")
 														}
-														placeholder="Select image for the about section"
-														galleryTitle="Select About Image"
+														placeholder="Select image for desktop view"
+														galleryTitle="Select About Image (Desktop)"
 													/>
 												</FormControl>
+												<FormDescription>
+													This image will be shown on desktop/tablet screens
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="aboutSection.mobileImage"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image (Mobile)</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) =>
+															field.onChange(url || "")
+														}
+														placeholder="Select image for mobile view"
+														galleryTitle="Select About Image (Mobile)"
+													/>
+												</FormControl>
+												<FormDescription>
+													This image will be shown on mobile screens (portrait recommended)
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}

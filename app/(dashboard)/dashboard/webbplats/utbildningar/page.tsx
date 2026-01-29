@@ -49,17 +49,38 @@ const ICONS = [
 const formSchema = z.object({
 	sectionVisibility: z.object({
 		hero: z.boolean(),
+		featuredSection: z.boolean(),
 		mainContent: z.boolean(),
 		benefits: z.boolean(),
 		process: z.boolean(),
 		support: z.boolean(),
 		inquiryForm: z.boolean(),
 		resources: z.boolean(),
-	}).optional(),
+	}).default({
+		hero: true,
+		featuredSection: true,
+		mainContent: true,
+		benefits: true,
+		process: true,
+		support: true,
+		inquiryForm: true,
+		resources: true,
+	}),
 	hero: z.object({
 		title: z.string().max(200).optional(),
 		titleHighlight: z.string().max(200).optional(),
 		subtitle: z.string().max(1000).optional(),
+	}).optional(),
+	featuredSection: z.object({
+		image: z.string().optional(),
+		mobileImage: z.string().optional(),
+		title: z.string().max(200).optional(),
+		description: z.string().max(2000).optional(),
+		subTitle: z.string().max(200).optional(),
+		checklistItems: z.array(z.object({
+			text: z.string().max(500).optional(),
+		})).optional(),
+		bottomDescription: z.string().max(2000).optional(),
 	}).optional(),
 	mainContent: z.object({
 		title: z.string().max(200).optional(),
@@ -89,6 +110,10 @@ const formSchema = z.object({
 		badge: z.string().max(100).optional(),
 		title: z.string().max(200).optional(),
 		subtitle: z.string().max(500).optional(),
+		faqItems: z.array(z.object({
+			question: z.string().max(500).optional(),
+			answer: z.string().max(2000).optional(),
+		})).optional(),
 	}).optional(),
 	resourcesSection: z.object({
 		title: z.string().max(200).optional(),
@@ -114,31 +139,35 @@ export default function TrainingPageAdmin() {
 	const [isSaving, setIsSaving] = useState(false);
 	const { confirm, ConfirmModal } = useConfirmModal({ variant: "destructive" });
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const form = useForm<FormValues>({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
 			sectionVisibility: {
-				hero: true, mainContent: true, benefits: true, process: true,
+				hero: true, featuredSection: true, mainContent: true, benefits: true, process: true,
 				support: true, inquiryForm: true, resources: true,
 			},
 			hero: {},
+			featuredSection: { checklistItems: [] },
 			mainContent: { paragraphs: [] },
 			benefits: [],
 			processSection: { steps: [] },
 			supportSection: { paragraphs: [] },
-			inquirySection: {},
+			inquirySection: { faqItems: [] },
 			resourcesSection: { resources: [] },
 			seo: {},
 		},
 	});
 
 	const benefitsFieldArray = useFieldArray({ control: form.control, name: "benefits" });
+	const checklistFieldArray = useFieldArray({ control: form.control, name: "featuredSection.checklistItems" });
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const paragraphsFieldArray = useFieldArray({ control: form.control, name: "mainContent.paragraphs" as any });
 	const stepsFieldArray = useFieldArray({ control: form.control, name: "processSection.steps" });
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const supportParagraphsFieldArray = useFieldArray({ control: form.control, name: "supportSection.paragraphs" as any });
 	const resourcesFieldArray = useFieldArray({ control: form.control, name: "resourcesSection.resources" });
+	const faqFieldArray = useFieldArray({ control: form.control, name: "inquirySection.faqItems" });
 
 	useEffect(() => {
 		async function fetchData() {
@@ -147,16 +176,26 @@ export default function TrainingPageAdmin() {
 				if (response.ok) {
 					const data = await response.json();
 					form.reset({
-						sectionVisibility: data.sectionVisibility || {
-							hero: true, mainContent: true, benefits: true, process: true,
+						sectionVisibility: {
+							hero: true, featuredSection: true, mainContent: true, benefits: true, process: true,
 							support: true, inquiryForm: true, resources: true,
+							...data.sectionVisibility,
 						},
 						hero: data.hero || {},
+						featuredSection: {
+							image: data.featuredSection?.image || "",
+							mobileImage: data.featuredSection?.mobileImage || "",
+							title: data.featuredSection?.title || "",
+							description: data.featuredSection?.description || "",
+							subTitle: data.featuredSection?.subTitle || "",
+							checklistItems: data.featuredSection?.checklistItems || [],
+							bottomDescription: data.featuredSection?.bottomDescription || "",
+						},
 						mainContent: data.mainContent || { paragraphs: [] },
 						benefits: data.benefits || [],
 						processSection: data.processSection || { steps: [] },
 						supportSection: data.supportSection || { paragraphs: [] },
-						inquirySection: data.inquirySection || {},
+						inquirySection: data.inquirySection || { faqItems: [] },
 						resourcesSection: data.resourcesSection || { resources: [] },
 						seo: data.seo || {},
 					});
@@ -248,6 +287,7 @@ export default function TrainingPageAdmin() {
 						<TabsList className="flex flex-wrap h-auto gap-1 justify-start">
 							<TabsTrigger value="visibility">Visibility</TabsTrigger>
 							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="featured">Featured</TabsTrigger>
 							<TabsTrigger value="main">Main Content</TabsTrigger>
 							<TabsTrigger value="benefits">Benefits</TabsTrigger>
 							<TabsTrigger value="process">Process</TabsTrigger>
@@ -262,11 +302,11 @@ export default function TrainingPageAdmin() {
 							<Card>
 								<CardHeader><CardTitle>Section Visibility</CardTitle></CardHeader>
 								<CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-									{["hero", "mainContent", "benefits", "process", "support", "inquiryForm", "resources"].map((key) => (
+									{["hero", "featuredSection", "mainContent", "benefits", "process", "support", "inquiryForm", "resources"].map((key) => (
 										<FormField key={key} control={form.control} name={`sectionVisibility.${key}` as `sectionVisibility.hero`}
 											render={({ field }) => (
 												<FormItem className="flex items-center justify-between rounded-lg border p-3">
-													<FormLabel className="cursor-pointer capitalize">{key === "inquiryForm" ? "Inquiry Form" : key === "mainContent" ? "Main Content" : key}</FormLabel>
+													<FormLabel className="cursor-pointer capitalize">{key === "inquiryForm" ? "Inquiry Form" : key === "mainContent" ? "Main Content" : key === "featuredSection" ? "Featured Section" : key}</FormLabel>
 													<FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
 												</FormItem>
 											)}
@@ -301,6 +341,114 @@ export default function TrainingPageAdmin() {
 										<FormItem>
 											<FormLabel>Subtitle</FormLabel>
 											<FormControl><Textarea placeholder="Vi på Synos Medical erbjuder..." rows={3} {...field} value={field.value || ""} /></FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Featured Section Tab */}
+						<TabsContent value="featured" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Featured Section</CardTitle>
+									<p className="text-sm text-muted-foreground">
+										This section appears below the hero with an image, title, description, and checklist.
+									</p>
+								</CardHeader>
+								<CardContent className="space-y-6">
+									<FormField control={form.control} name="featuredSection.image" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Featured Image (Desktop)</FormLabel>
+											<FormControl>
+												<MediaPicker
+													type="image"
+													value={field.value || null}
+													onChange={(url) => field.onChange(url || "")}
+													placeholder="Select featured image for desktop"
+													galleryTitle="Select Featured Image (Desktop)"
+												/>
+											</FormControl>
+											<FormDescription>
+												This image will be shown on desktop/tablet screens
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<FormField control={form.control} name="featuredSection.mobileImage" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Featured Image (Mobile)</FormLabel>
+											<FormControl>
+												<MediaPicker
+													type="image"
+													value={field.value || null}
+													onChange={(url) => field.onChange(url || "")}
+													placeholder="Select featured image for mobile"
+													galleryTitle="Select Featured Image (Mobile)"
+												/>
+											</FormControl>
+											<FormDescription>
+												This image will be shown on mobile screens (portrait recommended)
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField control={form.control} name="featuredSection.title" render={({ field }) => (
+											<FormItem>
+												<FormLabel>Title</FormLabel>
+												<FormControl><Input placeholder="Veritatisin Reprehenderit" {...field} value={field.value || ""} /></FormControl>
+												<FormMessage />
+											</FormItem>
+										)} />
+										<FormField control={form.control} name="featuredSection.subTitle" render={({ field }) => (
+											<FormItem>
+												<FormLabel>Subtitle</FormLabel>
+												<FormControl><Input placeholder="Dignissi Nostrum" {...field} value={field.value || ""} /></FormControl>
+												<FormMessage />
+											</FormItem>
+										)} />
+									</div>
+									<FormField control={form.control} name="featuredSection.description" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Description</FormLabel>
+											<FormControl><Textarea placeholder="Main description text..." rows={4} {...field} value={field.value || ""} /></FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<div className="space-y-4">
+										<div className="flex items-center justify-between">
+											<FormLabel>Checklist Items</FormLabel>
+											<Button type="button" variant="outline" size="sm" onClick={() => checklistFieldArray.append({ text: "" })}>
+												<Plus className="mr-2 h-4 w-4" />Add Item
+											</Button>
+										</div>
+										{checklistFieldArray.fields.map((field, index) => (
+											<div key={field.id} className="flex gap-4">
+												<FormField control={form.control} name={`featuredSection.checklistItems.${index}.text`} render={({ field }) => (
+													<FormItem className="flex-1">
+														<FormControl><Input placeholder="Checklist item text..." {...field} value={field.value || ""} /></FormControl>
+														<FormMessage />
+													</FormItem>
+												)} />
+												<Button type="button" variant="ghost" size="icon" className="shrink-0 text-destructive hover:text-destructive" onClick={async () => {
+													const confirmed = await confirm({
+														title: "Remove Item",
+														description: "Are you sure you want to remove this checklist item?",
+														confirmText: "Remove",
+													});
+													if (confirmed) checklistFieldArray.remove(index);
+												}}>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
+										))}
+									</div>
+									<FormField control={form.control} name="featuredSection.bottomDescription" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Bottom Description</FormLabel>
+											<FormControl><Textarea placeholder="Additional description below the checklist..." rows={4} {...field} value={field.value || ""} /></FormControl>
 											<FormMessage />
 										</FormItem>
 									)} />
@@ -565,6 +713,47 @@ export default function TrainingPageAdmin() {
 											<FormMessage />
 										</FormItem>
 									)} />
+								</CardContent>
+							</Card>
+							<Card>
+								<CardHeader><CardTitle>FAQ Items</CardTitle></CardHeader>
+								<CardContent className="space-y-4">
+									<div className="flex items-center justify-between">
+										<FormLabel>Questions & Answers</FormLabel>
+										<Button type="button" variant="outline" size="sm" onClick={() => faqFieldArray.append({ question: "", answer: "" })}>
+											<Plus className="mr-2 h-4 w-4" />Add FAQ
+										</Button>
+									</div>
+									{faqFieldArray.fields.map((field, index) => (
+										<div key={field.id} className="flex gap-4 rounded-lg border p-4">
+											<div className="flex-1 space-y-4">
+												<FormField control={form.control} name={`inquirySection.faqItems.${index}.question`} render={({ field }) => (
+													<FormItem>
+														<FormLabel>Question</FormLabel>
+														<FormControl><Input placeholder="Vad ingår i utbildningen?" {...field} value={field.value || ""} /></FormControl>
+														<FormMessage />
+													</FormItem>
+												)} />
+												<FormField control={form.control} name={`inquirySection.faqItems.${index}.answer`} render={({ field }) => (
+													<FormItem>
+														<FormLabel>Answer</FormLabel>
+														<FormControl><Textarea placeholder="Våra utbildningar inkluderar..." rows={3} {...field} value={field.value || ""} /></FormControl>
+														<FormMessage />
+													</FormItem>
+												)} />
+											</div>
+											<Button type="button" variant="ghost" size="icon" className="shrink-0 text-destructive hover:text-destructive" onClick={async () => {
+												const confirmed = await confirm({
+													title: "Remove FAQ",
+													description: "Are you sure you want to remove this FAQ item?",
+													confirmText: "Remove",
+												});
+												if (confirmed) faqFieldArray.remove(index);
+											}}>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</div>
+									))}
 								</CardContent>
 							</Card>
 						</TabsContent>

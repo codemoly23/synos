@@ -29,6 +29,7 @@ export const heroSectionSchema = z.object({
 	secondaryCta: ctaButtonSchema.optional(),
 	backgroundImage: z.string().optional(),
 	mainImage: z.string().optional(),
+	mobileImage: z.string().optional(),
 	trustIndicators: z.array(trustIndicatorSchema).optional(),
 });
 
@@ -70,6 +71,7 @@ export const aboutSectionSchema = z.object({
 	titleHighlight: z.string().max(200).optional(),
 	content: z.string().max(2000).optional(),
 	image: z.string().optional(),
+	mobileImage: z.string().optional(),
 	benefits: z.array(z.string().max(200)).optional(),
 	primaryCta: ctaButtonSchema.optional(),
 	secondaryCta: ctaButtonSchema.optional(),
@@ -135,6 +137,7 @@ export const productShowcaseItemSchema = z.object({
 	description: z.string().max(500).optional(),
 	status: z.string().max(50).optional(),
 	image: z.string().optional(),
+	mobileImage: z.string().optional(),
 	href: z.string().optional(),
 });
 
@@ -154,6 +157,7 @@ export const productShowcaseSectionSchema = z.object({
  */
 export const galleryImageSchema = z.object({
 	src: z.string().optional(),
+	mobileSrc: z.string().optional(),
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(300).optional(),
 });
@@ -233,6 +237,7 @@ export const updateHomePageSchema = z.object({
 	aboutSection: aboutSectionExtendedSchema.partial().optional(),
 	testimonialsSection: testimonialsSectionSchema.partial().optional(),
 	ctaSection: ctaSectionSchema.partial().optional(),
+	richContent: z.string().optional(),
 	seo: homePageSeoSchema.partial().optional(),
 });
 

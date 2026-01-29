@@ -188,6 +188,13 @@ export function ProductContent({
 								/>
 							)}
 
+							{/* FAQ Section - Right after description */}
+							{product.qa && product.qa.length > 0 && (
+								<div className="mb-12">
+									<ProductFAQ faqs={product.qa} />
+								</div>
+							)}
+
 							{/* Before & After Section */}
 							{product.beforeAfterImages &&
 								product.beforeAfterImages.length > 0 && (
@@ -248,8 +255,8 @@ export function ProductContent({
 					</div>
 				</div>
 			</section>
-			{/* Treatment Badges */}
-			<div className="_container">
+			{/* Treatment Badges - Hidden for now */}
+			{/* <div className="_container">
 				{product?.treatments && product.treatments.length > 0 && (
 					<motion.div
 						initial={{ opacity: 0, y: 10 }}
@@ -268,13 +275,7 @@ export function ProductContent({
 						))}
 					</motion.div>
 				)}
-			</div>
-
-			{/* Full Width Sections */}
-			{/* FAQ Section */}
-			{product.qa && product.qa.length > 0 && (
-				<ProductFAQ faqs={product.qa} />
-			)}
+			</div> */}
 
 			{/* Product Inquiry Form */}
 			<ProductInquiryForm
@@ -282,6 +283,40 @@ export function ProductContent({
 				productId={product.id}
 				productSlug={product.slug}
 			/>
+
+			{/* SEO Content - Hidden from users but visible to search engines */}
+			{/* This content is in the DOM for SEO purposes but visually hidden */}
+			{product.seoAccordions && product.seoAccordions.length > 0 && (
+				<div
+					className="sr-only"
+					aria-hidden="true"
+					itemScope
+					itemType="https://schema.org/FAQPage"
+				>
+					{product.seoAccordions.map((accordion) => (
+						<article
+							key={accordion._id}
+							itemScope
+							itemProp="mainEntity"
+							itemType="https://schema.org/Question"
+						>
+							<h3 itemProp="name">{accordion.title}</h3>
+							<div
+								itemScope
+								itemProp="acceptedAnswer"
+								itemType="https://schema.org/Answer"
+							>
+								<div
+									itemProp="text"
+									dangerouslySetInnerHTML={{
+										__html: accordion.content,
+									}}
+								/>
+							</div>
+						</article>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

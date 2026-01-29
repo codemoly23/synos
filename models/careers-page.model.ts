@@ -125,6 +125,7 @@ export interface ICareersJobOpeningsSection {
 	title?: string;
 	subtitle?: string;
 	noJobsMessage?: string;
+	featuredImage?: string;
 	jobOpenings?: ICareersJobOpening[];
 }
 
@@ -133,6 +134,7 @@ const CareersJobOpeningsSectionSchema = new Schema<ICareersJobOpeningsSection>(
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		noJobsMessage: { type: String, trim: true },
+		featuredImage: { type: String, trim: true },
 		jobOpenings: { type: [CareersJobOpeningSchema], default: [] },
 	},
 	{ _id: false }

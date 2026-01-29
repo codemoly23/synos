@@ -352,7 +352,7 @@ export function normalizeCategories(
 /**
  * Tab definitions for the product form
  */
-type TabId = "basic" | "content" | "media" | "specs" | "qna" | "seo";
+type TabId = "basic" | "content" | "media" | "specs" | "seo";
 
 const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 	basic: {
@@ -375,6 +375,8 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 			"description",
 			"productDescription",
 			"hiddenDescription",
+			"seoAccordions",
+			"qa",
 			"benefits",
 			"purchaseInfo",
 			"rubric",
@@ -393,10 +395,6 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 		label: "Specs & Docs",
 		fields: ["techSpecifications", "documentation"],
 	},
-	qna: {
-		label: "Q&A",
-		fields: ["qa"],
-	},
 	seo: {
 		label: "SEO",
 		fields: ["seo"],
@@ -413,6 +411,7 @@ const FIELD_LABELS: Record<string, string> = {
 	description: "Description",
 	productDescription: "Extended Description",
 	hiddenDescription: "Hidden Description",
+	seoAccordions: "SEO Accordions",
 	categories: "Categories",
 	primaryCategory: "Primary Category",
 	treatments: "Treatments / Tags",
@@ -580,7 +579,6 @@ function countErrorsPerTab(errors: FormError[]): Record<TabId, number> {
 		content: 0,
 		media: 0,
 		specs: 0,
-		qna: 0,
 		seo: 0,
 	};
 
@@ -713,10 +711,11 @@ export function ProductForm({
 		setValue,
 		watch,
 		formState: { errors, isDirty },
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} = useForm<CreateProductDraftInput | UpdateProductInput>({
 		resolver: zodResolver(
 			isEditing ? updateProductSchema : createProductDraftSchema
-		),
+		) as any,
 		defaultValues: {
 			title: product?.title || "",
 			slug: product?.slug || "",
@@ -768,6 +767,12 @@ export function ProductForm({
 					answer: q.answer,
 					visible: q.visible,
 				})) || [],
+			seoAccordions:
+				product?.seoAccordions?.map((s) => ({
+					title: s.title,
+					content: s.content,
+					order: s.order,
+				})) || [],
 			youtubeUrl: product?.youtubeUrl || "",
 			rubric: product?.rubric || "",
 			publishType: product?.publishType || "draft",
@@ -801,6 +806,15 @@ export function ProductForm({
 	} = useFieldArray({
 		control,
 		name: "qa",
+	});
+
+	const {
+		fields: seoAccordionFields,
+		append: appendSeoAccordion,
+		remove: removeSeoAccordion,
+	} = useFieldArray({
+		control,
+		name: "seoAccordions",
 	});
 
 	const { fields: beforeAfterFields, replace: replaceBeforeAfter } =
@@ -940,7 +954,6 @@ export function ProductForm({
 			content: [],
 			media: [],
 			specs: [],
-			qna: [],
 			seo: [],
 		};
 		for (const error of formErrors) {
@@ -1087,14 +1100,6 @@ export function ProductForm({
 							{tabErrorCounts.specs > 0 && (
 								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
 									{tabErrorCounts.specs}
-								</span>
-							)}
-						</TabsTrigger>
-						<TabsTrigger value="qna" className="relative">
-							Q&A
-							{tabErrorCounts.qna > 0 && (
-								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-									{tabErrorCounts.qna}
 								</span>
 							)}
 						</TabsTrigger>
@@ -1388,6 +1393,201 @@ export function ProductForm({
 										placeholder="Enter hidden description (internal use only)..."
 										variant={"advanceFull"}
 									/>
+								</div>
+
+								<Separator />
+
+								{/* SEO Accordions */}
+								<div className="space-y-4">
+									<div>
+										<Label className="text-base font-semibold">
+											SEO Content Accordions
+										</Label>
+										<p className="text-sm text-muted-foreground mt-1">
+											Add SEO-friendly content that will be displayed in
+											expandable accordion sections on the product page.
+											This content is visible to both users and search
+											engines (uses semantic h3/h4 headings and proper
+											aria attributes).
+										</p>
+									</div>
+									<div className="space-y-4">
+										{seoAccordionFields.map((field, index) => (
+											<div
+												key={field.id}
+												className="p-4 border rounded-lg space-y-3 bg-slate-50/50"
+											>
+												<div className="flex justify-between items-start">
+													<span className="text-sm font-medium">
+														Accordion #{index + 1}
+													</span>
+													<Button
+														type="button"
+														variant="ghost"
+														size="icon"
+														onClick={() =>
+															removeSeoAccordion(index)
+														}
+														disabled={isLoading}
+														className="text-red-500 h-8 w-8"
+													>
+														<Trash2 className="h-4 w-4" />
+													</Button>
+												</div>
+												<div className="space-y-2">
+													<Label
+														htmlFor={`seoAccordions.${index}.title`}
+													>
+														Title (Accordion Header)
+													</Label>
+													<Input
+														{...register(
+															`seoAccordions.${index}.title`
+														)}
+														placeholder="Enter accordion title (will be rendered as h3/h4)"
+														disabled={isLoading}
+													/>
+												</div>
+												<div className="space-y-2">
+													<Label>Content</Label>
+													<TextEditor
+														name={`seoAccordions.${index}.content`}
+														defaultValue={
+															watch(
+																`seoAccordions.${index}.content`
+															) || ""
+														}
+														onChange={(val) =>
+															setValue(
+																`seoAccordions.${index}.content`,
+																val,
+																{
+																	shouldDirty: true,
+																}
+															)
+														}
+														placeholder="Enter SEO content (supports rich text, keywords, etc.)"
+														variant="advanceFull"
+														height="200px"
+														disable={isLoading}
+													/>
+												</div>
+												<input
+													type="hidden"
+													{...register(
+														`seoAccordions.${index}.order`
+													)}
+													value={index}
+												/>
+											</div>
+										))}
+										<Button
+											type="button"
+											variant="outline"
+											onClick={() =>
+												appendSeoAccordion({
+													title: "",
+													content: "",
+													order: seoAccordionFields.length,
+												})
+											}
+											disabled={isLoading}
+										>
+											<Plus className="h-4 w-4 mr-1" />
+											Add SEO Accordion
+										</Button>
+									</div>
+								</div>
+
+								<Separator />
+
+								{/* Product FAQ */}
+								<div className="space-y-4">
+									<div>
+										<Label className="text-base font-semibold">
+											Product FAQ
+										</Label>
+										<p className="text-sm text-muted-foreground mt-1">
+											Add frequently asked questions about this product.
+											These will be displayed on the product page.
+										</p>
+									</div>
+									<div className="space-y-4">
+										{qaFields.map((field, index) => (
+											<div
+												key={field.id}
+												className="p-4 border rounded-lg space-y-3 bg-slate-50/50"
+											>
+												<div className="flex justify-between items-start">
+													<span className="text-sm font-medium">
+														FAQ #{index + 1}
+													</span>
+													<div className="flex items-center gap-2">
+														<label className="flex items-center gap-2 text-sm">
+															<input
+																type="checkbox"
+																{...register(`qa.${index}.visible`)}
+																disabled={isLoading}
+																className="h-4 w-4"
+															/>
+															Visible
+														</label>
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															onClick={() => removeQa(index)}
+															disabled={isLoading}
+															className="text-red-500 h-8 w-8"
+														>
+															<Trash2 className="h-4 w-4" />
+														</Button>
+													</div>
+												</div>
+												<div className="space-y-2">
+													<Label htmlFor={`qa.${index}.question`}>
+														Question
+													</Label>
+													<Input
+														{...register(`qa.${index}.question`)}
+														placeholder="Enter the question"
+														disabled={isLoading}
+													/>
+												</div>
+												<div className="space-y-2">
+													<Label>Answer</Label>
+													<TextEditor
+														name={`qa.${index}.answer`}
+														defaultValue={watch(`qa.${index}.answer`) || ""}
+														onChange={(val) =>
+															setValue(`qa.${index}.answer`, val, {
+																shouldDirty: true,
+															})
+														}
+														placeholder="Enter the answer (supports rich text)"
+														variant="detailedSimple"
+														height="150px"
+														disable={isLoading}
+													/>
+												</div>
+											</div>
+										))}
+										<Button
+											type="button"
+											variant="outline"
+											onClick={() =>
+												appendQa({
+													question: "",
+													answer: "",
+													visible: true,
+												})
+											}
+											disabled={isLoading}
+										>
+											<Plus className="h-4 w-4 mr-1" />
+											Add FAQ
+										</Button>
+									</div>
 								</div>
 
 								<Separator />
@@ -1719,84 +1919,6 @@ export function ProductForm({
 								</CardContent>
 							</Card>
 						</div>
-					</TabsContent>
-
-					{/* Q&A Tab */}
-					<TabsContent value="qna">
-						<Card>
-							<CardHeader>
-								<CardTitle>Questions & Answers</CardTitle>
-								<CardDescription>Product FAQ items</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								{qaFields.map((field, index) => (
-									<div
-										key={field.id}
-										className="p-4 border rounded-md space-y-3"
-									>
-										<div className="flex justify-between items-start">
-											<span className="text-sm font-medium">
-												Q&A #{index + 1}
-											</span>
-											<div className="flex items-center gap-2">
-												<label className="flex items-center gap-2 text-sm">
-													<input
-														type="checkbox"
-														{...register(`qa.${index}.visible`)}
-														disabled={isLoading}
-														className="h-4 w-4"
-													/>
-													Visible
-												</label>
-												<Button
-													type="button"
-													variant="ghost"
-													size="icon"
-													onClick={() => removeQa(index)}
-													disabled={isLoading}
-													className="text-red-500 h-8 w-8"
-												>
-													<Trash2 className="h-4 w-4" />
-												</Button>
-											</div>
-										</div>
-										<Input
-											{...register(`qa.${index}.question`)}
-											placeholder="Question"
-											disabled={isLoading}
-										/>
-										<TextEditor
-											name={`qa.${index}.answer`}
-											defaultValue={watch(`qa.${index}.answer`) || ""}
-											onChange={(val) =>
-												setValue(`qa.${index}.answer`, val, {
-													shouldDirty: true,
-												})
-											}
-											placeholder="Answer (supports rich text)"
-											variant="detailedSimple"
-											height="150px"
-											disable={isLoading}
-										/>
-									</div>
-								))}
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() =>
-										appendQa({
-											question: "",
-											answer: "",
-											visible: true,
-										})
-									}
-									disabled={isLoading}
-								>
-									<Plus className="h-4 w-4 mr-1" />
-									Add Q&A
-								</Button>
-							</CardContent>
-						</Card>
 					</TabsContent>
 
 					{/* SEO Tab */}

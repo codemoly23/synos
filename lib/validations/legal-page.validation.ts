@@ -109,6 +109,7 @@ export const legalCtaSectionSchema = z.object({
 // ============================================================================
 export const legalFeaturedImageSchema = z.object({
 	url: z.string().max(500).optional(),
+	mobileUrl: z.string().max(500).optional(),
 	alt: z.string().max(200).optional(),
 });
 
@@ -117,6 +118,7 @@ export const legalFeaturedImageSchema = z.object({
 // ============================================================================
 export const legalImageSchema = z.object({
 	url: z.string().max(500).optional(),
+	mobileUrl: z.string().max(500).optional(),
 	alt: z.string().max(200).optional(),
 });
 

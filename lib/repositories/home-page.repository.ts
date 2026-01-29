@@ -28,6 +28,7 @@ export interface UpdateHomePageInput {
 	aboutSection?: Partial<IAboutSection>;
 	testimonialsSection?: Partial<ITestimonialsSection>;
 	ctaSection?: Partial<ICtaSection>;
+	richContent?: string;
 	seo?: Partial<IHomePageSeo>;
 }
 
@@ -141,6 +142,10 @@ class HomePageRepository {
 					updateData[`ctaSection.${key}`] = value;
 				}
 			});
+		}
+
+		if (data.richContent !== undefined) {
+			updateData.richContent = data.richContent;
 		}
 
 		if (data.seo) {

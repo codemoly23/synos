@@ -233,12 +233,14 @@ const LegalCtaSectionSchema = new Schema<ILegalCtaSection>(
 // ============================================================================
 export interface ILegalFeaturedImage {
 	url?: string;
+	mobileUrl?: string;
 	alt?: string;
 }
 
 const LegalFeaturedImageSchema = new Schema<ILegalFeaturedImage>(
 	{
 		url: { type: String, trim: true },
+		mobileUrl: { type: String, trim: true },
 		alt: { type: String, trim: true },
 	},
 	{ _id: false }
@@ -261,7 +263,7 @@ const LegalStatSchema = new Schema<ILegalStat>(
 );
 
 export interface ILegalStatsSection {
-	image?: { url?: string; alt?: string };
+	image?: { url?: string; mobileUrl?: string; alt?: string };
 	title?: string;
 	description?: string;
 	stats?: ILegalStat[];
@@ -274,6 +276,7 @@ const LegalStatsSectionSchema = new Schema<ILegalStatsSection>(
 			type: new Schema(
 				{
 					url: { type: String, trim: true },
+					mobileUrl: { type: String, trim: true },
 					alt: { type: String, trim: true },
 				},
 				{ _id: false }
@@ -309,7 +312,7 @@ export interface ILegalFeaturesSection {
 	title?: string;
 	description?: string;
 	features?: ILegalFeature[];
-	image?: { url?: string; alt?: string };
+	image?: { url?: string; mobileUrl?: string; alt?: string };
 	bottomText?: string;
 }
 
@@ -322,6 +325,7 @@ const LegalFeaturesSectionSchema = new Schema<ILegalFeaturesSection>(
 			type: new Schema(
 				{
 					url: { type: String, trim: true },
+					mobileUrl: { type: String, trim: true },
 					alt: { type: String, trim: true },
 				},
 				{ _id: false }
@@ -454,8 +458,13 @@ export const getLegalPageModel = async (): Promise<Model<ILegalPage>> => {
 
 /**
  * Export synchronous model getter for use in repositories
+ * Note: Delete cached model in development to pick up schema changes
  */
 export function getLegalPageModelSync(): Model<ILegalPage> {
+	// In development, delete cached model to ensure schema changes are picked up
+	if (process.env.NODE_ENV === "development" && mongoose.models.LegalPage) {
+		delete mongoose.models.LegalPage;
+	}
 	return (
 		(mongoose.models.LegalPage as Model<ILegalPage>) ||
 		mongoose.model<ILegalPage>("LegalPage", LegalPageSchema)

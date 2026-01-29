@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Sparkles } from "lucide-react";
+import Image from "next/image";
 import { CareersHero } from "./careers-hero";
 import { JobCard } from "./job-card";
 import { ContactSidebar } from "./contact-sidebar";
@@ -44,6 +45,25 @@ export function CareersListing({ data }: CareersListingProps) {
 					<div className="grid gap-8 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_400px]">
 						{/* Left Column - Jobs */}
 						<div>
+							{/* Featured Image */}
+							{data.jobOpeningsSection?.featuredImage && (
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									className="mb-8 rounded-2xl overflow-hidden"
+								>
+									<div className="relative aspect-video">
+										<Image
+											src={data.jobOpeningsSection.featuredImage}
+											alt={data.hero?.title || "Careers at Synos Medical"}
+											fill
+											className="object-cover"
+											priority
+										/>
+									</div>
+								</motion.div>
+							)}
+
 							{/* Section Header */}
 							{visibility.jobOpenings && (
 								<motion.div
