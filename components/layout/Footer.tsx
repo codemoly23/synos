@@ -34,7 +34,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 	newsletterButtonText: "Prenumerera",
 	bottomLinks: [
 		{ label: "Integritetspolicy", href: "/integritetspolicy" },
-		{ label: "Villkor", href: "/villkor" },
+		{ label: "FAQ", href: "/faq" },
 		{ label: "Sitemap", href: "/sitemap.xml" },
 	],
 };
@@ -108,7 +108,7 @@ export function Footer({
 	};
 
 	return (
-		<footer className="bg-secondary text-primary-foreground pt-16 pb-24 md:pb-8">
+		<footer className="bg-secondary text-primary-foreground pt-16 pb-32 md:pb-8">
 			<div className="_container">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
 					{/* Brand Column */}

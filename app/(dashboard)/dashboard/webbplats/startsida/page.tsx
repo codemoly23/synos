@@ -160,6 +160,22 @@ const heroCertificationCardSchema = z.object({
 	progressPercentage: z.number().min(0).max(100).optional(),
 });
 
+// Hero Slide schema - each slide contains all hero content
+const heroSlideSchema = z.object({
+	badge: z.string().optional(),
+	title: z.string().optional(),
+	titleHighlight: z.string().optional(),
+	subtitle: z.string().optional(),
+	primaryCta: ctaButtonSchema.optional(),
+	secondaryCta: ctaButtonSchema.optional(),
+	backgroundImage: z.string().optional(),
+	mainImage: z.string().optional(),
+	mobileImage: z.string().optional(),
+	trustIndicators: z.array(trustIndicatorSchema).optional(),
+	floatingCard: heroFloatingCardSchema.optional(),
+	certificationCard: heroCertificationCardSchema.optional(),
+});
+
 // Product Showcase Item schema - optional fields
 const productShowcaseItemSchema = z.object({
 	name: z.string().optional(),
@@ -238,21 +254,10 @@ const homePageFormSchema = z.object({
 	// Section Visibility
 	sectionVisibility: sectionVisibilitySchema,
 
-	// Hero Section - all fields optional
+	// Hero Section - slides array
 	hero: z
 		.object({
-			badge: z.string().optional(),
-			title: z.string().optional(),
-			titleHighlight: z.string().optional(),
-			subtitle: z.string().optional(),
-			primaryCta: ctaButtonSchema.optional(),
-			secondaryCta: ctaButtonSchema.optional(),
-			backgroundImage: z.string().optional(),
-			mainImage: z.string().optional(),
-			mobileImage: z.string().optional(),
-			trustIndicators: z.array(trustIndicatorSchema).optional(),
-			floatingCard: heroFloatingCardSchema.optional(),
-			certificationCard: heroCertificationCardSchema.optional(),
+			slides: z.array(heroSlideSchema).optional(),
 		})
 		.optional(),
 
@@ -337,24 +342,7 @@ export default function StartsidaPage() {
 				richContent: false,
 			},
 			hero: {
-				badge: "",
-				title: "",
-				titleHighlight: "",
-				subtitle: "",
-				primaryCta: { text: "", href: "", variant: "primary" },
-				secondaryCta: { text: "", href: "", variant: "outline" },
-				backgroundImage: "",
-				mainImage: "",
-				mobileImage: "",
-				trustIndicators: [],
-				floatingCard: { image: "", label: "" },
-				certificationCard: {
-					title: "",
-					subtitle: "",
-					progressLabel: "",
-					progressValue: "",
-					progressPercentage: 0,
-				},
+				slides: [],
 			},
 			features: [],
 			processStepsSection: {
@@ -433,10 +421,10 @@ export default function StartsidaPage() {
 	});
 
 	const {
-		fields: trustIndicatorFields,
-		append: appendTrustIndicator,
-		remove: removeTrustIndicator,
-	} = useFieldArray({ control: form.control, name: "hero.trustIndicators" });
+		fields: heroSlideFields,
+		append: appendHeroSlide,
+		remove: removeHeroSlide,
+	} = useFieldArray({ control: form.control, name: "hero.slides" });
 
 	const {
 		fields: productFields,
@@ -532,35 +520,7 @@ export default function StartsidaPage() {
 				form.reset({
 					sectionVisibility,
 					hero: {
-						badge: content.hero?.badge || "",
-						title: content.hero?.title || "",
-						titleHighlight: content.hero?.titleHighlight || "",
-						subtitle: content.hero?.subtitle || "",
-						primaryCta: content.hero?.primaryCta || {
-							text: "",
-							href: "",
-							variant: "primary",
-						},
-						secondaryCta: content.hero?.secondaryCta || {
-							text: "",
-							href: "",
-							variant: "outline",
-						},
-						backgroundImage: content.hero?.backgroundImage || "",
-						mainImage: content.hero?.mainImage || "",
-						mobileImage: content.hero?.mobileImage || "",
-						trustIndicators: content.hero?.trustIndicators || [],
-						floatingCard: content.hero?.floatingCard || {
-							image: "",
-							label: "",
-						},
-						certificationCard: content.hero?.certificationCard || {
-							title: "",
-							subtitle: "",
-							progressLabel: "",
-							progressValue: "",
-							progressPercentage: 0,
-						},
+						slides: content.hero?.slides || [],
 					},
 					features: content.features || [],
 					processStepsSection: {
@@ -1029,588 +989,460 @@ export default function StartsidaPage() {
 						<TabsContent value="hero" className="space-y-6">
 							<Card>
 								<CardHeader>
-									<CardTitle>Hero Section</CardTitle>
-									<CardDescription>
-										The main section displayed at the top of the home
-										page.
-									</CardDescription>
+									<div className="flex items-center justify-between">
+										<div>
+											<CardTitle>Hero Slides</CardTitle>
+											<CardDescription>
+												Each slide contains its own content (text, images, buttons). The hero auto-slides between them.
+											</CardDescription>
+										</div>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												appendHeroSlide({
+													badge: "",
+													title: "",
+													titleHighlight: "",
+													subtitle: "",
+													primaryCta: { text: "", href: "", variant: "primary" },
+													secondaryCta: { text: "", href: "", variant: "outline" },
+													backgroundImage: "",
+													mainImage: "",
+													mobileImage: "",
+													trustIndicators: [],
+													floatingCard: { image: "", label: "" },
+													certificationCard: { title: "", subtitle: "", progressLabel: "", progressValue: "", progressPercentage: 0 },
+												})
+											}
+										>
+											<Plus className="mr-2 h-4 w-4" />
+											Add Slide
+										</Button>
+									</div>
 								</CardHeader>
 								<CardContent className="space-y-6">
-									<FormField
-										control={form.control}
-										name="hero.badge"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Badge Text</FormLabel>
-												<FormControl>
-													<Input
-														{...field}
-														value={field.value || ""}
-														placeholder="Sweden's leading supplier..."
-													/>
-												</FormControl>
-												<FormDescription>
-													Small text displayed above the title.
-												</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
+									{heroSlideFields.length === 0 && (
+										<div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
+											No slides added yet. Click &quot;Add Slide&quot; to create your first hero slide.
+										</div>
+									)}
 
-									<div className="grid gap-4 sm:grid-cols-2">
-										<FormField
-											control={form.control}
-											name="hero.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="Advanced medical"
-														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="hero.titleHighlight"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Title (highlight)</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="equipment for your clinic"
-														/>
-													</FormControl>
-													<FormDescription className="text-xs">
-														Part of the title with different
-														color.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</div>
-
-									<FormField
-										control={form.control}
-										name="hero.subtitle"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Subtitle</FormLabel>
-												<FormControl>
-													<Textarea
-														{...field}
-														value={field.value || ""}
-														placeholder="Describe your offering..."
-														rows={3}
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-
-									{/* Primary CTA */}
-									<div className="border rounded-lg p-4 space-y-4">
-										<h4 className="font-medium">Primary Button</h4>
-										<div className="grid gap-4 sm:grid-cols-3">
-											<FormField
-												control={form.control}
-												name="hero.primaryCta.text"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Text</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={field.value || ""}
-																placeholder="View our catalog"
-															/>
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="hero.primaryCta.href"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Link</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={field.value || ""}
-																placeholder="/products"
-															/>
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="hero.primaryCta.variant"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Style</FormLabel>
-														<Select
-															onValueChange={field.onChange}
-															defaultValue={field.value}
-														>
+									{heroSlideFields.map((slideField, slideIndex) => (
+										<Card key={slideField.id} className="border-2">
+											<CardHeader>
+												<div className="flex items-center justify-between">
+													<CardTitle className="text-base">Slide {slideIndex + 1}</CardTitle>
+													<Button
+														type="button"
+														variant="ghost"
+														size="sm"
+														onClick={async () => {
+															const confirmed = await confirm({
+																title: "Remove Slide",
+																description: `Are you sure you want to remove Slide ${slideIndex + 1}?`,
+																confirmText: "Remove",
+															});
+															if (confirmed) removeHeroSlide(slideIndex);
+														}}
+													>
+														<Trash2 className="h-4 w-4 text-destructive" />
+													</Button>
+												</div>
+											</CardHeader>
+											<CardContent className="space-y-6">
+												{/* Badge */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.badge`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Badge Text</FormLabel>
 															<FormControl>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select style" />
-																</SelectTrigger>
+																<Input {...field} value={field.value || ""} placeholder="Sweden's leading supplier..." />
 															</FormControl>
-															<SelectContent>
-																<SelectItem value="primary">
-																	Primary
-																</SelectItem>
-																<SelectItem value="secondary">
-																	Secondary
-																</SelectItem>
-																<SelectItem value="outline">
-																	Outline
-																</SelectItem>
-															</SelectContent>
-														</Select>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-										</div>
-									</div>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
 
-									{/* Secondary CTA */}
-									<div className="border rounded-lg p-4 space-y-4">
-										<h4 className="font-medium">
-											Secondary Button (optional)
-										</h4>
-										<div className="grid gap-4 sm:grid-cols-3">
-											<FormField
-												control={form.control}
-												name="hero.secondaryCta.text"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Text</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={field.value || ""}
-																placeholder="Contact us"
-															/>
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="hero.secondaryCta.href"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Link</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={field.value || ""}
-																placeholder="/contact"
-															/>
-														</FormControl>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="hero.secondaryCta.variant"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Style</FormLabel>
-														<Select
-															onValueChange={field.onChange}
-															defaultValue={field.value}
-														>
-															<FormControl>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select style" />
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																<SelectItem value="primary">
-																	Primary
-																</SelectItem>
-																<SelectItem value="secondary">
-																	Secondary
-																</SelectItem>
-																<SelectItem value="outline">
-																	Outline
-																</SelectItem>
-															</SelectContent>
-														</Select>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-										</div>
-									</div>
-
-									{/* Main Image (Desktop) */}
-									<FormField
-										control={form.control}
-										name="hero.mainImage"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Main Image (Desktop)</FormLabel>
-												<FormControl>
-													<MediaPicker
-														type="image"
-														value={field.value || null}
-														onChange={(url) =>
-															field.onChange(url || "")
-														}
-														placeholder="Select main image for desktop view"
-														galleryTitle="Select Hero Image (Desktop)"
-													/>
-												</FormControl>
-												<FormDescription>
-													This image will be shown on desktop/tablet screens
-												</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-
-									{/* Mobile Image */}
-									<FormField
-										control={form.control}
-										name="hero.mobileImage"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Mobile Image</FormLabel>
-												<FormControl>
-													<MediaPicker
-														type="image"
-														value={field.value || null}
-														onChange={(url) =>
-															field.onChange(url || "")
-														}
-														placeholder="Select image for mobile view"
-														galleryTitle="Select Hero Image (Mobile)"
-													/>
-												</FormControl>
-												<FormDescription>
-													This image will be shown on mobile screens (portrait recommended)
-												</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-
-									{/* Trust Indicators */}
-									<div className="space-y-4">
-										<div className="flex items-center justify-between">
-											<h4 className="font-medium">
-												Trust Indicators
-											</h4>
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												onClick={() =>
-													appendTrustIndicator({
-														icon: "ShieldCheck",
-														text: "",
-													})
-												}
-											>
-												<Plus className="h-4 w-4 mr-1" />
-												Add
-											</Button>
-										</div>
-										{trustIndicatorFields.map((field, index) => (
-											<div
-												key={field.id}
-												className="flex gap-4 items-start border rounded-lg p-4"
-											>
-												{/* <GripVertical className="h-5 w-5 text-muted-foreground mt-2" /> */}
-												<div className="flex-1 grid gap-4 sm:grid-cols-2">
+												{/* Title */}
+												<div className="grid gap-4 sm:grid-cols-2">
 													<FormField
 														control={form.control}
-														name={`hero.trustIndicators.${index}.icon`}
+														name={`hero.slides.${slideIndex}.title`}
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Icon</FormLabel>
-																<Select
-																	onValueChange={
-																		field.onChange
-																	}
-																	defaultValue={field.value}
-																>
-																	<FormControl>
-																		<SelectTrigger>
-																			<SelectValue placeholder="Select icon">
-																				{field.value && (
-																					<span className="flex items-center gap-2">
-																						<IconPreview
-																							name={
-																								field.value
-																							}
-																							className="h-4 w-4"
-																						/>
-																						<span>
-																							{
-																								field.value
-																							}
-																						</span>
-																					</span>
-																				)}
-																			</SelectValue>
-																		</SelectTrigger>
-																	</FormControl>
-																	<SelectContent>
-																		{AVAILABLE_ICONS.map(
-																			(icon) => (
-																				<SelectItem
-																					key={icon}
-																					value={icon}
-																				>
-																					<span className="flex items-center gap-2">
-																						<IconPreview
-																							name={icon}
-																							className="h-4 w-4"
-																						/>
-																						<span>
-																							{icon}
-																						</span>
-																					</span>
-																				</SelectItem>
-																			)
-																		)}
-																	</SelectContent>
-																</Select>
+																<FormLabel>Title</FormLabel>
+																<FormControl>
+																	<Input {...field} value={field.value || ""} placeholder="Advanced medical" />
+																</FormControl>
 																<FormMessage />
 															</FormItem>
 														)}
 													/>
 													<FormField
 														control={form.control}
-														name={`hero.trustIndicators.${index}.text`}
+														name={`hero.slides.${slideIndex}.titleHighlight`}
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Text</FormLabel>
+																<FormLabel>Title (highlight)</FormLabel>
 																<FormControl>
-																	<Input
-																		{...field}
-																		value={field.value || ""}
-																		placeholder="MDR certified"
-																	/>
+																	<Input {...field} value={field.value || ""} placeholder="equipment for your clinic" />
 																</FormControl>
 																<FormMessage />
 															</FormItem>
 														)}
 													/>
 												</div>
-												<Button
-													type="button"
-													variant="ghost"
-													size="sm"
-													onClick={async () => {
-														const confirmed = await confirm({
-															title: "Remove Trust Indicator",
-															description: "Are you sure you want to remove this trust indicator?",
-															confirmText: "Remove",
-														});
-														if (confirmed) removeTrustIndicator(index);
-													}}
-													className="text-destructive hover:text-destructive"
-												>
-													<Trash2 className="h-4 w-4" />
-												</Button>
-											</div>
-										))}
-									</div>
-								</CardContent>
-							</Card>
 
-							{/* Floating Card (Top Right) */}
-							<Card>
-								<CardHeader>
-									<CardTitle>Floating Card (Top Right)</CardTitle>
-									<CardDescription>
-										Small image card that floats on top right of the
-										hero image.
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<FormField
-										control={form.control}
-										name="hero.floatingCard.image"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Image</FormLabel>
-												<FormControl>
-													<MediaPicker
-														type="image"
-														value={field.value || null}
-														onChange={(url) =>
-															field.onChange(url || "")
-														}
-														placeholder="Select floating card image"
-														galleryTitle="Select Floating Card Image"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="hero.floatingCard.label"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Label</FormLabel>
-												<FormControl>
-													<Input
-														{...field}
-														value={field.value || ""}
-														placeholder="Precision Optics"
-													/>
-												</FormControl>
-												<FormDescription>
-													Text displayed at the bottom of the
-													floating card.
-												</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								</CardContent>
-							</Card>
+												{/* Subtitle */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.subtitle`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Subtitle</FormLabel>
+															<FormControl>
+																<Textarea {...field} value={field.value || ""} placeholder="Describe your offering..." rows={3} />
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
 
-							{/* Certification Card (Bottom Left) */}
-							<Card>
-								<CardHeader>
-									<CardTitle>
-										Certification Card (Bottom Left)
-									</CardTitle>
-									<CardDescription>
-										Glass card showing certification info with
-										progress bar.
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="grid gap-4 sm:grid-cols-2">
-										<FormField
-											control={form.control}
-											name="hero.certificationCard.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="Certified Excellence"
+												{/* Primary CTA */}
+												<div className="border rounded-lg p-4 space-y-4">
+													<h4 className="font-medium text-sm">Primary Button</h4>
+													<div className="grid gap-4 sm:grid-cols-2">
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.primaryCta.text`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Text</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="View our catalog" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
 														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="hero.certificationCard.subtitle"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Subtitle</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="ISO 13485 Compliant"
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.primaryCta.href`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Link</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="/products" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
 														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</div>
-									<div className="grid gap-4 sm:grid-cols-3">
-										<FormField
-											control={form.control}
-											name="hero.certificationCard.progressLabel"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Progress Label</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="Performance Score"
+													</div>
+												</div>
+
+												{/* Secondary CTA */}
+												<div className="border rounded-lg p-4 space-y-4">
+													<h4 className="font-medium text-sm">Secondary Button (optional)</h4>
+													<div className="grid gap-4 sm:grid-cols-2">
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.secondaryCta.text`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Text</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="Contact us" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
 														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="hero.certificationCard.progressValue"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Progress Value</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="99.8%"
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.secondaryCta.href`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Link</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="/contact" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
 														/>
-													</FormControl>
-													<FormDescription>
-														Text displayed for the value.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="hero.certificationCard.progressPercentage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Progress %</FormLabel>
-													<FormControl>
-														<Input
-															type="number"
-															min={0}
-															max={100}
-															placeholder="99.8"
-															{...field}
-															onChange={(e) =>
-																field.onChange(
-																	parseFloat(e.target.value) ||
-																		0
-																)
-															}
+													</div>
+												</div>
+
+												{/* Background Image */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.backgroundImage`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Background Image</FormLabel>
+															<FormControl>
+																<MediaPicker
+																	type="image"
+																	value={field.value || null}
+																	onChange={(url) => field.onChange(url || "")}
+																	placeholder="Select background image"
+																	galleryTitle={`Slide ${slideIndex + 1} - Background`}
+																/>
+															</FormControl>
+															<FormDescription>Full-screen background image behind the content</FormDescription>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
+
+												{/* Main Image */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.mainImage`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Main Image (Desktop)</FormLabel>
+															<FormControl>
+																<MediaPicker
+																	type="image"
+																	value={field.value || null}
+																	onChange={(url) => field.onChange(url || "")}
+																	placeholder="Select main image"
+																	galleryTitle={`Slide ${slideIndex + 1} - Main Image`}
+																/>
+															</FormControl>
+															<FormDescription>Right-side hero image on desktop</FormDescription>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
+
+												{/* Mobile Image */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.mobileImage`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Mobile Image</FormLabel>
+															<FormControl>
+																<MediaPicker
+																	type="image"
+																	value={field.value || null}
+																	onChange={(url) => field.onChange(url || "")}
+																	placeholder="Select mobile image"
+																	galleryTitle={`Slide ${slideIndex + 1} - Mobile Image`}
+																/>
+															</FormControl>
+															<FormDescription>Shown on mobile screens</FormDescription>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
+
+												{/* Trust Indicators */}
+												<div className="border rounded-lg p-4 space-y-3">
+													<div className="flex items-center justify-between">
+														<h4 className="font-medium text-sm">Trust Indicators</h4>
+														<Button
+															type="button"
+															variant="outline"
+															size="sm"
+															onClick={() => {
+																const current = form.getValues(`hero.slides.${slideIndex}.trustIndicators`) || [];
+																form.setValue(`hero.slides.${slideIndex}.trustIndicators`, [...current, { icon: "ShieldCheck", text: "" }]);
+															}}
+														>
+															<Plus className="h-4 w-4 mr-1" />
+															Add
+														</Button>
+													</div>
+													{(form.watch(`hero.slides.${slideIndex}.trustIndicators`) || []).map((_: unknown, tiIndex: number) => (
+														<div key={tiIndex} className="flex gap-3 items-end">
+															<FormField
+																control={form.control}
+																name={`hero.slides.${slideIndex}.trustIndicators.${tiIndex}.icon`}
+																render={({ field }) => (
+																	<FormItem className="flex-1">
+																		<FormLabel>Icon</FormLabel>
+																		<Select onValueChange={field.onChange} defaultValue={field.value}>
+																			<FormControl>
+																				<SelectTrigger>
+																					<SelectValue placeholder="Select icon">
+																						{field.value && (
+																							<span className="flex items-center gap-2">
+																								<IconPreview name={field.value} className="h-4 w-4" />
+																								<span>{field.value}</span>
+																							</span>
+																						)}
+																					</SelectValue>
+																				</SelectTrigger>
+																			</FormControl>
+																			<SelectContent>
+																				{AVAILABLE_ICONS.map((icon) => (
+																					<SelectItem key={icon} value={icon}>
+																						<span className="flex items-center gap-2">
+																							<IconPreview name={icon} className="h-4 w-4" />
+																							<span>{icon}</span>
+																						</span>
+																					</SelectItem>
+																				))}
+																			</SelectContent>
+																		</Select>
+																	</FormItem>
+																)}
+															/>
+															<FormField
+																control={form.control}
+																name={`hero.slides.${slideIndex}.trustIndicators.${tiIndex}.text`}
+																render={({ field }) => (
+																	<FormItem className="flex-1">
+																		<FormLabel>Text</FormLabel>
+																		<FormControl>
+																			<Input {...field} value={field.value || ""} placeholder="MDR certified" />
+																		</FormControl>
+																	</FormItem>
+																)}
+															/>
+															<Button
+																type="button"
+																variant="ghost"
+																size="sm"
+																onClick={() => {
+																	const current = form.getValues(`hero.slides.${slideIndex}.trustIndicators`) || [];
+																	form.setValue(`hero.slides.${slideIndex}.trustIndicators`, current.filter((_: unknown, i: number) => i !== tiIndex));
+																}}
+															>
+																<Trash2 className="h-4 w-4 text-destructive" />
+															</Button>
+														</div>
+													))}
+												</div>
+
+												{/* Floating Card */}
+												<div className="border rounded-lg p-4 space-y-4">
+													<h4 className="font-medium text-sm">Floating Card (Top Right)</h4>
+													<FormField
+														control={form.control}
+														name={`hero.slides.${slideIndex}.floatingCard.image`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Image</FormLabel>
+																<FormControl>
+																	<MediaPicker
+																		type="image"
+																		value={field.value || null}
+																		onChange={(url) => field.onChange(url || "")}
+																		placeholder="Select floating card image"
+																		galleryTitle={`Slide ${slideIndex + 1} - Floating Card`}
+																	/>
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`hero.slides.${slideIndex}.floatingCard.label`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Label</FormLabel>
+																<FormControl>
+																	<Input {...field} value={field.value || ""} placeholder="Precision Optics" />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+												</div>
+
+												{/* Certification Card */}
+												<div className="border rounded-lg p-4 space-y-4">
+													<h4 className="font-medium text-sm">Certification Card (Bottom Left)</h4>
+													<div className="grid gap-4 sm:grid-cols-2">
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.certificationCard.title`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Title</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="Certified Excellence" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
 														/>
-													</FormControl>
-													<FormDescription>
-														0-100 for the progress bar.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</div>
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.certificationCard.subtitle`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Subtitle</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="ISO 13485 Compliant" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+													</div>
+													<div className="grid gap-4 sm:grid-cols-3">
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.certificationCard.progressLabel`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Progress Label</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="Performance Score" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.certificationCard.progressValue`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Progress Value</FormLabel>
+																	<FormControl>
+																		<Input {...field} value={field.value || ""} placeholder="99.8%" />
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+														<FormField
+															control={form.control}
+															name={`hero.slides.${slideIndex}.certificationCard.progressPercentage`}
+															render={({ field }) => (
+																<FormItem>
+																	<FormLabel>Progress %</FormLabel>
+																	<FormControl>
+																		<Input
+																			type="number"
+																			min={0}
+																			max={100}
+																			placeholder="99.8"
+																			{...field}
+																			onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+																		/>
+																	</FormControl>
+																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+													</div>
+												</div>
+											</CardContent>
+										</Card>
+									))}
 								</CardContent>
 							</Card>
 						</TabsContent>

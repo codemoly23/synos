@@ -48,6 +48,7 @@ export async function PUT(request: NextRequest) {
 
 		// Parse and validate request body
 		const body = await request.json();
+
 		const validationResult = updateHomePageSchema.safeParse(body);
 
 		if (!validationResult.success) {

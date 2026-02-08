@@ -30,9 +30,9 @@ export interface IHeroCertificationCard {
 }
 
 /**
- * Hero Section interface - all fields optional to allow empty content
+ * Hero Slide interface - each slide contains all hero content
  */
-export interface IHeroSection {
+export interface IHeroSlide {
 	badge?: string;
 	title?: string;
 	titleHighlight?: string;
@@ -41,7 +41,6 @@ export interface IHeroSection {
 	secondaryCta?: ICtaButton;
 	backgroundImage?: string;
 	mainImage?: string;
-	/** Separate mobile image for responsive hero (full-height on mobile) */
 	mobileImage?: string;
 	trustIndicators?: Array<{
 		icon?: string;
@@ -49,6 +48,13 @@ export interface IHeroSection {
 	}>;
 	floatingCard?: IHeroFloatingCard;
 	certificationCard?: IHeroCertificationCard;
+}
+
+/**
+ * Hero Section interface - contains slides array
+ */
+export interface IHeroSection {
+	slides?: IHeroSlide[];
 }
 
 /**
@@ -296,9 +302,9 @@ const HeroCertificationCardSchema = new Schema<IHeroCertificationCard>(
 );
 
 /**
- * Hero Section sub-schema - no required fields to allow empty content
+ * Hero Slide sub-schema - each slide contains all hero content
  */
-const HeroSectionSchema = new Schema<IHeroSection>(
+const HeroSlideSchema = new Schema<IHeroSlide>(
 	{
 		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
@@ -317,6 +323,16 @@ const HeroSectionSchema = new Schema<IHeroSection>(
 		],
 		floatingCard: { type: HeroFloatingCardSchema },
 		certificationCard: { type: HeroCertificationCardSchema },
+	},
+	{ _id: false }
+);
+
+/**
+ * Hero Section sub-schema - contains slides array
+ */
+const HeroSectionSchema = new Schema<IHeroSection>(
+	{
+		slides: { type: [HeroSlideSchema], default: [] },
 	},
 	{ _id: false }
 );

@@ -60,7 +60,7 @@ export function MobileBottomNav() {
 					<div className="absolute inset-0 bg-linear-to-t from-gray-50/50 to-transparent pointer-events-none" />
 
 					{/* Navigation items container */}
-					<div className="relative flex items-center justify-around px-2 py-2">
+					<div className="relative flex items-center justify-evenly px-1 py-2">
 						{/* Animated active indicator */}
 						<div
 							className="absolute top-2 bottom-2 bg-primary/10 rounded-xl transition-all duration-300 ease-out"

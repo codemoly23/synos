@@ -82,13 +82,8 @@ class HomePageRepository {
 		}
 
 		if (data.hero) {
-			// For nested objects, we need to update each field individually
-			// to avoid overwriting the entire object
-			Object.entries(data.hero).forEach(([key, value]) => {
-				if (value !== undefined) {
-					updateData[`hero.${key}`] = value;
-				}
-			});
+			// Hero now only contains slides array - set entire hero object
+			updateData.hero = data.hero;
 		}
 
 		if (data.features) {

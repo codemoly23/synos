@@ -59,96 +59,98 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 							viewport={{ once: true }}
 							transition={{ duration: 0.5, delay: index * 0.1 }}
 						>
-							<Card className="bg-white group overflow-hidden border-border/10 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-								{/* Image Area */}
-								<div className="relative h-64 overflow-hidden bg-secondary/50">
-									{product.image && (
-										<>
-											{/* Desktop Image */}
-											<ImageComponent
-												src={product.image}
-												alt={product.name || "Product"}
-												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-												loading={index === 0 ? "eager" : "lazy"}
-												height={0}
-												width={0}
-												sizes={
-													index === 0
-														? "(max-width: 768px) 100vw, 50vw"
-														: "100vw"
-												}
-												wrapperClasses={`w-full h-full ${product.mobileImage ? "hidden md:block" : ""}`}
-											/>
-											{/* Mobile Image */}
-											{product.mobileImage && (
+							<Link
+								href={
+									product.href ||
+									`/produkter/${(product.name || "product")
+										.toLowerCase()
+										.replace(/\s+/g, "-")}`
+								}
+								className="block h-full"
+							>
+								<Card className="bg-white group overflow-hidden border-border/10 hover:shadow-lg transition-all duration-300 h-full flex flex-col cursor-pointer">
+									{/* Image Area */}
+									<div className="relative h-64 overflow-hidden bg-secondary/50">
+										{product.image && (
+											<>
+												{/* Desktop Image */}
 												<ImageComponent
-													src={product.mobileImage}
+													src={product.image}
 													alt={product.name || "Product"}
 													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 													loading={index === 0 ? "eager" : "lazy"}
 													height={0}
 													width={0}
-													sizes="100vw"
-													wrapperClasses="w-full h-full md:hidden"
+													sizes={
+														index === 0
+															? "(max-width: 768px) 100vw, 50vw"
+															: "100vw"
+													}
+													wrapperClasses={`w-full h-full ${product.mobileImage ? "hidden md:block" : ""}`}
 												/>
-											)}
-										</>
-									)}
+												{/* Mobile Image */}
+												{product.mobileImage && (
+													<ImageComponent
+														src={product.mobileImage}
+														alt={product.name || "Product"}
+														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+														loading={index === 0 ? "eager" : "lazy"}
+														height={0}
+														width={0}
+														sizes="100vw"
+														wrapperClasses="w-full h-full md:hidden"
+													/>
+												)}
+											</>
+										)}
 
-									{product.category && (
-										<div className="absolute top-4 right-4">
-											<Badge
-												variant="secondary"
-												className="bg-secondary/50 backdrop-blur-sm text-slate-200 font-medium"
-											>
-												{product.category}
-											</Badge>
-										</div>
-									)}
-								</div>
-
-								{/* Content */}
-								<CardContent className="pt-6 grow">
-									<div className="flex justify-between items-start mb-2">
-										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors">
-											{product.name}
-										</h3>
+										{product.category && (
+											<div className="absolute top-4 right-4">
+												<Badge
+													variant="secondary"
+													className="bg-secondary/50 backdrop-blur-sm text-slate-200 font-medium"
+												>
+													{product.category}
+												</Badge>
+											</div>
+										)}
 									</div>
-									{product.description && (
-										<p className="text-slate-600 text-sm mb-4">
-											{product.description}
-										</p>
-									)}
-									{product.status && (
-										<div className="flex items-center gap-2 text-sm font-medium">
-											<span
-												className={
-													product.status === "In Stock"
-														? "text-green-500"
-														: "text-orange-500"
-												}
-											>
-												● {product.status}
-											</span>
-										</div>
-									)}
-								</CardContent>
 
-								{/* Footer */}
-								<CardFooter className="border-t border-border/10 pt-4 flex justify-between items-center">
-									<Link
-										href={
-											product.href ||
-											`/produkter/${(product.name || "product")
-												.toLowerCase()
-												.replace(/\s+/g, "-")}`
-										}
-										className="text-primary hover:text-primary-hover hover:bg-primary/10 flex items-center border border-slate-200 px-5 py-1 rounded-xl"
-									>
-										Details <ArrowRight className="ml-1 h-4 w-4" />
-									</Link>
-								</CardFooter>
-							</Card>
+									{/* Content */}
+									<CardContent className="pt-6 grow">
+										<div className="flex justify-between items-start mb-2">
+											<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors">
+												{product.name}
+											</h3>
+										</div>
+										{product.description && (
+											<p className="text-slate-600 text-sm mb-4">
+												{product.description}
+											</p>
+										)}
+										{product.status && (
+											<div className="flex items-center gap-2 text-sm font-medium">
+												<span
+													className={
+														product.status === "In Stock"
+															? "text-green-500"
+															: "text-orange-500"
+													}
+												>
+													● {product.status}
+												</span>
+											</div>
+										)}
+									</CardContent>
+
+									{/* Footer */}
+									<CardFooter className="border-t border-border/10 pt-4 flex justify-between items-center">
+										<span className="text-primary group-hover:text-primary-hover group-hover:bg-primary/10 flex items-center border border-slate-200 px-5 py-1 rounded-xl">
+											Details <ArrowRight className="ml-1 h-4 w-4" />
+										</span>
+									</CardFooter>
+								</Card>
+							</Link>
 						</motion.div>
 					))}
 				</div>

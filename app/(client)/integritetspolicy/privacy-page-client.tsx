@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { Home, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { fadeUp, staggerContainer } from "@/lib/animations";
+import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import type { PrivacyPageData } from "@/lib/repositories/privacy-page.repository";
 
 interface PrivacyPageClientProps {
@@ -66,6 +70,9 @@ function ContentSection({
 }
 
 export function PrivacyPageClient({ data }: PrivacyPageClientProps) {
+	// Set navbar to dark-hero variant
+	useSetNavbarVariant("dark-hero");
+
 	const visibility = data.sectionVisibility || {
 		hero: true,
 		introduction: true,
@@ -156,30 +163,115 @@ export function PrivacyPageClient({ data }: PrivacyPageClientProps) {
 	);
 
 	return (
-		<div className="_container padding-top pb-16">
-			{/* Hero Section */}
+		<div className="min-h-screen bg-slate-50">
+			{/* Dark Hero Section */}
 			{visibility.hero && hasHero && (
-				<div className="mb-12 text-center">
-					{data.hero?.title && (
-						<h1 className="mb-4 text-4xl font-bold tracking-tight text-primary md:text-5xl">
-							{data.hero.title}
-						</h1>
-					)}
-					{data.hero?.subtitle && (
-						<p className="mx-auto max-w-3xl text-lg text-muted-foreground">
-							{data.hero.subtitle}
-						</p>
-					)}
-					{data.hero?.lastUpdated && (
-						<p className="mt-2 text-sm text-muted-foreground">
-							Senast uppdaterad: {data.hero.lastUpdated}
-						</p>
-					)}
-				</div>
+				<section className="relative overflow-hidden bg-secondary pt-28 pb-8 md:pt-36 md:pb-16 lg:pb-20">
+					{/* Abstract Geometric Overlay */}
+					<div className="absolute inset-0 opacity-10">
+						<svg
+							className="absolute top-0 left-0 w-full h-full"
+							viewBox="0 0 1440 560"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							preserveAspectRatio="xMidYMid slice"
+						>
+							<motion.path
+								d="M-100 300 Q 200 100, 400 300 T 800 300 T 1200 300 T 1600 300"
+								stroke="currentColor"
+								strokeWidth="1"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								animate={{ pathLength: 1, opacity: 0.6 }}
+								transition={{ duration: 2, ease: "easeInOut" }}
+							/>
+							<motion.path
+								d="M-100 350 Q 250 150, 500 350 T 900 350 T 1300 350 T 1700 350"
+								stroke="currentColor"
+								strokeWidth="0.5"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								animate={{ pathLength: 1, opacity: 0.4 }}
+								transition={{ duration: 2.5, ease: "easeInOut", delay: 0.3 }}
+							/>
+							<motion.path
+								d="M-100 250 Q 150 50, 350 250 T 750 250 T 1150 250 T 1550 250"
+								stroke="currentColor"
+								strokeWidth="0.5"
+								fill="none"
+								className="text-primary"
+								initial={{ pathLength: 0, opacity: 0 }}
+								animate={{ pathLength: 1, opacity: 0.3 }}
+								transition={{ duration: 2.5, ease: "easeInOut", delay: 0.5 }}
+							/>
+						</svg>
+					</div>
+
+					{/* Gradient overlay */}
+					<div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-secondary/80" />
+
+					<div className="_container relative z-10">
+						<motion.div
+							initial="initial"
+							animate="animate"
+							variants={staggerContainer}
+							className="max-w-4xl mx-auto text-center"
+						>
+							{/* Breadcrumb */}
+							<motion.nav
+								variants={fadeUp}
+								className="mb-6 flex items-center justify-center gap-2 text-sm"
+								aria-label="Breadcrumb"
+							>
+								<Link
+									href="/"
+									className="flex items-center gap-1 text-white/60 hover:text-primary transition-colors"
+								>
+									<Home className="h-4 w-4" />
+									<span>Hem</span>
+								</Link>
+								<ChevronRight className="h-4 w-4 text-white/40" />
+								<span className="text-white font-medium">Integritetspolicy</span>
+							</motion.nav>
+
+							{/* Title */}
+							{data.hero?.title && (
+								<motion.h1
+									variants={fadeUp}
+									className="text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl"
+								>
+									{data.hero.title}
+								</motion.h1>
+							)}
+
+							{/* Subtitle */}
+							{data.hero?.subtitle && (
+								<motion.p
+									variants={fadeUp}
+									className="mt-4 mx-auto max-w-3xl text-lg text-white/70"
+								>
+									{data.hero.subtitle}
+								</motion.p>
+							)}
+
+							{/* Last Updated */}
+							{data.hero?.lastUpdated && (
+								<motion.p
+									variants={fadeUp}
+									className="mt-3 text-sm text-white/50"
+								>
+									Senast uppdaterad: {data.hero.lastUpdated}
+								</motion.p>
+							)}
+						</motion.div>
+					</div>
+				</section>
 			)}
 
 			{/* Main Content */}
-			<div className="mx-auto max-w-4xl space-y-10">
+			<div className="mx-auto max-w-4xl space-y-10 _container py-16">
 				{/* Introduction */}
 				{visibility.introduction && hasIntroduction && (
 					<ContentSection section={data.introduction} />
