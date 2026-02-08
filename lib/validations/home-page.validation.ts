@@ -18,9 +18,9 @@ export const trustIndicatorSchema = z.object({
 });
 
 /**
- * Hero Section schema - all fields optional to allow empty content
+ * Hero Slide schema - each slide contains all hero content
  */
-export const heroSectionSchema = z.object({
+export const heroSlideSchema = z.object({
 	badge: z.string().max(200).optional(),
 	title: z.string().max(200).optional(),
 	titleHighlight: z.string().max(200).optional(),
@@ -31,6 +31,24 @@ export const heroSectionSchema = z.object({
 	mainImage: z.string().optional(),
 	mobileImage: z.string().optional(),
 	trustIndicators: z.array(trustIndicatorSchema).optional(),
+	floatingCard: z.object({
+		image: z.string().optional(),
+		label: z.string().max(100).optional(),
+	}).optional(),
+	certificationCard: z.object({
+		title: z.string().max(100).optional(),
+		subtitle: z.string().max(200).optional(),
+		progressLabel: z.string().max(100).optional(),
+		progressValue: z.string().max(50).optional(),
+		progressPercentage: z.number().min(0).max(100).optional(),
+	}).optional(),
+});
+
+/**
+ * Hero Section schema - contains slides array
+ */
+export const heroSectionSchema = z.object({
+	slides: z.array(heroSlideSchema).optional(),
 });
 
 /**
@@ -121,12 +139,9 @@ export const heroCertificationCardSchema = z.object({
 });
 
 /**
- * Extended Hero Section schema with floating/certification cards
+ * Extended Hero Section schema (same as heroSectionSchema, cards are now per-slide)
  */
-export const heroSectionExtendedSchema = heroSectionSchema.extend({
-	floatingCard: heroFloatingCardSchema.optional(),
-	certificationCard: heroCertificationCardSchema.optional(),
-});
+export const heroSectionExtendedSchema = heroSectionSchema;
 
 /**
  * Product Showcase Item schema - fields optional to allow partial data
