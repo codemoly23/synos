@@ -62,14 +62,18 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 							className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 border-transparent`}
 						>
 							<div className="flex bg-none items-center justify-between gap-1 lg:gap-2">
-								<Logo logoUrl={logoUrl} />
+								<div className="ml-1.5 lg:ml-0">
+									<Logo logoUrl={logoUrl} />
+								</div>
 								<div className="hidden lg:flex items-center justify-center flex-1" />
 								<div className="hidden lg:flex items-center" />
 								<div className="hidden xl:flex items-center gap-2 shrink-0" />
 								<div className="hidden lg:block">
 									<ProtectedNavbar />
 								</div>
-								<MobileNavbar useLightText={false} />
+								<div className="mr-1.5 lg:mr-0 flex items-center">
+									<MobileNavbar useLightText={false} />
+								</div>
 							</div>
 						</nav>
 					</header>
@@ -91,7 +95,9 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 					>
 						<div className="flex bg-none items-center justify-between gap-1 lg:gap-2">
 							{/* Logo */}
-							<Logo logoUrl={logoUrl} />
+							<div className="ml-1.5 lg:ml-0">
+								<Logo logoUrl={logoUrl} />
+							</div>
 
 							{/* Desktop Nav */}
 							<div className="hidden lg:flex items-center justify-center flex-1">
@@ -284,7 +290,9 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 							</div>
 
 							{/* Mobile Menu */}
-							<MobileNavbar useLightText={useLightText} />
+							<div className="mr-1.5 lg:mr-0 flex items-center">
+								<MobileNavbar useLightText={useLightText} />
+							</div>
 						</div>
 					</nav>
 				</header>

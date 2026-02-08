@@ -37,6 +37,7 @@ export const aboutMissionSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	description: z.string().max(2000).optional(),
 	image: z.string().optional(),
+	mobileImage: z.string().optional(),
 	features: z.array(aboutFeatureSchema).optional(),
 });
 
@@ -54,6 +55,7 @@ export const aboutStatSchema = z.object({
 // ============================================================================
 export const aboutGalleryImageSchema = z.object({
 	src: z.string().optional(),
+	mobileSrc: z.string().optional(),
 	alt: z.string().max(200).optional(),
 });
 

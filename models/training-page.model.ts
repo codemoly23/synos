@@ -6,6 +6,7 @@ import { connectMongoose } from "@/lib/db/db-connect";
 // ============================================================================
 export interface ITrainingSectionVisibility {
 	hero: boolean;
+	featuredSection: boolean;
 	mainContent: boolean;
 	benefits: boolean;
 	process: boolean;
@@ -19,6 +20,7 @@ const TrainingSectionVisibilitySchema =
 	new Schema<ITrainingSectionVisibility>(
 		{
 			hero: { type: Boolean, default: true },
+			featuredSection: { type: Boolean, default: true },
 			mainContent: { type: Boolean, default: true },
 			benefits: { type: Boolean, default: true },
 			process: { type: Boolean, default: true },
@@ -44,6 +46,43 @@ const TrainingHeroSectionSchema = new Schema<ITrainingHeroSection>(
 		title: { type: String, trim: true },
 		titleHighlight: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// FEATURED SECTION (Veritatisin Reprehenderit)
+// ============================================================================
+export interface ITrainingFeaturedChecklistItem {
+	text?: string;
+}
+
+export interface ITrainingFeaturedSection {
+	image?: string;
+	mobileImage?: string;
+	title?: string;
+	description?: string;
+	subTitle?: string;
+	checklistItems?: ITrainingFeaturedChecklistItem[];
+	bottomDescription?: string;
+}
+
+const TrainingFeaturedChecklistItemSchema = new Schema<ITrainingFeaturedChecklistItem>(
+	{
+		text: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+const TrainingFeaturedSectionSchema = new Schema<ITrainingFeaturedSection>(
+	{
+		image: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
+		title: { type: String, trim: true },
+		description: { type: String, trim: true },
+		subTitle: { type: String, trim: true },
+		checklistItems: { type: [TrainingFeaturedChecklistItemSchema], default: [] },
+		bottomDescription: { type: String, trim: true },
 	},
 	{ _id: false }
 );
@@ -140,12 +179,29 @@ const TrainingSupportSectionSchema = new Schema<ITrainingSupportSection>(
 );
 
 // ============================================================================
+// FAQ ITEM
+// ============================================================================
+export interface ITrainingFaqItem {
+	question?: string;
+	answer?: string;
+}
+
+const TrainingFaqItemSchema = new Schema<ITrainingFaqItem>(
+	{
+		question: { type: String, trim: true },
+		answer: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
 // INQUIRY FORM SECTION
 // ============================================================================
 export interface ITrainingInquirySection {
 	badge?: string;
 	title?: string;
 	subtitle?: string;
+	faqItems?: ITrainingFaqItem[];
 }
 
 const TrainingInquirySectionSchema = new Schema<ITrainingInquirySection>(
@@ -153,6 +209,7 @@ const TrainingInquirySectionSchema = new Schema<ITrainingInquirySection>(
 		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
+		faqItems: { type: [TrainingFaqItemSchema], default: [] },
 	},
 	{ _id: false }
 );
@@ -220,6 +277,7 @@ export interface ITrainingPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	sectionVisibility: ITrainingSectionVisibility;
 	hero: ITrainingHeroSection;
+	featuredSection: ITrainingFeaturedSection;
 	mainContent: ITrainingMainContentSection;
 	benefits: ITrainingBenefitCard[];
 	processSection: ITrainingProcessSection;
@@ -248,6 +306,7 @@ const TrainingPageSchema = new Schema<ITrainingPage>(
 			},
 		},
 		hero: { type: TrainingHeroSectionSchema, default: {} },
+		featuredSection: { type: TrainingFeaturedSectionSchema, default: {} },
 		mainContent: { type: TrainingMainContentSectionSchema, default: {} },
 		benefits: { type: [TrainingBenefitCardSchema], default: [] },
 		processSection: { type: TrainingProcessSectionSchema, default: {} },

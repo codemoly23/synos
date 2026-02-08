@@ -382,13 +382,24 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								className="relative h-full"
 							>
 								<div className="rounded-2xl overflow-hidden shadow-2xl h-full min-h-[600px]">
+									{/* Desktop Image */}
 									<ImageComponent
 										src={data.mission?.image || "/images/mission-section-image.jpg"}
 										alt="Vår mission"
 										width={600}
 										height={800}
-										className="w-full h-full object-cover"
+										className={`w-full h-full object-cover ${data.mission?.mobileImage ? "hidden md:block" : ""}`}
 									/>
+									{/* Mobile Image */}
+									{data.mission?.mobileImage && (
+										<ImageComponent
+											src={data.mission.mobileImage}
+											alt="Vår mission"
+											width={600}
+											height={800}
+											className="w-full h-full object-cover md:hidden"
+										/>
+									)}
 								</div>
 							</motion.div>
 

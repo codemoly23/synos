@@ -63,20 +63,36 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 								{/* Image Area */}
 								<div className="relative h-64 overflow-hidden bg-secondary/50">
 									{product.image && (
-										<ImageComponent
-											src={product.image}
-											alt={product.name || "Product"}
-											className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-											loading={index === 0 ? "eager" : "lazy"}
-											height={0}
-											width={0}
-											sizes={
-												index === 0
-													? "(max-width: 768px) 100vw, 50vw"
-													: "100vw"
-											}
-											wrapperClasses="w-full h-full"
-										/>
+										<>
+											{/* Desktop Image */}
+											<ImageComponent
+												src={product.image}
+												alt={product.name || "Product"}
+												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+												loading={index === 0 ? "eager" : "lazy"}
+												height={0}
+												width={0}
+												sizes={
+													index === 0
+														? "(max-width: 768px) 100vw, 50vw"
+														: "100vw"
+												}
+												wrapperClasses={`w-full h-full ${product.mobileImage ? "hidden md:block" : ""}`}
+											/>
+											{/* Mobile Image */}
+											{product.mobileImage && (
+												<ImageComponent
+													src={product.mobileImage}
+													alt={product.name || "Product"}
+													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+													loading={index === 0 ? "eager" : "lazy"}
+													height={0}
+													width={0}
+													sizes="100vw"
+													wrapperClasses="w-full h-full md:hidden"
+												/>
+											)}
+										</>
 									)}
 
 									{product.category && (

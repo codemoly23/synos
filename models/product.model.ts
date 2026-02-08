@@ -46,6 +46,13 @@ export interface ISeo {
 	noindex?: boolean;
 }
 
+export interface ISeoAccordion {
+	_id?: mongoose.Types.ObjectId;
+	title: string;
+	content: string;
+	order: number;
+}
+
 /**
  * Product interface extending Mongoose Document
  */
@@ -70,6 +77,7 @@ export interface IProduct extends Document {
 	categories: mongoose.Types.ObjectId[];
 	primaryCategory?: mongoose.Types.ObjectId; // Primary category for URL generation
 	qa: IQnA[];
+	seoAccordions: ISeoAccordion[];
 	youtubeUrl?: string;
 	rubric?: string;
 	publishType: PublishType;
@@ -197,6 +205,25 @@ const SeoSchema = new Schema<ISeo>(
 	{ _id: false }
 );
 
+const SeoAccordionSchema = new Schema<ISeoAccordion>(
+	{
+		title: {
+			type: String,
+			required: [true, "SEO accordion title is required"],
+			trim: true,
+		},
+		content: {
+			type: String,
+			required: [true, "SEO accordion content is required"],
+		},
+		order: {
+			type: Number,
+			default: 0,
+		},
+	},
+	{ _id: true }
+);
+
 /**
  * Product Schema
  */
@@ -286,6 +313,10 @@ const ProductSchema = new Schema<IProduct>(
 			index: true,
 		},
 		qa: [QnASchema],
+		seoAccordions: {
+			type: [SeoAccordionSchema],
+			default: [],
+		},
 		youtubeUrl: {
 			type: String,
 			default: "",

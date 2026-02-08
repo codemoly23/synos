@@ -34,6 +34,13 @@ export interface BeforeAfterImage {
 	label?: string;
 }
 
+export interface SeoAccordionItem {
+	title: string;
+	content: string;
+	order: number;
+	_id: string;
+}
+
 export type ProductType = {
 	_id: string;
 	title: string;
@@ -87,6 +94,7 @@ export type ProductType = {
 		visible: boolean;
 		_id: string;
 	}>;
+	seoAccordions: Array<SeoAccordionItem> | null;
 	youtubeUrl: string;
 	rubric: string;
 	publishType: string;

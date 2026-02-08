@@ -89,6 +89,7 @@ export interface IAboutSection {
 	titleHighlight?: string;
 	content?: string;
 	image?: string;
+	mobileImage?: string;
 	benefits?: string[];
 	primaryCta?: ICtaButton;
 	secondaryCta?: ICtaButton;
@@ -119,6 +120,7 @@ export interface IProductShowcaseItem {
 	description?: string;
 	status?: string;
 	image?: string;
+	mobileImage?: string;
 	href?: string;
 }
 
@@ -138,6 +140,7 @@ export interface IProductShowcaseSection {
  */
 export interface IGalleryImage {
 	src?: string;
+	mobileSrc?: string;
 	title?: string;
 	subtitle?: string;
 }
@@ -366,6 +369,7 @@ const ProductShowcaseItemSchema = new Schema<IProductShowcaseItem>(
 		description: { type: String, trim: true },
 		status: { type: String, trim: true },
 		image: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
 		href: { type: String, trim: true },
 	},
 	{ _id: false }
@@ -391,6 +395,7 @@ const ProductShowcaseSectionSchema = new Schema<IProductShowcaseSection>(
 const GalleryImageSchema = new Schema<IGalleryImage>(
 	{
 		src: { type: String, trim: true },
+		mobileSrc: { type: String, trim: true },
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 	},
@@ -434,6 +439,7 @@ const AboutSectionSchema = new Schema<IAboutSection>(
 		titleHighlight: { type: String, trim: true },
 		content: { type: String, trim: true },
 		image: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
 		benefits: [{ type: String, trim: true }],
 		primaryCta: { type: CtaButtonSchema },
 		secondaryCta: { type: CtaButtonSchema },

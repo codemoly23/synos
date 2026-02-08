@@ -55,6 +55,7 @@ export interface IAboutMissionSection {
 	title?: string;
 	description?: string;
 	image?: string;
+	mobileImage?: string;
 	features?: IAboutFeature[];
 }
 
@@ -85,6 +86,7 @@ const AboutMissionSectionSchema = new Schema<IAboutMissionSection>(
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
 		image: { type: String, trim: true },
+		mobileImage: { type: String, trim: true },
 		features: { type: [AboutFeatureSchema], default: [] },
 	},
 	{ _id: false }
@@ -113,6 +115,7 @@ const AboutStatSchema = new Schema<IAboutStat>(
 // ============================================================================
 export interface IAboutGalleryImage {
 	src?: string;
+	mobileSrc?: string;
 	alt?: string;
 }
 
@@ -125,6 +128,7 @@ export interface IAboutImageGallerySection {
 const AboutGalleryImageSchema = new Schema<IAboutGalleryImage>(
 	{
 		src: { type: String, trim: true },
+		mobileSrc: { type: String, trim: true },
 		alt: { type: String, trim: true },
 	},
 	{ _id: false }

@@ -164,7 +164,7 @@ export function ProductImageGallery({
 	);
 
 	return (
-		<div className="w-full max-w-4xl mx-auto">
+		<div className="w-full">
 			{/* Main Image Container */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
