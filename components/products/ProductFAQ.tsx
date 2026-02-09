@@ -93,7 +93,7 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 										className="overflow-hidden"
 									>
 										<div className="px-6 pb-5 pt-0">
-											<div className="font-medium text-foreground text-base border-t border-slate-300 pt-4">
+											<div className="font-medium text-foreground text-base leading-relaxed border-t border-slate-300 pt-4">
 												<PreviewEditor>{faq.answer}</PreviewEditor>
 											</div>
 										</div>
