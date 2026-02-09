@@ -65,8 +65,15 @@ export function BeforeAfterShowcase({
 		[]
 	);
 
+	// Create a ref to track if current interaction is touch
+	const isTouchInteraction = useRef(false);
+
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent, isLightbox = false) => {
+			// Ignore if this is a touch event (touch events fire first)
+			if (isTouchInteraction.current) {
+				return;
+			}
 			e.preventDefault();
 			setIsDragging(true);
 			const container = isLightbox
@@ -92,11 +99,17 @@ export function BeforeAfterShowcase({
 
 	const handleMouseUp = useCallback(() => {
 		setIsDragging(false);
+		// Reset touch flag after a short delay
+		setTimeout(() => {
+			isTouchInteraction.current = false;
+		}, 100);
 	}, []);
 
 	// Touch handlers
 	const handleTouchStart = useCallback(
 		(e: React.TouchEvent, isLightbox = false) => {
+			e.preventDefault();
+			isTouchInteraction.current = true;
 			setIsDragging(true);
 			const container = isLightbox
 				? lightboxContainerRef.current
@@ -109,6 +122,7 @@ export function BeforeAfterShowcase({
 	const handleTouchMove = useCallback(
 		(e: TouchEvent) => {
 			if (!isDragging) return;
+			e.preventDefault();
 			if (isLightboxOpen) {
 				handleSliderMove(
 					e.touches[0].clientX,
@@ -127,7 +141,7 @@ export function BeforeAfterShowcase({
 		if (isDragging) {
 			window.addEventListener("mousemove", handleMouseMove);
 			window.addEventListener("mouseup", handleMouseUp);
-			window.addEventListener("touchmove", handleTouchMove);
+			window.addEventListener("touchmove", handleTouchMove, { passive: false });
 			window.addEventListener("touchend", handleMouseUp);
 		}
 
@@ -239,12 +253,27 @@ export function BeforeAfterShowcase({
 
 			{/* Slider Handle */}
 			<div
-				className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)] cursor-ew-resize z-10"
-				style={{ left: `${position}%`, transform: "translateX(-50%)" }}
+				className="absolute top-0 bottom-0 z-10 flex items-center justify-center select-none"
+				style={{
+					left: `${position}%`,
+					transform: "translateX(-50%)",
+					width: '48px',
+					touchAction: 'none',
+					userSelect: 'none',
+					WebkitUserSelect: 'none'
+				}}
+				onMouseDown={(e) => {
+					e.stopPropagation();
+					handleMouseDown(e, isLightbox);
+				}}
+				onTouchStart={onTouchStart}
 			>
+				{/* Visible slider line */}
+				<div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)]" />
+
 				{/* Handle Circle */}
-				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
-					<div className="flex items-center gap-0.5">
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing">
+					<div className="flex items-center gap-0.5 pointer-events-none">
 						<ChevronLeft className="h-4 w-4 text-slate-600" />
 						<ChevronRight className="h-4 w-4 text-slate-600" />
 					</div>

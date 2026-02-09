@@ -206,19 +206,21 @@ export function Footer({
 						förbehållna.
 					</p>
 					<div className="flex gap-6">
-						{settings.bottomLinks.map((link) => (
-							<Link
-								key={link.href}
-								href={link.href}
-								className="hover:text-white"
-								{...(link.isExternal && {
-									target: "_blank",
-									rel: "noopener noreferrer",
-								})}
-							>
-								{link.label}
-							</Link>
-						))}
+						{settings.bottomLinks
+							.filter((link) => link.label !== "Sitemap")
+							.map((link) => (
+								<Link
+									key={link.href}
+									href={link.href}
+									className="hover:text-white"
+									{...(link.isExternal && {
+										target: "_blank",
+										rel: "noopener noreferrer",
+									})}
+								>
+									{link.label}
+								</Link>
+							))}
 					</div>
 				</div>
 			</div>
