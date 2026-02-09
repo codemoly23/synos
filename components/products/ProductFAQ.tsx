@@ -61,7 +61,7 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 								aria-expanded={openIndex === index}
 								aria-controls={`faq-answer-${faq._id}`}
 							>
-								<span className="font-semibold text-foreground text-lg flex-1 cursor-pointer">
+								<span className="font-medium text-foreground text-base flex-1 cursor-pointer">
 									{faq.question}
 								</span>
 								<motion.div
@@ -93,7 +93,7 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 										className="overflow-hidden"
 									>
 										<div className="px-6 pb-5 pt-0">
-											<div className="prose prose-sm max-w-none text-muted-foreground border-t border-slate-300 pt-4">
+											<div className="prose prose-base max-w-none text-foreground/90 border-t border-slate-300 pt-4">
 												<PreviewEditor>{faq.answer}</PreviewEditor>
 											</div>
 										</div>
