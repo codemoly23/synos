@@ -52,7 +52,7 @@ export function MobileBottomNav() {
 		<>
 			{/* Floating Bottom Navigation - Mobile Only */}
 			<nav
-				className="fixed bottom-4 left-4 right-4 z-50 md:hidden"
+				className="fixed bottom-4 w-full left-0 px-3  z-50 md:hidden"
 				aria-label="Mobile navigation"
 			>
 				{/* Outer container with dark bg matching top navbar */}
