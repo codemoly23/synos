@@ -238,6 +238,14 @@
     @apply max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Stat circle gradient border rotation animation */
   .stat-gradient-border {
     animation: spin-slow 2s linear infinite;
@@ -403,7 +411,7 @@
 
   /* Layout */
   ._container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .section-padding {
