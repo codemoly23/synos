@@ -87,7 +87,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 			<div className="fixed top-3 sm:top-6 left-0 z-50 w-full">
 				<header className={"_container"}>
 					<nav
-						className={`py-1.5 sm:py-2 transition-all backdrop-blur-md duration-300 rounded-full border px-2 sm:px-3 bg-secondary shadow-lg ${
+						className={`py-1.5 sm:py-2 transition-all backdrop-blur-xl duration-300 rounded-full border px-2 sm:px-3 bg-secondary/70 shadow-lg ${
 							isScrolled
 								? "border-secondary/80"
 								: "border-secondary/50"

@@ -117,19 +117,19 @@ export default async function Home({ searchParams }: HomeProps) {
 			{/* Hero Section */}
 			{visibility.hero && homePage.hero && <Hero data={homePage.hero} />}
 
-			{/* Search Section - Always visible */}
-			<SearchSection />
-
-			{/* Feature Highlights */}
-			{visibility.features && homePage.features?.length > 0 && (
-				<FeatureHighlights features={homePage.features} />
-			)}
+			{/* Search Section - Hidden */}
+			{/* <SearchSection /> */}
 
 			{/* Product Showcase */}
 			{visibility.productShowcase &&
 				(homePage.productShowcase?.products?.length ?? 0) > 0 && (
 					<ProductShowcase data={homePage.productShowcase} />
 				)}
+
+			{/* Feature Highlights */}
+			{visibility.features && homePage.features?.length > 0 && (
+				<FeatureHighlights features={homePage.features} />
+			)}
 
 			{/* Image Gallery */}
 			{visibility.imageGallery &&

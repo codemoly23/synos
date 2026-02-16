@@ -16,6 +16,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { Package, ArrowRight, Sparkles } from "lucide-react";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
+import { CategoryFilterBar } from "@/components/utrustning/CategoryFilterBar";
 
 /**
  * Utrustning (Equipment) Overview Page
@@ -279,32 +280,10 @@ export default async function UtrustningPage() {
 			</section>
 
 			{/* Products Grid Section */}
-			<section className="py-16">
+			<section className="pt-6 pb-16">
 				<div className="_container">
-					{/* Category Filter Pills */}
-					<div className="mb-12 flex flex-wrap gap-3">
-						<Link href="/utrustning">
-							<Badge
-								variant="default"
-								className="px-4 py-2 text-sm cursor-pointer bg-primary text-white hover:bg-primary/90"
-							>
-								Alla produkter
-							</Badge>
-						</Link>
-						{categories.map((category) => (
-							<Link
-								key={category._id.toString()}
-								href={`/kategori/${category.slug}`}
-							>
-								<Badge
-									variant="outline"
-									className="px-4 py-2 text-sm cursor-pointer hover:bg-primary/10 hover:border-primary"
-								>
-									{category.name}
-								</Badge>
-							</Link>
-						))}
-					</div>
+					{/* Category Filter Bar with Dropdowns */}
+					<CategoryFilterBar />
 
 					{/* Products Grid */}
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
