@@ -1,9 +1,11 @@
 "use client";
 
-import { Palette, BarChart3 } from "lucide-react";
+import { Palette, BarChart3, ScanSearch, ExternalLink } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Custom404Form } from "./custom-404-form";
 import { FourOhFourLogsTable } from "./four-oh-four-logs-table";
+import { LinkAuditTab } from "./link-audit-tab";
+import { ExternalLinksTab } from "./external-links-tab";
 
 export default function LinkManagementPage() {
 	return (
@@ -13,12 +15,20 @@ export default function LinkManagementPage() {
 					Link Management
 				</h1>
 				<p className="text-muted-foreground">
-					Customize the 404 error page and monitor broken links.
+					Manage links, audit link health, and customize the 404 error page.
 				</p>
 			</div>
 
-			<Tabs defaultValue="custom-404" className="space-y-6">
+			<Tabs defaultValue="link-audit" className="space-y-6">
 				<TabsList>
+					<TabsTrigger value="link-audit" className="gap-2">
+						<ScanSearch className="h-4 w-4" />
+						Automated Link Checking
+					</TabsTrigger>
+					<TabsTrigger value="external-links" className="gap-2">
+						<ExternalLink className="h-4 w-4" />
+						External Link Validation
+					</TabsTrigger>
 					<TabsTrigger value="custom-404" className="gap-2">
 						<Palette className="h-4 w-4" />
 						Custom 404 Page
@@ -28,6 +38,14 @@ export default function LinkManagementPage() {
 						404 Monitoring
 					</TabsTrigger>
 				</TabsList>
+
+				<TabsContent value="link-audit">
+					<LinkAuditTab />
+				</TabsContent>
+
+				<TabsContent value="external-links">
+					<ExternalLinksTab />
+				</TabsContent>
 
 				<TabsContent value="custom-404">
 					<Custom404Form />
