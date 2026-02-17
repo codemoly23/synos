@@ -42,6 +42,7 @@ export const CACHE_TAGS = {
 	TRAINING_PAGE: "training-page",
 	FAQ_PAGE: "faq-page",
 	CONTACT_PAGE: "contact-page",
+	CUSTOM_404_PAGE: "custom-404-page",
 
 	// Sitemaps
 	SITEMAPS: "sitemaps",

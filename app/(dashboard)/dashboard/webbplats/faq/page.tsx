@@ -34,6 +34,7 @@ import { toast } from "sonner";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 
 // ============================================================================
@@ -122,6 +123,7 @@ const faqPageSeoSchema = z.object({
 	description: z.string().max(300).optional(),
 	keywords: z.array(z.string().max(50)).optional(),
 	ogImage: z.string().max(500).optional(),
+	focusKeyphrase: z.string().max(100).optional(),
 });
 
 const formSchema = z.object({
@@ -185,6 +187,7 @@ const defaultValues: FormData = {
 		description: "",
 		keywords: [],
 		ogImage: "",
+		focusKeyphrase: "",
 	},
 };
 
@@ -1168,120 +1171,156 @@ export default function FAQAdminPage() {
 					{/* SEO Tab */}
 					<TabsContent value="seo" className="space-y-6">
 						<div className="grid gap-6 lg:grid-cols-2">
-							<Card>
-								<CardHeader>
-									<CardTitle>SEO Settings</CardTitle>
-									<CardDescription>
-										Search engine optimization for the FAQ page.
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="seo.title">Page Title</Label>
-										<Input
-											id="seo.title"
-											{...form.register("seo.title")}
-											value={form.watch("seo.title") || ""}
-											placeholder="FAQ - Vanliga frågor och svar"
-										/>
-										<p className="text-sm text-muted-foreground">
-											Displayed in browser tab and search results.
-										</p>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="seo.description">Meta Description</Label>
-										<Textarea
-											id="seo.description"
-											{...form.register("seo.description")}
-											value={form.watch("seo.description") || ""}
-											placeholder="Har du frågor om Synos Medical..."
-											rows={3}
-										/>
-										<p className="text-sm text-muted-foreground">
-											Short description shown in search results.
-										</p>
-									</div>
-									<div className="space-y-2">
-										<Label>OG Image</Label>
-										<MediaPicker
-											type="image"
-											value={form.watch("seo.ogImage") || null}
-											onChange={(url) => form.setValue("seo.ogImage", url || "")}
-											placeholder="Select OG image (1200x630px recommended)"
-											galleryTitle="Select OG Image"
-										/>
-										<p className="text-sm text-muted-foreground">
-											Image shown when sharing on social media.
-										</p>
-									</div>
-									<div className="space-y-2">
-										<Label>Keywords</Label>
+							<div className="space-y-6">
+								<Card>
+									<CardHeader>
+										<CardTitle>SEO Settings</CardTitle>
+										<CardDescription>
+											Search engine optimization for the FAQ page
+										</CardDescription>
+									</CardHeader>
+									<CardContent className="space-y-6">
 										<div className="space-y-2">
-											{seoKeywords.fields.map((field, index) => (
-												<div
-													key={field.id}
-													className="flex items-center gap-2"
-												>
-													<Input
-														{...form.register(
-															`seo.keywords.${index}` as const
-														)}
-														value={form.watch(`seo.keywords.${index}`) || ""}
-														placeholder="Keyword"
-													/>
-													<Button
-														type="button"
-														variant="ghost"
-														size="icon"
-														onClick={async () => {
-															const confirmed = await confirm({
-																title: "Remove Keyword",
-																description: "Are you sure you want to remove this keyword?",
-																confirmText: "Remove",
-															});
-															if (confirmed) seoKeywords.remove(index);
-														}}
-													>
-														<Trash2 className="h-4 w-4 text-destructive" />
-													</Button>
-												</div>
-											))}
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												onClick={() =>
-													seoKeywords.append("" as never)
-												}
-											>
-												<Plus className="mr-2 h-4 w-4" />
-												Add Keyword
-											</Button>
+											<Label>Focus Keyphrase</Label>
+											<Input
+												{...form.register("seo.focusKeyphrase")}
+												placeholder="Enter focus keyphrase e.g. vanliga frågor synos"
+											/>
+											<p className="text-xs text-muted-foreground">The keyword or phrase you want this page to rank for.</p>
 										</div>
-									</div>
-								</CardContent>
-							</Card>
 
-							<Card>
-								<CardHeader>
-									<CardTitle>Preview</CardTitle>
-									<CardDescription>
-										See how the FAQ page appears in search results and social media.
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<SeoPreview
-										data={{
-											title: form.watch("seo.title") || "FAQ - Synos Medical",
-											description: form.watch("seo.description") || "Add a description",
-											slug: "faq",
-											ogImage: form.watch("seo.ogImage") || null,
-											siteName: "Synos Medical",
-											siteUrl: "www.synos.se",
-										}}
-									/>
-								</CardContent>
-							</Card>
+										<div className="space-y-2">
+											<Label>Meta Title</Label>
+											<Input
+												{...form.register("seo.title")}
+												placeholder="FAQ - Vanliga frågor och svar"
+												maxLength={70}
+											/>
+											<CharacterCount
+												value={form.watch("seo.title") || ""}
+												min={30}
+												max={70}
+												optimal={{ min: 50, max: 60 }}
+												label="Title length"
+											/>
+										</div>
+
+										<div className="space-y-2">
+											<Label>Meta Description</Label>
+											<Textarea
+												{...form.register("seo.description")}
+												placeholder="Har du frågor om Synos Medical..."
+												rows={3}
+												maxLength={200}
+											/>
+											<CharacterCount
+												value={form.watch("seo.description") || ""}
+												min={80}
+												max={200}
+												optimal={{ min: 120, max: 160 }}
+												label="Description length"
+											/>
+										</div>
+
+										<div className="space-y-2">
+											<Label>Open Graph Image</Label>
+											<MediaPicker
+												type="image"
+												value={form.watch("seo.ogImage") || null}
+												onChange={(url) => form.setValue("seo.ogImage", url || "")}
+												placeholder="Select OG image (1200x630px recommended)"
+												galleryTitle="Select OG Image"
+											/>
+										</div>
+
+										<div className="space-y-2">
+											<Label>Keywords</Label>
+											<div className="space-y-2">
+												{seoKeywords.fields.map((field, index) => (
+													<div
+														key={field.id}
+														className="flex items-center gap-2"
+													>
+														<Input
+															{...form.register(
+																`seo.keywords.${index}` as const
+															)}
+															value={form.watch(`seo.keywords.${index}`) || ""}
+															placeholder="Keyword"
+														/>
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															onClick={async () => {
+																const confirmed = await confirm({
+																	title: "Remove Keyword",
+																	description: "Are you sure you want to remove this keyword?",
+																	confirmText: "Remove",
+																});
+																if (confirmed) seoKeywords.remove(index);
+															}}
+														>
+															<Trash2 className="h-4 w-4 text-destructive" />
+														</Button>
+													</div>
+												))}
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() =>
+														seoKeywords.append("" as never)
+													}
+												>
+													<Plus className="mr-2 h-4 w-4" />
+													Add Keyword
+												</Button>
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+
+								<SeoAnalysis
+									data={{
+										title: form.watch("seo.title") || "",
+										description: form.watch("seo.description") || "",
+										slug: "faq",
+										focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+										hasOgImage: !!form.watch("seo.ogImage"),
+									}}
+								/>
+
+								<ReadabilityAnalysis
+									data={{
+										content: "",
+										title: form.watch("seo.title") || "",
+									}}
+								/>
+							</div>
+
+							<div className="space-y-6">
+								<Card>
+									<CardHeader>
+										<CardTitle>Preview</CardTitle>
+										<CardDescription>
+											See how the FAQ page appears in search results and social media
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<SeoPreview
+											data={{
+												title: form.watch("seo.title") || "FAQ - Synos Medical",
+												description: form.watch("seo.description") || "Add a description",
+												slug: "faq",
+												ogImage: form.watch("seo.ogImage") || null,
+												siteName: "Synos Medical",
+												siteUrl: "www.synos.se",
+											}}
+										/>
+									</CardContent>
+								</Card>
+							</div>
 						</div>
 					</TabsContent>
 				</Tabs>

@@ -117,6 +117,7 @@ export const homePageSeoSchema = z.object({
 	title: z.string().max(100).optional(),
 	description: z.string().max(500).optional(),
 	ogImage: z.string().optional(),
+	focusKeyphrase: z.string().max(100).optional(),
 });
 
 /**

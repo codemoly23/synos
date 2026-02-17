@@ -42,6 +42,7 @@ import {
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 import {
 	updateAboutPageSchema,
 	aboutSectionVisibilitySchema,
@@ -169,6 +170,7 @@ const formSchema = z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
 		ogImage: z.string().optional(),
+		focusKeyphrase: z.string().optional(),
 	}),
 });
 
@@ -1308,64 +1310,110 @@ export default function AboutPageCMS() {
 				{/* SEO Tab */}
 				<TabsContent value="seo" className="space-y-6">
 					<div className="grid gap-6 lg:grid-cols-2">
-						<Card>
-							<CardHeader>
-								<CardTitle>SEO Settings</CardTitle>
-								<CardDescription>
-									Search engine optimization for the about page
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<div className="space-y-2">
-									<Label>Meta Title</Label>
-									<Input
-										{...form.register("seo.title")}
-										placeholder="Om oss - Synos Medical"
-									/>
-								</div>
+						<div className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle>SEO Settings</CardTitle>
+									<CardDescription>
+										Search engine optimization for the about page
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-6">
+									<div className="space-y-2">
+										<Label>Focus Keyphrase</Label>
+										<Input
+											{...form.register("seo.focusKeyphrase")}
+											placeholder="Enter focus keyphrase e.g. about synos medical"
+										/>
+										<p className="text-xs text-muted-foreground">The keyword or phrase you want this page to rank for.</p>
+									</div>
 
-								<div className="space-y-2">
-									<Label>Meta Description</Label>
-									<Textarea
-										{...form.register("seo.description")}
-										placeholder="SEO description for search engines..."
-										rows={3}
-									/>
-								</div>
+									<div className="space-y-2">
+										<Label>Meta Title</Label>
+										<Input
+											{...form.register("seo.title")}
+											placeholder="Om oss - Synos Medical"
+											maxLength={70}
+										/>
+										<CharacterCount
+											value={form.watch("seo.title") || ""}
+											min={30}
+											max={70}
+											optimal={{ min: 50, max: 60 }}
+											label="Title length"
+										/>
+									</div>
 
-								<div className="space-y-2">
-									<Label>Open Graph Image</Label>
-									<MediaPicker
-										type="image"
-										value={form.watch("seo.ogImage") || null}
-										onChange={(url) => form.setValue("seo.ogImage", url || "")}
-										placeholder="Select OG image (1200x630px recommended)"
-										galleryTitle="Select OG Image"
-									/>
-								</div>
-							</CardContent>
-						</Card>
+									<div className="space-y-2">
+										<Label>Meta Description</Label>
+										<Textarea
+											{...form.register("seo.description")}
+											placeholder="SEO description for search engines..."
+											rows={3}
+											maxLength={200}
+										/>
+										<CharacterCount
+											value={form.watch("seo.description") || ""}
+											min={80}
+											max={200}
+											optimal={{ min: 120, max: 160 }}
+											label="Description length"
+										/>
+									</div>
 
-						<Card>
-							<CardHeader>
-								<CardTitle>Preview</CardTitle>
-								<CardDescription>
-									See how the about page appears in search results
-								</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<SeoPreview
-									data={{
-										title: form.watch("seo.title") || "Om oss - Synos Medical",
-										description: form.watch("seo.description") || "Add a description",
-										slug: "om-oss",
-										ogImage: form.watch("seo.ogImage") || null,
-										siteName: "Synos Medical",
-										siteUrl: "www.synos.se",
-									}}
-								/>
-							</CardContent>
-						</Card>
+									<div className="space-y-2">
+										<Label>Open Graph Image</Label>
+										<MediaPicker
+											type="image"
+											value={form.watch("seo.ogImage") || null}
+											onChange={(url) => form.setValue("seo.ogImage", url || "")}
+											placeholder="Select OG image (1200x630px recommended)"
+											galleryTitle="Select OG Image"
+										/>
+									</div>
+								</CardContent>
+							</Card>
+
+							<SeoAnalysis
+								data={{
+									title: form.watch("seo.title") || "",
+									description: form.watch("seo.description") || "",
+									slug: "om-oss",
+									focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+									hasOgImage: !!form.watch("seo.ogImage"),
+								}}
+							/>
+
+							<ReadabilityAnalysis
+								data={{
+									content: "",
+									title: form.watch("seo.title") || "",
+								}}
+							/>
+						</div>
+
+						<div className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle>Preview</CardTitle>
+									<CardDescription>
+										See how the about page appears in search results
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<SeoPreview
+										data={{
+											title: form.watch("seo.title") || "Om oss - Synos Medical",
+											description: form.watch("seo.description") || "Add a description",
+											slug: "om-oss",
+											ogImage: form.watch("seo.ogImage") || null,
+											siteName: "Synos Medical",
+											siteUrl: "www.synos.se",
+										}}
+									/>
+								</CardContent>
+							</Card>
+						</div>
 					</div>
 				</TabsContent>
 			</Tabs>

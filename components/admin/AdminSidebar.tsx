@@ -33,6 +33,7 @@ import {
 	Award,
 	BookOpen,
 	Presentation,
+	Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -192,6 +193,11 @@ const navSections: NavSection[] = [
 				title: "Storage",
 				href: "/dashboard/storage",
 				icon: HardDrive,
+			},
+			{
+				title: "Link Management",
+				href: "/dashboard/link-management",
+				icon: Link2,
 			},
 		],
 	},

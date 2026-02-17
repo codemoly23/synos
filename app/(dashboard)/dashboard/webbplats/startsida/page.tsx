@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,6 +58,11 @@ import {
 } from "@/components/ui/select";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import {
+	SeoAnalysis,
+	CharacterCount,
+	ReadabilityAnalysis,
+} from "@/components/admin/seo";
 import { Switch } from "@/components/ui/switch";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
@@ -316,6 +321,7 @@ const homePageFormSchema = z.object({
 			title: z.string().optional(),
 			description: z.string().optional(),
 			ogImage: z.string().optional(),
+			focusKeyphrase: z.string().optional(),
 		})
 		.optional(),
 });
@@ -400,9 +406,86 @@ export default function StartsidaPage() {
 				title: "",
 				description: "",
 				ogImage: "",
+				focusKeyphrase: "",
 			},
 		},
 	});
+
+	// Collect all page text content for SEO/Readability analysis
+	const allFormValues = form.watch();
+	const aggregatedPageContent = useMemo(() => {
+		const parts: string[] = [];
+
+		// Hero slides
+		const slides = allFormValues.hero?.slides || [];
+		for (const slide of slides) {
+			if (slide.badge) parts.push(`<p>${slide.badge}</p>`);
+			if (slide.title) parts.push(`<h1>${slide.title}${slide.titleHighlight ? " " + slide.titleHighlight : ""}</h1>`);
+			if (slide.subtitle) parts.push(`<p>${slide.subtitle}</p>`);
+			if (slide.trustIndicators) {
+				for (const ti of slide.trustIndicators) {
+					if (ti.text) parts.push(`<p>${ti.text}</p>`);
+				}
+			}
+		}
+
+		// Features
+		const features = allFormValues.features || [];
+		for (const f of features) {
+			if (f.title) parts.push(`<h3>${f.title}</h3>`);
+			if (f.description) parts.push(`<p>${f.description}</p>`);
+		}
+
+		// Product Showcase
+		const ps = allFormValues.productShowcase;
+		if (ps?.title) parts.push(`<h2>${ps.title}</h2>`);
+		if (ps?.subtitle) parts.push(`<p>${ps.subtitle}</p>`);
+		for (const p of ps?.products || []) {
+			if (p.name) parts.push(`<h3>${p.name}</h3>`);
+			if (p.description) parts.push(`<p>${p.description}</p>`);
+			if (p.category) parts.push(`<p>${p.category}</p>`);
+		}
+
+		// Process Steps
+		const pss = allFormValues.processStepsSection;
+		if (pss?.title) parts.push(`<h2>${pss.title}</h2>`);
+		if (pss?.subtitle) parts.push(`<p>${pss.subtitle}</p>`);
+		for (const step of pss?.steps || []) {
+			if (step.title) parts.push(`<h3>${step.title}</h3>`);
+			if (step.description) parts.push(`<p>${step.description}</p>`);
+		}
+
+		// About Section
+		const about = allFormValues.aboutSection;
+		if (about?.title) parts.push(`<h2>${about.title}${about.titleHighlight ? " " + about.titleHighlight : ""}</h2>`);
+		if (about?.content) parts.push(`<p>${about.content}</p>`);
+		for (const b of about?.benefits || []) {
+			if (b) parts.push(`<p>${b}</p>`);
+		}
+
+		// Testimonials
+		const ts = allFormValues.testimonialsSection;
+		if (ts?.title) parts.push(`<h2>${ts.title}</h2>`);
+		if (ts?.subtitle) parts.push(`<p>${ts.subtitle}</p>`);
+		for (const t of ts?.testimonials || []) {
+			if (t.quote) parts.push(`<p>${t.quote}</p>`);
+		}
+
+		// Image Gallery
+		const ig = allFormValues.imageGallery;
+		if (ig?.title) parts.push(`<h2>${ig.title}</h2>`);
+		if (ig?.subtitle) parts.push(`<p>${ig.subtitle}</p>`);
+
+		// CTA Section
+		const cta = allFormValues.ctaSection;
+		if (cta?.title) parts.push(`<h2>${cta.title}</h2>`);
+		if (cta?.subtitle) parts.push(`<p>${cta.subtitle}</p>`);
+
+		// Rich Content
+		if (allFormValues.richContent) parts.push(allFormValues.richContent);
+
+		return parts.join("\n");
+	}, [allFormValues]);
 
 	// Field arrays for dynamic lists
 	const {
@@ -594,6 +677,7 @@ export default function StartsidaPage() {
 						title: content.seo?.title || "",
 						description: content.seo?.description || "",
 						ogImage: content.seo?.ogImage || "",
+						focusKeyphrase: content.seo?.focusKeyphrase || "",
 					},
 				});
 			} catch (error) {
@@ -3195,112 +3279,171 @@ export default function StartsidaPage() {
 						{/* SEO Tab */}
 						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-										<CardDescription>
-											Search engine optimization for the home page.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Page Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
+								{/* Left Column - SEO Settings + Analysis */}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+											<CardDescription>
+												Search engine optimization for the home page.
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											{/* Focus Keyphrase */}
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Enter focus keyphrase e.g. medical equipment"
+															/>
+														</FormControl>
+														<FormDescription>
+															The keyword or phrase you want this page to rank for.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+
+											{/* Page Title */}
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Synos Medical - Medical Equipment"
+																maxLength={70}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="Synos Medical - Medical Equipment"
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Displayed in browser tab and search
-														results.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															{...field}
+											{/* Meta Description */}
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																{...field}
+																value={field.value || ""}
+																placeholder="Sweden's leading supplier of medical equipment..."
+																rows={3}
+																maxLength={200}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="Sweden's leading supplier..."
-															rows={3}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Short description shown in search
-														results.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) =>
-																field.onChange(url || "")
-															}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image shown when sharing on social
-														media.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
+											{/* OG Image */}
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) =>
+																	field.onChange(url || "")
+																}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image shown when sharing on social
+															media.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
 
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-										<CardDescription>
-											See how the home page appears in search results
-											and social media.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title:
-													form.watch("seo.title") ||
-													"Synos Medical - Medical Equipment",
-												description:
-													form.watch("seo.description") ||
-													"Add a description",
-												slug: "",
-												ogImage: form.watch("seo.ogImage") || null,
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+									{/* SEO Analysis */}
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+											pageContent: aggregatedPageContent,
+										}}
+									/>
+
+									{/* Readability Analysis */}
+									<ReadabilityAnalysis
+										data={{
+											content: aggregatedPageContent,
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								{/* Right Column - Preview */}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+											<CardDescription>
+												See how the home page appears in search results
+												and social media.
+											</CardDescription>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title:
+														form.watch("seo.title") ||
+														"Synos Medical - Medical Equipment",
+													description:
+														form.watch("seo.description") ||
+														"Add a description",
+													slug: "",
+													ogImage: form.watch("seo.ogImage") || null,
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

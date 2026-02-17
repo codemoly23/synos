@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 // Available icons for benefits
@@ -159,6 +160,7 @@ const formSchema = z.object({
 		.optional(),
 	seo: z
 		.object({
+			focusKeyphrase: z.string().max(100).optional(),
 			title: z.string().max(100).optional(),
 			description: z.string().max(300).optional(),
 			ogImage: z.string().max(500).optional(),
@@ -1552,99 +1554,151 @@ export default function CareersPageAdmin() {
 						</TabsContent>
 
 						{/* SEO Tab */}
-						<TabsContent value="seo" className="space-y-4">
+						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Title</FormLabel>
-													<FormControl>
-														<Input
-															placeholder="Lediga Tjänster | Synos Medical"
-															{...field}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Enter focus keyphrase e.g. lediga tjänster synos medical"
+																{...field}
+																value={field.value || ""}
+															/>
+														</FormControl>
+														<FormDescription>
+															The keyword or phrase you want this page to rank for.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Lediga Tjänster | Synos Medical"
+																{...field}
+																value={field.value || ""}
+																maxLength={70}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 50-60 characters
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															placeholder="Bli en del av Synos Medical-teamet. Se våra lediga tjänster och ansök idag."
-															rows={3}
-															{...field}
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																placeholder="Bli en del av Synos Medical-teamet. Se våra lediga tjänster och ansök idag."
+																rows={3}
+																{...field}
+																value={field.value || ""}
+																maxLength={200}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 150-160 characters
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) => field.onChange(url || "")}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image displayed when the page is shared on social
-														media
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title:
-													form.watch("seo.title") ||
-													"Lediga Tjänster - Synos Medical",
-												description:
-													form.watch("seo.description") || "Add a description",
-												ogImage: form.watch("seo.ogImage") || null,
-												slug: "om-oss/lediga-tjanster",
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) => field.onChange(url || "")}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image displayed when the page is shared on social
+															media
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
+
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "om-oss/lediga-tjanster",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									<ReadabilityAnalysis
+										data={{
+											content: "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title:
+														form.watch("seo.title") ||
+														"Lediga Tjänster - Synos Medical",
+													description:
+														form.watch("seo.description") || "Add a description",
+													ogImage: form.watch("seo.ogImage") || null,
+													slug: "om-oss/lediga-tjanster",
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

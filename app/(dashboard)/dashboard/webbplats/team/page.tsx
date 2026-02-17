@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 
 // Section Visibility schema
@@ -120,6 +121,7 @@ const teamPageFormSchema = z.object({
 			title: z.string().optional(),
 			description: z.string().optional(),
 			ogImage: z.string().optional(),
+			focusKeyphrase: z.string().optional(),
 		})
 		.optional(),
 });
@@ -1130,99 +1132,149 @@ export default function TeamPageAdmin() {
 						{/* SEO Tab */}
 						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-										<CardDescription>
-											Search engine optimization for the team page.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Page Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+											<CardDescription>
+												Search engine optimization for the team page.
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Enter focus keyphrase"
+															/>
+														</FormControl>
+														<FormDescription>
+															The keyword or phrase you want this page to rank for.
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Vårt Team - Synos Medical"
+																maxLength={70}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="Vårt Team - Synos Medical"
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Displayed in browser tab and search results.
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															{...field}
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																{...field}
+																value={field.value || ""}
+																placeholder="En kort beskrivning av team-sidan..."
+																rows={3}
+																maxLength={200}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="En kort beskrivning av team-sidan..."
-															rows={3}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Short description shown in search results.
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) =>
-																field.onChange(url || "")
-															}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image shown when sharing on social media.
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) =>
+																	field.onChange(url || "")
+																}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image shown when sharing on social media.
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
 
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-										<CardDescription>
-											See how the team page appears in search results and social media.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title: form.watch("seo.title") || "Vårt Team - Synos Medical",
-												description: form.watch("seo.description") || "Add a description",
-												slug: "om-oss/team",
-												ogImage: form.watch("seo.ogImage") || null,
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "om-oss/team",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									<ReadabilityAnalysis
+										data={{
+											content: "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+											<CardDescription>
+												See how the team page appears in search results and social media.
+											</CardDescription>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title: form.watch("seo.title") || "Vårt Team - Synos Medical",
+													description: form.watch("seo.description") || "Add a description",
+													slug: "om-oss/team",
+													ogImage: form.watch("seo.ogImage") || null,
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

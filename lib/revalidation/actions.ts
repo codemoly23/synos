@@ -267,3 +267,11 @@ export async function revalidateContactPage(): Promise<void> {
 	revalidateTag(CACHE_TAGS.CONTACT_PAGE, "default");
 	revalidatePath(PATHS.CONTACT);
 }
+
+/**
+ * Revalidate custom 404 page
+ * Call this when custom 404 page content is updated
+ */
+export async function revalidateCustom404Page(): Promise<void> {
+	revalidateTag(CACHE_TAGS.CUSTOM_404_PAGE, "default");
+}
