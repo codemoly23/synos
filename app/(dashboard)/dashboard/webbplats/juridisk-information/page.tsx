@@ -39,6 +39,7 @@ import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 
 // Icon options
 const ICON_OPTIONS = [
@@ -202,6 +203,7 @@ const legalPageFormSchema = z.object({
 			title: z.string().optional(),
 			description: z.string().optional(),
 			ogImage: z.string().optional(),
+			focusKeyphrase: z.string().optional(),
 		})
 		.optional(),
 });
@@ -2028,93 +2030,147 @@ export default function LegalPageAdmin() {
 						{/* SEO Tab */}
 						<TabsContent value="seo" className="space-y-4">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+											<CardDescription>
+												Optimize this page for search engines
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="t.ex. juridisk information synos"
+															/>
+														</FormControl>
+														<FormDescription>
+															The main keyword or phrase you want this page to rank for
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title (SEO)</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="t.ex. Juridisk Information | Synos Medical"
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="t.ex. Juridisk Information | Synos Medical"
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 50-60 characters
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															{...field}
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																{...field}
+																value={field.value || ""}
+																placeholder="Beskrivning för sökmotorer..."
+																rows={3}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
-															placeholder="Beskrivning för sökmotorer..."
-															rows={3}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 150-160 characters
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) =>
-																field.onChange(url || "")
-															}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image displayed when shared on social
-														media
-													</FormDescription>
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title: form.watch("seo.title") || "Juridisk Information - Synos Medical",
-												description: form.watch("seo.description") || "Add a description",
-												ogImage: form.watch("seo.ogImage") || null,
-												slug: "om-oss/juridisk-information",
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) =>
+																	field.onChange(url || "")
+																}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image displayed when shared on social media (1200x630px recommended)
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
+
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "om-oss/juridisk-information",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									<ReadabilityAnalysis
+										data={{
+											content: form.watch("seo.description") || "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								<div>
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+											<CardDescription>
+												How this page may appear in search results
+											</CardDescription>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title: form.watch("seo.title") || "Juridisk Information - Synos Medical",
+													description: form.watch("seo.description") || "Add a description",
+													ogImage: form.watch("seo.ogImage") || null,
+													slug: "om-oss/juridisk-information",
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

@@ -34,8 +34,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 
@@ -111,6 +113,7 @@ const kontaktPageFormSchema = z.object({
 
 	// SEO
 	seo: z.object({
+		focusKeyphrase: z.string().optional(),
 		title: z.string().optional(),
 		description: z.string().optional(),
 		ogImage: z.string().optional(),
@@ -146,7 +149,7 @@ export default function KontaktPage() {
 				closedText: "",
 			},
 			faqSection: { badge: "", title: "", subtitle: "", faqs: [] },
-			seo: { title: "", description: "", ogImage: "" },
+			seo: { focusKeyphrase: "", title: "", description: "", ogImage: "" },
 		},
 	});
 
@@ -214,6 +217,7 @@ export default function KontaktPage() {
 						faqs: content.faqSection?.faqs || [],
 					},
 					seo: {
+						focusKeyphrase: content.seo?.focusKeyphrase || "",
 						title: content.seo?.title || "",
 						description: content.seo?.description || "",
 						ogImage: content.seo?.ogImage || "",
@@ -950,107 +954,115 @@ export default function KontaktPage() {
 						{/* SEO Tab */}
 						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-										<CardDescription>
-											Search engine optimization for the contact page.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Page Title</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={field.value || ""}
-															placeholder="Contact Us - Synos Medical"
-														/>
-													</FormControl>
-													<FormDescription>
-														Displayed in the browser tab and search results.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+											<CardDescription>
+												Search engine optimization for the contact page.
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											<div className="space-y-2">
+												<Label>Focus Keyphrase</Label>
+												<Input
+													{...form.register("seo.focusKeyphrase")}
+													placeholder="Enter focus keyphrase e.g. contact synos medical"
+												/>
+												<p className="text-xs text-muted-foreground">The keyword or phrase you want this page to rank for.</p>
+											</div>
 
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															{...field}
-															value={field.value || ""}
-															placeholder="Contact Synos Medical for questions..."
-															rows={3}
-														/>
-													</FormControl>
-													<FormDescription>
-														Short description displayed in search results.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+											<div className="space-y-2">
+												<Label>Page Title</Label>
+												<Input
+													{...form.register("seo.title")}
+													placeholder="Contact Us - Synos Medical"
+													maxLength={70}
+												/>
+												<CharacterCount
+													value={form.watch("seo.title") || ""}
+													min={30}
+													max={70}
+													optimal={{ min: 50, max: 60 }}
+													label="Title length"
+												/>
+											</div>
 
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) => field.onChange(url || "")}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image displayed when sharing on social media.
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
+											<div className="space-y-2">
+												<Label>Meta Description</Label>
+												<Textarea
+													{...form.register("seo.description")}
+													placeholder="Contact Synos Medical for questions..."
+													rows={3}
+													maxLength={200}
+												/>
+												<CharacterCount
+													value={form.watch("seo.description") || ""}
+													min={80}
+													max={200}
+													optimal={{ min: 120, max: 160 }}
+													label="Description length"
+												/>
+											</div>
 
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-										<CardDescription>
-											See how the contact page appears in search results and social
-											media.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title:
-													form.watch("seo.title") ||
-													"Contact Us - Synos Medical",
-												description:
-													form.watch("seo.description") ||
-													"Add a description",
-												slug: "kontakt",
-												ogImage: form.watch("seo.ogImage") || null,
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+											<div className="space-y-2">
+												<Label>Open Graph Image</Label>
+												<MediaPicker
+													type="image"
+													value={form.watch("seo.ogImage") || null}
+													onChange={(url) => form.setValue("seo.ogImage", url || "")}
+													placeholder="Select OG image (1200x630px recommended)"
+													galleryTitle="Select OG Image"
+												/>
+											</div>
+										</CardContent>
+									</Card>
+
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "kontakt",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									<ReadabilityAnalysis
+										data={{
+											content: "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+											<CardDescription>
+												See how the contact page appears in search results and social
+												media.
+											</CardDescription>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title:
+														form.watch("seo.title") ||
+														"Contact Us - Synos Medical",
+													description:
+														form.watch("seo.description") ||
+														"Add a description",
+													slug: "kontakt",
+													ogImage: form.watch("seo.ogImage") || null,
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

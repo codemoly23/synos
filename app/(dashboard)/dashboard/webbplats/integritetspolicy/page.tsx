@@ -18,13 +18,14 @@ import {
 	FormDescription,
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 
 // Local Zod schema for the form
 const formSchema = z.object({
@@ -254,6 +255,7 @@ const formSchema = z.object({
 		.optional(),
 	seo: z
 		.object({
+			focusKeyphrase: z.string().max(100).optional(),
 			title: z.string().max(100).optional(),
 			description: z.string().max(300).optional(),
 			ogImage: z.string().max(500).optional(),
@@ -1436,99 +1438,155 @@ export default function PrivacyPageAdmin() {
 						</TabsContent>
 
 						{/* SEO Tab */}
-						<TabsContent value="seo" className="space-y-4">
+						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>SEO Settings</CardTitle>
-									</CardHeader>
-									<CardContent className="space-y-4">
-										<FormField
-											control={form.control}
-											name="seo.title"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Title</FormLabel>
-													<FormControl>
-														<Input
-															placeholder="Integritetspolicy - Synos Medical"
-															{...field}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+											<CardDescription>
+												Search engine optimization for the privacy policy page.
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Enter focus keyphrase e.g. integritetspolicy"
+															/>
+														</FormControl>
+														<FormDescription>
+															The keyword or phrase you want this page to rank for.
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Integritetspolicy - Synos Medical"
+																{...field}
+																value={field.value || ""}
+																maxLength={70}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 50-60 characters
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.description"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Meta Description</FormLabel>
-													<FormControl>
-														<Textarea
-															placeholder="Läs om hur Synos Medical AB behandlar dina personuppgifter enligt GDPR."
-															rows={3}
-															{...field}
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																placeholder="Läs om hur Synos Medical AB behandlar dina personuppgifter enligt GDPR."
+																rows={3}
+																{...field}
+																value={field.value || ""}
+																maxLength={200}
+															/>
+														</FormControl>
+														<CharacterCount
 															value={field.value || ""}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
 														/>
-													</FormControl>
-													<FormDescription>
-														Recommended length: 150-160 characters
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<FormField
-											control={form.control}
-											name="seo.ogImage"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>OG Image</FormLabel>
-													<FormControl>
-														<MediaPicker
-															type="image"
-															value={field.value || null}
-															onChange={(url) =>
-																field.onChange(url || "")
-															}
-															placeholder="Select OG image (1200x630px recommended)"
-															galleryTitle="Select OG Image"
-														/>
-													</FormControl>
-													<FormDescription>
-														Image displayed when the page is
-														shared on social media
-													</FormDescription>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</CardContent>
-								</Card>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) =>
+																	field.onChange(url || "")
+																}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image displayed when the page is
+															shared on social media.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
 
-								<Card>
-									<CardHeader>
-										<CardTitle>Preview</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title: form.watch("seo.title") || "Integritetspolicy - Synos Medical",
-												description: form.watch("seo.description") || "Add a description",
-												ogImage: form.watch("seo.ogImage") || null,
-												slug: "integritetspolicy",
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "integritetspolicy",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									<ReadabilityAnalysis
+										data={{
+											content: "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+											<CardDescription>
+												See how this page appears in search results and social media.
+											</CardDescription>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title: form.watch("seo.title") || "Integritetspolicy - Synos Medical",
+													description: form.watch("seo.description") || "Add a description",
+													ogImage: form.watch("seo.ogImage") || null,
+													slug: "integritetspolicy",
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>

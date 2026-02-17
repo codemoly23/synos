@@ -213,6 +213,7 @@ export interface IHomePageSeo {
 	title?: string;
 	description?: string;
 	ogImage?: string;
+	focusKeyphrase?: string;
 }
 
 /**
@@ -490,6 +491,7 @@ const HomePageSeoSchema = new Schema<IHomePageSeo>(
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
 		ogImage: { type: String, trim: true },
+		focusKeyphrase: { type: String, trim: true },
 	},
 	{ _id: false }
 );

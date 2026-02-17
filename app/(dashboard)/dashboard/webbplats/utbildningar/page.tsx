@@ -32,6 +32,7 @@ import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
 import { MediaPicker } from "@/components/storage/media-picker";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
+import { SeoAnalysis, CharacterCount, ReadabilityAnalysis } from "@/components/admin/seo";
 
 // Available icons
 const ICONS = [
@@ -126,6 +127,7 @@ const formSchema = z.object({
 		})).optional(),
 	}).optional(),
 	seo: z.object({
+		focusKeyphrase: z.string().max(100).optional(),
 		title: z.string().max(100).optional(),
 		description: z.string().max(300).optional(),
 		ogImage: z.string().max(500).optional(),
@@ -836,60 +838,160 @@ export default function TrainingPageAdmin() {
 						</TabsContent>
 
 						{/* SEO Tab */}
-						<TabsContent value="seo" className="space-y-4">
+						<TabsContent value="seo" className="space-y-6">
 							<div className="grid gap-6 lg:grid-cols-2">
-								<Card>
-									<CardHeader><CardTitle>SEO Settings</CardTitle></CardHeader>
-									<CardContent className="space-y-4">
-										<FormField control={form.control} name="seo.title" render={({ field }) => (
-											<FormItem>
-												<FormLabel>Meta Title</FormLabel>
-												<FormControl><Input placeholder="Utbildningar | Synos Medical" {...field} value={field.value || ""} /></FormControl>
-												<FormDescription>Recommended length: 50-60 characters</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)} />
-										<FormField control={form.control} name="seo.description" render={({ field }) => (
-											<FormItem>
-												<FormLabel>Meta Description</FormLabel>
-												<FormControl><Textarea placeholder="När du köper maskin hos oss ingår även flera dagar utbildning..." rows={3} {...field} value={field.value || ""} /></FormControl>
-												<FormDescription>Recommended length: 150-160 characters</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)} />
-										<FormField control={form.control} name="seo.ogImage" render={({ field }) => (
-											<FormItem>
-												<FormLabel>OG Image</FormLabel>
-												<FormControl>
-													<MediaPicker
-														type="image"
-														value={field.value || null}
-														onChange={(url) => field.onChange(url || "")}
-														placeholder="Select OG image (1200x630px recommended)"
-														galleryTitle="Select OG Image"
-													/>
-												</FormControl>
-												<FormDescription>Image displayed when the page is shared on social media</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)} />
-									</CardContent>
-								</Card>
-								<Card>
-									<CardHeader><CardTitle>Preview</CardTitle></CardHeader>
-									<CardContent>
-										<SeoPreview
-											data={{
-												title: form.watch("seo.title") || "Utbildningar - Synos Medical",
-												description: form.watch("seo.description") || "Add a description",
-												ogImage: form.watch("seo.ogImage") || null,
-												slug: "utbildningar",
-												siteName: "Synos Medical",
-												siteUrl: "www.synos.se",
-											}}
-										/>
-									</CardContent>
-								</Card>
+								{/* Left Column - SEO Settings + Analysis */}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>SEO Settings</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											{/* Focus Keyphrase */}
+											<FormField
+												control={form.control}
+												name="seo.focusKeyphrase"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Focus Keyphrase</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Enter focus keyphrase e.g. utbildningar medicinsk utrustning"
+															/>
+														</FormControl>
+														<FormDescription>
+															The keyword or phrase you want this page to rank for.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+
+											{/* Page Title */}
+											<FormField
+												control={form.control}
+												name="seo.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Page Title</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={field.value || ""}
+																placeholder="Utbildningar | Synos Medical"
+																maxLength={70}
+															/>
+														</FormControl>
+														<CharacterCount
+															value={field.value || ""}
+															min={30}
+															max={70}
+															optimal={{ min: 50, max: 60 }}
+															label="Title length"
+														/>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+
+											{/* Meta Description */}
+											<FormField
+												control={form.control}
+												name="seo.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Meta Description</FormLabel>
+														<FormControl>
+															<Textarea
+																{...field}
+																value={field.value || ""}
+																placeholder="När du köper maskin hos oss ingår även flera dagar utbildning..."
+																rows={3}
+																maxLength={200}
+															/>
+														</FormControl>
+														<CharacterCount
+															value={field.value || ""}
+															min={80}
+															max={200}
+															optimal={{ min: 120, max: 160 }}
+															label="Description length"
+														/>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+
+											{/* OG Image */}
+											<FormField
+												control={form.control}
+												name="seo.ogImage"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>OG Image</FormLabel>
+														<FormControl>
+															<MediaPicker
+																type="image"
+																value={field.value || null}
+																onChange={(url) =>
+																	field.onChange(url || "")
+																}
+																placeholder="Select OG image (1200x630px recommended)"
+																galleryTitle="Select OG Image"
+															/>
+														</FormControl>
+														<FormDescription>
+															Image shown when sharing on social media.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</CardContent>
+									</Card>
+
+									{/* SEO Analysis */}
+									<SeoAnalysis
+										data={{
+											title: form.watch("seo.title") || "",
+											description: form.watch("seo.description") || "",
+											slug: "utbildningar",
+											focusKeyphrase: form.watch("seo.focusKeyphrase") || "",
+											hasOgImage: !!form.watch("seo.ogImage"),
+										}}
+									/>
+
+									{/* Readability Analysis */}
+									<ReadabilityAnalysis
+										data={{
+											content: form.watch("seo.description") || "",
+											title: form.watch("seo.title") || "",
+										}}
+									/>
+								</div>
+
+								{/* Right Column - Preview */}
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle>Preview</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<SeoPreview
+												data={{
+													title: form.watch("seo.title") || "Utbildningar - Synos Medical",
+													description: form.watch("seo.description") || "Add a description",
+													ogImage: form.watch("seo.ogImage") || null,
+													slug: "utbildningar",
+													siteName: "Synos Medical",
+													siteUrl: "www.synos.se",
+												}}
+											/>
+										</CardContent>
+									</Card>
+								</div>
 							</div>
 						</TabsContent>
 					</Tabs>
