@@ -108,6 +108,20 @@ class LinkAuditRepository {
 	}
 
 	/**
+	 * Cancel a running audit
+	 */
+	async cancel(id: string): Promise<void> {
+		await connectMongoose();
+		const LinkAudit = getLinkAuditModelSync();
+		await LinkAudit.findByIdAndUpdate(id, {
+			$set: {
+				status: "cancelled",
+				completedAt: new Date(),
+			},
+		});
+	}
+
+	/**
 	 * Get latest audit
 	 */
 	async getLatest(): Promise<LinkAuditData | null> {

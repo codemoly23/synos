@@ -178,7 +178,8 @@ async function processWithConcurrency<T, R>(
 	items: T[],
 	processor: (item: T) => Promise<R>,
 	concurrency: number,
-	onProgress?: (completed: number, total: number) => void
+	onProgress?: (completed: number, total: number) => void,
+	signal?: AbortSignal
 ): Promise<R[]> {
 	const results: R[] = [];
 	let completed = 0;
@@ -186,6 +187,7 @@ async function processWithConcurrency<T, R>(
 
 	async function runNext(): Promise<void> {
 		while (index < items.length) {
+			if (signal?.aborted) return;
 			const currentIndex = index++;
 			const result = await processor(items[currentIndex]);
 			results[currentIndex] = result;
@@ -205,7 +207,8 @@ async function processWithConcurrency<T, R>(
  */
 export async function checkLinks(
 	extractedLinks: ExtractedLink[],
-	onProgress?: (completed: number, total: number, result?: IAuditedLink) => void
+	onProgress?: (completed: number, total: number, result?: IAuditedLink) => void,
+	signal?: AbortSignal
 ): Promise<IAuditedLink[]> {
 	// Deduplicate URLs to avoid checking the same URL multiple times
 	const urlMap = new Map<string, ExtractedLink[]>();
@@ -232,7 +235,8 @@ export async function checkLinks(
 		CONCURRENCY,
 		(completed, total) => {
 			onProgress?.(completed, total);
-		}
+		},
+		signal
 	);
 
 	// Map results back to all extracted links

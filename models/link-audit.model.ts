@@ -48,7 +48,7 @@ const AuditedLinkSchema = new Schema<IAuditedLink>(
 // ============================================================================
 export interface ILinkAudit extends Document {
 	_id: mongoose.Types.ObjectId;
-	status: "running" | "completed" | "failed";
+	status: "running" | "completed" | "failed" | "cancelled";
 	type: "full" | "internal" | "external";
 	totalLinks: number;
 	checkedLinks: number;
@@ -70,7 +70,7 @@ const LinkAuditSchema = new Schema<ILinkAudit>(
 	{
 		status: {
 			type: String,
-			enum: ["running", "completed", "failed"],
+			enum: ["running", "completed", "failed", "cancelled"],
 			default: "running",
 		},
 		type: {

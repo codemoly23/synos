@@ -13,6 +13,7 @@ import {
 	Clock,
 	ExternalLink,
 	RefreshCw,
+	Square,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ interface AuditedLink {
 
 interface AuditReport {
 	_id: string;
-	status: "running" | "completed" | "failed";
+	status: "running" | "completed" | "failed" | "cancelled";
 	type: string;
 	totalLinks: number;
 	checkedLinks: number;
@@ -82,6 +83,7 @@ export function LinkAuditTab() {
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
 	const [scanType, setScanType] = useState<"full" | "internal" | "external">("full");
+	const [cancelling, setCancelling] = useState(false);
 
 	// Debounced search
 	useEffect(() => {
@@ -124,7 +126,7 @@ export function LinkAuditTab() {
 				if (res.ok) {
 					const data = await res.json();
 					if (data.audit) {
-						if (data.audit.status === "completed") {
+						if (data.audit.status !== "running") {
 							// Fetch full audit with links
 							const fullRes = await fetch(`/api/link-management/audit/${data.audit._id}`);
 							if (fullRes.ok) {
@@ -177,6 +179,27 @@ export function LinkAuditTab() {
 			toast.error("Failed to start audit");
 		} finally {
 			setStarting(false);
+		}
+	}
+
+	// Cancel running audit
+	async function handleCancelAudit() {
+		setCancelling(true);
+		try {
+			const res = await fetch("/api/link-management/audit/cancel", {
+				method: "POST",
+			});
+
+			if (res.ok) {
+				toast.success("Scan cancelled");
+				setAudit((prev) => (prev ? { ...prev, status: "cancelled" } : null));
+			} else {
+				toast.error("Failed to cancel scan");
+			}
+		} catch {
+			toast.error("Failed to cancel scan");
+		} finally {
+			setCancelling(false);
 		}
 	}
 
@@ -243,17 +266,32 @@ export function LinkAuditTab() {
 								<SelectItem value="external">External Links Only</SelectItem>
 							</SelectContent>
 						</Select>
-						<Button
-							onClick={handleStartAudit}
-							disabled={starting || audit?.status === "running"}
-						>
-							{starting || audit?.status === "running" ? (
-								<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-							) : (
-								<Play className="h-4 w-4 mr-2" />
-							)}
-							{audit?.status === "running" ? "Scanning..." : "Start Scan"}
-						</Button>
+						{audit?.status === "running" ? (
+							<Button
+								variant="destructive"
+								onClick={handleCancelAudit}
+								disabled={cancelling}
+							>
+								{cancelling ? (
+									<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+								) : (
+									<Square className="h-4 w-4 mr-2" />
+								)}
+								{cancelling ? "Cancelling..." : "Stop Scan"}
+							</Button>
+						) : (
+							<Button
+								onClick={handleStartAudit}
+								disabled={starting}
+							>
+								{starting ? (
+									<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+								) : (
+									<Play className="h-4 w-4 mr-2" />
+								)}
+								Start Scan
+							</Button>
+						)}
 					</div>
 
 					{/* Progress Bar */}
