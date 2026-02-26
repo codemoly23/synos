@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
 	ChevronLeft,
@@ -21,16 +21,110 @@ interface BeforeAfterShowcaseProps {
 
 type ViewMode = "slider" | "side-by-side";
 
+// SliderComparison is defined OUTSIDE BeforeAfterShowcase.
+// If defined inside, React creates a new function reference on every render,
+// treats it as a new component type, and unmounts/remounts the DOM element —
+// this kills pointer capture mid-drag. Outside = stable type = no remount.
+interface SliderComparisonProps {
+	beforeImage: string;
+	afterImage: string;
+	position: number;
+	onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+	onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void;
+	isLightbox?: boolean;
+}
+
+function SliderComparison({
+	beforeImage,
+	afterImage,
+	position,
+	onPointerDown,
+	onPointerMove,
+	isLightbox = false,
+}: SliderComparisonProps) {
+	return (
+		<div
+			className={cn(
+				"relative w-full overflow-hidden select-none",
+				isLightbox ? "h-full" : "aspect-[4/3] md:aspect-[16/10]"
+			)}
+			style={{ touchAction: "none", cursor: "ew-resize" }}
+			onPointerDown={onPointerDown}
+			onPointerMove={onPointerMove}
+		>
+			{/* After Image (Base layer) */}
+			<div className="absolute inset-0">
+				<Image
+					src={afterImage}
+					alt="After"
+					fill
+					sizes={isLightbox ? "100vw" : "(max-width: 768px) 100vw, 800px"}
+					className="object-cover"
+					priority
+				/>
+				<div className="absolute bottom-4 right-4 bg-emerald-600/90 text-white text-xs px-3 py-1.5 rounded-full font-medium uppercase tracking-wide shadow-lg">
+					Efter
+				</div>
+			</div>
+
+			{/* Before Image (Clipped layer) */}
+			<div
+				className="absolute inset-0 overflow-hidden"
+				style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
+			>
+				<Image
+					src={beforeImage}
+					alt="Before"
+					fill
+					sizes={isLightbox ? "100vw" : "(max-width: 768px) 100vw, 800px"}
+					className="object-cover"
+					priority
+				/>
+				<div className="absolute bottom-4 left-4 bg-slate-800/90 text-white text-xs px-3 py-1.5 rounded-full font-medium uppercase tracking-wide shadow-lg">
+					Före
+				</div>
+			</div>
+
+			{/* Slider Handle — pointer-events-none so the container handles all events */}
+			<div
+				className="absolute top-0 bottom-0 z-10 flex items-center justify-center select-none pointer-events-none"
+				style={{
+					left: `${position}%`,
+					transform: "translateX(-50%)",
+					width: "48px",
+				}}
+			>
+				{/* Visible slider line */}
+				<div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)]" />
+
+				{/* Handle Circle */}
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
+					<div className="flex items-center gap-0.5">
+						<ChevronLeft className="h-4 w-4 text-slate-600" />
+						<ChevronRight className="h-4 w-4 text-slate-600" />
+					</div>
+				</div>
+			</div>
+
+			{/* Instruction overlay (shows briefly on mount) */}
+			<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+				<div className="bg-black/50 text-white text-sm px-4 py-2 rounded-full opacity-0 animate-[fadeInOut_3s_ease-in-out]">
+					Dra för att jämföra
+				</div>
+			</div>
+		</div>
+	);
+}
+
 /**
  * BeforeAfterShowcase Component
  *
  * Modern before/after image comparison with:
- * - Draggable slider mode
+ * - Draggable slider (Pointer Events API — works on mouse, touch, and stylus)
  * - Side-by-side toggle option
  * - Multiple pairs carousel navigation
  * - Fullscreen lightbox with slider
  * - Smooth animations
- * - Touch/mobile support
  */
 export function BeforeAfterShowcase({
 	pairs,
@@ -41,117 +135,42 @@ export function BeforeAfterShowcase({
 	const [sliderPosition, setSliderPosition] = useState(50);
 	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 	const [lightboxSliderPosition, setLightboxSliderPosition] = useState(50);
-	const [isDragging, setIsDragging] = useState(false);
-	const containerRef = useRef<HTMLDivElement>(null);
-	const lightboxContainerRef = useRef<HTMLDivElement>(null);
 
 	const currentPair = pairs[selectedIndex];
 
-	// Handle slider drag
-	const handleSliderMove = useCallback(
-		(clientX: number, container: HTMLDivElement | null, isLightbox = false) => {
-			if (!container) return;
-
-			const rect = container.getBoundingClientRect();
-			const x = clientX - rect.left;
-			const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-
-			if (isLightbox) {
-				setLightboxSliderPosition(percentage);
-			} else {
-				setSliderPosition(percentage);
-			}
+	// Unified pointer handler — covers mouse, touch, and stylus with one API.
+	// setPointerCapture ensures pointermove continues firing even when the pointer
+	// leaves the element boundary (e.g. fast drags). No window listeners needed.
+	// e.currentTarget is used for getBoundingClientRect so no containerRef needed.
+	const handlePointerDown = useCallback(
+		(e: React.PointerEvent<HTMLDivElement>, isLightbox = false) => {
+			e.preventDefault();
+			e.currentTarget.setPointerCapture(e.pointerId);
+			const rect = e.currentTarget.getBoundingClientRect();
+			const percentage = Math.max(
+				0,
+				Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)
+			);
+			if (isLightbox) setLightboxSliderPosition(percentage);
+			else setSliderPosition(percentage);
 		},
 		[]
 	);
 
-	// Create a ref to track if current interaction is touch
-	const isTouchInteraction = useRef(false);
-
-	const handleMouseDown = useCallback(
-		(e: React.MouseEvent, isLightbox = false) => {
-			// Ignore if this is a touch event (touch events fire first)
-			if (isTouchInteraction.current) {
-				return;
-			}
-			e.preventDefault();
-			setIsDragging(true);
-			const container = isLightbox
-				? lightboxContainerRef.current
-				: containerRef.current;
-			handleSliderMove(e.clientX, container, isLightbox);
+	const handlePointerMove = useCallback(
+		(e: React.PointerEvent<HTMLDivElement>, isLightbox = false) => {
+			// hasPointerCapture guards against hover moves (only fires during drag)
+			if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+			const rect = e.currentTarget.getBoundingClientRect();
+			const percentage = Math.max(
+				0,
+				Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)
+			);
+			if (isLightbox) setLightboxSliderPosition(percentage);
+			else setSliderPosition(percentage);
 		},
-		[handleSliderMove]
+		[]
 	);
-
-	const handleMouseMove = useCallback(
-		(e: MouseEvent) => {
-			if (!isDragging) return;
-			// Check if we're in lightbox mode
-			if (isLightboxOpen) {
-				handleSliderMove(e.clientX, lightboxContainerRef.current, true);
-			} else {
-				handleSliderMove(e.clientX, containerRef.current, false);
-			}
-		},
-		[isDragging, isLightboxOpen, handleSliderMove]
-	);
-
-	const handleMouseUp = useCallback(() => {
-		setIsDragging(false);
-		// Reset touch flag after a short delay
-		setTimeout(() => {
-			isTouchInteraction.current = false;
-		}, 100);
-	}, []);
-
-	// Touch handlers
-	const handleTouchStart = useCallback(
-		(e: React.TouchEvent, isLightbox = false) => {
-			e.preventDefault();
-			isTouchInteraction.current = true;
-			setIsDragging(true);
-			const container = isLightbox
-				? lightboxContainerRef.current
-				: containerRef.current;
-			handleSliderMove(e.touches[0].clientX, container, isLightbox);
-		},
-		[handleSliderMove]
-	);
-
-	const handleTouchMove = useCallback(
-		(e: TouchEvent) => {
-			if (!isDragging) return;
-			e.preventDefault();
-			if (isLightboxOpen) {
-				handleSliderMove(
-					e.touches[0].clientX,
-					lightboxContainerRef.current,
-					true
-				);
-			} else {
-				handleSliderMove(e.touches[0].clientX, containerRef.current, false);
-			}
-		},
-		[isDragging, isLightboxOpen, handleSliderMove]
-	);
-
-	// Event listeners
-	useEffect(() => {
-		if (isDragging) {
-			window.addEventListener("mousemove", handleMouseMove);
-			window.addEventListener("mouseup", handleMouseUp);
-			window.addEventListener("touchmove", handleTouchMove, { passive: false });
-			window.addEventListener("touchend", handleMouseUp);
-		}
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-			window.removeEventListener("touchmove", handleTouchMove);
-			window.removeEventListener("touchend", handleMouseUp);
-		};
-	}, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove]);
 
 	// Keyboard navigation for lightbox
 	useEffect(() => {
@@ -191,105 +210,7 @@ export function BeforeAfterShowcase({
 		setSliderPosition(50);
 	};
 
-	// Slider comparison component
-	const SliderComparison = ({
-		beforeImage,
-		afterImage,
-		position,
-		onMouseDown,
-		onTouchStart,
-		containerRef: ref,
-		isLightbox = false,
-	}: {
-		beforeImage: string;
-		afterImage: string;
-		position: number;
-		onMouseDown: (e: React.MouseEvent) => void;
-		onTouchStart: (e: React.TouchEvent) => void;
-		containerRef: React.RefObject<HTMLDivElement | null>;
-		isLightbox?: boolean;
-	}) => (
-		<div
-			ref={ref}
-			className={cn(
-				"relative w-full overflow-hidden select-none",
-				isLightbox ? "h-full" : "aspect-[4/3] md:aspect-[16/10]"
-			)}
-			onMouseDown={onMouseDown}
-			onTouchStart={onTouchStart}
-		>
-			{/* After Image (Base layer) */}
-			<div className="absolute inset-0">
-				<Image
-					src={afterImage}
-					alt="After"
-					fill
-					sizes={isLightbox ? "100vw" : "(max-width: 768px) 100vw, 800px"}
-					className="object-cover"
-					priority
-				/>
-				<div className="absolute bottom-4 right-4 bg-emerald-600/90 text-white text-xs px-3 py-1.5 rounded-full font-medium uppercase tracking-wide shadow-lg">
-					Efter
-				</div>
-			</div>
-
-			{/* Before Image (Clipped layer) */}
-			<div
-				className="absolute inset-0 overflow-hidden"
-				style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
-			>
-				<Image
-					src={beforeImage}
-					alt="Before"
-					fill
-					sizes={isLightbox ? "100vw" : "(max-width: 768px) 100vw, 800px"}
-					className="object-cover"
-					priority
-				/>
-				<div className="absolute bottom-4 left-4 bg-slate-800/90 text-white text-xs px-3 py-1.5 rounded-full font-medium uppercase tracking-wide shadow-lg">
-					Före
-				</div>
-			</div>
-
-			{/* Slider Handle */}
-			<div
-				className="absolute top-0 bottom-0 z-10 flex items-center justify-center select-none"
-				style={{
-					left: `${position}%`,
-					transform: "translateX(-50%)",
-					width: '48px',
-					touchAction: 'none',
-					userSelect: 'none',
-					WebkitUserSelect: 'none'
-				}}
-				onMouseDown={(e) => {
-					e.stopPropagation();
-					handleMouseDown(e, isLightbox);
-				}}
-				onTouchStart={onTouchStart}
-			>
-				{/* Visible slider line */}
-				<div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)]" />
-
-				{/* Handle Circle */}
-				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing">
-					<div className="flex items-center gap-0.5 pointer-events-none">
-						<ChevronLeft className="h-4 w-4 text-slate-600" />
-						<ChevronRight className="h-4 w-4 text-slate-600" />
-					</div>
-				</div>
-			</div>
-
-			{/* Instruction overlay (shows briefly) */}
-			<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-				<div className="bg-black/50 text-white text-sm px-4 py-2 rounded-full opacity-0 animate-[fadeInOut_3s_ease-in-out]">
-					Dra för att jämföra
-				</div>
-			</div>
-		</div>
-	);
-
-	// Side by side comparison
+	// Side by side comparison (no interaction, fine to keep inside)
 	const SideBySideComparison = ({
 		beforeImage,
 		afterImage,
@@ -408,9 +329,8 @@ export function BeforeAfterShowcase({
 								beforeImage={currentPair.beforeImage}
 								afterImage={currentPair.afterImage}
 								position={sliderPosition}
-								onMouseDown={(e) => handleMouseDown(e, false)}
-								onTouchStart={(e) => handleTouchStart(e, false)}
-								containerRef={containerRef}
+								onPointerDown={(e) => handlePointerDown(e, false)}
+								onPointerMove={(e) => handlePointerMove(e, false)}
 							/>
 						) : (
 							<div className="p-4">
@@ -426,7 +346,7 @@ export function BeforeAfterShowcase({
 				{/* Fullscreen Button */}
 				<button
 					onClick={() => setIsLightboxOpen(true)}
-					className="absolute top-4 right-4 p-2.5 rounded-full bg-white/95 shadow-lg text-slate-700 hover:bg-white hover:scale-105 transition-all duration-200 cursor-pointer opacity-0 group-hover:opacity-100 z-20"
+					className="absolute top-4 right-4 p-2.5 rounded-full bg-white/95 shadow-lg text-slate-700 hover:bg-white hover:scale-105 transition-all duration-200 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-20"
 					aria-label="Open fullscreen"
 				>
 					<Maximize2 className="h-5 w-5" />
@@ -443,7 +363,6 @@ export function BeforeAfterShowcase({
 			{/* Navigation for Multiple Pairs */}
 			{pairs.length > 1 && (
 				<div className="mt-6">
-					{/* Navigation Arrows + Thumbnails */}
 					<div className="flex items-center justify-center gap-4">
 						<button
 							onClick={handlePrevious}
@@ -582,9 +501,8 @@ export function BeforeAfterShowcase({
 											beforeImage={currentPair.beforeImage}
 											afterImage={currentPair.afterImage}
 											position={lightboxSliderPosition}
-											onMouseDown={(e) => handleMouseDown(e, true)}
-											onTouchStart={(e) => handleTouchStart(e, true)}
-											containerRef={lightboxContainerRef}
+											onPointerDown={(e) => handlePointerDown(e, true)}
+											onPointerMove={(e) => handlePointerMove(e, true)}
 											isLightbox
 										/>
 									</div>
