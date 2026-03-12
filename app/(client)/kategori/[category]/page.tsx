@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
-import { PreviewEditor } from "@/components/common/TextEditor";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -492,33 +491,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 							</div>
 						)}
 
-						{/* Category Content - Image and Description */}
-						{(category.image || category.description) && (
-							<div className="mt-12 space-y-8">
-								{/* Category Image */}
-								{category.image && (
-									<div className="relative w-full overflow-hidden rounded-xl">
-										<ImageComponent
-											src={category.image}
-											alt={category.name}
-											width={0}
-											height={0}
-											sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 900px"
-											className="w-full h-auto max-h-[400px] object-cover rounded-xl"
-											wrapperClasses="w-full"
-											showLoader
-										/>
-									</div>
-								)}
-
-								{/* Category Description */}
-								{category.description && (
-									<div className="prose prose-slate max-w-none">
-										<PreviewEditor>{category.description}</PreviewEditor>
-									</div>
-								)}
-							</div>
-						)}
 					</div>
 				</div>
 			</div>

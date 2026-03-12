@@ -140,6 +140,7 @@ const processStepSchema = z.object({
 	title: z.string().optional(),
 	description: z.string().optional(),
 	icon: z.string().optional(),
+	link: z.string().optional(),
 });
 
 // Process Steps Section schema - all optional
@@ -2547,6 +2548,23 @@ export default function StartsidaPage() {
 																		value={field.value || ""}
 																		placeholder="Explore our comprehensive catalog..."
 																		rows={2}
+																	/>
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+													<FormField
+														control={form.control}
+														name={`processStepsSection.steps.${index}.link`}
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>Link URL</FormLabel>
+																<FormControl>
+																	<Input
+																		{...field}
+																		value={field.value || ""}
+																		placeholder="/kontakt"
 																	/>
 																</FormControl>
 																<FormMessage />

@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import {
 	homePageRepository,
 	type HomePageData,
@@ -21,128 +20,69 @@ import type {
 export const HOME_PAGE_CACHE_TAG = "home-page";
 
 /**
- * Get home page content with caching
- * Cached for 1 hour, revalidated on-demand when content is updated
+ * Get home page content
+ * Caching is handled at the page level via ISR (revalidate = 86400)
+ * On-demand revalidation via revalidatePath("/", "page") in the API route
  */
-export const getHomePage = unstable_cache(
-	async (): Promise<HomePageData> => {
-		return homePageRepository.get();
-	},
-	["home-page"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600, // 1 hour
-	}
-);
+export const getHomePage = async (): Promise<HomePageData> => {
+	return homePageRepository.get();
+};
 
 /**
  * Get hero section only
  */
-export const getHeroSection = unstable_cache(
-	async (): Promise<IHeroSection> => {
-		return homePageRepository.getHero();
-	},
-	["home-page-hero"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+export const getHeroSection = async (): Promise<IHeroSection> => {
+	return homePageRepository.getHero();
+};
 
 /**
  * Get feature highlights only
  */
-export const getFeatureHighlights = unstable_cache(
-	async (): Promise<IFeatureHighlight[]> => {
-		return homePageRepository.getFeatures();
-	},
-	["home-page-features"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+export const getFeatureHighlights = async (): Promise<IFeatureHighlight[]> => {
+	return homePageRepository.getFeatures();
+};
 
 /**
  * Get product showcase section only
  */
-export const getProductShowcaseSection = unstable_cache(
+export const getProductShowcaseSection =
 	async (): Promise<IProductShowcaseSection> => {
 		return homePageRepository.getProductShowcase();
-	},
-	["home-page-product-showcase"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+	};
 
 /**
  * Get image gallery section only
  */
-export const getImageGallerySection = unstable_cache(
+export const getImageGallerySection =
 	async (): Promise<IImageGallerySection> => {
 		return homePageRepository.getImageGallery();
-	},
-	["home-page-image-gallery"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+	};
 
 /**
  * Get process steps section only
  */
-export const getProcessStepsSection = unstable_cache(
+export const getProcessStepsSection =
 	async (): Promise<IProcessStepsSection> => {
 		return homePageRepository.getProcessStepsSection();
-	},
-	["home-page-process-steps"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+	};
 
 /**
  * Get about section only
  */
-export const getAboutSection = unstable_cache(
-	async (): Promise<IAboutSection> => {
-		return homePageRepository.getAboutSection();
-	},
-	["home-page-about"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+export const getAboutSection = async (): Promise<IAboutSection> => {
+	return homePageRepository.getAboutSection();
+};
 
 /**
  * Get CTA section only
  */
-export const getCtaSection = unstable_cache(
-	async (): Promise<ICtaSection> => {
-		return homePageRepository.getCtaSection();
-	},
-	["home-page-cta"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+export const getCtaSection = async (): Promise<ICtaSection> => {
+	return homePageRepository.getCtaSection();
+};
 
 /**
  * Get SEO settings only
  */
-export const getHomePageSeo = unstable_cache(
-	async (): Promise<IHomePageSeo> => {
-		return homePageRepository.getSeo();
-	},
-	["home-page-seo"],
-	{
-		tags: [HOME_PAGE_CACHE_TAG],
-		revalidate: 3600,
-	}
-);
+export const getHomePageSeo = async (): Promise<IHomePageSeo> => {
+	return homePageRepository.getSeo();
+};

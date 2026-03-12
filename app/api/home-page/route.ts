@@ -9,8 +9,7 @@ import {
 	unauthorizedResponse,
 	internalServerErrorResponse,
 } from "@/lib/utils/api-response";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { HOME_PAGE_CACHE_TAG } from "@/lib/services/home-page.service";
+import { revalidatePath } from "next/cache";
 
 /**
  * GET /api/home-page
@@ -68,10 +67,7 @@ export async function PUT(request: NextRequest) {
 			updatedBy: session.user.id,
 		});
 
-		// Revalidate cache tag for all home page queries
-		revalidateTag(HOME_PAGE_CACHE_TAG, "default");
-
-		// Revalidate home page
+		// Revalidate home page to clear ISR cache
 		revalidatePath("/", "page");
 
 		return successResponse(homePage, "Home page content updated successfully");

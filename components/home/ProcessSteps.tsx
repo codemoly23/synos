@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
 	Search,
@@ -86,6 +87,22 @@ export function ProcessSteps({ data }: ProcessStepsProps) {
 							const IconComponent = step.icon
 								? iconMap[step.icon] || Search
 								: Search;
+
+							const cardContent = (
+								<div className="flex flex-col items-center text-center">
+									<div className="h-24 w-24 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center mb-6 relative z-10 shadow-sm group-hover/step:border-primary/30 transition-colors">
+										<IconComponent className="h-10 w-10 text-primary" />
+										<div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-secondary text-white flex items-center justify-center text-sm font-bold">
+											{step.stepNumber}
+										</div>
+									</div>
+									<h3 className="text-xl font-bold text-secondary mb-3 group-hover/step:text-primary transition-colors">
+										{step.title}
+									</h3>
+									<p className="text-slate-600">{step.description}</p>
+								</div>
+							);
+
 							return (
 								<motion.div
 									key={index}
@@ -93,20 +110,20 @@ export function ProcessSteps({ data }: ProcessStepsProps) {
 									whileInView={{ opacity: 1, y: 0 }}
 									viewport={{ once: true }}
 									transition={{ duration: 0.5, delay: index * 0.2 }}
-									className="relative bg-white lg:bg-transparent p-6 lg:p-0 rounded-xl border lg:border-none border-border/50"
+									className="relative"
 								>
-									<div className="flex flex-col items-center text-center">
-										<div className="h-24 w-24 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center mb-6 relative z-10 shadow-sm">
-											<IconComponent className="h-10 w-10 text-primary" />
-											<div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-secondary text-white flex items-center justify-center text-sm font-bold">
-												{step.stepNumber}
-											</div>
+									{step.link ? (
+										<Link
+											href={step.link}
+											className="group/step block bg-white lg:bg-transparent p-6 lg:p-0 rounded-xl border lg:border-none border-border/50 hover:shadow-md transition-shadow duration-200"
+										>
+											{cardContent}
+										</Link>
+									) : (
+										<div className="group/step bg-white lg:bg-transparent p-6 lg:p-0 rounded-xl border lg:border-none border-border/50">
+											{cardContent}
 										</div>
-										<h3 className="text-xl font-bold text-secondary mb-3">
-											{step.title}
-										</h3>
-										<p className="text-slate-600">{step.description}</p>
-									</div>
+									)}
 								</motion.div>
 							);
 						})}

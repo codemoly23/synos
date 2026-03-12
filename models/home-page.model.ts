@@ -74,6 +74,7 @@ export interface IProcessStep {
 	title?: string;
 	description?: string;
 	icon?: string;
+	link?: string;
 }
 
 /**
@@ -359,6 +360,7 @@ const ProcessStepSchema = new Schema<IProcessStep>(
 		title: { type: String, trim: true },
 		description: { type: String, trim: true },
 		icon: { type: String, trim: true },
+		link: { type: String, trim: true },
 	},
 	{ _id: false }
 );

@@ -68,6 +68,7 @@ export const processStepSchema = z.object({
 	title: z.string().max(100).optional(),
 	description: z.string().max(500).optional(),
 	icon: z.string().max(50).optional(),
+	link: z.string().max(500).optional(),
 });
 
 /**
