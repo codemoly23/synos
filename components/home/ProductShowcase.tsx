@@ -121,22 +121,22 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 									{/* Content */}
 									<div className="pt-4 pb-2 flex flex-col grow">
 										{product.category && (
-											<span className="text-primary text-xs font-semibold mb-1">
+											<span className="text-primary text-sm font-semibold mb-1">
 												{product.category}
 											</span>
 										)}
-										<h3 className="text-lg font-bold text-secondary group-hover:text-primary transition-colors line-clamp-1">
+										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors line-clamp-1">
 											{product.name}
 										</h3>
 										{product.description && (
-											<p className="text-slate-500 text-sm mt-1 line-clamp-2">
+											<p className="text-slate-500 text-base mt-1 line-clamp-2">
 												{product.description}
 											</p>
 										)}
 
 										{/* Read more + arrow */}
 										<div className="flex items-center justify-between mt-3">
-											<span className="text-sm text-slate-500">
+											<span className="text-base text-slate-500">
 												Läs mer
 											</span>
 											<div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary transition-colors">

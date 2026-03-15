@@ -110,7 +110,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 													<>
 														<NavigationMenuTrigger
 															className={cn(
-																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-xs font-medium transition-colors h-8 px-2",
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-base font-medium transition-colors h-8 px-2",
 																useLightText
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
@@ -187,7 +187,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 													<>
 														<NavigationMenuTrigger
 															className={cn(
-																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-xs font-medium transition-colors h-8 px-2",
+																"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! data-[state=open]:bg-secondary/10! text-base font-medium transition-colors h-8 px-2",
 																useLightText
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
@@ -221,7 +221,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														href={item.href}
 														className={cn(
 															navigationMenuTriggerStyle(),
-															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors text-xs h-8 px-2",
+															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors text-base h-8 px-2",
 															useLightText
 																? "text-white/90! hover:text-white! focus:text-white! active:text-white!"
 																: "text-secondary! hover:text-primary! focus:text-primary! active:text-primary!"

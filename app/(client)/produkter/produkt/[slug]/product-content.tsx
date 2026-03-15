@@ -178,7 +178,7 @@ export function ProductContent({
 			{/* Main Content Section */}
 			<section className="py-12 md:py-16">
 				<div className="_container">
-					<div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+					<div className="grid gap-8 lg:grid-cols-[1fr_340px] items-start">
 						{/* Main Content */}
 						<article className="min-w-0">
 							{/* Long Description Section */}
@@ -242,15 +242,13 @@ export function ProductContent({
 						</article>
 
 						{/* Sidebar - Sticky */}
-						<aside className="space-y-6">
-							<div className="sticky top-24 space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent pr-1">
-								<ProductDetailSidebar
-									brochureUrl={product.documentation}
-									videoUrl={product.youtubeUrl}
-									benefits={product.benefits}
-									certifications={product.certifications}
-								/>
-							</div>
+						<aside className="sticky top-24 space-y-4">
+							<ProductDetailSidebar
+								brochureUrl={product.documentation}
+								videoUrl={product.youtubeUrl}
+								benefits={product.benefits}
+								certifications={product.certifications}
+							/>
 						</aside>
 					</div>
 				</div>

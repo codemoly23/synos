@@ -156,7 +156,7 @@ function KategoriSidebar({
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="space-y-2 pb-2! p-0">
-					<div className="max-h-[200px] overflow-y-auto px-3">
+					<div className="px-3">
 						{categories.map((category) => (
 							<Link
 								key={category._id.toString()}

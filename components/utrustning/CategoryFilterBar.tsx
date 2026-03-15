@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 
+const MOBILE_VISIBLE_COUNT = 2;
+
 export function CategoryFilterBar() {
 	const [openCategory, setOpenCategory] = useState<string | null>(null);
 	const [dropdownPos, setDropdownPos] = useState<{
@@ -18,6 +20,7 @@ export function CategoryFilterBar() {
 	const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 	const { data: navigationData, isLoading } = useNavigation();
 	const [mounted, setMounted] = useState(false);
+	const [showAllMobile, setShowAllMobile] = useState(false);
 
 	useEffect(() => {
 		setMounted(true);
@@ -44,10 +47,39 @@ export function CategoryFilterBar() {
 		(c) => c._id === openCategory
 	);
 
+	const categories = navigationData?.categories ?? [];
+	const mobileVisible = showAllMobile ? categories : categories.slice(0, MOBILE_VISIBLE_COUNT);
+	const hasMore = categories.length > MOBILE_VISIBLE_COUNT;
+
+	const renderCategoryButton = (category: typeof categories[0]) => (
+		<div key={category._id} className="relative shrink-0">
+			<button
+				ref={(el) => {
+					if (el) buttonRefs.current.set(category._id, el);
+				}}
+				onClick={() => toggleCategory(category._id)}
+				className={cn(
+					"flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap",
+					openCategory === category._id
+						? "bg-secondary text-white border-secondary"
+						: "bg-white text-secondary border-slate-200 hover:border-primary hover:bg-primary/5"
+				)}
+			>
+				{category.name}
+				<ChevronDown
+					className={cn(
+						"h-3.5 w-3.5 transition-transform duration-200",
+						openCategory === category._id && "rotate-180"
+					)}
+				/>
+			</button>
+		</div>
+	);
+
 	return (
 		<div className="mb-6 relative">
-			{/* Horizontal scrollable category pills */}
-			<div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+			{/* Desktop: all categories wrapped */}
+			<div className="hidden sm:flex flex-wrap gap-3 pb-3">
 				{/* All Products pill */}
 				<Link href="/utrustning" className="shrink-0">
 					<Badge
@@ -66,31 +98,46 @@ export function CategoryFilterBar() {
 					</div>
 				)}
 
-				{/* Category dropdown pills */}
-				{navigationData?.categories.map((category) => (
-					<div key={category._id} className="relative shrink-0">
-						<button
-							ref={(el) => {
-								if (el) buttonRefs.current.set(category._id, el);
-							}}
-							onClick={() => toggleCategory(category._id)}
-							className={cn(
-								"flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-full border transition-all duration-200 whitespace-nowrap",
-								openCategory === category._id
-									? "bg-secondary text-white border-secondary"
-									: "bg-white text-secondary border-slate-200 hover:border-primary hover:bg-primary/5"
-							)}
-						>
-							{category.name}
-							<ChevronDown
-								className={cn(
-									"h-3.5 w-3.5 transition-transform duration-200",
-									openCategory === category._id && "rotate-180"
-								)}
-							/>
-						</button>
+				{categories.map(renderCategoryButton)}
+			</div>
+
+			{/* Mobile: show 2 + "Se alla" button */}
+			<div className="flex sm:hidden flex-wrap gap-3 pb-3">
+				{/* All Products pill */}
+				<Link href="/utrustning" className="shrink-0">
+					<Badge
+						variant="default"
+						className="px-5 py-2.5 text-sm cursor-pointer bg-primary text-white hover:bg-primary/90 whitespace-nowrap rounded-full"
+					>
+						Alla produkter
+					</Badge>
+				</Link>
+
+				{/* Loading state */}
+				{isLoading && (
+					<div className="flex items-center gap-2 px-4 text-sm text-muted-foreground">
+						<Loader2 className="h-4 w-4 animate-spin" />
+						Laddar...
 					</div>
-				))}
+				)}
+
+				{mobileVisible.map(renderCategoryButton)}
+
+				{/* Se alla / Visa färre toggle */}
+				{hasMore && (
+					<button
+						onClick={() => setShowAllMobile((p) => !p)}
+						className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-full border border-primary text-primary bg-primary/5 whitespace-nowrap transition-all duration-200"
+					>
+						{showAllMobile ? "Visa färre" : `Se alla (${categories.length})`}
+						<ChevronDown
+							className={cn(
+								"h-3.5 w-3.5 transition-transform duration-200",
+								showAllMobile && "rotate-180"
+							)}
+						/>
+					</button>
+				)}
 			</div>
 
 			{/* Dropdown portal - rendered outside overflow container */}
