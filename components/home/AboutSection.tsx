@@ -16,54 +16,57 @@ const AboutSection = ({ data }: AboutSectionProps) => {
 
 	return (
 		<section className="section-padding bg-white relative overflow-hidden">
-			<div className="_container grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+			<div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0 items-center">
 				{/* Only render image section if we have an image */}
 				{hasImage && (
-					<div className="relative h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
+					<div className="relative flex items-center justify-center min-h-[500px] lg:min-h-[600px] p-10 bg-slate-50">
 						{/* Desktop Image */}
-						<ImageComponent
-							src={data.image!}
-							alt="About Section Image"
-							height={0}
-							width={0}
-							sizes="100vw"
-							wrapperClasses={`w-full h-full ${hasMobileImage ? "hidden md:block" : ""}`}
-							className="object-cover w-full h-full"
-						/>
-						{/* Mobile Image */}
-						{hasMobileImage && (
+						<div className={`relative w-full max-w-[560px] aspect-4/3 rounded-2xl overflow-hidden shadow-xl ${hasMobileImage ? "hidden md:block" : ""}`}>
 							<ImageComponent
-								src={data.mobileImage!}
+								src={data.image!}
 								alt="About Section Image"
 								height={0}
 								width={0}
-								sizes="100vw"
-								wrapperClasses="w-full h-full md:hidden"
+								sizes="50vw"
+								wrapperClasses="w-full h-full"
 								className="object-cover w-full h-full"
 							/>
-						)}
-
-						{/* Decorative elements */}
-						<div className="absolute inset-0 bg-linear-to-t from-secondary/60 via-transparent to-transparent" />
-						{hasCertificationBadge && (
-							<div className="absolute bottom-8 left-8 right-8 text-white bg-secondary/30 p-8 rounded-3xl">
-								<div className="flex items-center gap-3 mb-2">
-									<div className="bg-success rounded-full p-1">
-										<CheckCircle2 className="h-4 w-4 text-white" />
+							{/* Decorative elements */}
+							<div className="absolute inset-0 bg-linear-to-t from-secondary/60 via-transparent to-transparent" />
+							{hasCertificationBadge && (
+								<div className="absolute bottom-6 left-6 right-6 text-white bg-secondary/30 p-6 rounded-2xl">
+									<div className="flex items-center gap-3 mb-2">
+										<div className="bg-success rounded-full p-1">
+											<CheckCircle2 className="h-4 w-4 text-white" />
+										</div>
+										<span className="font-bold text-base tracking-wide uppercase">
+											{data.certificationBadge!.title}
+										</span>
 									</div>
-									<span className="font-bold text-lg tracking-wide uppercase">
-										{data.certificationBadge!.title}
-									</span>
+									<p className="text-sm text-slate-200">
+										{`"${data.certificationBadge!.description}"`}
+									</p>
 								</div>
-								<p className="text-sm text-slate-200">
-									{`"${data.certificationBadge!.description}"`}
-								</p>
+							)}
+						</div>
+						{/* Mobile Image */}
+						{hasMobileImage && (
+							<div className="relative w-full max-w-[560px] aspect-4/3 rounded-2xl overflow-hidden shadow-xl md:hidden">
+								<ImageComponent
+									src={data.mobileImage!}
+									alt="About Section Image"
+									height={0}
+									width={0}
+									sizes="100vw"
+									wrapperClasses="w-full h-full"
+									className="object-cover w-full h-full"
+								/>
 							</div>
 						)}
 					</div>
 				)}
 
-				<div className="space-y-8">
+				<div className="space-y-8 px-8 md:px-12 lg:px-16 py-12 lg:py-0">
 					{data.badge && (
 						<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 w-fit border border-primary/20">
 							<span className="text-xs font-bold text-primary uppercase tracking-wider">

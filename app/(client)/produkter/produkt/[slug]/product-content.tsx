@@ -191,7 +191,7 @@ export function ProductContent({
 							{/* FAQ Section - Right after description */}
 							{product.qa && product.qa.length > 0 && (
 								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} />
+									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
 								</div>
 							)}
 

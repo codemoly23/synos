@@ -12,6 +12,7 @@ interface ProductFAQProps {
 		visible: boolean;
 		_id: string;
 	}>;
+	title?: string;
 }
 
 /**
@@ -23,7 +24,7 @@ interface ProductFAQProps {
  * - One item open at a time
  * - Keyboard accessible
  */
-export function ProductFAQ({ faqs }: ProductFAQProps) {
+export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 	const [openIndex, setOpenIndex] = useState<number | null>(0);
 
 	const toggleFAQ = (index: number) => {
@@ -34,6 +35,11 @@ export function ProductFAQ({ faqs }: ProductFAQProps) {
 
 	return (
 		<div className="space-y-4">
+			{title && (
+				<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
+					{title}
+				</h2>
+			)}
 			{faqs
 				.filter((faq) => faq.visible)
 				.map((faq, index) => (

@@ -88,6 +88,7 @@ export type ProductType = {
 		slug: string;
 		id: string;
 	} | null;
+	faqTitle?: string;
 	qa: Array<{
 		question: string;
 		answer: string;

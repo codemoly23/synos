@@ -24,7 +24,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 	if (validProducts.length === 0) return null;
 
 	return (
-		<section className="section-padding bg-white">
+		<section className="pt-8 lg:pt-12 pb-8 lg:pb-12 bg-white">
 			<div className="_container">
 				{/* Section Header */}
 				<div className="flex justify-between items-end mb-8">
@@ -68,10 +68,10 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 						pauseOnMouseEnter: true,
 					}}
 					breakpoints={{
-						480: { slidesPerView: 1.5, spaceBetween: 20 },
-						640: { slidesPerView: 2.2, spaceBetween: 24 },
-						1024: { slidesPerView: 3.2, spaceBetween: 28 },
-						1280: { slidesPerView: 4, spaceBetween: 28 },
+						480: { slidesPerView: 1.3, spaceBetween: 20 },
+						640: { slidesPerView: 1.8, spaceBetween: 24 },
+						1024: { slidesPerView: 2.5, spaceBetween: 28 },
+						1280: { slidesPerView: 3, spaceBetween: 28 },
 					}}
 					className="overflow-visible!"
 				>
@@ -89,7 +89,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 								{/* Card */}
 								<div className="h-full flex flex-col bg-white rounded-2xl overflow-hidden">
 									{/* Image */}
-									<div className="relative aspect-square overflow-hidden bg-slate-100 rounded-2xl">
+									<div className="relative aspect-4/3 overflow-hidden bg-slate-100 rounded-2xl">
 										{product.image && (
 											<>
 												<ImageComponent

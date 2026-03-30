@@ -76,6 +76,7 @@ export interface IProduct extends Document {
 	seo: ISeo;
 	categories: mongoose.Types.ObjectId[];
 	primaryCategory?: mongoose.Types.ObjectId; // Primary category for URL generation
+	faqTitle?: string;
 	qa: IQnA[];
 	seoAccordions: ISeoAccordion[];
 	youtubeUrl?: string;
@@ -312,6 +313,7 @@ const ProductSchema = new Schema<IProduct>(
 			default: null,
 			index: true,
 		},
+		faqTitle: { type: String, trim: true },
 		qa: [QnASchema],
 		seoAccordions: {
 			type: [SeoAccordionSchema],
