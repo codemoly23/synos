@@ -168,7 +168,7 @@ const homePageData = {
 		title: "Utvalda produkter",
 		subtitle:
 			"Upptäck vårt sortiment av världsledande klinikutrustning för estetiska behandlingar",
-		ctaText: "Se alla produkter",
+		ctaText: "Alla Utrustning",
 		ctaHref: "/klinikutrustning",
 		products: [
 			{

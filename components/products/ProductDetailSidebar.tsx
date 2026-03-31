@@ -25,6 +25,7 @@ interface ProductDetailSidebarProps {
 	videoUrl?: string;
 	benefits?: string[] | null;
 	certifications?: string[] | null;
+	onScrollToForm?: () => void;
 }
 
 export function ProductDetailSidebar({
@@ -32,6 +33,7 @@ export function ProductDetailSidebar({
 	videoUrl,
 	benefits,
 	certifications,
+	onScrollToForm,
 }: ProductDetailSidebarProps) {
 	return (
 		<aside className="space-y-4">
@@ -56,15 +58,13 @@ export function ProductDetailSidebar({
 						</p>
 						<div className="space-y-2">
 							<Button
-								asChild
 								size="sm"
+								onClick={onScrollToForm}
 								className="w-full bg-white text-primary font-semibold flex items-center justify-center hover:bg-white/95 gap-2 shadow-md hover:shadow-lg transition-all duration-200 h-9 text-sm"
 							>
-								<Link href="/kontakt">
-									<Mail className="h-4 w-4" />
-									Begär offert
-									<ChevronRight className="h-3.5 w-3.5 ml-auto" />
-								</Link>
+								<Mail className="h-4 w-4" />
+								Begär offert
+								<ChevronRight className="h-3.5 w-3.5 ml-auto" />
 							</Button>
 							<Button
 								asChild

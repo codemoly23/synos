@@ -80,6 +80,7 @@ export interface IProduct extends Document {
 	qa: IQnA[];
 	seoAccordions: ISeoAccordion[];
 	youtubeUrl?: string;
+	videoThumbnail?: string;
 	rubric?: string;
 	publishType: PublishType;
 	visibility: Visibility;
@@ -323,6 +324,10 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			default: "",
 		},
+		videoThumbnail: {
+			type: String,
+			default: "",
+		},
 		rubric: {
 			type: String,
 			default: "",
@@ -392,10 +397,15 @@ ProductSchema.set("toObject", { virtuals: true });
 
 /**
  * Get Product Model
- * Uses function to prevent model overwrite during hot reload
+ * In development, deletes cached model on each call so schema changes
+ * from hot-reload are picked up. In production, caches for performance.
  */
 export const getProductModel = async (): Promise<Model<IProduct>> => {
 	await connectMongoose();
+
+	if (process.env.NODE_ENV !== "production" && mongoose.models.Product) {
+		delete mongoose.models["Product"];
+	}
 
 	return (
 		(mongoose.models.Product as Model<IProduct>) ||
@@ -408,6 +418,10 @@ export const getProductModel = async (): Promise<Model<IProduct>> => {
  * Note: Ensure connectMongoose is called before using this
  */
 export function getProductModelSync(): Model<IProduct> {
+	if (process.env.NODE_ENV !== "production" && mongoose.models.Product) {
+		delete mongoose.models["Product"];
+	}
+
 	return (
 		(mongoose.models.Product as Model<IProduct>) ||
 		mongoose.model<IProduct>("Product", ProductSchema)

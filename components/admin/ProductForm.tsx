@@ -389,6 +389,7 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 			"overviewImage",
 			"beforeAfterImages",
 			"youtubeUrl",
+			"videoThumbnail",
 		],
 	},
 	specs: {
@@ -775,6 +776,7 @@ export function ProductForm({
 					order: s.order,
 				})) || [],
 			youtubeUrl: product?.youtubeUrl || "",
+			videoThumbnail: product?.videoThumbnail || "",
 			rubric: product?.rubric || "",
 			publishType: product?.publishType || "draft",
 			visibility: product?.visibility || "public",
@@ -1746,6 +1748,26 @@ export function ProductForm({
 										{...register("youtubeUrl")}
 										placeholder="https://www.youtube.com/watch?v=..."
 										disabled={isLoading}
+									/>
+								</div>
+
+								{/* Video Thumbnail */}
+								<div className="space-y-2">
+									<Label>Video Thumbnail</Label>
+									<p className="text-xs text-muted-foreground">
+										Upload a high-resolution thumbnail for the video. Overrides the auto-generated YouTube thumbnail.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("videoThumbnail") || null}
+										onChange={(url) =>
+											setValue("videoThumbnail", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select video thumbnail"
+										disabled={isLoading}
+										galleryTitle="Select Video Thumbnail"
 									/>
 								</div>
 

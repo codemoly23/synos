@@ -9,7 +9,6 @@ import {
 	ChevronDown,
 	Check,
 	ChevronRight,
-	Cookie,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,7 +36,6 @@ import {
 	defaultCountry,
 	type Country,
 } from "@/components/ui/country-code-select";
-import { useCookieConsent } from "@/lib/context/cookie-consent-context";
 
 type ModalStep = "datetime" | "phone" | "success";
 
@@ -50,8 +48,6 @@ export function CallbackPopup() {
 		React.useState<Country>(defaultCountry);
 	const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
-	// Cookie consent context for mobile stacked button
-	const { hasConsented, openSettings } = useCookieConsent();
 
 	// Date and time state
 	const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
@@ -169,24 +165,7 @@ export function CallbackPopup() {
 		<>
 			{/* Mobile: Stacked buttons (Cookie + Callback) - positioned above bottom nav */}
 			<div className="fixed bottom-[100px] right-4 z-50 flex flex-col items-center gap-2 md:hidden">
-				{/* Cookie Button - only show if user has consented */}
-				{hasConsented && (
-					<button
-						onClick={openSettings}
-						className={cn(
-							"w-11 h-11 rounded-full bg-slate-800 text-white shadow-lg flex items-center justify-center",
-							"transition-all duration-300 ease-out",
-							"hover:bg-slate-700 hover:scale-105 hover:shadow-xl",
-							"focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2",
-							"active:scale-95"
-						)}
-						aria-label="Cookie-inställningar"
-					>
-						<Cookie className="w-5 h-5" />
-					</button>
-				)}
-
-				{/* Callback Button */}
+{/* Callback Button */}
 				<button
 					onClick={() => setIsModalOpen(true)}
 					className={cn(

@@ -16,6 +16,7 @@ interface ProductImageGalleryProps {
 	images: string[];
 	productName: string;
 	youtubeUrl?: string;
+	videoThumbnail?: string;
 }
 
 /**
@@ -65,6 +66,7 @@ export function ProductImageGallery({
 	images,
 	productName,
 	youtubeUrl,
+	videoThumbnail,
 }: ProductImageGalleryProps) {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -86,7 +88,7 @@ export function ProductImageGallery({
 		if (youtubeVideoId) {
 			items.push({
 				type: "video",
-				src: getYouTubeThumbnail(youtubeVideoId),
+				src: videoThumbnail || getYouTubeThumbnail(youtubeVideoId),
 			});
 		}
 

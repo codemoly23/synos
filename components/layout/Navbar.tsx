@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Mail, Phone, Search } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 
@@ -17,14 +17,14 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { mainNavNew } from "@/config/navigation-new";
+import { technologyMap } from "@/config/technology-map";
+import { categoryMap } from "@/config/category-map";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 import { useNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { cn } from "@/lib/utils";
 import type { SiteConfigType } from "@/config/site";
 import Logo from "../common/logo";
 import MobileNavbar from "./MobileNavbar";
-import ProtectedNavbar from "./ProtectedNavbar";
-import { NavbarSearch } from "./NavbarSearch";
 
 interface NavbarProps {
 	config: SiteConfigType;
@@ -66,11 +66,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 									<Logo logoUrl={logoUrl} />
 								</div>
 								<div className="hidden lg:flex items-center justify-center flex-1" />
-								<div className="hidden lg:flex items-center" />
 								<div className="hidden xl:flex items-center gap-2 shrink-0" />
-								<div className="hidden lg:block">
-									<ProtectedNavbar />
-								</div>
 								<div className="mr-1.5 lg:mr-0 flex items-center">
 									<MobileNavbar useLightText={false} />
 								</div>
@@ -122,63 +118,86 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]!">
 															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
-																<div className="grid grid-cols-5 gap-x-6 gap-y-3">
-																	{navigationData?.categories.map(
-																		(category) => (
-																			<div
-																				key={category._id}
-																				className="space-y-0"
+																{item.isTechnologyMenu ? (
+																	/* UTRUSTNING: static technology-grouped map */
+																	<div className="grid grid-cols-5 gap-x-6 gap-y-4">
+																		{technologyMap.map((tech) => (
+																			<div key={tech.name} className="space-y-1">
+																				<p className="text-sm font-bold text-primary">
+																					{tech.name}
+																				</p>
+																				<ul className="space-y-0">
+																					{tech.machines.map((machine) => (
+																						<li key={machine.href}>
+																							<Link
+																								href={machine.href}
+																								className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
+																							>
+																								{machine.title}
+																							</Link>
+																						</li>
+																					))}
+																				</ul>
+																			</div>
+																		))}
+																	</div>
+																) : item.isCategoryMenu ? (
+																	/* KATEGORI: static category list */
+																	<div className="grid grid-cols-4 gap-x-6 gap-y-2">
+																		{categoryMap.map((cat) => (
+																			<Link
+																				key={cat.href}
+																				href={cat.href}
+																				className="block text-sm font-medium text-slate-700 hover:text-secondary transition-colors hover:underline py-1"
 																			>
-																				<Link
-																					href={`/kategori/${category.slug}`}
-																					className="block text-sm font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
+																				{cat.name}
+																			</Link>
+																		))}
+																	</div>
+																) : (
+																	/* DB categories fallback */
+																	<div className="grid grid-cols-5 gap-x-6 gap-y-3">
+																		{navigationData?.categories.map(
+																			(category) => (
+																				<div
+																					key={category._id}
+																					className="space-y-0"
 																				>
-																					{category.name}
-																				</Link>
-																				{category.products
-																					.length > 0 && (
-																					<ul className="space-y-0">
-																						{category.products.map(
-																							(
-																								product
-																							) => (
-																								<li
-																									key={
-																										product._id
-																									}
-																								>
+																					<Link
+																						href={`/kategori/${category.slug}`}
+																						className="block text-sm font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
+																					>
+																						{category.name}
+																					</Link>
+																					{category.products.length > 0 && (
+																						<ul className="space-y-0">
+																							{category.products.map((product) => (
+																								<li key={product._id}>
 																									<Link
 																										href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
 																										className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
 																									>
-																										{
-																											product.title
-																										}
+																										{product.title}
 																									</Link>
 																								</li>
-																							)
-																						)}
-																					</ul>
-																				)}
-																			</div>
-																		)
-																	)}
-																	{/* Loading state */}
-																	{!navigationData && (
-																		<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
-																			Laddar...
-																		</div>
-																	)}
-																	{/* Empty state */}
-																	{navigationData &&
-																		navigationData.categories
-																			.length === 0 && (
+																							))}
+																						</ul>
+																					)}
+																				</div>
+																			)
+																		)}
+																		{!navigationData && (
 																			<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
-																				Inga kategorier
-																				tillgängliga
+																				Laddar...
 																			</div>
 																		)}
-																</div>
+																		{navigationData && navigationData.categories.length === 0 && (
+																			<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
+																				Inga kategorier tillgängliga
+																			</div>
+																		)}
+																	</div>
+																)}
 															</div>
 														</NavigationMenuContent>
 													</>
@@ -236,11 +255,6 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 								</NavigationMenu>
 							</div>
 
-							{/* Search */}
-							<div className="hidden lg:flex items-center">
-								<NavbarSearch useLightText={useLightText} />
-							</div>
-
 							{/* Actions */}
 							<div className="hidden xl:flex items-center gap-2 shrink-0">
 								<div className="space-y-0.5">
@@ -285,10 +299,6 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 									Begär offert
 								</Button>
 							</div>
-							<div className="hidden lg:block">
-								<ProtectedNavbar />
-							</div>
-
 							{/* Mobile Menu */}
 							<div className="mr-1.5 lg:mr-0 flex items-center">
 								<MobileNavbar useLightText={useLightText} />

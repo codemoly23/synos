@@ -217,6 +217,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				product={product}
 				basePath={`/kategori/${category.slug}`}
 				baseLabel={category.name}
+				parentBreadcrumbs={[
+					{ label: "Kategori", href: "/kategori" },
+					{ label: category.name, href: `/kategori/${category.slug}` },
+				]}
 			/>
 		</>
 	);

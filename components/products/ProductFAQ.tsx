@@ -67,7 +67,7 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 								aria-expanded={openIndex === index}
 								aria-controls={`faq-answer-${faq._id}`}
 							>
-								<span className="font-medium text-foreground text-base flex-1 cursor-pointer">
+								<span className="font-medium text-foreground text-lg flex-1 cursor-pointer">
 									{faq.question}
 								</span>
 								<motion.div
@@ -99,7 +99,7 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 										className="overflow-hidden"
 									>
 										<div className="px-6 pb-5 pt-0">
-											<div className="font-medium text-foreground text-base leading-relaxed border-t border-slate-300 pt-4">
+											<div className="font-medium text-foreground text-lg leading-relaxed border-t border-slate-300 pt-4 [&_.sun-editor-editable]:text-[15px]!">
 												<PreviewEditor>{faq.answer}</PreviewEditor>
 											</div>
 										</div>

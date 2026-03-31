@@ -40,6 +40,7 @@ interface ProductInquiryFormProps {
 	productName: string;
 	productId: string;
 	productSlug: string;
+	categoryName?: string;
 }
 
 // Form schema with phone validation
@@ -77,6 +78,7 @@ export function ProductInquiryForm({
 	productName,
 	productId,
 	productSlug,
+	categoryName,
 }: ProductInquiryFormProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
@@ -390,6 +392,11 @@ export function ProductInquiryForm({
 										<span className="text-red-500">*</span>
 									</Label>
 									<div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+										{categoryName && (
+											<p className="text-xs text-primary font-medium mb-1">
+												{categoryName}
+											</p>
+										)}
 										<p className="font-medium text-secondary">
 											{productName}
 										</p>

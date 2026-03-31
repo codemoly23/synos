@@ -56,7 +56,7 @@ export function Hero({ data }: HeroProps) {
 
 	if (!hasSlides) {
 		return (
-			<section className="relative w-full overflow-hidden padding-top pb-16 lg:pb-32 min-h-[100svh] lg:min-h-0 bg-slate-100">
+			<section className="relative w-full overflow-hidden padding-top pb-4 lg:pb-8 min-h-[65svh] lg:min-h-0 bg-slate-100">
 				<div className="z-10 absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 				<div className="relative z-20 _container flex items-center justify-center min-h-[60vh]">
 					<p className="text-slate-400 text-lg">No hero slides configured.</p>
@@ -66,7 +66,7 @@ export function Hero({ data }: HeroProps) {
 	}
 
 	return (
-		<section className={`relative w-full overflow-hidden padding-top pb-16 lg:pb-32 min-h-[100svh] lg:min-h-0 ${
+		<section className={`relative w-full overflow-hidden padding-top pb-4 lg:pb-8 min-h-[65svh] lg:min-h-0 ${
 			isDarkBackground ? 'bg-slate-900' : 'bg-slate-100'
 		}`}>
 			{/* Background Image Carousel */}

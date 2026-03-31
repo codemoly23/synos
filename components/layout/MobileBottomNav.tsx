@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Home, Package, GraduationCap, Phone } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 interface NavItem {
 	label: string;
@@ -37,6 +38,18 @@ const navItems: NavItem[] = [
 
 export function MobileBottomNav() {
 	const pathname = usePathname();
+	const [nearFooter, setNearFooter] = useState(false);
+
+	useEffect(() => {
+		const footer = document.querySelector("footer");
+		if (!footer) return;
+		const observer = new IntersectionObserver(
+			([entry]) => setNearFooter(entry.isIntersecting),
+			{ threshold: 0 }
+		);
+		observer.observe(footer);
+		return () => observer.disconnect();
+	}, []);
 
 	const isActive = (href: string) => {
 		if (href === "/") {
@@ -56,7 +69,12 @@ export function MobileBottomNav() {
 				aria-label="Mobile navigation"
 			>
 				{/* Outer container with dark bg matching top navbar */}
-				<div className="relative bg-secondary/70 backdrop-blur-xl border border-secondary/50 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] overflow-hidden">
+				<div className={cn(
+					"relative backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] overflow-hidden transition-colors duration-300",
+					nearFooter
+						? "bg-white/90 border border-slate-200"
+						: "bg-secondary/70 border border-secondary/50"
+				)}>
 					{/* Subtle gradient overlay for depth */}
 					<div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent pointer-events-none" />
 
@@ -87,7 +105,7 @@ export function MobileBottomNav() {
 									href={item.href}
 									className={cn(
 										"relative flex flex-col items-center justify-center flex-1 py-2.5 px-1 rounded-xl group",
-										active ? "text-primary" : "text-white/70"
+										active ? "text-primary" : nearFooter ? "text-secondary/70" : "text-white/70"
 									)}
 									aria-current={active ? "page" : undefined}
 								>
@@ -109,7 +127,7 @@ export function MobileBottomNav() {
 												"w-5 h-5 transition-colors duration-200",
 												active
 													? "text-primary"
-													: "text-white/70"
+													: nearFooter ? "text-secondary/70" : "text-white/70"
 											)}
 											strokeWidth={active ? 2.5 : 1.5}
 											aria-hidden="true"
@@ -139,7 +157,7 @@ export function MobileBottomNav() {
 											"text-[11px] mt-1 font-medium truncate max-w-full",
 											active
 												? "text-primary font-semibold"
-												: "text-white/70"
+												: nearFooter ? "text-secondary/70" : "text-white/70"
 										)}
 										animate={{
 											opacity: active ? 1 : 0.7,

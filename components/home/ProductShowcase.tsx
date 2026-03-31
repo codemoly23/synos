@@ -53,7 +53,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 			</div>
 
 			{/* Product Carousel */}
-			<div className="_container">
+			<div className="max-w-[1920px] w-full mx-auto px-8 lg:px-16">
 				<Swiper
 					modules={[Autoplay, FreeMode]}
 					spaceBetween={20}
@@ -73,7 +73,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 						1024: { slidesPerView: 2.5, spaceBetween: 28 },
 						1280: { slidesPerView: 3, spaceBetween: 28 },
 					}}
-					className="overflow-visible!"
+					className="overflow-hidden"
 				>
 					{validProducts.map((product, index) => (
 						<SwiperSlide key={index} className="h-auto!">
@@ -153,7 +153,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 
 			{/* Mobile View All Button */}
 			{data?.ctaText && data?.ctaHref && (
-				<div className="_container mt-6 md:hidden">
+				<div className="_container px-8 mt-6 md:hidden">
 					<Button variant="outline" className="w-full" asChild>
 						<Link href={data.ctaHref}>
 							{data.ctaText} <ArrowRight className="ml-2 h-4 w-4" />

@@ -97,6 +97,7 @@ export type ProductType = {
 	}>;
 	seoAccordions: Array<SeoAccordionItem> | null;
 	youtubeUrl: string;
+	videoThumbnail?: string;
 	rubric: string;
 	publishType: string;
 	visibility: string;

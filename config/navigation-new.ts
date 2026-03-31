@@ -4,6 +4,8 @@ export interface NavItem {
 	description?: string;
 	items?: NavItem[];
 	isDynamic?: boolean; // Flag for items that load from database
+	isTechnologyMenu?: boolean; // Flag for UTRUSTNING: renders static technology-map groups
+	isCategoryMenu?: boolean; // Flag for KATEGORI: renders static category-map list
 }
 
 /**
@@ -31,13 +33,15 @@ export const mainNavNew: NavItem[] = [
 		title: "UTRUSTNING",
 		href: "/produkter",
 		isDynamic: true, // This item loads categories/products from database
+		isTechnologyMenu: true, // Renders static technology-map groups (not DB categories)
 	},
 
 	// KATEGORI - Categories
 	{
 		title: "KATEGORI",
 		href: "/kategori",
-		isDynamic: true, // This item loads categories from database
+		isDynamic: true,
+		isCategoryMenu: true, // Renders static category-map list
 	},
 
 	// STARTA EGET - Start Your Own Business

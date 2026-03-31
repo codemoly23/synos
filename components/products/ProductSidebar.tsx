@@ -66,21 +66,16 @@ export function ProductSidebar({
 
 			{/* Quick Info Card */}
 			<Card className="border-primary/50 bg-linear-to-br from-primary/20 to-slate-100">
-				<CardHeader className="pb-3">
-					<CardTitle className="text-base font-semibold text-foreground">
-						Behöver du hjälp?
-					</CardTitle>
-				</CardHeader>
-				<CardContent className="space-y-3">
+				<CardContent className="pt-4 space-y-3">
 					<p className="text-sm text-foreground">
 						Våra experter hjälper dig att hitta rätt utrustning för din
 						verksamhet.
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 border border-transparent"
 					>
-						Kontakta oss
+						Begär produktförfrågan
 					</Link>
 				</CardContent>
 			</Card>

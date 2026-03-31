@@ -235,7 +235,7 @@
 
 @layer utilities {
   ._container {
-    @apply max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .scrollbar-hide {

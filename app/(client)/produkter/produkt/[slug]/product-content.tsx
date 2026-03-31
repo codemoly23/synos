@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductType } from "@/types";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "@/components/shared/Breadcrumb";
 import { ProductDetailSidebar } from "@/components/products/ProductDetailSidebar";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
@@ -22,6 +22,8 @@ interface ProductContentProps {
 	basePath?: string;
 	/** Label for the back button breadcrumb */
 	baseLabel?: string;
+	/** Optional extra breadcrumb items to prepend before the product title */
+	parentBreadcrumbs?: BreadcrumbItem[];
 }
 
 /**
@@ -32,6 +34,7 @@ export function ProductContent({
 	product,
 	basePath = "/produkter",
 	baseLabel = "Produkter",
+	parentBreadcrumbs,
 }: ProductContentProps) {
 	const primaryImage = product.overviewImage;
 
@@ -42,10 +45,11 @@ export function ProductContent({
 				<div className="_container">
 					{/* Breadcrumb */}
 					<Breadcrumb
-						items={[
-							{ label: baseLabel, href: basePath },
-							{ label: product.title },
-						]}
+						items={
+							parentBreadcrumbs
+								? [...parentBreadcrumbs, { label: product.title }]
+								: [{ label: baseLabel, href: basePath }, { label: product.title }]
+						}
 					/>
 				</div>
 
@@ -139,6 +143,7 @@ export function ProductContent({
 								images={product.productImages}
 								productName={product.title}
 								youtubeUrl={product.youtubeUrl}
+								videoThumbnail={product.videoThumbnail}
 							/>
 						) : primaryImage ? (
 							<div className="relative aspect-video md:aspect-21/9 w-full overflow-hidden rounded-2xl shadow-xl">
@@ -242,45 +247,32 @@ export function ProductContent({
 						</article>
 
 						{/* Sidebar - Sticky */}
-						<aside className="sticky top-24 space-y-4">
+						<aside className="sticky top-28 self-start space-y-4">
 							<ProductDetailSidebar
 								brochureUrl={product.documentation}
 								videoUrl={product.youtubeUrl}
 								benefits={product.benefits}
 								certifications={product.certifications}
+								onScrollToForm={() =>
+									document
+										.getElementById("product-inquiry-form")
+										?.scrollIntoView({ behavior: "smooth" })
+								}
 							/>
 						</aside>
 					</div>
 				</div>
 			</section>
-			{/* Treatment Badges - Hidden for now */}
-			{/* <div className="_container">
-				{product?.treatments && product.treatments.length > 0 && (
-					<motion.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.4, delay: 0.1 }}
-						className="mb-4 flex flex-wrap gap-2"
-					>
-						{product.treatments.map((treatment) => (
-							<Badge
-								key={treatment}
-								variant="secondary"
-								className="bg-primary/10 text-primary hover:bg-primary/20"
-							>
-								{treatment}
-							</Badge>
-						))}
-					</motion.div>
-				)}
-			</div> */}
 
 			{/* Product Inquiry Form */}
-			<ProductInquiryForm
-				productName={product.title}
-				productId={product.id}
-				productSlug={product.slug}
-			/>
+			<div id="product-inquiry-form">
+				<ProductInquiryForm
+					productName={product.title}
+					productId={product.id}
+					productSlug={product.slug}
+					categoryName={baseLabel}
+				/>
+			</div>
 
 			{/* SEO Content - Hidden from users but visible to search engines */}
 			{/* This content is in the DOM for SEO purposes but visually hidden */}

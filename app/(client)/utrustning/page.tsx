@@ -212,7 +212,7 @@ export default async function UtrustningPage() {
 	return (
 		<div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
 			{/* Hero Section */}
-			<section className="relative overflow-hidden bg-linear-to-br from-slate-100 via-primary/5 to-slate-50 pt-32 pb-16">
+			<section className="relative overflow-hidden bg-linear-to-br from-slate-100 via-primary/5 to-slate-50 pt-20 pb-8 sm:pt-32 sm:pb-16">
 				{/* Background decoration */}
 				<div className="absolute inset-0 overflow-hidden">
 					<div className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
@@ -220,11 +220,13 @@ export default async function UtrustningPage() {
 				</div>
 
 				<div className="_container relative">
-					<Breadcrumb items={[{ label: "Utrustning" }]} />
+					<div className="hidden sm:block">
+						<Breadcrumb items={[{ label: "Utrustning" }]} />
+					</div>
 
-					<div className="mt-8 max-w-4xl">
+					<div className="mt-3 sm:mt-8 max-w-4xl">
 						{/* Badge */}
-						<div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
+						<div className="hidden sm:inline-flex mb-6 items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
 							<Package className="h-4 w-4 text-primary" />
 							<span className="text-sm font-semibold text-primary">
 								Professionell Utrustning
@@ -247,7 +249,7 @@ export default async function UtrustningPage() {
 						</p>
 
 						{/* Stats */}
-						<div className="mt-8 flex flex-wrap gap-8">
+						<div className="hidden sm:flex mt-8 flex-wrap gap-8">
 							<div className="flex items-center gap-3">
 								<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
 									<Sparkles className="h-6 w-6 text-primary" />

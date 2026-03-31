@@ -73,38 +73,38 @@ function ProductCardDB({
 		<Link href={`/kategori/${categorySlug}/${product.slug}`}>
 			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
-				<div className="relative h-56 overflow-hidden bg-primary/50">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
 						height={0}
 						width={0}
-						sizes="100vw"
+						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 						showLoader
 						wrapperClasses="w-full h-full"
 						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
 
-				<CardHeader className="px-2 py-1">
-					<h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">
+				<CardHeader className="px-4 py-3">
+					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
 				</CardHeader>
 
-				<CardContent className="px-2 py-1">
-					<p className="mb-2 text-xs text-muted-foreground line-clamp-2">
+				<CardContent className="px-4 pb-3 pt-0">
+					<p className="mb-3 text-sm text-muted-foreground line-clamp-3">
 						{product.shortDescription}
 					</p>
 
 					{/* Treatment Tags */}
 					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-0.5">
+						<div className="flex flex-wrap gap-1">
 							{product.treatments.slice(0, 3).map((treatment) => (
 								<Badge
 									key={treatment}
 									variant="secondary"
-									className="bg-primary/5 text-primary/80 text-[10px] hover:bg-primary/5"
+									className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
 								>
 									{treatment}
 								</Badge>
@@ -113,11 +113,8 @@ function ProductCardDB({
 					)}
 				</CardContent>
 
-				<CardFooter className="p-2!">
-					<Button
-						size="sm"
-						className="w-full bg-primary text-primary-foreground transition-colors p-0!"
-					>
+				<CardFooter className="px-4 pb-4 pt-0">
+					<Button className="w-full bg-primary text-primary-foreground transition-colors">
 						Läs mer
 					</Button>
 				</CardFooter>
@@ -278,34 +275,24 @@ export default async function ProductsPage() {
 
 	// Get category slug for each product
 	function getCategorySlugForProduct(product: IProduct): string {
-		// First try primaryCategory if it's populated
 		const primaryCat = product.primaryCategory as unknown as {
 			_id?: { toString(): string };
 			slug?: string;
 		};
-		if (primaryCat?.slug) {
-			return primaryCat.slug;
-		}
+		if (primaryCat?.slug) return primaryCat.slug;
 		if (primaryCat?._id) {
 			const slug = categorySlugMap.get(primaryCat._id.toString());
 			if (slug) return slug;
 		}
 
-		// Fall back to first category in categories array
 		if (product.categories && product.categories.length > 0) {
 			const firstCategory = product.categories[0] as unknown as {
 				_id?: { toString(): string };
 				slug?: string;
 			};
-			// If populated, use slug directly
-			if (firstCategory?.slug) {
-				return firstCategory.slug;
-			}
-			// Otherwise look up from map
+			if (firstCategory?.slug) return firstCategory.slug;
 			const catId = firstCategory?._id?.toString();
-			if (catId) {
-				return categorySlugMap.get(catId) || "uncategorized";
-			}
+			if (catId) return categorySlugMap.get(catId) || "uncategorized";
 		}
 		return "uncategorized";
 	}
@@ -340,17 +327,14 @@ export default async function ProductsPage() {
 
 					{/* Main Content */}
 					<div className="flex-1">
-						{/* Toolbar */}
-						<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-							<div>
-								<p className="text-sm text-muted-foreground">
-									Visar{" "}
-									<span className="font-medium text-foreground">
-										{products.length}
-									</span>{" "}
-									produkter
-								</p>
-							</div>
+						<div className="mb-6">
+							<p className="text-sm text-muted-foreground">
+								Visar{" "}
+								<span className="font-medium text-foreground">
+									{products.length}
+								</span>{" "}
+								produkter
+							</p>
 						</div>
 
 						{/* Products Grid */}
