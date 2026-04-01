@@ -120,7 +120,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
 																{item.isTechnologyMenu ? (
 																	/* UTRUSTNING: static technology-grouped map */
-																	<div className="grid grid-cols-5 gap-x-6 gap-y-4">
+																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{technologyMap.map((tech) => (
 																			<div key={tech.name} className="space-y-1">
 																				<p className="text-sm font-bold text-primary">

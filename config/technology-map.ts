@@ -1,5 +1,5 @@
 /**
- * Static technology-to-machine mapping for the UTRUSTNING mega menu.
+ * Static technology-to-machine mapping for the UTRUSTNING mega menu and sidebar.
  * Groups laser/device products by technology type.
  * Products not yet in the database are omitted — add them when created.
  */
@@ -19,30 +19,43 @@ export const technologyMap: TechGroup[] = [
 		name: "Alexandrit & Nd:YAG",
 		machines: [
 			{ title: "MOTUS PRO", href: "/kategori/harborttagning/motus-pro" },
-			{
-				title: "Motus AX",
-				href: "/kategori/harborttagning/harborttagningslaser-kopa-motus-ax",
-			},
-			{ title: "Motus AY", href: "/kategori/harborttagning/motus-ay" },
+			{ title: "Motus AX / AY", href: "/kategori/harborttagning/harborttagningslaser-kopa-motus-ax" },
 			{ title: "Again PRO PLUS", href: "/kategori/harborttagning/again-pro" },
 		],
 	},
 	{
 		name: "Pico & Q-Switched",
 		machines: [
-			{
-				title: "QTERRA Q10",
-				href: "/kategori/tatueringsborttagning/qterra-q10-tatueringsborttagning-laser-sverige",
-			},
-			{ title: "TORO Pico Laser", href: "/kategori/tatueringsborttagning/toro" },
-			{ title: "SmartPICO", href: "/kategori/tatueringsborttagning/smartpico" },
+			{ title: "Q-terra Q10", href: "/kategori/tatueringsborttagning/qterra-q10-tatueringsborttagning-laser-sverige" },
+			{ title: "Toro Pico Laser", href: "/kategori/tatueringsborttagning/toro" },
+		],
+	},
+	{
+		name: "Diodlaser",
+		machines: [
+			{ title: "Tridi Wave", href: "/produkter" },
+		],
+	},
+	{
+		name: "IPL",
+		machines: [
+			{ title: "Prisma", href: "/produkter" },
+		],
+	},
+	{
+		name: "Fraktionerad laser 1540/1570nm",
+		machines: [
+			{ title: "Helix", href: "/produkter" },
+			{ title: "DuoGlide", href: "/kategori/co2laser/duoglide" },
 		],
 	},
 	{
 		name: "CO₂ Fraktionerad laser",
 		machines: [
+			{ title: "Helix", href: "/produkter" },
 			{ title: "Tetra PRO", href: "/kategori/co2laser/tetra-pro" },
-			{ title: "SmartXide Punto", href: "/kategori/co2laser/ny-smartxide-punto" },
+			{ title: "SmartXide PRO", href: "/kategori/co2laser/ny-smartxide-punto" },
+			{ title: "Punto", href: "/kategori/co2laser/ny-smartxide-punto" },
 			{ title: "DuoGlide", href: "/kategori/co2laser/duoglide" },
 		],
 	},
@@ -59,18 +72,30 @@ export const technologyMap: TechGroup[] = [
 		],
 	},
 	{
+		name: "HIFU",
+		machines: [
+			{ title: "HIFU Ultraskin S", href: "/produkter" },
+		],
+	},
+	{
 		name: "Plasma",
 		machines: [
 			{ title: "Jovena", href: "/kategori/ansiktsbehandlingar/jovena" },
+			{ title: "Plasmage", href: "/produkter" },
 		],
 	},
 	{
 		name: "Body Contouring",
 		machines: [
-			{
-				title: "Onda Coolwaves PRO",
-				href: "/kategori/kropp-muskler-fett/onda-coolwaves-pro",
-			},
+			{ title: "Onda Coolwaves PRO", href: "/kategori/kropp-muskler-fett/onda-coolwaves-pro" },
+			{ title: "BodyStim Pro", href: "/produkter" },
+			{ title: "HIFU Ultraskin S", href: "/produkter" },
+		],
+	},
+	{
+		name: "EMS",
+		machines: [
+			{ title: "BodyStim Pro", href: "/produkter" },
 		],
 	},
 ];

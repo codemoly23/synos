@@ -23,6 +23,7 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
+import { technologyMap } from "@/config/technology-map";
 import { ImageComponent } from "@/components/common/image-component";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
@@ -124,17 +125,34 @@ function ProductCardDB({
 	);
 }
 
-// Sidebar Component for Database Categories
+const staticCategories = [
+	{ name: "Permanent Hårborttagning", href: "/kategori/harborttagning" },
+	{ name: "Tatueringsborttagning", href: "/kategori/tatueringsborttagning" },
+	{ name: "Hudföryngring", href: "/kategori/hudforyngring" },
+	{ name: "Skin Resurfacing", href: "/kategori/co2laser" },
+	{ name: "Huduppstramning", href: "/kategori/hudforyngring" },
+	{ name: "Pigmentbehandling", href: "/kategori/pigmentflackar" },
+	{ name: "Kärlbehandling", href: "/kategori/ytliga-blodkarl-angiom" },
+	{ name: "Akne & Ärrbehandling", href: "/kategori/akne-arr-och-hudbristningar" },
+	{ name: "Hudbristningar", href: "/kategori/akne-arr-och-hudbristningar" },
+	{ name: "Kroppsformning & Fettbehandling", href: "/kategori/kropp-muskler-fett" },
+	{ name: "Muskeltoning", href: "/kategori/kropp-muskler-fett" },
+	{ name: "Cellulitbehandling", href: "/kategori/kropp-muskler-fett" },
+];
+
+// Sidebar Component
 function KategoriSidebar({
 	categories,
 	activeCategory,
+	selectedTech,
 }: {
 	categories: ICategory[];
 	activeCategory?: string;
+	selectedTech?: string;
 }) {
 	return (
-		<aside className="space-y-6">
-			{/* Categories Filter */}
+		<aside className="space-y-4">
+			{/* Behandlingskategorier Card */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
 					<CardTitle className="text-xl font-semibold">
@@ -142,29 +160,50 @@ function KategoriSidebar({
 					</CardTitle>
 					<Link
 						href="/kategori"
-						className={`block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
-							!activeCategory
-								? "bg-primary text-primary-foreground"
-								: "text-foreground hover:bg-primary/50"
-						}`}
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
 					>
 						Alla Produkter
 					</Link>
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
-				<CardContent className="space-y-2 pb-2! p-0">
+				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{categories.map((category) => (
+						{staticCategories.map((cat) => (
 							<Link
-								key={category._id.toString()}
-								href={`/kategori/${category.slug}`}
-								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-									activeCategory === category.slug
-										? "bg-primary text-primary-foreground"
-										: "text-foreground hover:bg-primary/20"
-								}`}
+								key={cat.name}
+								href={cat.href}
+								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
-								{category.name}
+								{cat.name}
+							</Link>
+						))}
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Technology Category Card */}
+			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
+				<CardHeader className="px-3 py-2">
+					<CardTitle className="text-xl font-semibold">
+						Technology Category
+					</CardTitle>
+					<Link
+						href="/kategori"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+					>
+						Alla Teknologier
+					</Link>
+				</CardHeader>
+				<Separator className="my-2 bg-primary/50" />
+				<CardContent className="pb-2! p-0">
+					<div className="px-3">
+						{technologyMap.map((tech) => (
+							<Link
+								key={tech.name}
+								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+							>
+								{tech.name}
 							</Link>
 						))}
 					</div>
@@ -180,8 +219,7 @@ function KategoriSidebar({
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<p className="text-sm text-foreground">
-						Våra experter hjälper dig att hitta rätt utrustning för din
-						verksamhet.
+						Våra experter hjälper dig att hitta rätt utrustning för din verksamhet.
 					</p>
 					<Link
 						href="/kontakt"
@@ -205,40 +243,26 @@ function KategoriSidebar({
 							<ShieldCheck className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								MDR-certifierade
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Alla produkter är certifierade enligt EU-förordningar
-							</p>
+							<h4 className="text-sm font-medium text-foreground">MDR-certifierade</h4>
+							<p className="text-xs text-muted-foreground">Alla produkter är certifierade enligt EU-förordningar</p>
 						</div>
 					</div>
-
 					<div className="flex items-start space-x-3">
 						<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20">
 							<BookOpen className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								Utbildning ingår
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Komplett utbildning och support vid köp
-							</p>
+							<h4 className="text-sm font-medium text-foreground">Utbildning ingår</h4>
+							<p className="text-xs text-muted-foreground">Komplett utbildning och support vid köp</p>
 						</div>
 					</div>
-
 					<div className="flex items-start space-x-3">
 						<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20">
 							<Settings className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								Snabb service
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Reparation inom 48 arbetstimmar
-							</p>
+							<h4 className="text-sm font-medium text-foreground">Snabb service</h4>
+							<p className="text-xs text-muted-foreground">Reparation inom 48 arbetstimmar</p>
 						</div>
 					</div>
 				</CardContent>
@@ -303,8 +327,10 @@ export default async function KategoriPage() {
 	return (
 		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
 			<div className="_container mx-auto px-4 py-8 padding-top">
-				{/* Breadcrumb */}
-				<Breadcrumb items={[{ label: "Kategori" }]} />
+				{/* Breadcrumb - hidden on mobile */}
+				<div className="hidden md:block">
+					<Breadcrumb items={[{ label: "Kategori" }]} />
+				</div>
 
 				{/* Page Header */}
 				<div className="mb-8">
