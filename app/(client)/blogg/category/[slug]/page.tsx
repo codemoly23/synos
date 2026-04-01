@@ -16,7 +16,7 @@ import { Breadcrumb } from "@/components/shared/Breadcrumb";
  */
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 // Allow new categories to be generated on-demand
 export const dynamicParams = true;

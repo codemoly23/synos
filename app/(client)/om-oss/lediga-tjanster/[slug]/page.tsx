@@ -4,7 +4,7 @@ import { careersPageService } from "@/lib/services/careers-page.service";
 import { JobDetail } from "./_components/job-detail";
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 interface JobDetailPageProps {
 	params: Promise<{ slug: string }>;

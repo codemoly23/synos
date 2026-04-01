@@ -17,7 +17,7 @@ import { SearchPageSkeleton } from "@/components/search/SearchSkeleton";
 
 // ISR: Revalidate every 24 hours
 // Note: Search mode uses searchParams which makes those requests dynamic
-export const revalidate = 86400;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
 	const [seo, siteSettings] = await Promise.all([

@@ -35,7 +35,7 @@ import type { ICategory } from "@/models/category.model";
  */
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
 	const siteConfig = await getSiteConfig();

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 // Icon mapping for dynamic icons
 const iconMap: Record<string, LucideIcon> = {

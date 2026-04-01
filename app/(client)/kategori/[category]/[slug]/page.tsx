@@ -22,7 +22,7 @@ interface ProductPageProps {
 }
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 // Allow new products to be generated on-demand
 export const dynamicParams = true;

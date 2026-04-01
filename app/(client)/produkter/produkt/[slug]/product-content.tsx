@@ -43,14 +43,16 @@ export function ProductContent({
 			{/* Hero Section - Similar to Blog Detail Hero */}
 			<section className="relative overflow-hidden bg-linear-to-b from-slate-50 to-primary/10 padding-top pb-8">
 				<div className="_container">
-					{/* Breadcrumb */}
-					<Breadcrumb
-						items={
-							parentBreadcrumbs
-								? [...parentBreadcrumbs, { label: product.title }]
-								: [{ label: baseLabel, href: basePath }, { label: product.title }]
-						}
-					/>
+					{/* Breadcrumb - hidden on mobile */}
+					<div className="hidden md:block">
+						<Breadcrumb
+							items={
+								parentBreadcrumbs
+									? [...parentBreadcrumbs, { label: product.title }]
+									: [{ label: baseLabel, href: basePath }, { label: product.title }]
+							}
+						/>
+					</div>
 				</div>
 
 				<div className="_container">
@@ -79,17 +81,7 @@ export function ProductContent({
 						{product.title}
 					</motion.h1>
 
-					{/* Short Description */}
-					<motion.p
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.2 }}
-						className="mb-8 text-lg text-muted-foreground md:text-xl"
-					>
-						{product.shortDescription}
-					</motion.p>
-
-					{/* Certifications & Share Row */}
+{/* Certifications & Share Row */}
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -122,13 +114,6 @@ export function ProductContent({
 								</div>
 							)}
 
-						{/* Share Button */}
-						<div className="ml-auto">
-							<ProductShareButtons
-								productName={product.title}
-								productUrl={`/produkter/produkt/${product.slug}`}
-							/>
-						</div>
 					</motion.div>
 
 					{/* Featured Image */}
@@ -186,6 +171,14 @@ export function ProductContent({
 					<div className="grid gap-8 lg:grid-cols-[1fr_340px] items-start">
 						{/* Main Content */}
 						<article className="min-w-0">
+							{/* Share Button - below image, above Om Produkten */}
+							<div className="mb-6 flex justify-end">
+								<ProductShareButtons
+									productName={product.title}
+									productUrl={`/produkter/produkt/${product.slug}`}
+								/>
+							</div>
+
 							{/* Long Description Section */}
 							{product.productDescription && (
 								<ProductLongDescription

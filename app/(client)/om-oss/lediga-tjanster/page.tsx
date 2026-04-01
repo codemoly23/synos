@@ -3,7 +3,7 @@ import { careersPageService } from "@/lib/services/careers-page.service";
 import { CareersListing } from "./_components/careers-listing";
 
 // ISR: Revalidate every 24 hours
-export const revalidate = 86400;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
 	const data = await careersPageService.getPublicCareersPage();

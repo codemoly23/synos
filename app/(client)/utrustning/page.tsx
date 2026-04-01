@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Revalidate every hour
-export const revalidate = 3600;
+export const revalidate = 60;
 
 async function getCategories() {
 	try {

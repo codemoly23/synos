@@ -9,7 +9,7 @@ export const size = {
 export const contentType = "image/png";
 
 // Revalidate every hour to pick up favicon changes
-export const revalidate = 3600;
+export const revalidate = 60;
 
 /**
  * Dynamic Favicon Generator
