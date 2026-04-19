@@ -23,7 +23,7 @@ import { CategoryFilterBar } from "@/components/utrustning/CategoryFilterBar";
  *
  * URL: /utrustning/
  * Shows all individual equipment/products in a portfolio-style layout
- * Products link to their category-based URLs: /kategori/[category]/[slug]
+ * Products link to their category-based URLs: /klinikutrustning/[category]/[slug]
  */
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -92,7 +92,7 @@ function EquipmentCard({
 	const primaryImage = product.overviewImage || product.productImages?.[0];
 
 	return (
-		<Link href={`/kategori/${categorySlug}/${product.slug}`}>
+		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
 			<Card className="group h-full overflow-hidden border-0 bg-white hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 rounded-3xl">
 				{/* Image */}
 				<div className="relative aspect-[4/3] overflow-hidden bg-linear-to-br from-slate-100 to-primary/10">

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
-import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
+import { productRepository } from "@/lib/repositories/product.repository";
 import type { ProductType } from "@/types";
 
 /**
@@ -212,11 +212,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				/>
 			))}
 
-			{/* Product Content with klinikutrustning navigation */}
+			{/* Product Content with kategori navigation */}
 			<ProductContent
 				product={product}
 				basePath={`/klinikutrustning/${category.slug}`}
 				baseLabel={category.name}
+				parentBreadcrumbs={[
+					{ label: "Kategori", href: "/kategori" },
+					{ label: category.name, href: `/klinikutrustning/${category.slug}` },
+				]}
 			/>
 		</>
 	);

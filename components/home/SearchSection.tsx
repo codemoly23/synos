@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -22,7 +22,9 @@ export function SearchSection() {
 		e.preventDefault();
 		const trimmed = searchValue.trim();
 		if (trimmed.length >= 2) {
-			router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			startTransition(() => {
+				router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			});
 		}
 	};
 

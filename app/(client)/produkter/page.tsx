@@ -64,7 +64,7 @@ function ProductCardDB({
 }) {
 	const primaryImage = product.overviewImage || product.productImages?.[0];
 	return (
-		<Link href={`/kategori/${categorySlug}/${product.slug}`}>
+		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
 			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
 				<div className="relative aspect-square overflow-hidden bg-white p-4">
@@ -114,18 +114,18 @@ function ProductCardDB({
 }
 // Static category list
 const staticCategories = [
-	{ name: "Permanent Hårborttagning", href: "/kategori/harborttagning", tech: "Alexandrit/Nd:YAG, Diode, IPL" },
-	{ name: "Tatueringsborttagning", href: "/kategori/tatueringsborttagning", tech: "Pico/Q-Switched" },
-	{ name: "Hudföryngring", href: "/kategori/hudforyngring", tech: "CO₂, Er:YAG, 1540/1570, Redium, RF" },
-	{ name: "Skin Resurfacing", href: "/kategori/co2laser", tech: "CO₂, Er:YAG" },
-	{ name: "Huduppstramning", href: "/kategori/hudforyngring", tech: "CO₂, RF, HIFU, Plasma" },
-	{ name: "Pigmentbehandling", href: "/kategori/pigmentflackar", tech: "Pico/Q-Switched, Redium, CO₂, IPL" },
-	{ name: "Kärlbehandling", href: "/kategori/ytliga-blodkarl-angiom", tech: "Alexandrit/Nd:YAG" },
-	{ name: "Akne & Ärrbehandling", href: "/kategori/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
-	{ name: "Hudbristningar", href: "/kategori/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/kategori/kropp-muskler-fett", tech: "Body Contouring" },
-	{ name: "Muskeltoning", href: "/kategori/kropp-muskler-fett", tech: "EMS" },
-	{ name: "Cellulitbehandling", href: "/kategori/kropp-muskler-fett", tech: "Body Contouring" },
+	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning", tech: "Alexandrit/Nd:YAG, Diode, IPL" },
+	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning", tech: "Pico/Q-Switched" },
+	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring", tech: "CO₂, Er:YAG, 1540/1570, Redium, RF" },
+	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser", tech: "CO₂, Er:YAG" },
+	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring", tech: "CO₂, RF, HIFU, Plasma" },
+	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar", tech: "Pico/Q-Switched, Redium, CO₂, IPL" },
+	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom", tech: "Alexandrit/Nd:YAG" },
+	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
+	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
+	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett", tech: "Body Contouring" },
+	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett", tech: "EMS" },
+	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett", tech: "Body Contouring" },
 ];
 
 // Static technology map for sidebar
@@ -133,16 +133,16 @@ const sidebarTechMap = [
 	{
 		name: "Alexandrit & Nd:YAG",
 		machines: [
-			{ title: "MOTUS PRO", href: "/kategori/harborttagning/motus-pro" },
-			{ title: "Motus AX / AY", href: "/kategori/harborttagning/harborttagningslaser-kopa-motus-ax" },
-			{ title: "Again PRO PLUS", href: "/kategori/harborttagning/again-pro" },
+			{ title: "MOTUS PRO", href: "/klinikutrustning/harborttagning/motus-pro" },
+			{ title: "Motus AX / AY", href: "/klinikutrustning/harborttagning/harborttagningslaser-kopa-motus-ax" },
+			{ title: "Again PRO PLUS", href: "/klinikutrustning/harborttagning/again-pro" },
 		],
 	},
 	{
 		name: "Pico & Q-Switched",
 		machines: [
-			{ title: "Q-terra Q10", href: "/kategori/tatueringsborttagning/qterra-q10-tatueringsborttagning-laser-sverige" },
-			{ title: "Toro Pico Laser", href: "/kategori/tatueringsborttagning/toro" },
+			{ title: "Q-terra Q10", href: "/klinikutrustning/tatueringsborttagning/qterra-q10-tatueringsborttagning-laser-sverige" },
+			{ title: "Toro Pico Laser", href: "/klinikutrustning/tatueringsborttagning/toro" },
 		],
 	},
 	{
@@ -161,29 +161,29 @@ const sidebarTechMap = [
 		name: "Fraktionerad laser 1540/1570nm",
 		machines: [
 			{ title: "Helix", href: "/produkter" },
-			{ title: "DuoGlide", href: "/kategori/co2laser/duoglide" },
+			{ title: "DuoGlide", href: "/klinikutrustning/co2laser/duoglide" },
 		],
 	},
 	{
 		name: "CO₂ Fraktionerad laser",
 		machines: [
 			{ title: "Helix", href: "/produkter" },
-			{ title: "Tetra PRO", href: "/kategori/co2laser/tetra-pro" },
-			{ title: "SmartXide PRO", href: "/kategori/co2laser/ny-smartxide-punto" },
-			{ title: "Punto", href: "/kategori/co2laser/ny-smartxide-punto" },
-			{ title: "DuoGlide", href: "/kategori/co2laser/duoglide" },
+			{ title: "Tetra PRO", href: "/klinikutrustning/co2laser/tetra-pro" },
+			{ title: "SmartXide PRO", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
+			{ title: "Punto", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
+			{ title: "DuoGlide", href: "/klinikutrustning/co2laser/duoglide" },
 		],
 	},
 	{
 		name: "Fraktionerad Redium 675 nm",
 		machines: [
-			{ title: "RedTouch PRO", href: "/kategori/hudforyngring/redium" },
+			{ title: "RedTouch PRO", href: "/klinikutrustning/hudforyngring/redium" },
 		],
 	},
 	{
 		name: "RF Microneedling",
 		machines: [
-			{ title: "Vivace RF", href: "/kategori/hudforyngring/vivace-rf-microneedling" },
+			{ title: "Vivace RF", href: "/klinikutrustning/hudforyngring/vivace-rf-microneedling" },
 		],
 	},
 	{
@@ -195,14 +195,14 @@ const sidebarTechMap = [
 	{
 		name: "Plasma",
 		machines: [
-			{ title: "Jovena", href: "/kategori/ansiktsbehandlingar/jovena" },
+			{ title: "Jovena", href: "/klinikutrustning/ansiktsbehandlingar/jovena" },
 			{ title: "Plasmage", href: "/produkter" },
 		],
 	},
 	{
 		name: "Body Contouring",
 		machines: [
-			{ title: "Onda Coolwaves PRO", href: "/kategori/kropp-muskler-fett/onda-coolwaves-pro" },
+			{ title: "Onda Coolwaves PRO", href: "/klinikutrustning/kropp-muskler-fett/onda-coolwaves-pro" },
 			{ title: "BodyStim Pro", href: "/produkter" },
 			{ title: "HIFU Ultraskin S", href: "/produkter" },
 		],

@@ -111,7 +111,7 @@ const toggleCategory = (categoryId: string) => {
 																		<div className="space-y-0.5">
 																			{tech.machines.map((machine) => (
 																				<Link
-																					key={machine.href}
+																					key={`${tech.name}:${machine.title}`}
 																					href={machine.href}
 																					className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																					onClick={() => setOpen(false)}
@@ -167,7 +167,7 @@ const toggleCategory = (categoryId: string) => {
 																							{category.products.map((product) => (
 																								<Link
 																									key={product._id}
-																									href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
+																									href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																									className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																									onClick={() => setOpen(false)}
 																								>
@@ -175,7 +175,7 @@ const toggleCategory = (categoryId: string) => {
 																								</Link>
 																							))}
 																							<Link
-																								href={`/kategori/${category.slug}`}
+																								href={`/klinikutrustning/${category.slug}`}
 																								className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
 																								onClick={() => setOpen(false)}
 																							>
@@ -186,7 +186,7 @@ const toggleCategory = (categoryId: string) => {
 																				</>
 																			) : (
 																				<Link
-																					href={`/kategori/${category.slug}`}
+																					href={`/klinikutrustning/${category.slug}`}
 																					className="flex items-center px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-secondary/5 rounded-lg transition-all"
 																					onClick={() => setOpen(false)}
 																				>

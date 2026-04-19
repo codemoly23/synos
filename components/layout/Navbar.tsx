@@ -128,7 +128,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																				</p>
 																				<ul className="space-y-0">
 																					{tech.machines.map((machine) => (
-																						<li key={machine.href}>
+																						<li key={`${tech.name}:${machine.title}`}>
 																							<Link
 																								href={machine.href}
 																								className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
@@ -164,7 +164,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																					className="space-y-0"
 																				>
 																					<Link
-																						href={`/kategori/${category.slug}`}
+																						href={`/klinikutrustning/${category.slug}`}
 																						className="block text-sm font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
 																					>
 																						{category.name}
@@ -174,7 +174,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																							{category.products.map((product) => (
 																								<li key={product._id}>
 																									<Link
-																										href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
+																										href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																										className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
 																									>
 																										{product.title}

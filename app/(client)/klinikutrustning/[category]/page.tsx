@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
-import { PreviewEditor } from "@/components/common/TextEditor";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -143,7 +142,7 @@ export async function generateMetadata({
 	// Use SEO fields if available, otherwise fallback to defaults
 	const seoTitle =
 		category.seo?.title ||
-		`${category.name} | Klinikutrustning | ${siteConfig.name}`;
+		`${category.name} | Kategori | ${siteConfig.name}`;
 	const seoDescription =
 		category.seo?.description ||
 		(category.description
@@ -197,38 +196,38 @@ function ProductCardDB({
 		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
 			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
-				<div className="relative h-56 overflow-hidden bg-primary/50">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
 						height={0}
 						width={0}
-						sizes="100vw"
+						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 						showLoader
 						wrapperClasses="w-full h-full"
 						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
 
-				<CardHeader className="px-2 py-1">
-					<h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">
+				<CardHeader className="px-4 py-3">
+					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
 				</CardHeader>
 
-				<CardContent className="px-2 py-1">
-					<p className="mb-2 text-xs text-muted-foreground line-clamp-2">
+				<CardContent className="px-4 pb-3 pt-0">
+					<p className="mb-3 text-sm text-muted-foreground line-clamp-3">
 						{product.shortDescription}
 					</p>
 
 					{/* Treatment Tags */}
 					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-0.5">
+						<div className="flex flex-wrap gap-1">
 							{product.treatments.slice(0, 3).map((treatment) => (
 								<Badge
 									key={treatment}
 									variant="secondary"
-									className="bg-primary/5 text-primary/80 text-[10px] hover:bg-primary/5"
+									className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
 								>
 									{treatment}
 								</Badge>
@@ -237,11 +236,8 @@ function ProductCardDB({
 					)}
 				</CardContent>
 
-				<CardFooter className="p-2!">
-					<Button
-						size="sm"
-						className="w-full bg-primary text-primary-foreground transition-colors p-0!"
-					>
+				<CardFooter className="px-4 pb-4 pt-0">
+					<Button className="w-full bg-primary text-primary-foreground transition-colors">
 						Läs mer
 					</Button>
 				</CardFooter>
@@ -251,7 +247,7 @@ function ProductCardDB({
 }
 
 // Sidebar Component
-function KlinikutrustningaSidebar({
+function KategoriSidebar({
 	categories,
 	activeCategory,
 }: {
@@ -267,7 +263,7 @@ function KlinikutrustningaSidebar({
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/klinikutrustning"
+						href="/kategori"
 						className={`block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
 							!activeCategory
 								? "bg-primary text-primary-foreground"
@@ -299,21 +295,16 @@ function KlinikutrustningaSidebar({
 
 			{/* Quick Info Card */}
 			<Card className="border-primary/50 bg-linear-to-br from-primary/20 to-slate-100">
-				<CardHeader className="pb-3">
-					<CardTitle className="text-base font-semibold text-foreground">
-						Behöver du hjälp?
-					</CardTitle>
-				</CardHeader>
-				<CardContent className="space-y-3">
+				<CardContent className="pt-4 space-y-3">
 					<p className="text-sm text-foreground">
 						Våra experter hjälper dig att hitta rätt utrustning för din
 						verksamhet.
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 border border-transparent"
 					>
-						Kontakta oss
+						Begär produktförfrågan
 					</Link>
 				</CardContent>
 			</Card>
@@ -392,7 +383,7 @@ function MobileDrawer({
 				<DrawerContent className="p-0! rounded-t-sm">
 					<DrawerTitle className="sr-only">Filter</DrawerTitle>
 					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KlinikutrustningaSidebar
+						<KategoriSidebar
 							categories={categories}
 							activeCategory={activeCategory}
 						/>
@@ -417,35 +408,55 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
 	const products = await getProductsByCategory(category._id.toString());
 
+	const heroSubtitle = category.description
+		? stripHtml(category.description).slice(0, 300)
+		: undefined;
+
 	return (
-		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
-			<div className="_container mx-auto px-4 py-8 padding-top">
-				{/* Breadcrumb */}
-				<Breadcrumb
-					items={[
-						{ label: "Klinikutrustning", href: "/klinikutrustning" },
-						{ label: category.name },
-					]}
-				/>
-
-				{/* Page Header */}
-				<div className="mb-8">
-					<h1 className="mb-3 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-						{category.name}
-					</h1>
-					{category.description && (
-						<div className="prose prose-slate max-w-3xl text-muted-foreground">
-							<PreviewEditor>{category.description}</PreviewEditor>
+		<div className="min-h-screen">
+			{/* Hero Section */}
+			<section className="relative overflow-hidden bg-secondary padding-top pb-0">
+				<div className="_container relative z-10">
+					<div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 min-h-[280px]">
+						<div className="py-12 lg:py-16">
+							<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
+								Klinikutrustning
+							</p>
+							<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
+								{category.name}
+							</h1>
+							{heroSubtitle && (
+								<p className="text-white/60 text-base max-w-lg leading-relaxed">
+									{heroSubtitle}
+								</p>
+							)}
 						</div>
-					)}
+						{category.image && (
+							<div className="hidden lg:flex items-center justify-end">
+								<div className="relative w-[500px] h-80 drop-shadow-2xl">
+									<ImageComponent
+										src={category.image}
+										alt={category.name}
+										fill
+										className="object-contain object-center"
+										priority
+										sizes="500px"
+									/>
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
+			</section>
 
+			<div className="bg-linear-to-b from-slate-100 to-primary/10">
+			<div className="_container mx-auto px-4 py-8">
 				{/* Main Layout with Sidebar */}
 				<div className="flex flex-col gap-8 lg:flex-row">
 					{/* Sidebar */}
 					<div className="w-full lg:w-80 lg:shrink-0">
 						<div className="lg:sticky lg:top-28 hidden sm:block">
-							<KlinikutrustningaSidebar
+							<KategoriSidebar
 								categories={categories}
 								activeCategory={categorySlug}
 							/>
@@ -486,11 +497,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						{products.length === 0 && (
 							<div className="py-16 text-center">
 								<p className="text-lg text-muted-foreground">
-									Inga produkter tillgängliga i denna kategori för
-									tillfället.
+									Inga produkter tillgängliga i denna kategori för tillfället.
 								</p>
 								<Link
-									href="/klinikutrustning"
+									href="/kategori"
 									className="mt-4 inline-block text-primary hover:underline"
 								>
 									← Tillbaka till alla kategorier
@@ -499,6 +509,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						)}
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	);

@@ -77,7 +77,7 @@ export async function generateBreadcrumbJsonLd(
 			"@type": "ListItem" as const,
 			position: 3,
 			name: categoryName,
-			item: `${baseUrl}/produkter/kategori/${product.categories[0].slug}`,
+			item: `${baseUrl}/produkter/klinikutrustning/${product.categories[0].slug}`,
 		});
 		items.push({
 			"@type": "ListItem" as const,

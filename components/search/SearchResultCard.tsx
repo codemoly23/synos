@@ -20,7 +20,7 @@ export function ProductResultCard({ product }: ProductResultCardProps) {
 		product.primaryCategory?.slug ||
 		product.categories?.[0]?.slug ||
 		"uncategorized";
-	const href = `/kategori/${categorySlug}/${product.slug}`;
+	const href = `/klinikutrustning/${categorySlug}/${product.slug}`;
 
 	return (
 		<Link
@@ -161,7 +161,7 @@ interface CategoryResultCardProps {
 export function CategoryResultCard({ category }: CategoryResultCardProps) {
 	return (
 		<Link
-			href={`/kategori/${category.slug}`}
+			href={`/klinikutrustning/${category.slug}`}
 			className="group flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-200 hover:border-primary/30 hover:shadow-md transition-all duration-200"
 		>
 			{/* Icon */}

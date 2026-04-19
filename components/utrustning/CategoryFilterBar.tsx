@@ -179,7 +179,7 @@ export function CategoryFilterBar() {
 											{openCat.products.map((product) => (
 												<Link
 													key={product._id}
-													href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
+													href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 													className="block px-4 py-2.5 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
 													onClick={() => {
 														setOpenCategory(null);
@@ -190,7 +190,7 @@ export function CategoryFilterBar() {
 												</Link>
 											))}
 											<Link
-												href={`/kategori/${openCat.slug}`}
+												href={`/klinikutrustning/${openCat.slug}`}
 												className="block px-4 py-2.5 text-sm font-medium text-primary hover:underline border-t border-slate-100 mt-1 pt-2.5"
 												onClick={() => {
 													setOpenCategory(null);

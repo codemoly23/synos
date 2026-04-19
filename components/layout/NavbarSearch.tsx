@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,9 @@ export function NavbarSearch({ useLightText = false }: NavbarSearchProps) {
 		e?.preventDefault();
 		const trimmed = inputValue.trim();
 		if (trimmed.length >= 2) {
-			router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			startTransition(() => {
+				router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			});
 			setIsExpanded(false);
 			setInputValue("");
 		}

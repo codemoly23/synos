@@ -11,18 +11,18 @@ export interface CategoryItem {
 
 export const categoryMap: CategoryItem[] = [
 	// Existing DB categories (slug confirmed)
-	{ name: "Permanent Hårborttagning", href: "/kategori/harborttagning" },
-	{ name: "Tatueringsborttagning", href: "/kategori/tatueringsborttagning" },
-	{ name: "Hudföryngring", href: "/kategori/hudforyngring" },
-	{ name: "Pigmentbehandling", href: "/kategori/pigmentflackar" },
-	{ name: "Kärlbehandling", href: "/kategori/ytliga-blodkarl-angiom" },
-	{ name: "Akne & Ärrbehandling", href: "/kategori/akne" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/kategori/kropp-muskler-fett" },
+	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning" },
+	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning" },
+	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring" },
+	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar" },
+	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom" },
+	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne" },
+	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
 
 	// NEW — create these categories in admin panel
-	{ name: "Skin Resurfacing", href: "/kategori/skin-resurfacing" },
-	{ name: "Huduppstramning", href: "/kategori/huduppstramning" },
-	{ name: "Hudbristningar", href: "/kategori/hudbristningar" },
-	{ name: "Muskeltoning", href: "/kategori/muskeltoning" },
-	{ name: "Cellulitbehandling", href: "/kategori/cellulitbehandling" },
+	{ name: "Skin Resurfacing", href: "/klinikutrustning/skin-resurfacing" },
+	{ name: "Huduppstramning", href: "/klinikutrustning/huduppstramning" },
+	{ name: "Hudbristningar", href: "/klinikutrustning/hudbristningar" },
+	{ name: "Muskeltoning", href: "/klinikutrustning/muskeltoning" },
+	{ name: "Cellulitbehandling", href: "/klinikutrustning/cellulitbehandling" },
 ];

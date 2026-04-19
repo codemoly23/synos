@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
-import { productRepository } from "@/lib/repositories/product.repository";
-import { categoryRepository } from "@/lib/repositories/category.repository";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import {
+	getPublishedProducts,
+	getActiveCategories,
+} from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,59 +22,42 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
+import { technologyMap } from "@/config/technology-map";
 import { ImageComponent } from "@/components/common/image-component";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
 /**
- * Klinikutrustning (Clinic Equipment) Main Listing Page
+ * Kategori (Category) Main Listing Page
  *
  * URL: /klinikutrustning/
  * Shows all products with category sidebar filter
+ * This is an alias for /klinikutrustning with "Kategori" branding
  */
+
+// ISR: Revalidate every 24 hours
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
 	const siteConfig = await getSiteConfig();
 
 	return {
-		title: `Klinikutrustning | ${siteConfig.name}`,
+		title: `Kategori | ${siteConfig.name}`,
 		description:
 			"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
 		openGraph: {
-			title: `Klinikutrustning | ${siteConfig.name}`,
+			title: `Kategori | ${siteConfig.name}`,
 			description:
 				"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-			url: `${siteConfig.url}/klinikutrustning`,
+			url: `${siteConfig.url}/kategori`,
 			siteName: siteConfig.name,
 			locale: "sv_SE",
 			type: "website",
 		},
 		alternates: {
-			canonical: `${siteConfig.url}/klinikutrustning`,
+			canonical: `${siteConfig.url}/kategori`,
 		},
 	};
-}
-
-// ISR: Revalidate every 24 hours
-export const revalidate = 60;
-
-async function getCategories() {
-	try {
-		return await categoryRepository.findActiveCategories();
-	} catch (error) {
-		console.error("Error fetching categories:", error);
-		return [];
-	}
-}
-
-async function getProducts() {
-	try {
-		const { data } = await productRepository.findPublished({ limit: 100 });
-		return data;
-	} catch (error) {
-		console.error("Error fetching products:", error);
-		return [];
-	}
 }
 
 // Product Card Component for Database Products
@@ -90,38 +74,38 @@ function ProductCardDB({
 		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
 			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
-				<div className="relative h-56 overflow-hidden bg-primary/50">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
 						height={0}
 						width={0}
-						sizes="100vw"
+						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 						showLoader
 						wrapperClasses="w-full h-full"
 						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
 
-				<CardHeader className="px-2 py-1">
-					<h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary line-clamp-2">
+				<CardHeader className="px-4 py-3">
+					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
 				</CardHeader>
 
-				<CardContent className="px-2 py-1">
-					<p className="mb-2 text-xs text-muted-foreground line-clamp-2">
+				<CardContent className="px-4 pb-3 pt-0">
+					<p className="mb-3 text-sm text-muted-foreground line-clamp-3">
 						{product.shortDescription}
 					</p>
 
 					{/* Treatment Tags */}
 					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-0.5">
+						<div className="flex flex-wrap gap-1">
 							{product.treatments.slice(0, 3).map((treatment) => (
 								<Badge
 									key={treatment}
 									variant="secondary"
-									className="bg-primary/5 text-primary/80 text-[10px] hover:bg-primary/5"
+									className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
 								>
 									{treatment}
 								</Badge>
@@ -130,11 +114,8 @@ function ProductCardDB({
 					)}
 				</CardContent>
 
-				<CardFooter className="p-2!">
-					<Button
-						size="sm"
-						className="w-full bg-primary text-primary-foreground transition-colors p-0!"
-					>
+				<CardFooter className="px-4 pb-4 pt-0">
+					<Button className="w-full bg-primary text-primary-foreground transition-colors">
 						Läs mer
 					</Button>
 				</CardFooter>
@@ -143,47 +124,85 @@ function ProductCardDB({
 	);
 }
 
-// Sidebar Component for Database Categories
-function KlinikutrustningaSidebar({
+const staticCategories = [
+	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning" },
+	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning" },
+	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring" },
+	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser" },
+	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring" },
+	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar" },
+	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom" },
+	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
+	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
+	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
+	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett" },
+	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
+];
+
+// Sidebar Component
+function KategoriSidebar({
 	categories,
 	activeCategory,
+	selectedTech,
 }: {
 	categories: ICategory[];
 	activeCategory?: string;
+	selectedTech?: string;
 }) {
 	return (
-		<aside className="space-y-6">
-			{/* Categories Filter */}
+		<aside className="space-y-4">
+			{/* Behandlingskategorier Card */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
 					<CardTitle className="text-xl font-semibold">
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/klinikutrustning"
-						className={`block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
-							!activeCategory
-								? "bg-primary text-primary-foreground"
-								: "text-foreground hover:bg-primary/50"
-						}`}
+						href="/kategori"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
 					>
 						Alla Produkter
 					</Link>
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
-				<CardContent className="space-y-2 pb-2! p-0">
-					<div className="max-h-[200px] overflow-y-auto px-3">
-						{categories.map((category) => (
+				<CardContent className="pb-2! p-0">
+					<div className="px-3">
+						{staticCategories.map((cat) => (
 							<Link
-								key={category._id.toString()}
-								href={`/klinikutrustning/${category.slug}`}
-								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-									activeCategory === category.slug
-										? "bg-primary text-primary-foreground"
-										: "text-foreground hover:bg-primary/20"
-								}`}
+								key={cat.name}
+								href={cat.href}
+								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
-								{category.name}
+								{cat.name}
+							</Link>
+						))}
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Technology Category Card */}
+			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
+				<CardHeader className="px-3 py-2">
+					<CardTitle className="text-xl font-semibold">
+						Technology Category
+					</CardTitle>
+					<Link
+						href="/kategori"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+					>
+						Alla Teknologier
+					</Link>
+				</CardHeader>
+				<Separator className="my-2 bg-primary/50" />
+				<CardContent className="pb-2! p-0">
+					<div className="px-3">
+						{technologyMap.map((tech) => (
+							<Link
+								key={tech.name}
+								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+							>
+								{tech.name}
 							</Link>
 						))}
 					</div>
@@ -199,8 +218,7 @@ function KlinikutrustningaSidebar({
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<p className="text-sm text-foreground">
-						Våra experter hjälper dig att hitta rätt utrustning för din
-						verksamhet.
+						Våra experter hjälper dig att hitta rätt utrustning för din verksamhet.
 					</p>
 					<Link
 						href="/kontakt"
@@ -224,40 +242,26 @@ function KlinikutrustningaSidebar({
 							<ShieldCheck className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								MDR-certifierade
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Alla produkter är certifierade enligt EU-förordningar
-							</p>
+							<h4 className="text-sm font-medium text-foreground">MDR-certifierade</h4>
+							<p className="text-xs text-muted-foreground">Alla produkter är certifierade enligt EU-förordningar</p>
 						</div>
 					</div>
-
 					<div className="flex items-start space-x-3">
 						<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20">
 							<BookOpen className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								Utbildning ingår
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Komplett utbildning och support vid köp
-							</p>
+							<h4 className="text-sm font-medium text-foreground">Utbildning ingår</h4>
+							<p className="text-xs text-muted-foreground">Komplett utbildning och support vid köp</p>
 						</div>
 					</div>
-
 					<div className="flex items-start space-x-3">
 						<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20">
 							<Settings className="h-4 w-4 text-primary" />
 						</div>
 						<div>
-							<h4 className="text-sm font-medium text-foreground">
-								Snabb service
-							</h4>
-							<p className="text-xs text-muted-foreground">
-								Reparation inom 48 arbetstimmar
-							</p>
+							<h4 className="text-sm font-medium text-foreground">Snabb service</h4>
+							<p className="text-xs text-muted-foreground">Reparation inom 48 arbetstimmar</p>
 						</div>
 					</div>
 				</CardContent>
@@ -279,7 +283,7 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 				<DrawerContent className="p-0! rounded-t-sm">
 					<DrawerTitle className="sr-only">Filter</DrawerTitle>
 					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KlinikutrustningaSidebar categories={categories} />
+						<KategoriSidebar categories={categories} />
 					</div>
 				</DrawerContent>
 			</Drawer>
@@ -287,10 +291,10 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 	);
 }
 
-export default async function KlinikutrustningPage() {
+export default async function KategoriPage() {
 	const [categories, products] = await Promise.all([
-		getCategories(),
-		getProducts(),
+		getActiveCategories(),
+		getPublishedProducts({ limit: 100 }),
 	]);
 
 	// Create a map of category ID to slug for product cards
@@ -320,38 +324,51 @@ export default async function KlinikutrustningPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-linear-to-b from-slate-100 to-primary/10">
-			<div className="_container mx-auto px-4 py-8 padding-top">
-				{/* Breadcrumb */}
-				<Breadcrumb items={[{ label: "Klinikutrustning" }]} />
-
-				{/* Page Header */}
-				<div className="mb-8">
-					<h1 className="mb-3 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-						Klinikutrustning
-					</h1>
-					<p className="max-w-3xl text-lg text-muted-foreground">
-						Professionella lasermaskiner och medicinsk utrustning av
-						högsta kvalitet. Alla våra produkter är MDR-certifierade och
-						testade för bästa funktionalitet.
-					</p>
-				</div>
-
-				{/* Main Layout with Sidebar */}
-				<div className="flex flex-col gap-8 lg:flex-row">
-					{/* Sidebar */}
-					<div className="w-full lg:w-80 lg:shrink-0">
-						<div className="lg:sticky lg:top-28 hidden sm:block">
-							<KlinikutrustningaSidebar categories={categories} />
+		<div className="min-h-screen">
+			{/* Hero Section */}
+			<section className="relative overflow-hidden bg-secondary padding-top pb-0">
+				<div className="_container relative z-10">
+					<div className="grid grid-cols-1 lg:grid-cols-2 items-end gap-8 min-h-[280px]">
+						<div className="py-12 lg:py-16">
+							<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
+								Våra Produkter
+							</h1>
+							<p className="text-white/60 text-base max-w-lg leading-relaxed">
+								Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet.
+								Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.
+							</p>
 						</div>
-						<MobileDrawer categories={categories} />
+						<div className="hidden lg:flex items-end justify-end self-end">
+							<div className="relative w-[500px] h-80 drop-shadow-2xl">
+								<ImageComponent
+									src="/storage/images/motus-ax-3-600x500.webp"
+									alt="Medicinsk utrustning"
+									fill
+									className="object-contain object-bottom"
+									priority
+									sizes="500px"
+								/>
+							</div>
+						</div>
 					</div>
+				</div>
+			</section>
 
-					{/* Main Content */}
-					<div className="flex-1">
-						{/* Toolbar */}
-						<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-							<div>
+			{/* Products Section */}
+			<div className="bg-linear-to-b from-slate-100 to-primary/10">
+				<div className="_container mx-auto px-4 py-8">
+					<div className="flex flex-col gap-8 lg:flex-row">
+						{/* Sidebar */}
+						<div className="w-full lg:w-80 lg:shrink-0">
+							<div className="lg:sticky lg:top-28 hidden sm:block">
+								<KategoriSidebar categories={categories} />
+							</div>
+							<MobileDrawer categories={categories} />
+						</div>
+
+						{/* Main Content */}
+						<div className="flex-1">
+							<div className="mb-6">
 								<p className="text-sm text-muted-foreground">
 									Visar{" "}
 									<span className="font-medium text-foreground">
@@ -360,27 +377,27 @@ export default async function KlinikutrustningPage() {
 									produkter
 								</p>
 							</div>
-						</div>
 
-						{/* Products Grid */}
-						<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-							{products.map((product) => (
-								<ProductCardDB
-									key={product._id.toString()}
-									product={product}
-									categorySlug={getCategorySlugForProduct(product)}
-								/>
-							))}
-						</div>
-
-						{/* Empty State */}
-						{products.length === 0 && (
-							<div className="py-16 text-center">
-								<p className="text-lg text-muted-foreground">
-									Inga produkter tillgängliga för tillfället.
-								</p>
+							{/* Products Grid */}
+							<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+								{products.map((product) => (
+									<ProductCardDB
+										key={product._id.toString()}
+										product={product}
+										categorySlug={getCategorySlugForProduct(product)}
+									/>
+								))}
 							</div>
-						)}
+
+							{/* Empty State */}
+							{products.length === 0 && (
+								<div className="py-16 text-center">
+									<p className="text-lg text-muted-foreground">
+										Inga produkter tillgängliga för tillfället.
+									</p>
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

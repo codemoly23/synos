@@ -13,6 +13,23 @@ const nextConfig: NextConfig = {
 	},
 	async redirects() {
 		return [
+			// Redirect /kategori to /klinikutrustning
+			{
+				source: "/kategori",
+				destination: "/klinikutrustning",
+				permanent: true,
+			},
+			{
+				source: "/kategori/:category",
+				destination: "/klinikutrustning/:category",
+				permanent: true,
+			},
+			{
+				source: "/kategori/:category/:slug",
+				destination: "/klinikutrustning/:category/:slug",
+				permanent: true,
+			},
+
 			// Redirect /blogg to /nyheter
 			{
 				source: "/blogg",

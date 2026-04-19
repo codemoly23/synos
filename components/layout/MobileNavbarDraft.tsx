@@ -21,7 +21,7 @@ import {
 import { mainNav } from "@/config/navigation";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 import Logo from "../common/logo";
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import ProtectedNavbar from "./ProtectedNavbar";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,9 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 		e.preventDefault();
 		const trimmed = searchValue.trim();
 		if (trimmed.length >= 2) {
-			router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			startTransition(() => {
+				router.push(`/?s=${encodeURIComponent(trimmed)}`);
+			});
 			setOpen(false);
 			setSearchValue("");
 		}
@@ -141,7 +143,7 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 															(category) => (
 																<div key={category._id}>
 																	<Link
-																		href={`/kategori/${category.slug}`}
+																		href={`/klinikutrustning/${category.slug}`}
 																		className="flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
 																		onClick={() =>
 																			setOpen(false)
@@ -163,7 +165,7 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 																						key={
 																							product._id
 																						}
-																						href={`/kategori/${product.primaryCategorySlug}/${product.slug}`}
+																						href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																						className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																						onClick={() =>
 																							setOpen(
@@ -179,7 +181,7 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 																			{category.products
 																				.length > 3 && (
 																				<Link
-																					href={`/kategori/${category.slug}`}
+																					href={`/klinikutrustning/${category.slug}`}
 																					className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
 																					onClick={() =>
 																						setOpen(false)
