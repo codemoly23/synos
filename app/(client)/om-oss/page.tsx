@@ -5,6 +5,8 @@ import {
 } from "@/lib/services/about-page.service";
 import { AboutPageClient } from "./_components/about-page-client";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
 	const seo = await getAboutPageSeo();
 

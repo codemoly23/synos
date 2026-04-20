@@ -33,26 +33,26 @@ export const technologyMap: TechGroup[] = [
 	{
 		name: "Diodlaser",
 		machines: [
-			{ title: "Tridi Wave", href: "/produkter" },
+			{ title: "Tridi Wave", href: "/klinikutrustning/harborttagning/tridi-wave" },
 		],
 	},
 	{
 		name: "IPL",
 		machines: [
-			{ title: "Prisma", href: "/produkter" },
+			{ title: "Prisma", href: "/klinikutrustning/hudforyngring/prisma" },
 		],
 	},
 	{
 		name: "Fraktionerad laser 1540/1570nm",
 		machines: [
-			{ title: "Helix", href: "/produkter" },
+			{ title: "Helix", href: "/klinikutrustning/hudforyngring/helix" },
 			{ title: "DuoGlide", href: "/klinikutrustning/co2laser/duoglide" },
 		],
 	},
 	{
 		name: "CO₂ Fraktionerad laser",
 		machines: [
-			{ title: "Helix", href: "/produkter" },
+			{ title: "Helix", href: "/klinikutrustning/hudforyngring/helix" },
 			{ title: "Tetra PRO", href: "/klinikutrustning/co2laser/tetra-pro" },
 			{ title: "SmartXide PRO", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
 			{ title: "Punto", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
@@ -74,28 +74,28 @@ export const technologyMap: TechGroup[] = [
 	{
 		name: "HIFU",
 		machines: [
-			{ title: "HIFU Ultraskin S", href: "/produkter" },
+			{ title: "HIFU Ultraskin S", href: "/klinikutrustning/hudforyngring/hifu-ultraskin-s" },
 		],
 	},
 	{
 		name: "Plasma",
 		machines: [
 			{ title: "Jovena", href: "/klinikutrustning/ansiktsbehandlingar/jovena" },
-			{ title: "Plasmage", href: "/produkter" },
+			{ title: "Plasmage", href: "/klinikutrustning/ansiktsbehandlingar/plasmage" },
 		],
 	},
 	{
 		name: "Body Contouring",
 		machines: [
 			{ title: "Onda Coolwaves PRO", href: "/klinikutrustning/kropp-muskler-fett/onda-coolwaves-pro" },
-			{ title: "BodyStim Pro", href: "/produkter" },
-			{ title: "HIFU Ultraskin S", href: "/produkter" },
+			{ title: "BodyStim Pro", href: "/klinikutrustning/kropp-muskler-fett/bodystim-pro" },
+			{ title: "HIFU Ultraskin S", href: "/klinikutrustning/hudforyngring/hifu-ultraskin-s" },
 		],
 	},
 	{
 		name: "EMS",
 		machines: [
-			{ title: "BodyStim Pro", href: "/produkter" },
+			{ title: "BodyStim Pro", href: "/klinikutrustning/kropp-muskler-fett/bodystim-pro" },
 		],
 	},
 ];

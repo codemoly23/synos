@@ -227,21 +227,6 @@ const aboutCertificationBadgeSchema = z.object({
 	description: z.string().optional(),
 });
 
-// Testimonial Item schema - optional fields
-const testimonialItemSchema = z.object({
-	quote: z.string().optional(),
-	author: z.string().optional(),
-	role: z.string().optional(),
-	company: z.string().optional(),
-});
-
-// Testimonials Section schema
-const testimonialsSectionSchema = z.object({
-	title: z.string().optional(),
-	subtitle: z.string().optional(),
-	testimonials: z.array(testimonialItemSchema).optional(),
-});
-
 // Section Visibility schema
 const sectionVisibilitySchema = z.object({
 	hero: z.boolean(),
@@ -294,9 +279,6 @@ const homePageFormSchema = z.object({
 			certificationBadge: aboutCertificationBadgeSchema.optional(),
 		})
 		.optional(),
-
-	// Testimonials Section
-	testimonialsSection: testimonialsSectionSchema.optional(),
 
 	// CTA Section - all fields optional
 	ctaSection: z
@@ -386,11 +368,6 @@ export default function StartsidaPage() {
 				secondaryCta: { text: "", href: "", variant: "outline" },
 				certificationBadge: { title: "", description: "" },
 			},
-			testimonialsSection: {
-				title: "",
-				subtitle: "",
-				testimonials: [],
-			},
 			ctaSection: {
 				title: "",
 				subtitle: "",
@@ -464,14 +441,6 @@ export default function StartsidaPage() {
 			if (b) parts.push(`<p>${b}</p>`);
 		}
 
-		// Testimonials
-		const ts = allFormValues.testimonialsSection;
-		if (ts?.title) parts.push(`<h2>${ts.title}</h2>`);
-		if (ts?.subtitle) parts.push(`<p>${ts.subtitle}</p>`);
-		for (const t of ts?.testimonials || []) {
-			if (t.quote) parts.push(`<p>${t.quote}</p>`);
-		}
-
 		// Image Gallery
 		const ig = allFormValues.imageGallery;
 		if (ig?.title) parts.push(`<h2>${ig.title}</h2>`);
@@ -524,15 +493,6 @@ export default function StartsidaPage() {
 		append: appendGalleryImage,
 		remove: removeGalleryImage,
 	} = useFieldArray({ control: form.control, name: "imageGallery.images" });
-
-	const {
-		fields: testimonialFields,
-		append: appendTestimonial,
-		remove: removeTestimonial,
-	} = useFieldArray({
-		control: form.control,
-		name: "testimonialsSection.testimonials",
-	});
 
 	// Benefits are simple strings, so we manage them manually
 	const benefits = form.watch("aboutSection.benefits") || [];
@@ -653,15 +613,6 @@ export default function StartsidaPage() {
 							description: "",
 						},
 					},
-					testimonialsSection: {
-						title: content.testimonialsSection?.title ?? "",
-						subtitle: content.testimonialsSection?.subtitle ?? "",
-						testimonials: Array.isArray(
-							content.testimonialsSection?.testimonials
-						)
-							? content.testimonialsSection.testimonials
-							: [],
-					},
 					ctaSection: {
 						title: content.ctaSection?.title || "",
 						subtitle: content.ctaSection?.subtitle || "",
@@ -727,7 +678,6 @@ export default function StartsidaPage() {
 		imageGallery: "Image Gallery",
 		processStepsSection: "Process Steps",
 		aboutSection: "About Section",
-		testimonialsSection: "Testimonials",
 		ctaSection: "CTA Section",
 		seo: "SEO",
 		sectionVisibility: "Section Visibility",
@@ -735,11 +685,6 @@ export default function StartsidaPage() {
 		subtitle: "Subtitle",
 		content: "Content",
 		badge: "Badge",
-		quote: "Quote",
-		author: "Author",
-		role: "Role",
-		company: "Company",
-		testimonials: "Testimonials list",
 		text: "Button text",
 		href: "Link URL",
 	};
@@ -747,7 +692,7 @@ export default function StartsidaPage() {
 	const getFriendlyFieldName = (path: string): string => {
 		const parts = path.split(".");
 		const friendlyParts = parts.map((part) => {
-			// Handle array indices like "testimonials.0.quote"
+			// Handle array indices like "features.0.title"
 			if (/^\d+$/.test(part)) {
 				return `#${parseInt(part) + 1}`;
 			}
@@ -849,7 +794,6 @@ export default function StartsidaPage() {
 							<TabsTrigger value="gallery">Gallery</TabsTrigger>
 							<TabsTrigger value="process">Process</TabsTrigger>
 							<TabsTrigger value="about">About</TabsTrigger>
-							<TabsTrigger value="testimonials">Testimonials</TabsTrigger>
 							<TabsTrigger value="cta">CTA</TabsTrigger>
 							<TabsTrigger value="rich-content">Rich Content</TabsTrigger>
 							<TabsTrigger value="seo">SEO</TabsTrigger>
@@ -1009,7 +953,7 @@ export default function StartsidaPage() {
 															Testimonials
 														</FormLabel>
 														<FormDescription>
-															Customer testimonials carousel.
+															Customer reviews / Reco widget section.
 														</FormDescription>
 													</div>
 													<FormControl>
@@ -2881,198 +2825,6 @@ export default function StartsidaPage() {
 											)}
 										/>
 									</div>
-								</CardContent>
-							</Card>
-						</TabsContent>
-
-						{/* Testimonials Tab */}
-						<TabsContent value="testimonials" className="space-y-6">
-							{/* Section Settings */}
-							<Card>
-								<CardHeader>
-									<CardTitle>Section Settings</CardTitle>
-									<CardDescription>
-										Title and description for the testimonials
-										section.
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<FormField
-										control={form.control}
-										name="testimonialsSection.title"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Section Title</FormLabel>
-												<FormControl>
-													<Input
-														{...field}
-														value={field.value || ""}
-														placeholder="Trusted by Leading Healthcare Providers"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="testimonialsSection.subtitle"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Section Subtitle</FormLabel>
-												<FormControl>
-													<Textarea
-														{...field}
-														value={field.value || ""}
-														placeholder="Hear from healthcare professionals who have transformed their practices..."
-														rows={2}
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								</CardContent>
-							</Card>
-
-							{/* Testimonials List */}
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center justify-between">
-										<span>Testimonials</span>
-										<Button
-											type="button"
-											variant="outline"
-											size="sm"
-											onClick={() =>
-												appendTestimonial({
-													quote: "",
-													author: "",
-													role: "",
-													company: "",
-												})
-											}
-										>
-											<Plus className="h-4 w-4 mr-1" />
-											Add Testimonial
-										</Button>
-									</CardTitle>
-									<CardDescription>
-										Customer testimonials displayed in a carousel.
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									{testimonialFields.length === 0 ? (
-										<div className="text-center py-8 text-muted-foreground">
-											No testimonials added. Click &quot;Add
-											Testimonial&quot; to add one.
-										</div>
-									) : (
-										testimonialFields.map((field, index) => (
-											<Card key={field.id} className="border-dashed">
-												<CardHeader className="pb-3">
-													<div className="flex items-center justify-between">
-														<CardTitle className="text-base">
-															Testimonial {index + 1}
-														</CardTitle>
-														<Button
-															type="button"
-															variant="ghost"
-															size="sm"
-															onClick={async () => {
-																const confirmed = await confirm({
-																	title: "Remove Testimonial",
-																	description: "Are you sure you want to remove this testimonial?",
-																	confirmText: "Remove",
-																});
-																if (confirmed) removeTestimonial(index);
-															}}
-															className="text-destructive hover:text-destructive"
-														>
-															<Trash2 className="h-4 w-4" />
-														</Button>
-													</div>
-												</CardHeader>
-												<CardContent className="space-y-4">
-													<FormField
-														control={form.control}
-														name={`testimonialsSection.testimonials.${index}.quote`}
-														render={({ field }) => (
-															<FormItem>
-																<FormLabel>Quote</FormLabel>
-																<FormControl>
-																	<Textarea
-																		{...field}
-																		value={field.value || ""}
-																		placeholder="Enter the testimonial quote..."
-																		rows={3}
-																	/>
-																</FormControl>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-													<div className="grid gap-4 sm:grid-cols-2">
-														<FormField
-															control={form.control}
-															name={`testimonialsSection.testimonials.${index}.author`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>
-																		Author Name
-																	</FormLabel>
-																	<FormControl>
-																		<Input
-																			{...field}
-																			value={field.value || ""}
-																			placeholder="Dr. Sarah Chen"
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-														<FormField
-															control={form.control}
-															name={`testimonialsSection.testimonials.${index}.role`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>Role</FormLabel>
-																	<FormControl>
-																		<Input
-																			{...field}
-																			value={field.value || ""}
-																			placeholder="Chief of Radiology"
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-													</div>
-													<FormField
-														control={form.control}
-														name={`testimonialsSection.testimonials.${index}.company`}
-														render={({ field }) => (
-															<FormItem>
-																<FormLabel>
-																	Company/Hospital
-																</FormLabel>
-																<FormControl>
-																	<Input
-																		{...field}
-																		value={field.value || ""}
-																		placeholder="St. Mary's General Hospital"
-																	/>
-																</FormControl>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-												</CardContent>
-											</Card>
-										))
-									)}
 								</CardContent>
 							</Card>
 						</TabsContent>

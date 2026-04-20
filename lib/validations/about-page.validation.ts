@@ -119,6 +119,7 @@ export const aboutPartnerSchema = z.object({
 });
 
 export const aboutPartnersSectionSchema = z.object({
+	badge: z.string().max(100).optional(),
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	partners: z.array(aboutPartnerSchema).optional(),

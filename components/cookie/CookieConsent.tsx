@@ -350,7 +350,6 @@ function CookieSettingsModal() {
 }
 
 // Floating Cookie Settings Button - Desktop Only
-// On mobile, this is rendered inside CallbackPopup for stacked layout
 function CookieSettingsButton() {
 	const { hasConsented, openSettings } = useCookieConsent();
 

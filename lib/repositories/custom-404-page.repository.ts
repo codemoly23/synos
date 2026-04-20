@@ -46,7 +46,9 @@ class Custom404PageRepository {
 		const updateData: Record<string, unknown> = {};
 
 		if (data.sectionVisibility) {
-			updateData.sectionVisibility = data.sectionVisibility;
+			Object.entries(data.sectionVisibility).forEach(([key, value]) => {
+				updateData[`sectionVisibility.${key}`] = value;
+			});
 		}
 
 		if (data.hero) {

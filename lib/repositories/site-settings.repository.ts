@@ -10,6 +10,8 @@ import {
 	type ISeoSettings,
 	type IBrandingSettings,
 	type IFooterSettings,
+	type IReviewsSettings,
+	type IBrightcallSettings,
 } from "@/models/site-settings.model";
 
 /**
@@ -27,6 +29,8 @@ export interface UpdateSiteSettingsInput {
 	seo?: Partial<ISeoSettings>;
 	branding?: Partial<IBrandingSettings>;
 	footer?: Partial<IFooterSettings>;
+	reviews?: Partial<IReviewsSettings>;
+	brightcall?: Partial<IBrightcallSettings>;
 }
 
 /**
@@ -130,6 +134,22 @@ class SiteSettingsRepository {
 				updateData.footer = {
 					...existing.footer,
 					...data.footer,
+				};
+			}
+
+			if (data.reviews !== undefined) {
+				const existing = await this.get();
+				updateData.reviews = {
+					...existing.reviews,
+					...data.reviews,
+				};
+			}
+
+			if (data.brightcall !== undefined) {
+				const existing = await this.get();
+				updateData.brightcall = {
+					...existing.brightcall,
+					...data.brightcall,
 				};
 			}
 

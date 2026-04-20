@@ -108,9 +108,21 @@ export function ImageGallery({ data }: ImageGalleryProps) {
 										? "(max-width: 768px) 100vw, 50vw"
 										: "100vw"
 								}
-								wrapperClasses="w-full h-full"
+								wrapperClasses={`w-full h-full ${image.mobileSrc ? "hidden md:block" : ""}`}
 								className="object-cover w-full h-full"
 							/>
+							{image.mobileSrc && (
+								<ImageComponent
+									src={image.mobileSrc}
+									alt={`${image.title} - ${image.subtitle}`}
+									loading={index === 0 ? "eager" : "lazy"}
+									height={0}
+									width={0}
+									sizes="100vw"
+									wrapperClasses="w-full h-full md:hidden"
+									className="object-cover w-full h-full"
+								/>
+							)}
 
 							{/* Gradient Overlay - Always visible for better text contrast */}
 							<div

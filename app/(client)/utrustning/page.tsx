@@ -5,18 +5,12 @@ import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
-import { ImageComponent } from "@/components/common/image-component";
-import { Package, ArrowRight, Sparkles } from "lucide-react";
+import { Package, Sparkles } from "lucide-react";
 import type { IProduct } from "@/models/product.model";
-import type { ICategory } from "@/models/category.model";
-import { CategoryFilterBar } from "@/components/utrustning/CategoryFilterBar";
+import {
+	UtrustningFilterableGrid,
+	type SerializedProduct,
+} from "@/components/utrustning/UtrustningFilterableGrid";
 
 /**
  * Utrustning (Equipment) Overview Page
@@ -79,95 +73,6 @@ async function getProducts() {
 	}
 }
 
-// Equipment Card Component - Portfolio style
-function EquipmentCard({
-	product,
-	categorySlug,
-	categoryName,
-}: {
-	product: IProduct;
-	categorySlug: string;
-	categoryName: string;
-}) {
-	const primaryImage = product.overviewImage || product.productImages?.[0];
-
-	return (
-		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
-			<Card className="group h-full overflow-hidden border-0 bg-white hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 rounded-3xl">
-				{/* Image */}
-				<div className="relative aspect-[4/3] overflow-hidden bg-linear-to-br from-slate-100 to-primary/10">
-					<ImageComponent
-						src={primaryImage}
-						alt={product.title}
-						height={0}
-						width={0}
-						sizes="100vw"
-						showLoader
-						wrapperClasses="w-full h-full"
-						className="object-cover transition-transform h-full w-full duration-500 group-hover:scale-110"
-					/>
-					{/* Overlay on hover */}
-					<div className="absolute inset-0 bg-linear-to-t from-secondary/80 via-secondary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-					{/* Category Badge */}
-					<div className="absolute top-4 left-4">
-						<Badge className="bg-white/90 text-secondary hover:bg-white backdrop-blur-sm">
-							{categoryName}
-						</Badge>
-					</div>
-
-					{/* Quick action on hover */}
-					<div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-						<Button
-							size="sm"
-							className="w-full bg-white text-secondary hover:bg-primary hover:text-white"
-						>
-							Visa produkt
-							<ArrowRight className="ml-2 h-4 w-4" />
-						</Button>
-					</div>
-				</div>
-
-				{/* Content */}
-				<CardHeader className="pb-2">
-					<h3 className="text-xl font-bold text-secondary transition-colors group-hover:text-primary line-clamp-1">
-						{product.title}
-					</h3>
-				</CardHeader>
-
-				<CardContent className="pt-0">
-					<p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-						{product.shortDescription}
-					</p>
-
-					{/* Treatment Tags */}
-					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-1">
-							{product.treatments.slice(0, 3).map((treatment) => (
-								<Badge
-									key={treatment}
-									variant="outline"
-									className="text-xs border-primary/30 text-primary/80"
-								>
-									{treatment}
-								</Badge>
-							))}
-							{product.treatments.length > 3 && (
-								<Badge
-									variant="outline"
-									className="text-xs border-primary/30 text-primary/80"
-								>
-									+{product.treatments.length - 3}
-								</Badge>
-							)}
-						</div>
-					)}
-				</CardContent>
-			</Card>
-		</Link>
-	);
-}
-
 export default async function UtrustningPage() {
 	const [categories, products] = await Promise.all([
 		getCategories(),
@@ -193,11 +98,9 @@ export default async function UtrustningPage() {
 				slug?: string;
 				name?: string;
 			};
-			// If populated, use directly
 			if (firstCategory?.slug && firstCategory?.name) {
 				return { slug: firstCategory.slug, name: firstCategory.name };
 			}
-			// Otherwise look up from map
 			const catId = firstCategory?._id?.toString();
 			if (catId) {
 				return {
@@ -208,6 +111,42 @@ export default async function UtrustningPage() {
 		}
 		return { slug: "uncategorized", name: "Okategoriserad" };
 	}
+
+	function getAllCategorySlugs(product: IProduct): string[] {
+		const slugs: string[] = [];
+		if (product.categories) {
+			for (const c of product.categories) {
+				const cat = c as unknown as {
+					_id?: { toString(): string };
+					slug?: string;
+				};
+				if (cat?.slug) {
+					slugs.push(cat.slug);
+				} else if (cat?._id) {
+					const s = categorySlugMap.get(cat._id.toString());
+					if (s) slugs.push(s);
+				}
+			}
+		}
+		return slugs;
+	}
+
+	const serializedProducts: SerializedProduct[] = products.map((product) => {
+		const info = getCategoryInfoForProduct(product);
+		const allSlugs = getAllCategorySlugs(product);
+		return {
+			id: product._id.toString(),
+			title: product.title,
+			slug: product.slug,
+			shortDescription: product.shortDescription || "",
+			treatments: product.treatments || [],
+			overviewImage: product.overviewImage || null,
+			firstProductImage: product.productImages?.[0] || null,
+			primaryCategorySlug: info.slug,
+			primaryCategoryName: info.name,
+			categorySlugs: allSlugs.length ? allSlugs : [info.slug],
+		};
+	});
 
 	return (
 		<div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
@@ -284,26 +223,9 @@ export default async function UtrustningPage() {
 			{/* Products Grid Section */}
 			<section className="pt-6 pb-16">
 				<div className="_container">
-					{/* Category Filter Bar with Dropdowns */}
-					<CategoryFilterBar />
-
-					{/* Products Grid */}
-					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-						{products.map((product) => {
-							const categoryInfo = getCategoryInfoForProduct(product);
-							return (
-								<EquipmentCard
-									key={product._id.toString()}
-									product={product}
-									categorySlug={categoryInfo.slug}
-									categoryName={categoryInfo.name}
-								/>
-							);
-						})}
-					</div>
-
-					{/* Empty State */}
-					{products.length === 0 && (
+					{products.length > 0 ? (
+						<UtrustningFilterableGrid products={serializedProducts} />
+					) : (
 						<div className="py-24 text-center">
 							<Package className="mx-auto h-16 w-16 text-muted-foreground/50 mb-4" />
 							<p className="text-lg text-muted-foreground">

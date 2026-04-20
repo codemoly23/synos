@@ -253,6 +253,7 @@ export interface IAboutPartner {
 }
 
 export interface IAboutPartnersSection {
+	badge?: string;
 	title?: string;
 	subtitle?: string;
 	partners?: IAboutPartner[];
@@ -269,6 +270,7 @@ const AboutPartnerSchema = new Schema<IAboutPartner>(
 
 const AboutPartnersSectionSchema = new Schema<IAboutPartnersSection>(
 	{
+		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		partners: { type: [AboutPartnerSchema], default: [] },

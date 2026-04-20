@@ -138,6 +138,7 @@ const formSchema = z.object({
 			.optional(),
 	}),
 	partners: z.object({
+		badge: z.string().optional(),
 		title: z.string().optional(),
 		subtitle: z.string().optional(),
 		partners: z
@@ -311,6 +312,7 @@ export default function AboutPageCMS() {
 						},
 					},
 					partners: {
+						badge: data.partners?.badge || "",
 						title: data.partners?.title || "",
 						subtitle: data.partners?.subtitle || "",
 						partners: data.partners?.partners || [],
@@ -1156,12 +1158,19 @@ export default function AboutPageCMS() {
 							<CardDescription>Logo carousel of partner companies</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="grid gap-4 md:grid-cols-2">
+							<div className="grid gap-4 md:grid-cols-3">
+								<div className="space-y-2">
+									<Label>Section Badge</Label>
+									<Input
+										{...form.register("partners.badge")}
+										placeholder="e.g., Our Company"
+									/>
+								</div>
 								<div className="space-y-2">
 									<Label>Section Title</Label>
 									<Input
 										{...form.register("partners.title")}
-										placeholder="e.g., Vara partners"
+										placeholder="e.g., Trusted Business Partner"
 									/>
 								</div>
 								<div className="space-y-2">

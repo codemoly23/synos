@@ -76,9 +76,11 @@ class HomePageRepository {
 		// Build update object, only including provided fields
 		const updateData: Record<string, unknown> = {};
 
-		// Section visibility - update entire object
+		// Section visibility - use dot-notation to ensure boolean false values are saved
 		if (data.sectionVisibility) {
-			updateData.sectionVisibility = data.sectionVisibility;
+			Object.entries(data.sectionVisibility).forEach(([key, value]) => {
+				updateData[`sectionVisibility.${key}`] = value;
+			});
 		}
 
 		if (data.hero) {

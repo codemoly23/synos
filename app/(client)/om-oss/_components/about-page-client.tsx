@@ -76,9 +76,6 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 	const hasTestimonials =
 		data.testimonials?.testimonials &&
 		data.testimonials.testimonials.filter((t) => t.quote).length > 0;
-	const hasPartners =
-		data.partners?.partners &&
-		data.partners.partners.filter((p) => p.logo || p.name).length > 0;
 	const hasCta =
 		data.cta?.title ||
 		data.cta?.description ||
@@ -543,8 +540,17 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										alt={image.alt || `Bild ${index + 1}`}
 										width={index === 0 ? 600 : 400}
 										height={index === 0 ? 600 : 300}
-										className="w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500"
+										className={`w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 ${image.mobileSrc ? "hidden md:block" : ""}`}
 									/>
+									{image.mobileSrc && (
+										<ImageComponent
+											src={image.mobileSrc}
+											alt={image.alt || `Bild ${index + 1}`}
+											width={index === 0 ? 600 : 400}
+											height={index === 0 ? 600 : 300}
+											className="w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 md:hidden"
+										/>
+									)}
 									<div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 								</motion.div>
 							))}
@@ -554,7 +560,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 			)}
 
 			{/* Trusted Business Partner Section */}
-			{validPartners.length > 0 && (
+			{visibility.partners && validPartners.length > 0 && (
 				<section className="py-16 md:py-20 lg:py-24 bg-slate-100 overflow-hidden">
 					<div className="_container">
 						<motion.div
@@ -565,16 +571,25 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							className="text-center mb-12"
 						>
 							{/* Badge */}
-							<div className="mb-4 inline-flex items-center gap-3">
-								<span className="text-secondary/60">●</span>
-								<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
-									Our Company
-								</span>
-								<span className="text-secondary/60">●</span>
-							</div>
-							<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary">
-								Trusted Business Partner
-							</h2>
+							{data.partners?.badge && (
+								<div className="mb-4 inline-flex items-center gap-3">
+									<span className="text-secondary/60">●</span>
+									<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
+										{data.partners.badge}
+									</span>
+									<span className="text-secondary/60">●</span>
+								</div>
+							)}
+							{data.partners?.title && (
+								<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary">
+									{data.partners.title}
+								</h2>
+							)}
+							{data.partners?.subtitle && (
+								<p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+									{data.partners.subtitle}
+								</p>
+							)}
 						</motion.div>
 					</div>
 
@@ -1309,82 +1324,6 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									</div>
 								</div>
 							</div>
-						</motion.div>
-					</div>
-				</section>
-			)}
-
-			{/* Partners Section */}
-			{visibility.partners && hasPartners && (
-				<section className="py-16 md:py-20">
-					<div className="_container">
-						<motion.div
-							variants={staggerContainer}
-							initial="initial"
-							whileInView="animate"
-							viewport={{ once: true }}
-							className="text-center mb-12"
-						>
-							{data.partners?.title && (
-								<motion.h2
-									variants={fadeUp}
-									className="text-3xl md:text-4xl font-bold text-secondary mb-4"
-								>
-									{data.partners.title}
-								</motion.h2>
-							)}
-							{data.partners?.subtitle && (
-								<motion.p
-									variants={fadeUp}
-									className="text-muted-foreground max-w-2xl mx-auto"
-								>
-									{data.partners.subtitle}
-								</motion.p>
-							)}
-						</motion.div>
-
-						{/* Partners Logo Grid */}
-						<motion.div
-							variants={staggerContainer}
-							initial="initial"
-							whileInView="animate"
-							viewport={{ once: true }}
-							className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center"
-						>
-							{validPartners.map((partner, index) => (
-								<motion.div
-									key={index}
-									variants={fadeUp}
-									className="flex items-center justify-center"
-								>
-									{partner.url ? (
-										<a
-											href={partner.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all"
-										>
-											<Image
-												src={partner.logo || ""}
-												alt={partner.name || `Partner ${index + 1}`}
-												width={150}
-												height={60}
-												className="max-h-12 w-auto object-contain"
-											/>
-										</a>
-									) : (
-										<div className="grayscale opacity-60">
-											<Image
-												src={partner.logo || ""}
-												alt={partner.name || `Partner ${index + 1}`}
-												width={150}
-												height={60}
-												className="max-h-12 w-auto object-contain"
-											/>
-										</div>
-									)}
-								</motion.div>
-							))}
 						</motion.div>
 					</div>
 				</section>

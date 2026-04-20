@@ -123,9 +123,12 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{technologyMap.map((tech) => (
 																			<div key={tech.name} className="space-y-1">
-																				<p className="text-sm font-bold text-primary">
+																				<Link
+																					href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+																					className="text-sm font-bold text-primary hover:underline"
+																				>
 																					{tech.name}
-																				</p>
+																				</Link>
 																				<ul className="space-y-0">
 																					{tech.machines.map((machine) => (
 																						<li key={`${tech.name}:${machine.title}`}>

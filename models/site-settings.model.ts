@@ -47,6 +47,27 @@ export interface IBrandingSettings {
 }
 
 /**
+ * Brightcall (Convolo.ai) integration settings interface
+ * When enabled, the Brightcall script is injected and replaces the in-house callback popup.
+ */
+export interface IBrightcallSettings {
+	enabled?: boolean;
+	widgetKey?: string; // e.g. "6d30f2bc306bc7a2b45b2bbfe479f60e"
+	apiKey?: string; // for server-to-server API calls (optional, stored for future use)
+	apiBaseUrl?: string; // base URL hosting the icallback.js script (default https://app.convolo.ai)
+}
+
+/**
+ * Reviews settings interface
+ */
+export interface IReviewsSettings {
+	recoWidgetUrl?: string; // Reco widget iframe src URL
+	title?: string; // Optional section title shown above the widget
+	subtitle?: string; // Optional section subtitle
+	isVisible?: boolean; // Toggle to show/hide the Reco widget on the homepage
+}
+
+/**
  * Footer link interface
  */
 export interface IFooterLink {
@@ -100,6 +121,12 @@ export interface ISiteSettings extends Document {
 
 	// Footer settings
 	footer: IFooterSettings;
+
+	// Reviews (Reco widget)
+	reviews: IReviewsSettings;
+
+	// Brightcall (Convolo.ai)
+	brightcall: IBrightcallSettings;
 
 	// Timestamps
 	updatedAt: Date;
@@ -201,6 +228,36 @@ const BrandingSettingsSchema = new Schema<IBrandingSettings>(
 			default: "/storage/synos-logo-beige-glow.svg",
 		},
 		faviconUrl: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+/**
+ * Brightcall sub-schema
+ */
+const BrightcallSettingsSchema = new Schema<IBrightcallSettings>(
+	{
+		enabled: { type: Boolean, default: false },
+		widgetKey: { type: String, trim: true },
+		apiKey: { type: String, trim: true },
+		apiBaseUrl: {
+			type: String,
+			trim: true,
+			default: "https://app.convolo.ai",
+		},
+	},
+	{ _id: false }
+);
+
+/**
+ * Reviews sub-schema
+ */
+const ReviewsSettingsSchema = new Schema<IReviewsSettings>(
+	{
+		recoWidgetUrl: { type: String, trim: true },
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+		isVisible: { type: Boolean, default: true },
 	},
 	{ _id: false }
 );
@@ -376,6 +433,19 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
 			type: FooterSettingsSchema,
 			default: {},
 		},
+		reviews: {
+			type: ReviewsSettingsSchema,
+			default: {
+				isVisible: true,
+			},
+		},
+		brightcall: {
+			type: BrightcallSettingsSchema,
+			default: {
+				enabled: false,
+				apiBaseUrl: "https://app.convolo.ai",
+			},
+		},
 	},
 	{
 		timestamps: true,
@@ -396,16 +466,31 @@ SiteSettingsSchema.set("toJSON", {
 SiteSettingsSchema.set("toObject", { virtuals: true });
 
 /**
+ * Ensure the cached Mongoose model is up-to-date with the current schema.
+ * If the schema has been extended (e.g. added new fields) after the model was
+ * first compiled during dev hot-reload, Mongoose silently drops writes to
+ * the new paths. Re-registering fixes that.
+ */
+function resolveSiteSettingsModel(): Model<ISiteSettings> {
+	const cached = mongoose.models.SiteSettings as Model<ISiteSettings> | undefined;
+	if (cached) {
+		// If schema is missing any of our current top-level paths, drop the cache.
+		const currentPaths = Object.keys(SiteSettingsSchema.paths);
+		const cachedPaths = Object.keys(cached.schema.paths);
+		const hasAllPaths = currentPaths.every((p) => cachedPaths.includes(p));
+		if (hasAllPaths) return cached;
+		delete mongoose.models.SiteSettings;
+	}
+	return mongoose.model<ISiteSettings>("SiteSettings", SiteSettingsSchema);
+}
+
+/**
  * Get SiteSettings Model
  * Uses function to prevent model overwrite during hot reload
  */
 export const getSiteSettingsModel = async (): Promise<Model<ISiteSettings>> => {
 	await connectMongoose();
-
-	return (
-		(mongoose.models.SiteSettings as Model<ISiteSettings>) ||
-		mongoose.model<ISiteSettings>("SiteSettings", SiteSettingsSchema)
-	);
+	return resolveSiteSettingsModel();
 };
 
 /**
@@ -413,8 +498,5 @@ export const getSiteSettingsModel = async (): Promise<Model<ISiteSettings>> => {
  * Note: Ensure connectMongoose is called before using this
  */
 export function getSiteSettingsModelSync(): Model<ISiteSettings> {
-	return (
-		(mongoose.models.SiteSettings as Model<ISiteSettings>) ||
-		mongoose.model<ISiteSettings>("SiteSettings", SiteSettingsSchema)
-	);
+	return resolveSiteSettingsModel();
 }

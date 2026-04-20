@@ -7,6 +7,7 @@ import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { ImageGallery } from "@/components/home/ImageGallery";
 import { ProcessSteps } from "@/components/home/ProcessSteps";
 import { Testimonials } from "@/components/home/Testimonials";
+import { RecoReviews } from "@/components/widgets/RecoReviews";
 import AboutSection from "@/components/home/AboutSection";
 import CtaSection from "@/components/home/CtaSection";
 import { getHomePage, getHomePageSeo } from "@/lib/services/home-page.service";
@@ -148,11 +149,16 @@ export default async function Home({ searchParams }: HomeProps) {
 					<ProcessSteps data={homePage.processStepsSection} />
 				)}
 
-			{/* Testimonials */}
+			{/* Testimonials — replaced by Reco widget when configured */}
 			{visibility.testimonials &&
-				(homePage.testimonialsSection?.testimonials?.length ?? 0) > 0 && (
-					<Testimonials data={homePage.testimonialsSection} />
-				)}
+				(siteSettings.reviews?.isVisible !== false &&
+				siteSettings.reviews?.recoWidgetUrl ? (
+					<RecoReviews data={siteSettings.reviews} />
+				) : (
+					(homePage.testimonialsSection?.testimonials?.length ?? 0) > 0 && (
+						<Testimonials data={homePage.testimonialsSection} />
+					)
+				))}
 
 			{/* CTA Section */}
 			{visibility.cta && homePage.ctaSection && (

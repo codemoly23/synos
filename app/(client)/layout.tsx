@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { CallbackPopup } from "@/components/callback/CallbackPopup";
+import { BrightcallScript } from "@/components/callback/BrightcallScript";
 import { CookieConsent } from "@/components/cookie/CookieConsent";
 import { CookieConsentProvider } from "@/lib/context/cookie-consent-context";
 import { NavbarVariantProvider } from "@/lib/context/navbar-variant-context";
@@ -9,6 +9,7 @@ import {
 	getLegacySiteConfig,
 	getBrandingSettings,
 	getFooterSettings,
+	getSiteSettings,
 } from "@/lib/services/site-settings.service";
 
 /**
@@ -22,13 +23,18 @@ export default async function ClientLayout({
 	children: React.ReactNode;
 }) {
 	// Fetch site settings from database in parallel
-	const [siteConfig, brandingSettings, footerSettings] = await Promise.all([
-		getLegacySiteConfig(),
-		getBrandingSettings(),
-		getFooterSettings(),
-	]);
+	const [siteConfig, brandingSettings, footerSettings, siteSettings] =
+		await Promise.all([
+			getLegacySiteConfig(),
+			getBrandingSettings(),
+			getFooterSettings(),
+			getSiteSettings(),
+		]);
 
 	const logoUrl = brandingSettings?.logoUrl;
+	const brightcallActive = Boolean(
+		siteSettings.brightcall?.enabled && siteSettings.brightcall?.widgetKey
+	);
 
 	return (
 		<CookieConsentProvider>
@@ -42,7 +48,12 @@ export default async function ClientLayout({
 						logoUrl={logoUrl}
 					/>
 					<MobileBottomNav />
-					<CallbackPopup />
+					{brightcallActive && (
+						<BrightcallScript
+							widgetKey={siteSettings.brightcall!.widgetKey!}
+							apiBaseUrl={siteSettings.brightcall?.apiBaseUrl}
+						/>
+					)}
 					<CookieConsent />
 				</div>
 			</NavbarVariantProvider>

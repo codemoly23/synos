@@ -124,6 +124,48 @@ export const footerSettingsSchema = z.object({
 });
 
 /**
+ * Brightcall settings schema
+ */
+export const brightcallSettingsSchema = z.object({
+	enabled: z.boolean().optional(),
+	widgetKey: z
+		.string()
+		.max(100, "Widget key cannot exceed 100 characters")
+		.optional()
+		.or(z.literal("")),
+	apiKey: z
+		.string()
+		.max(200, "API key cannot exceed 200 characters")
+		.optional()
+		.or(z.literal("")),
+	apiBaseUrl: z
+		.string()
+		.max(300, "API base URL cannot exceed 300 characters")
+		.optional()
+		.or(z.literal("")),
+});
+
+/**
+ * Reviews settings schema
+ */
+export const reviewsSettingsSchema = z.object({
+	recoWidgetUrl: z
+		.string()
+		.max(500, "Widget URL cannot exceed 500 characters")
+		.optional()
+		.or(z.literal("")),
+	title: z
+		.string()
+		.max(100, "Title cannot exceed 100 characters")
+		.optional(),
+	subtitle: z
+		.string()
+		.max(300, "Subtitle cannot exceed 300 characters")
+		.optional(),
+	isVisible: z.boolean().optional(),
+});
+
+/**
  * Update site settings schema
  */
 export const updateSiteSettingsSchema = z.object({
@@ -171,6 +213,12 @@ export const updateSiteSettingsSchema = z.object({
 
 	// Footer
 	footer: footerSettingsSchema.partial().optional(),
+
+	// Reviews (Reco widget)
+	reviews: reviewsSettingsSchema.partial().optional(),
+
+	// Brightcall (Convolo.ai)
+	brightcall: brightcallSettingsSchema.partial().optional(),
 });
 
 // Type exports
@@ -180,4 +228,6 @@ export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
 export type BrandingSettingsInput = z.infer<typeof brandingSettingsSchema>;
 export type FooterLinkInput = z.infer<typeof footerLinkSchema>;
 export type FooterSettingsInput = z.infer<typeof footerSettingsSchema>;
+export type ReviewsSettingsInput = z.infer<typeof reviewsSettingsSchema>;
+export type BrightcallSettingsInput = z.infer<typeof brightcallSettingsSchema>;
 export type UpdateSiteSettingsInput = z.infer<typeof updateSiteSettingsSchema>;

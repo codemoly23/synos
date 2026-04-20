@@ -20,6 +20,8 @@ import {
 	Image,
 	LayoutGrid,
 	GripVertical,
+	Star,
+	PhoneCall,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
 	Card,
@@ -114,6 +117,22 @@ const settingsFormSchema = z.object({
 		newsletterButtonText: z.string().optional(),
 		bottomLinks: z.array(footerLinkSchema).optional(),
 	}),
+
+	// Reviews (Reco widget)
+	reviews: z.object({
+		recoWidgetUrl: z.string().optional(),
+		title: z.string().optional(),
+		subtitle: z.string().optional(),
+		isVisible: z.boolean().optional(),
+	}),
+
+	// Brightcall (Convolo.ai)
+	brightcall: z.object({
+		enabled: z.boolean().optional(),
+		widgetKey: z.string().optional(),
+		apiKey: z.string().optional(),
+		apiBaseUrl: z.string().optional(),
+	}),
 });
 
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
@@ -159,6 +178,18 @@ export default function SettingsPage() {
 				newsletterPlaceholder: "Din e-postadress",
 				newsletterButtonText: "Prenumerera",
 				bottomLinks: [],
+			},
+			reviews: {
+				recoWidgetUrl: "",
+				title: "",
+				subtitle: "",
+				isVisible: true,
+			},
+			brightcall: {
+				enabled: false,
+				widgetKey: "",
+				apiKey: "",
+				apiBaseUrl: "https://app.convolo.ai",
 			},
 		},
 	});
@@ -237,6 +268,19 @@ export default function SettingsPage() {
 						newsletterButtonText: settings.footer?.newsletterButtonText || "Prenumerera",
 						bottomLinks: settings.footer?.bottomLinks || [],
 					},
+					reviews: {
+						recoWidgetUrl: settings.reviews?.recoWidgetUrl || "",
+						title: settings.reviews?.title || "",
+						subtitle: settings.reviews?.subtitle || "",
+						isVisible: settings.reviews?.isVisible ?? true,
+					},
+					brightcall: {
+						enabled: settings.brightcall?.enabled ?? false,
+						widgetKey: settings.brightcall?.widgetKey || "",
+						apiKey: settings.brightcall?.apiKey || "",
+						apiBaseUrl:
+							settings.brightcall?.apiBaseUrl || "https://app.convolo.ai",
+					},
 				});
 			} catch (error) {
 				console.error("Error fetching settings:", error);
@@ -299,7 +343,7 @@ export default function SettingsPage() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<Tabs defaultValue="company" className="space-y-6">
-						<TabsList className="grid w-full grid-cols-6">
+						<TabsList className="grid w-full grid-cols-8">
 							<TabsTrigger value="company" className="flex items-center gap-2">
 								<Building2 className="h-4 w-4" />
 								<span className="hidden sm:inline">Company</span>
@@ -323,6 +367,14 @@ export default function SettingsPage() {
 							<TabsTrigger value="footer" className="flex items-center gap-2">
 								<LayoutGrid className="h-4 w-4" />
 								<span className="hidden sm:inline">Footer</span>
+							</TabsTrigger>
+							<TabsTrigger value="reviews" className="flex items-center gap-2">
+								<Star className="h-4 w-4" />
+								<span className="hidden sm:inline">Reviews</span>
+							</TabsTrigger>
+							<TabsTrigger value="brightcall" className="flex items-center gap-2">
+								<PhoneCall className="h-4 w-4" />
+								<span className="hidden sm:inline">Brightcall</span>
 							</TabsTrigger>
 						</TabsList>
 
@@ -1277,6 +1329,226 @@ export default function SettingsPage() {
 											</div>
 										))
 									)}
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Reviews Tab */}
+						<TabsContent value="reviews" className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Star className="h-5 w-5" />
+										Reco Reviews Widget
+									</CardTitle>
+									<CardDescription>
+										Paste the Reco widget iframe URL to display customer
+										reviews on the homepage.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="reviews.isVisible"
+										render={({ field }) => (
+											<FormItem className="flex items-center justify-between rounded-lg border p-4">
+												<div className="space-y-0.5">
+													<FormLabel className="text-base">
+														Show on homepage
+													</FormLabel>
+													<FormDescription>
+														Toggle to show or hide the Reco widget on the
+														homepage.
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={!!field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="reviews.recoWidgetUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Reco Widget URL</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="https://widget.reco.se/v2/venues/.../horizontal/xlarge?..."
+														{...field}
+													/>
+												</FormControl>
+												<FormDescription>
+													Paste the src URL from the Reco embed iframe. When
+													set, this widget replaces the testimonials section on
+													the homepage.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField
+											control={form.control}
+											name="reviews.title"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Section Title (Optional)</FormLabel>
+													<FormControl>
+														<Input placeholder="Vad våra kunder säger" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="reviews.subtitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Section Subtitle (Optional)</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Läs vad andra klinikägare tycker..."
+															{...field}
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									{form.watch("reviews.recoWidgetUrl") && (
+										<div className="space-y-2">
+											<FormLabel>Preview</FormLabel>
+											<div className="border rounded-lg overflow-hidden bg-background">
+												<iframe
+													src={form.watch("reviews.recoWidgetUrl")}
+													title="Reco widget preview"
+													height={225}
+													style={{
+														width: "100%",
+														border: 0,
+														display: "block",
+														overflow: "hidden",
+													}}
+												/>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Brightcall Tab */}
+						<TabsContent value="brightcall" className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<PhoneCall className="h-5 w-5" />
+										Brightcall (Convolo.ai) Widget
+									</CardTitle>
+									<CardDescription>
+										When enabled, the Brightcall call-back widget replaces
+										the built-in callback popup across the site.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="brightcall.enabled"
+										render={({ field }) => (
+											<FormItem className="flex items-center justify-between rounded-lg border p-4">
+												<div className="space-y-0.5">
+													<FormLabel className="text-base">
+														Enable Brightcall widget
+													</FormLabel>
+													<FormDescription>
+														When on, Brightcall&apos;s call-back widget loads
+														across the site. A widget key is required.
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={!!field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="brightcall.widgetKey"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Widget Key</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="e.g. 6d30f2bc306bc7a2b45b2bbfe479f60e"
+														{...field}
+													/>
+												</FormControl>
+												<FormDescription>
+													Found in the Brightcall dashboard → Widgets → Edit
+													Widget → Main tab (Widget Key).
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="brightcall.apiKey"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>API Key (Optional)</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="e.g. 550a0d561cc279f3fb4a3bbfccd32ad6813be744"
+														{...field}
+													/>
+												</FormControl>
+												<FormDescription>
+													Found under Integrations → API KEY. Reserved for
+													server-side call ordering; the embedded widget only
+													needs the Widget Key.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="brightcall.apiBaseUrl"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>API Base URL</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="https://app.convolo.ai"
+														{...field}
+													/>
+												</FormControl>
+												<FormDescription>
+													Base URL that hosts the Brightcall widget script
+													(<code>/js/icallback.js</code>). Leave as default
+													unless Brightcall directs you otherwise.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 								</CardContent>
 							</Card>
 						</TabsContent>
