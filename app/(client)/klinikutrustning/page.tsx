@@ -6,7 +6,6 @@ import {
 	getActiveCategories,
 } from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -71,10 +70,10 @@ function ProductCardDB({
 	const primaryImage = product.overviewImage || product.productImages?.[0];
 
 	return (
-		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
-			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
+		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`} className="h-full">
+			<Card className="group h-full flex flex-col overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
-				<div className="relative aspect-4/3 overflow-hidden bg-primary/50">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50 shrink-0">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
@@ -86,39 +85,18 @@ function ProductCardDB({
 						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
-
-				<CardHeader className="px-4 py-3">
+				<div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">
 					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
-				</CardHeader>
-
-				<CardContent className="px-4 pb-3 pt-0">
-					<p className="mb-3 text-sm text-muted-foreground line-clamp-3">
+					<p className="text-sm text-muted-foreground line-clamp-2">
 						{product.shortDescription}
 					</p>
-
-					{/* Treatment Tags */}
-					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-1">
-							{product.treatments.slice(0, 3).map((treatment) => (
-								<Badge
-									key={treatment}
-									variant="secondary"
-									className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
-								>
-									{treatment}
-								</Badge>
-							))}
-						</div>
-					)}
-				</CardContent>
-
-				<CardFooter className="px-4 pb-4 pt-0">
+					<div className="flex-1" />
 					<Button className="w-full bg-primary text-primary-foreground transition-colors">
 						Läs mer
 					</Button>
-				</CardFooter>
+				</div>
 			</Card>
 		</Link>
 	);

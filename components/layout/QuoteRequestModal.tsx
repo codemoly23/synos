@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils/cn";
@@ -26,11 +25,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {
-	CountryCodeSelect,
-	defaultCountry,
-	type Country,
-} from "@/components/ui/country-code-select";
 
 // Client-side form schema
 const quoteFormSchema = z.object({
@@ -39,7 +33,6 @@ const quoteFormSchema = z.object({
 		.min(2, "Namnet måste vara minst 2 tecken")
 		.max(100, "Namnet får inte överstiga 100 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
-	countryCode: z.string().min(2, "Landskod krävs"),
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
@@ -70,8 +63,6 @@ export function QuoteRequestModal({
 }: QuoteRequestModalProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
-	const [selectedCountry, setSelectedCountry] =
-		useState<Country>(defaultCountry);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -79,25 +70,18 @@ export function QuoteRequestModal({
 		handleSubmit,
 		setValue,
 		reset,
-		setError,
 		formState: { errors },
 	} = useForm<FormData>({
 		resolver: zodResolver(quoteFormSchema),
 		defaultValues: {
 			fullName: "",
 			email: "",
-			countryCode: defaultCountry.dialCode,
 			phone: "",
 			companyName: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
 		},
 	});
-
-	const handleCountryChange = (country: Country) => {
-		setSelectedCountry(country);
-		setValue("countryCode", country.dialCode);
-	};
 
 	const handleGdprChange = (checked: boolean) => {
 		setGdprChecked(checked);
@@ -106,26 +90,14 @@ export function QuoteRequestModal({
 
 	const handleClose = () => {
 		onOpenChange(false);
-		// Reset after animation
 		setTimeout(() => {
 			setIsSuccess(false);
 			reset();
 			setGdprChecked(false);
-			setSelectedCountry(defaultCountry);
 		}, 200);
 	};
 
 	const onSubmit = async (data: FormData) => {
-		// Frontend phone validation
-		const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
-		if (!isValidPhoneNumber(fullPhone)) {
-			setError("phone", {
-				type: "manual",
-				message: "Ogiltigt telefonnummer för valt land",
-			});
-			return;
-		}
-
 		setIsSubmitting(true);
 
 		try {
@@ -147,7 +119,6 @@ export function QuoteRequestModal({
 				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				setSelectedCountry(defaultCountry);
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -324,35 +295,28 @@ export function QuoteRequestModal({
 									)}
 								</div>
 
-								{/* Phone with Country Code */}
+								{/* Phone */}
 								<div className="space-y-1">
-									<Label className="text-xs font-semibold">
+									<Label
+										htmlFor="phone"
+										className="text-xs font-semibold"
+									>
 										Telefonnummer{" "}
 										<span className="text-red-500">*</span>
 									</Label>
-									<div className="flex gap-2">
-										<div className="w-[100px] shrink-0">
-											<CountryCodeSelect
-												value={selectedCountry}
-												onChange={handleCountryChange}
-												disabled={isSubmitting}
-												className="h-10"
-											/>
-										</div>
-										<div className="relative flex-1 min-w-0">
-											<Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-											<Input
-												id="phone"
-												type="tel"
-												{...register("phone")}
-												placeholder="701234567"
-												className={cn(
-													"pl-10 h-10 text-sm",
-													errors.phone && "border-red-500"
-												)}
-												disabled={isSubmitting}
-											/>
-										</div>
+									<div className="relative">
+										<Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<Input
+											id="phone"
+											type="tel"
+											{...register("phone")}
+											placeholder="Ditt telefonnummer"
+											className={cn(
+												"pl-10 h-10 text-sm",
+												errors.phone && "border-red-500"
+											)}
+											disabled={isSubmitting}
+										/>
 									</div>
 									{errors.phone && (
 										<p className="text-xs text-red-500">

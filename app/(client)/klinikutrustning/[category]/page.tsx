@@ -6,7 +6,6 @@ import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
+import { technologyMap } from "@/config/technology-map";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -193,10 +193,10 @@ function ProductCardDB({
 	const primaryImage = product.overviewImage || product.productImages?.[0];
 
 	return (
-		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`}>
-			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
+		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`} className="h-full">
+			<Card className="group h-full flex flex-col overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
 				{/* Image */}
-				<div className="relative aspect-4/3 overflow-hidden bg-primary/50">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50 shrink-0">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
@@ -208,39 +208,18 @@ function ProductCardDB({
 						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
-
-				<CardHeader className="px-4 py-3">
+				<div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">
 					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
-				</CardHeader>
-
-				<CardContent className="px-4 pb-3 pt-0">
-					<p className="mb-3 text-sm text-muted-foreground line-clamp-3">
+					<p className="text-sm text-muted-foreground line-clamp-2">
 						{product.shortDescription}
 					</p>
-
-					{/* Treatment Tags */}
-					{product.treatments && product.treatments.length > 0 && (
-						<div className="flex flex-wrap gap-1">
-							{product.treatments.slice(0, 3).map((treatment) => (
-								<Badge
-									key={treatment}
-									variant="secondary"
-									className="bg-primary/5 text-primary/80 text-xs hover:bg-primary/5"
-								>
-									{treatment}
-								</Badge>
-							))}
-						</div>
-					)}
-				</CardContent>
-
-				<CardFooter className="px-4 pb-4 pt-0">
+					<div className="flex-1" />
 					<Button className="w-full bg-primary text-primary-foreground transition-colors">
 						Läs mer
 					</Button>
-				</CardFooter>
+				</div>
 			</Card>
 		</Link>
 	);
@@ -287,6 +266,35 @@ function KategoriSidebar({
 								}`}
 							>
 								{category.name}
+							</Link>
+						))}
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Technology Category Card */}
+			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
+				<CardHeader className="px-3 py-2">
+					<CardTitle className="text-xl font-semibold">
+						Technology Category
+					</CardTitle>
+					<Link
+						href="/klinikutrustning"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+					>
+						Alla Teknologier
+					</Link>
+				</CardHeader>
+				<Separator className="my-2 bg-primary/50" />
+				<CardContent className="pb-2! p-0">
+					<div className="px-3">
+						{technologyMap.map((tech) => (
+							<Link
+								key={tech.name}
+								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+							>
+								{tech.name}
 							</Link>
 						))}
 					</div>

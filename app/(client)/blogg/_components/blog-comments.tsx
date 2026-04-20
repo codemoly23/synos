@@ -2,18 +2,12 @@
 
 import { motion } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations";
-import { MessageSquare, User, Loader2, Phone } from "lucide-react";
+import { MessageSquare, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useCallback } from "react";
-import { isValidPhoneNumber } from "libphonenumber-js";
-import {
-	CountryCodeSelect,
-	defaultCountry,
-	type Country,
-} from "@/components/ui/country-code-select";
 
 /**
  * BlogComments Component
@@ -35,14 +29,11 @@ interface BlogCommentsProps {
 export function BlogComments({ postId }: BlogCommentsProps) {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
-	const [phone, setPhone] = useState("");
 	const [comment, setComment] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [selectedCountry, setSelectedCountry] =
-		useState<Country>(defaultCountry);
 
 	// Fetch comments on mount
 	const fetchComments = useCallback(async () => {
@@ -76,13 +67,6 @@ export function BlogComments({ postId }: BlogCommentsProps) {
 			newErrors.email = "Ange en giltig e-postadress";
 		}
 
-		// Validate phone with libphonenumber-js
-		const fullPhone =
-			selectedCountry.dialCode + phone.replace(/[\s\-]/g, "");
-		if (!phone.trim() || !isValidPhoneNumber(fullPhone)) {
-			newErrors.phone = "Ange ett giltigt telefonnummer för valt land";
-		}
-
 		if (!comment.trim() || comment.trim().length < 10) {
 			newErrors.comment = "Kommentar måste vara minst 10 tecken";
 		}
@@ -110,8 +94,6 @@ export function BlogComments({ postId }: BlogCommentsProps) {
 				body: JSON.stringify({
 					name: name.trim(),
 					email: email.trim(),
-					countryCode: selectedCountry.dialCode,
-					phone: phone.trim(),
 					comment: comment.trim(),
 				}),
 			});
@@ -122,9 +104,7 @@ export function BlogComments({ postId }: BlogCommentsProps) {
 				// Reset form
 				setName("");
 				setEmail("");
-				setPhone("");
 				setComment("");
-				setSelectedCountry(defaultCountry);
 				toast.success(
 					data.message ||
 						"Tack för din kommentar! Den kommer att granskas innan publicering."
@@ -279,41 +259,6 @@ export function BlogComments({ postId }: BlogCommentsProps) {
 										</p>
 									)}
 								</div>
-							</div>
-							<div>
-								<label
-									htmlFor="phone"
-									className="mb-2 block text-sm font-medium text-foreground"
-								>
-									Telefon *
-								</label>
-								<div className="flex gap-2">
-									<div className="w-[110px] shrink-0">
-										<CountryCodeSelect
-											value={selectedCountry}
-											onChange={setSelectedCountry}
-											disabled={isSubmitting}
-										/>
-									</div>
-									<div className="relative flex-1 min-w-0">
-										<Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-										<Input
-											id="phone"
-											type="tel"
-											value={phone}
-											onChange={(e) => setPhone(e.target.value)}
-											required
-											placeholder="701234567"
-											className={`pl-11 h-12 ${errors.phone ? "border-destructive" : ""}`}
-											disabled={isSubmitting}
-										/>
-									</div>
-								</div>
-								{errors.phone && (
-									<p className="mt-1 text-sm text-destructive">
-										{errors.phone}
-									</p>
-								)}
 							</div>
 							<div>
 								<label

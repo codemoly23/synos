@@ -7,7 +7,6 @@ import { z } from "zod";
 import { toast } from "sonner";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,11 +19,6 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-	CountryCodeSelect,
-	defaultCountry,
-	type Country,
-} from "@/components/ui/country-code-select";
 import {
 	BookOpen,
 	Shield,
@@ -86,8 +80,6 @@ const clientFormSchema = z.object({
 		.min(2, "Namnet måste vara minst 2 tecken")
 		.max(100, "Namnet får inte överstiga 100 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
-	countryCode: z.string().min(2, "Landskod krävs"),
-	countryName: z.string().min(2, "Land krävs"),
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
@@ -110,8 +102,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
-	const [selectedCountry, setSelectedCountry] =
-		useState<Country>(defaultCountry);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -119,26 +109,17 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 		handleSubmit,
 		setValue,
 		reset,
-		setError,
 		formState: { errors },
 	} = useForm<FormData>({
 		resolver: zodResolver(clientFormSchema),
 		defaultValues: {
 			fullName: "",
 			email: "",
-			countryCode: defaultCountry.dialCode,
-			countryName: defaultCountry.name,
 			phone: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
 		},
 	});
-
-	const handleCountryChange = (country: Country) => {
-		setSelectedCountry(country);
-		setValue("countryCode", country.dialCode);
-		setValue("countryName", country.name);
-	};
 
 	const handleGdprChange = (checked: boolean) => {
 		setGdprChecked(checked);
@@ -146,17 +127,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 	};
 
 	const onSubmit = async (formData: FormData) => {
-		// Frontend phone validation
-		const fullPhone =
-			formData.countryCode + formData.phone.replace(/[\s\-]/g, "");
-		if (!isValidPhoneNumber(fullPhone)) {
-			setError("phone", {
-				type: "manual",
-				message: "Ogiltigt telefonnummer för valt land",
-			});
-			return;
-		}
-
 		setIsSubmitting(true);
 
 		try {
@@ -179,7 +149,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				setSelectedCountry(defaultCountry);
 				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
 				setTimeout(() => setIsSuccess(false), 10000);
 			} else {
@@ -938,31 +907,22 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 
 									{/* Phone */}
 									<div className="space-y-2">
-										<Label className="text-sm font-medium text-white">
+										<Label htmlFor="phone" className="text-sm font-medium text-white">
 											Telefon <span className="text-red-400">*</span>
 										</Label>
-										<div className="flex gap-3">
-											<div className="w-[120px] shrink-0">
-												<CountryCodeSelect
-													value={selectedCountry}
-													onChange={handleCountryChange}
-													disabled={isSubmitting}
-												/>
-											</div>
-											<div className="relative flex-1">
-												<Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
-												<Input
-													id="phone"
-													type="tel"
-													{...register("phone")}
-													placeholder="Telefonnummer"
-													className={cn(
-														"pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary",
-														errors.phone && "border-red-400"
-													)}
-													disabled={isSubmitting}
-												/>
-											</div>
+										<div className="relative">
+											<Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+											<Input
+												id="phone"
+												type="tel"
+												{...register("phone")}
+												placeholder="Telefonnummer"
+												className={cn(
+													"pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary",
+													errors.phone && "border-red-400"
+												)}
+												disabled={isSubmitting}
+											/>
 										</div>
 										{errors.phone && (
 											<p className="text-xs text-red-400">
