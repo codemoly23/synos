@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.create({ name: name.trim(), isActive, order });
 
-		revalidateTag("technology-groups");
-		revalidateTag("products");
+		revalidateTag("technology-groups", "default");
+		revalidateTag("products", "default");
 
 		return successResponse(group, "Technology group created successfully");
 	} catch (error: unknown) {

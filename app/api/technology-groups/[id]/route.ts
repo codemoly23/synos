@@ -19,8 +19,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 		await group.save();
 
-		revalidateTag("technology-groups");
-		revalidateTag("products");
+		revalidateTag("technology-groups", "default");
+		revalidateTag("products", "default");
 
 		return successResponse(group, "Technology group updated successfully");
 	} catch (error: unknown) {
@@ -38,8 +38,8 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 		const group = await TechnologyGroup.findByIdAndDelete(id);
 		if (!group) return notFoundResponse("Technology group not found");
 
-		revalidateTag("technology-groups");
-		revalidateTag("products");
+		revalidateTag("technology-groups", "default");
+		revalidateTag("products", "default");
 
 		return successResponse(null, "Technology group deleted successfully");
 	} catch (error) {
