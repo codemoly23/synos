@@ -105,9 +105,13 @@ const toggleCategory = (categoryId: string) => {
 															<>
 																{technologyMap.map((tech) => (
 																	<div key={tech.name}>
-																		<p className="px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide">
+																		<Link
+																			href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+																			className="block px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide hover:text-secondary transition-colors"
+																			onClick={() => setOpen(false)}
+																		>
 																			{tech.name}
-																		</p>
+																		</Link>
 																		<div className="space-y-0.5">
 																			{tech.machines.map((machine) => (
 																				<Link
@@ -124,21 +128,6 @@ const toggleCategory = (categoryId: string) => {
 																))}
 															</>
 														) : item.isCategoryMenu ? (
-															/* KATEGORI: static category list */
-															<>
-																{categoryMap.map((cat) => (
-																	<Link
-																		key={cat.href}
-																		href={cat.href}
-																		className="block px-3 py-2 text-sm font-medium text-secondary hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
-																		onClick={() => setOpen(false)}
-																	>
-																		{cat.name}
-																	</Link>
-																))}
-															</>
-														) : (
-															/* KATEGORI: dynamic DB categories */
 															<>
 																{isLoading && (
 																	<div className="px-3 py-2 text-sm text-gray-400">
@@ -202,7 +191,7 @@ const toggleCategory = (categoryId: string) => {
 																	</div>
 																)}
 															</>
-														)}
+														) : null}
 													</div>
 												</AccordionContent>
 											</>

@@ -145,62 +145,44 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																		))}
 																	</div>
 																) : item.isCategoryMenu ? (
-																	/* KATEGORI: static category list */
-																	<div className="grid grid-cols-4 gap-x-6 gap-y-2">
-																		{categoryMap.map((cat) => (
-																			<Link
-																				key={cat.href}
-																				href={cat.href}
-																				className="block text-sm font-medium text-slate-700 hover:text-secondary transition-colors hover:underline py-1"
-																			>
-																				{cat.name}
-																			</Link>
-																		))}
-																	</div>
-																) : (
-																	/* DB categories fallback */
-																	<div className="grid grid-cols-5 gap-x-6 gap-y-3">
-																		{navigationData?.categories.map(
-																			(category) => (
-																				<div
-																					key={category._id}
-																					className="space-y-0"
+																	/* KATEGORI: categories with products from DB */
+																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
+																		{navigationData?.categories.map((category) => (
+																			<div key={category._id} className="space-y-1">
+																				<Link
+																					href={`/klinikutrustning/${category.slug}`}
+																					className="text-sm font-bold text-primary hover:underline"
 																				>
-																					<Link
-																						href={`/klinikutrustning/${category.slug}`}
-																						className="block text-sm font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
-																					>
-																						{category.name}
-																					</Link>
-																					{category.products.length > 0 && (
-																						<ul className="space-y-0">
-																							{category.products.map((product) => (
-																								<li key={product._id}>
-																									<Link
-																										href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																										className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
-																									>
-																										{product.title}
-																									</Link>
-																								</li>
-																							))}
-																						</ul>
-																					)}
-																				</div>
-																			)
-																		)}
+																					{category.name}
+																				</Link>
+																				{category.products.length > 0 && (
+																					<ul className="space-y-0">
+																						{category.products.map((product) => (
+																							<li key={product._id}>
+																								<Link
+																									href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
+																									className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
+																								>
+																									{product.title}
+																								</Link>
+																							</li>
+																						))}
+																					</ul>
+																				)}
+																			</div>
+																		))}
 																		{!navigationData && (
-																			<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
+																			<div className="col-span-4 py-8 text-center text-slate-400 text-sm">
 																				Laddar...
 																			</div>
 																		)}
 																		{navigationData && navigationData.categories.length === 0 && (
-																			<div className="col-span-5 py-8 text-center text-slate-400 text-sm">
+																			<div className="col-span-4 py-8 text-center text-slate-400 text-sm">
 																				Inga kategorier tillgängliga
 																			</div>
 																		)}
 																	</div>
-																)}
+																) : null}
 															</div>
 														</NavigationMenuContent>
 													</>
