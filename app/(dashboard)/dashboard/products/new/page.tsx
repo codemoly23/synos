@@ -30,6 +30,8 @@ export default function NewProductPage() {
 	>([]);
 	const [certificationSuggestions, setCertificationSuggestions] =
 		React.useState<string[]>([]);
+	const [technologyGroupSuggestions, setTechnologyGroupSuggestions] =
+		React.useState<string[]>([]);
 	const [isLoading, setIsLoading] = React.useState(false);
 
 	// Redirect if not authenticated
@@ -100,6 +102,7 @@ export default function NewProductPage() {
 				if (tagsData.success) {
 					setTreatmentSuggestions(tagsData.data.treatments || []);
 					setCertificationSuggestions(tagsData.data.certifications || []);
+					setTechnologyGroupSuggestions(tagsData.data.technologyGroups || []);
 				}
 			} catch (error) {
 				console.error("Failed to fetch data:", error);
@@ -273,6 +276,7 @@ export default function NewProductPage() {
 					categoryTree={categoryTree}
 					treatmentSuggestions={treatmentSuggestions}
 					certificationSuggestions={certificationSuggestions}
+					technologyGroupSuggestions={technologyGroupSuggestions}
 					onSaveDraft={handleSaveDraft}
 					onPublish={handlePublish}
 					onCancel={() => router.push("/dashboard/products")}

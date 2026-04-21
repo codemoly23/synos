@@ -149,6 +149,11 @@ const navSections: NavSection[] = [
 				href: "/dashboard/categories",
 				icon: FolderTree,
 			},
+			{
+				title: "Technology Categories",
+				href: "/dashboard/technology-categories",
+				icon: Tags,
+			},
 		],
 	},
 	{

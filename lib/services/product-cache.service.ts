@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
+import { getTechnologyGroupModel } from "@/models/technology-group.model";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -10,6 +11,7 @@ import type { ICategory } from "@/models/category.model";
  */
 export const PRODUCTS_CACHE_TAG = "products";
 export const CATEGORIES_CACHE_TAG = "categories";
+export const TECHNOLOGY_GROUPS_CACHE_TAG = "technology-groups";
 
 // 24 hours in seconds
 const CACHE_REVALIDATE = 86400;
@@ -87,6 +89,77 @@ export const getProductsByCategory = unstable_cache(
 	["products-by-category"],
 	{
 		tags: [PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+export interface TechGroupProduct {
+	title: string;
+	slug: string;
+	primaryCategorySlug: string;
+}
+
+export interface TechGroup {
+	name: string;
+	products: TechGroupProduct[];
+}
+
+/**
+ * Get technology groups aggregated from products' technologyGroup field
+ */
+export const getTechnologyGroups = unstable_cache(
+	async (): Promise<TechGroup[]> => {
+		const { data: products } = await productRepository.findPublished({ limit: 200 });
+
+		const techGroupMap = new Map<string, TechGroupProduct[]>();
+
+		for (const product of products) {
+			const groups = (product as unknown as { technologyGroups?: string[] }).technologyGroups;
+			if (!groups?.length) continue;
+
+			const primaryCat = product.primaryCategory as unknown as { slug?: string };
+			let primaryCategorySlug = primaryCat?.slug || "";
+			if (!primaryCategorySlug && product.categories?.length > 0) {
+				const firstCat = product.categories[0] as unknown as { slug?: string };
+				primaryCategorySlug = firstCat?.slug || "";
+			}
+
+			const techProduct = { title: product.title, slug: product.slug, primaryCategorySlug };
+			for (const group of groups) {
+				const existing = techGroupMap.get(group) || [];
+				existing.push(techProduct);
+				techGroupMap.set(group, existing);
+			}
+		}
+
+		return Array.from(techGroupMap.entries())
+			.map(([name, products]) => ({ name, products }))
+			.sort((a, b) => a.name.localeCompare(b.name, "sv"));
+	},
+	["technology-groups"],
+	{ tags: [PRODUCTS_CACHE_TAG], revalidate: CACHE_REVALIDATE }
+);
+
+/**
+ * Get active technology group names from the TechnologyGroup collection
+ * Used by /produkter sidebar "Teknologikategori" section
+ */
+export const getActiveTechnologyGroupNames = unstable_cache(
+	async (): Promise<{ _id: string; name: string; order: number }[]> => {
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const groups = await TechnologyGroup.find({ isActive: true })
+			.sort({ order: 1, name: 1 })
+			.select("_id name order")
+			.lean();
+		return groups.map((g) => ({
+			_id: g._id.toString(),
+			name: g.name,
+			order: g.order,
+		}));
+	},
+	["active-technology-group-names"],
+	{
+		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
 		revalidate: CACHE_REVALIDATE,
 	}
 );

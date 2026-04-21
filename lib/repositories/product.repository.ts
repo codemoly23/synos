@@ -394,6 +394,22 @@ class ProductRepository extends BaseRepository<IProduct> {
 	}
 
 	/**
+	 * Get all unique technology groups
+	 */
+	async getAllTechnologyGroups(): Promise<string[]> {
+		try {
+			await this.ensureConnection();
+			const startTime = Date.now();
+			const groups = await this.model.distinct("technologyGroups").exec();
+			logger.db("getAllTechnologyGroups", this.modelName, Date.now() - startTime);
+			return groups.filter((g: unknown) => g && typeof g === "string" && (g as string).trim());
+		} catch (error) {
+			logger.error("Error getting technology groups", error);
+			throw new DatabaseError("Failed to get technology groups");
+		}
+	}
+
+	/**
 	 * Full-text search products
 	 */
 	async searchProducts(

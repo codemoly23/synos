@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import type {
 	NavigationData,
 	NavCategory,
+	NavTechGroup,
+	NavTechProduct,
 } from "@/app/api/navigation/route";
 
 interface UseNavigationResult {
@@ -15,7 +17,7 @@ interface UseNavigationResult {
 // Cache the navigation data to avoid refetching on every component mount
 let cachedData: NavigationData | null = null;
 let cacheTimestamp: number = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 60 * 1000; // 1 minute
 
 export function useNavigation(): UseNavigationResult {
 	const [data, setData] = useState<NavigationData | null>(cachedData);
@@ -64,4 +66,4 @@ export function useNavigation(): UseNavigationResult {
 }
 
 // Export types for use in components
-export type { NavigationData, NavCategory };
+export type { NavigationData, NavCategory, NavTechGroup, NavTechProduct };

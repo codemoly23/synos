@@ -149,6 +149,7 @@ export const createProductDraftSchema = z.object({
 	youtubeUrl: optionalUrlSchema,
 	videoThumbnail: z.string().optional(),
 	rubric: z.string().max(1000).optional(),
+	technologyGroups: z.array(z.string().max(100)).optional().default([]),
 	publishType: z.enum(["publish", "draft", "pending", "private"]).default("draft"),
 	visibility: z.enum(["public", "hidden"]).default("public"),
 });
@@ -181,6 +182,7 @@ export const updateProductSchema = z.object({
 	youtubeUrl: optionalUrlSchema,
 	videoThumbnail: z.string().optional(),
 	rubric: z.string().max(1000).optional(),
+	technologyGroups: z.array(z.string().max(100)).optional().default([]),
 	publishType: z.enum(["publish", "draft", "pending", "private"]).optional(),
 	visibility: z.enum(["public", "hidden"]).optional(),
 });

@@ -18,8 +18,6 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { mainNavNew } from "@/config/navigation-new";
-import { technologyMap } from "@/config/technology-map";
-import { categoryMap } from "@/config/category-map";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 import Logo from "../common/logo";
 import { useState } from "react";
@@ -101,9 +99,9 @@ const toggleCategory = (categoryId: string) => {
 												<AccordionContent className="pb-1 pt-0.5">
 													<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
 														{item.isTechnologyMenu ? (
-															/* UTRUSTNING: static technology groups */
+															/* UTRUSTNING: DB technology groups */
 															<>
-																{technologyMap.map((tech) => (
+																{(navigationData?.technologyGroups || []).map((tech) => (
 																	<div key={tech.name}>
 																		<Link
 																			href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
@@ -113,19 +111,22 @@ const toggleCategory = (categoryId: string) => {
 																			{tech.name}
 																		</Link>
 																		<div className="space-y-0.5">
-																			{tech.machines.map((machine) => (
+																			{tech.products.map((product) => (
 																				<Link
-																					key={`${tech.name}:${machine.title}`}
-																					href={machine.href}
+																					key={`${tech.name}:${product.slug}`}
+																					href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																					className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																					onClick={() => setOpen(false)}
 																				>
-																					{machine.title}
+																					{product.title}
 																				</Link>
 																			))}
 																		</div>
 																	</div>
 																))}
+																{isLoading && (
+																	<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
+																)}
 															</>
 														) : item.isCategoryMenu ? (
 															<>

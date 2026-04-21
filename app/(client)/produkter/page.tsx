@@ -4,8 +4,8 @@ import { getSiteConfig } from "@/config/site";
 import {
 	getNewestProducts,
 	getActiveCategories,
+	getActiveTechnologyGroupNames,
 } from "@/lib/services/product-cache.service";
-import { technologyMap } from "@/config/technology-map";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -94,120 +94,22 @@ function ProductCardDB({
 		</Link>
 	);
 }
-// Static category list
-const staticCategories = [
-	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning", tech: "Alexandrit/Nd:YAG, Diode, IPL" },
-	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning", tech: "Pico/Q-Switched" },
-	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring", tech: "CO₂, Er:YAG, 1540/1570, Redium, RF" },
-	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser", tech: "CO₂, Er:YAG" },
-	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring", tech: "CO₂, RF, HIFU, Plasma" },
-	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar", tech: "Pico/Q-Switched, Redium, CO₂, IPL" },
-	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom", tech: "Alexandrit/Nd:YAG" },
-	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
-	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar", tech: "CO₂, Redium, RF, Plasma" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett", tech: "Body Contouring" },
-	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett", tech: "EMS" },
-	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett", tech: "Body Contouring" },
-];
 
-// Static technology map for sidebar
-const sidebarTechMap = [
-	{
-		name: "Alexandrit & Nd:YAG",
-		machines: [
-			{ title: "MOTUS PRO", href: "/klinikutrustning/harborttagning/motus-pro" },
-			{ title: "Motus AX / AY", href: "/klinikutrustning/harborttagning/harborttagningslaser-kopa-motus-ax" },
-			{ title: "Again PRO PLUS", href: "/klinikutrustning/harborttagning/again-pro" },
-		],
-	},
-	{
-		name: "Pico & Q-Switched",
-		machines: [
-			{ title: "Q-terra Q10", href: "/klinikutrustning/tatueringsborttagning/qterra-q10-tatueringsborttagning-laser-sverige" },
-			{ title: "Toro Pico Laser", href: "/klinikutrustning/tatueringsborttagning/toro" },
-		],
-	},
-	{
-		name: "Diodlaser",
-		machines: [
-			{ title: "Tridi Wave", href: "/produkter" },
-		],
-	},
-	{
-		name: "IPL",
-		machines: [
-			{ title: "Prisma", href: "/produkter" },
-		],
-	},
-	{
-		name: "Fraktionerad laser 1540/1570nm",
-		machines: [
-			{ title: "Helix", href: "/produkter" },
-			{ title: "DuoGlide", href: "/klinikutrustning/co2laser/duoglide" },
-		],
-	},
-	{
-		name: "CO₂ Fraktionerad laser",
-		machines: [
-			{ title: "Helix", href: "/produkter" },
-			{ title: "Tetra PRO", href: "/klinikutrustning/co2laser/tetra-pro" },
-			{ title: "SmartXide PRO", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
-			{ title: "Punto", href: "/klinikutrustning/co2laser/ny-smartxide-punto" },
-			{ title: "DuoGlide", href: "/klinikutrustning/co2laser/duoglide" },
-		],
-	},
-	{
-		name: "Fraktionerad Redium 675 nm",
-		machines: [
-			{ title: "RedTouch PRO", href: "/klinikutrustning/hudforyngring/redium" },
-		],
-	},
-	{
-		name: "RF Microneedling",
-		machines: [
-			{ title: "Vivace RF", href: "/klinikutrustning/hudforyngring/vivace-rf-microneedling" },
-		],
-	},
-	{
-		name: "HIFU",
-		machines: [
-			{ title: "HIFU Ultraskin S", href: "/produkter" },
-		],
-	},
-	{
-		name: "Plasma",
-		machines: [
-			{ title: "Jovena", href: "/klinikutrustning/ansiktsbehandlingar/jovena" },
-			{ title: "Plasmage", href: "/produkter" },
-		],
-	},
-	{
-		name: "Body Contouring",
-		machines: [
-			{ title: "Onda Coolwaves PRO", href: "/klinikutrustning/kropp-muskler-fett/onda-coolwaves-pro" },
-			{ title: "BodyStim Pro", href: "/produkter" },
-			{ title: "HIFU Ultraskin S", href: "/produkter" },
-		],
-	},
-	{
-		name: "EMS",
-		machines: [
-			{ title: "BodyStim Pro", href: "/produkter" },
-		],
-	},
-];
+type TechGroupItem = { _id: string; name: string; order: number };
 
 // Sidebar Component
 function ProduktSidebar({
 	categories,
+	techGroups,
 	selectedTech,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	selectedTech?: string;
 }) {
 	return (
 		<aside className="space-y-4">
-			{/* Behandlingskategorier Card */}
+			{/* Behandlingskategorier Card — from DB */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
 					<CardTitle className="text-xl font-semibold">
@@ -223,10 +125,10 @@ function ProduktSidebar({
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{staticCategories.map((cat) => (
+						{categories.map((cat) => (
 							<Link
-								key={cat.name}
-								href={cat.href}
+								key={cat._id.toString()}
+								href={`/klinikutrustning/${cat.slug}`}
 								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
 								{cat.name}
@@ -236,11 +138,11 @@ function ProduktSidebar({
 				</CardContent>
 			</Card>
 
-			{/* Technology Category Card */}
+			{/* Technology Category Card — from DB */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
 					<CardTitle className="text-xl font-semibold">
-						Technology Category
+						Teknologikategori
 					</CardTitle>
 					<Link
 						href="/produkter"
@@ -252,9 +154,9 @@ function ProduktSidebar({
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{technologyMap.map((tech) => (
+						{techGroups.map((tech) => (
 							<Link
-								key={tech.name}
+								key={tech._id}
 								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
 								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
 									selectedTech === tech.name
@@ -265,6 +167,9 @@ function ProduktSidebar({
 								{tech.name}
 							</Link>
 						))}
+						{techGroups.length === 0 && (
+							<p className="px-3 py-2 text-sm text-muted-foreground">Inga teknologier</p>
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -343,9 +248,11 @@ function ProduktSidebar({
 // Mobile Drawer Component
 function MobileDrawer({
 	categories,
+	techGroups,
 	selectedTech,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	selectedTech?: string;
 }) {
 	return (
@@ -359,7 +266,7 @@ function MobileDrawer({
 				<DrawerContent className="p-0! rounded-t-sm">
 					<DrawerTitle className="sr-only">Filter</DrawerTitle>
 					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<ProduktSidebar categories={categories} selectedTech={selectedTech} />
+						<ProduktSidebar categories={categories} techGroups={techGroups} selectedTech={selectedTech} />
 					</div>
 				</DrawerContent>
 			</Drawer>
@@ -372,21 +279,17 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories] = await Promise.all([
+	const [products, categories, techGroups] = await Promise.all([
 		getNewestProducts(100),
 		getActiveCategories(),
+		getActiveTechnologyGroupNames(),
 	]);
 
-	// Filter products by selected technology
+	// Filter products by selected technology (using technologyGroups array on product)
 	const filteredProducts = selectedTech
-		? (() => {
-				const techGroup = technologyMap.find((t) => t.name === selectedTech);
-				if (!techGroup) return products;
-				const machineSlugs = techGroup.machines.map(
-					(m) => m.href.split("/").pop() ?? ""
-				);
-				return products.filter((p) => machineSlugs.includes(p.slug));
-		  })()
+		? products.filter((p) =>
+				((p as unknown as { technologyGroups?: string[] }).technologyGroups || []).includes(selectedTech)
+		  )
 		: products;
 	// Create a map of category ID to slug for product cards
 	const categorySlugMap = new Map<string, string>();
@@ -459,9 +362,9 @@ export default async function ProductsPage({
 					{/* Sidebar */}
 					<div className="w-full lg:w-80 lg:shrink-0">
 						<div className="lg:sticky lg:top-28 hidden sm:block">
-							<ProduktSidebar categories={categories} selectedTech={selectedTech} />
+							<ProduktSidebar categories={categories} techGroups={techGroups} selectedTech={selectedTech} />
 						</div>
-						<MobileDrawer categories={categories} selectedTech={selectedTech} />
+						<MobileDrawer categories={categories} techGroups={techGroups} selectedTech={selectedTech} />
 					</div>
 					{/* Main Content */}
 					<div className="flex-1">

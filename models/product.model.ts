@@ -82,6 +82,7 @@ export interface IProduct extends Document {
 	youtubeUrl?: string;
 	videoThumbnail?: string;
 	rubric?: string;
+	technologyGroups?: string[];
 	publishType: PublishType;
 	visibility: Visibility;
 	lastEditedBy?: mongoose.Types.ObjectId;
@@ -332,6 +333,10 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			default: "",
 		},
+		technologyGroups: {
+			type: [String],
+			default: [],
+		},
 		publishType: {
 			type: String,
 			enum: ["publish", "draft", "pending", "private"],
@@ -362,6 +367,7 @@ ProductSchema.index({ slug: 1 }, { unique: true });
 ProductSchema.index({ publishType: 1, visibility: 1 });
 ProductSchema.index({ categories: 1 });
 ProductSchema.index({ treatments: 1 });
+ProductSchema.index({ technologyGroups: 1 });
 ProductSchema.index({ certifications: 1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ publishedAt: -1 });

@@ -365,6 +365,7 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 			"primaryCategory",
 			"treatments",
 			"certifications",
+			"technologyGroup",
 			"publishType",
 			"visibility",
 		],
@@ -417,6 +418,7 @@ const FIELD_LABELS: Record<string, string> = {
 	primaryCategory: "Primary Category",
 	treatments: "Treatments / Tags",
 	certifications: "Certifications",
+	technologyGroup: "Technology Group",
 	benefits: "Benefits",
 	purchaseInfo: "Purchase Information",
 	"purchaseInfo.title": "Purchase Info Title",
@@ -597,6 +599,7 @@ interface ProductFormProps {
 	categoryTree: ICategoryTreeNode[];
 	treatmentSuggestions?: string[];
 	certificationSuggestions?: string[];
+	technologyGroupSuggestions?: string[];
 	onSaveDraft: (data: ProductFormData) => Promise<ProductFormResult>;
 	onPublish?: (data: ProductFormData) => Promise<ProductFormResult>;
 	onUnpublish?: () => Promise<ProductFormResult>;
@@ -620,6 +623,7 @@ export function ProductForm({
 	categoryTree,
 	treatmentSuggestions = [],
 	certificationSuggestions = [],
+	technologyGroupSuggestions = [],
 	onSaveDraft,
 	onPublish,
 	onUnpublish,
@@ -778,6 +782,7 @@ export function ProductForm({
 			youtubeUrl: product?.youtubeUrl || "",
 			videoThumbnail: product?.videoThumbnail || "",
 			rubric: product?.rubric || "",
+			technologyGroups: (product as unknown as { technologyGroups?: string[] })?.technologyGroups || [],
 			publishType: product?.publishType || "draft",
 			visibility: product?.visibility || "public",
 		},
@@ -1317,6 +1322,25 @@ export function ProductForm({
 										placeholder="Add certifications..."
 										disabled={isLoading}
 									/>
+								</div>
+
+								<Separator />
+
+								{/* Technology Groups */}
+								<div className="space-y-2">
+									<Label>Technology Groups</Label>
+									<TagInput
+										value={(watch("technologyGroups") as string[]) || []}
+										onChange={(tags) =>
+											setValue("technologyGroups", tags, { shouldDirty: true })
+										}
+										suggestions={technologyGroupSuggestions}
+										placeholder="Add technology group..."
+										disabled={isLoading}
+									/>
+									<p className="text-xs text-slate-500">
+										Skriv ett nytt gruppnamn eller välj ett befintligt. En produkt kan tillhöra flera grupper.
+									</p>
 								</div>
 
 								<Separator />

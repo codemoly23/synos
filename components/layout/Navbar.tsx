@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { mainNavNew } from "@/config/navigation-new";
-import { technologyMap } from "@/config/technology-map";
-import { categoryMap } from "@/config/category-map";
 import { useNavigation } from "@/lib/hooks/use-navigation";
 import { useNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { cn } from "@/lib/utils";
@@ -119,9 +117,9 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]!">
 															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
 																{item.isTechnologyMenu ? (
-																	/* UTRUSTNING: static technology-grouped map */
+																	/* UTRUSTNING: DB technology groups */
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
-																		{technologyMap.map((tech) => (
+																		{(navigationData?.technologyGroups || []).map((tech) => (
 																			<div key={tech.name} className="space-y-1">
 																				<Link
 																					href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
@@ -130,19 +128,25 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																					{tech.name}
 																				</Link>
 																				<ul className="space-y-0">
-																					{tech.machines.map((machine) => (
-																						<li key={`${tech.name}:${machine.title}`}>
+																					{tech.products.map((product) => (
+																						<li key={`${tech.name}:${product.slug}`}>
 																							<Link
-																								href={machine.href}
+																								href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																								className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
 																							>
-																								{machine.title}
+																								{product.title}
 																							</Link>
 																						</li>
 																					))}
 																				</ul>
 																			</div>
 																		))}
+																		{!navigationData && (
+																			<div className="col-span-4 py-8 text-center text-slate-400 text-sm">Laddar...</div>
+																		)}
+																		{navigationData && navigationData.technologyGroups.length === 0 && (
+																			<div className="col-span-4 py-8 text-center text-slate-400 text-sm">Inga teknologier</div>
+																		)}
 																	</div>
 																) : item.isCategoryMenu ? (
 																	/* KATEGORI: categories with products from DB */

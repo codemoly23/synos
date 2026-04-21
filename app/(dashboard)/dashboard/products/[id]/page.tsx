@@ -28,12 +28,9 @@ export default function EditProductPage() {
 
 	const [product, setProduct] = useState<IProduct | null>(null);
 	const [categoryTree, setCategoryTree] = useState<ICategoryTreeNode[]>([]);
-	const [treatmentSuggestions, setTreatmentSuggestions] = useState<string[]>(
-		[]
-	);
-	const [certificationSuggestions, setCertificationSuggestions] = useState<
-		string[]
-	>([]);
+	const [treatmentSuggestions, setTreatmentSuggestions] = useState<string[]>([]);
+	const [certificationSuggestions, setCertificationSuggestions] = useState<string[]>([]);
+	const [technologyGroupSuggestions, setTechnologyGroupSuggestions] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -125,6 +122,7 @@ export default function EditProductPage() {
 				if (tagsData.success) {
 					setTreatmentSuggestions(tagsData.data.treatments || []);
 					setCertificationSuggestions(tagsData.data.certifications || []);
+					setTechnologyGroupSuggestions(tagsData.data.technologyGroups || []);
 				}
 			} catch (error) {
 				console.error("Failed to fetch data:", error);
@@ -397,6 +395,7 @@ export default function EditProductPage() {
 					categoryTree={categoryTree}
 					treatmentSuggestions={treatmentSuggestions}
 					certificationSuggestions={certificationSuggestions}
+					technologyGroupSuggestions={technologyGroupSuggestions}
 					onSaveDraft={handleSaveDraft}
 					onPublish={handlePublish}
 					onUnpublish={handleUnpublish}

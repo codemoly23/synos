@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { productService } from "@/lib/services/product.service";
+import { getTechnologyGroupModel } from "@/models/technology-group.model";
 import { logger } from "@/lib/utils/logger";
 import {
 	successResponse,
@@ -8,20 +9,25 @@ import {
 
 /**
  * GET /api/products/tags
- * Get all unique treatments and certifications tags
+ * Get all unique treatments, certifications and technology group tags
  */
 export async function GET(_request: NextRequest) {
 	try {
-		const [treatments, certifications] = await Promise.all([
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const [treatments, certifications, productGroups, cmsGroups] = await Promise.all([
 			productService.getAllTreatments(),
 			productService.getAllCertifications(),
+			productService.getAllTechnologyGroups(),
+			TechnologyGroup.find({}).sort({ order: 1, name: 1 }).select("name").lean(),
 		]);
 
+		// Merge CMS-managed groups with groups already used on products
+		const technologyGroups = Array.from(
+			new Set([...cmsGroups.map((g) => g.name), ...productGroups])
+		).sort((a, b) => a.localeCompare(b, "sv"));
+
 		return successResponse(
-			{
-				treatments,
-				certifications,
-			},
+			{ treatments, certifications, technologyGroups },
 			"Tags retrieved successfully"
 		);
 	} catch (error: unknown) {

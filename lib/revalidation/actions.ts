@@ -17,6 +17,9 @@ export async function revalidateProduct(
 	// Revalidate products list
 	revalidateTag(CACHE_TAGS.PRODUCTS, "default");
 
+	// Revalidate navigation API (UTRUSTNING + KATEGORI dropdowns)
+	revalidatePath("/api/navigation");
+
 	// Revalidate product detail pages for the specific category
 	if (categorySlug) {
 		revalidatePath(`${PATHS.KATEGORI}/${categorySlug}/${slug}`);

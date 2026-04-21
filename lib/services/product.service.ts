@@ -894,6 +894,13 @@ class ProductService {
 	}
 
 	/**
+	 * Get all unique technology groups
+	 */
+	async getAllTechnologyGroups(): Promise<string[]> {
+		return productRepository.getAllTechnologyGroups();
+	}
+
+	/**
 	 * Get product statistics
 	 */
 	async getProductStats(): Promise<{
