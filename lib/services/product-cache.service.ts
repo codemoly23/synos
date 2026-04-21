@@ -140,24 +140,72 @@ export const getTechnologyGroups = unstable_cache(
 	{ tags: [PRODUCTS_CACHE_TAG], revalidate: CACHE_REVALIDATE }
 );
 
+export interface TechnologyGroupItem {
+	_id: string;
+	name: string;
+	slug: string;
+	order: number;
+}
+
+export interface TechnologyGroupDetail {
+	_id: string;
+	name: string;
+	slug: string;
+	description?: string;
+	image?: string | null;
+	order: number;
+	seo?: {
+		title?: string;
+		description?: string;
+		ogImage?: string | null;
+		noindex?: boolean;
+	};
+}
+
 /**
- * Get active technology group names from the TechnologyGroup collection
+ * Get active technology groups from the TechnologyGroup collection
  * Used by /produkter sidebar "Teknologikategori" section
  */
 export const getActiveTechnologyGroupNames = unstable_cache(
-	async (): Promise<{ _id: string; name: string; order: number }[]> => {
+	async (): Promise<TechnologyGroupItem[]> => {
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const groups = await TechnologyGroup.find({ isActive: true })
 			.sort({ order: 1, name: 1 })
-			.select("_id name order")
+			.select("_id name slug order")
 			.lean();
 		return groups.map((g) => ({
 			_id: g._id.toString(),
 			name: g.name,
+			slug: g.slug,
 			order: g.order,
 		}));
 	},
 	["active-technology-group-names"],
+	{
+		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+/**
+ * Get a single technology group by name (for /produkter?technology=X hero)
+ */
+export const getTechnologyGroupByName = unstable_cache(
+	async (name: string): Promise<TechnologyGroupDetail | null> => {
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const group = await TechnologyGroup.findOne({ name, isActive: true }).lean();
+		if (!group) return null;
+		return {
+			_id: group._id.toString(),
+			name: group.name,
+			slug: group.slug,
+			description: group.description || "",
+			image: group.image || null,
+			order: group.order,
+			seo: group.seo,
+		};
+	},
+	["technology-group-by-name"],
 	{
 		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
 		revalidate: CACHE_REVALIDATE,

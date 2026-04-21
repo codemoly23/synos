@@ -5,6 +5,7 @@ import {
 	getNewestProducts,
 	getActiveCategories,
 	getActiveTechnologyGroupNames,
+	getTechnologyGroupByName,
 } from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,23 +34,52 @@ import type { ICategory } from "@/models/category.model";
  */
 // ISR: Revalidate every 24 hours
 export const revalidate = 60;
-export async function generateMetadata(): Promise<Metadata> {
-	const siteConfig = await getSiteConfig();
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: Promise<{ technology?: string }>;
+}): Promise<Metadata> {
+	const { technology } = await searchParams;
+	const [siteConfig, group] = await Promise.all([
+		getSiteConfig(),
+		technology ? getTechnologyGroupByName(technology) : Promise.resolve(null),
+	]);
+
+	const baseDescription =
+		"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
+
+	const title = group
+		? group.seo?.title || `${group.name} | Produkter | ${siteConfig.name}`
+		: `Produkter | ${siteConfig.name}`;
+
+	const description = group
+		? group.seo?.description ||
+		  (group.description
+				? group.description.replace(/<[^>]*>/g, "").trim().slice(0, 160)
+				: baseDescription)
+		: baseDescription;
+
+	const ogImage = group?.seo?.ogImage || group?.image || undefined;
+
+	const canonical = group
+		? `${siteConfig.url}/produkter?technology=${encodeURIComponent(group.name)}`
+		: `${siteConfig.url}/produkter`;
+
 	return {
-		title: `Produkter | ${siteConfig.name}`,
-		description:
-			"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.",
+		title,
+		description,
+		robots: group?.seo?.noindex ? { index: false, follow: false } : undefined,
 		openGraph: {
-			title: `Produkter | ${siteConfig.name}`,
-			description:
-				"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet.",
-			url: `${siteConfig.url}/produkter`,
+			title,
+			description,
+			url: canonical,
 			siteName: siteConfig.name,
 			locale: "sv_SE",
 			type: "website",
+			...(ogImage ? { images: [ogImage] } : {}),
 		},
 		alternates: {
-			canonical: `${siteConfig.url}/produkter`,
+			canonical,
 		},
 	};
 }
@@ -95,7 +125,7 @@ function ProductCardDB({
 	);
 }
 
-type TechGroupItem = { _id: string; name: string; order: number };
+type TechGroupItem = { _id: string; name: string; slug: string; order: number };
 
 // Sidebar Component
 function ProduktSidebar({
@@ -279,10 +309,11 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories, techGroups] = await Promise.all([
+	const [products, categories, techGroups, selectedGroup] = await Promise.all([
 		getNewestProducts(100),
 		getActiveCategories(),
 		getActiveTechnologyGroupNames(),
+		selectedTech ? getTechnologyGroupByName(selectedTech) : Promise.resolve(null),
 	]);
 
 	// Filter products by selected technology (using technologyGroups array on product)
@@ -291,6 +322,13 @@ export default async function ProductsPage({
 				((p as unknown as { technologyGroups?: string[] }).technologyGroups || []).includes(selectedTech)
 		  )
 		: products;
+
+	// Hero content: if a technology is selected and has a group, use its data; otherwise defaults
+	const heroTitle = selectedGroup?.name || "Våra Produkter";
+	const heroDescription = selectedGroup?.description
+		? selectedGroup.description.replace(/<[^>]*>/g, "").trim().slice(0, 300)
+		: "Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
+	const heroImage = selectedGroup?.image || "/storage/images/motus-ax-3-600x500.webp";
 	// Create a map of category ID to slug for product cards
 	const categorySlugMap = new Map<string, string>();
 	categories.forEach((cat) => {
@@ -330,20 +368,24 @@ export default async function ProductsPage({
 					<div className="grid grid-cols-1 lg:grid-cols-2 items-end gap-8 min-h-[280px]">
 						{/* Left - Text */}
 						<div className="py-12 lg:py-16">
+							{selectedGroup && (
+								<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
+									Teknologi
+								</p>
+							)}
 							<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
-								Våra Produkter
+								{heroTitle}
 							</h1>
 							<p className="text-white/60 text-base max-w-lg leading-relaxed">
-								Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet.
-								Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.
+								{heroDescription}
 							</p>
 						</div>
 						{/* Right - Product Images */}
 						<div className="hidden lg:flex items-end justify-end self-end">
 							<div className="relative w-[500px] h-80 drop-shadow-2xl">
 								<ImageComponent
-									src="/storage/images/motus-ax-3-600x500.webp"
-									alt="Medicinsk utrustning"
+									src={heroImage}
+									alt={heroTitle}
 									fill
 									className="object-contain object-bottom"
 									priority
