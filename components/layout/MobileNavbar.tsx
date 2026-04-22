@@ -140,18 +140,26 @@ const toggleCategory = (categoryId: string) => {
 																		<div key={category._id}>
 																			{category.products.length > 0 ? (
 																				<>
-																					<button
-																						onClick={() => toggleCategory(category._id)}
-																						className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-secondary/5 rounded-lg transition-all"
-																					>
-																						<span>{category.name}</span>
-																						<ChevronDown
-																							className={cn(
-																								"h-4 w-4 text-muted-foreground transition-transform duration-200",
-																								expandedCategory === category._id && "rotate-180"
-																							)}
-																						/>
-																					</button>
+																					<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
+																						<Link
+																							href={`/klinikutrustning/${category.slug}`}
+																							className="flex-1 px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+																							onClick={() => setOpen(false)}
+																						>
+																							{category.name}
+																						</Link>
+																						<button
+																							onClick={() => toggleCategory(category._id)}
+																							className="px-2 py-2 text-muted-foreground hover:text-secondary transition-colors"
+																						>
+																							<ChevronDown
+																								className={cn(
+																									"h-4 w-4 transition-transform duration-200",
+																									expandedCategory === category._id && "rotate-180"
+																								)}
+																							/>
+																						</button>
+																					</div>
 																					{expandedCategory === category._id && (
 																						<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200 max-h-[200px] overflow-y-auto nav-dropdown-scroll">
 																							{category.products.map((product) => (
