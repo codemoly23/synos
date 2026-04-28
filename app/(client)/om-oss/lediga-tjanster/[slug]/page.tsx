@@ -13,38 +13,45 @@ interface JobDetailPageProps {
 export async function generateMetadata({
 	params,
 }: JobDetailPageProps): Promise<Metadata> {
-	const { slug } = await params;
-	const job = await careersPageService.getJobBySlug(slug);
+	try {
+		const { slug } = await params;
+		const job = await careersPageService.getJobBySlug(slug);
 
-	if (!job) {
+		if (!job) {
+			return {
+				title: "Job Not Found | Synos Medical",
+			};
+		}
+
 		return {
-			title: "Job Not Found | Synos Medical",
-		};
-	}
-
-	return {
-		title: `${job.title} | Lediga Tjänster | Synos Medical`,
-		description:
-			job.shortDescription ||
-			`Ansök till tjänsten ${job.title} hos Synos Medical. ${job.location ? `Plats: ${job.location}.` : ""} ${job.employmentType || ""}`,
-		openGraph: {
-			title: `${job.title} | Karriär hos Synos Medical`,
+			title: `${job.title} | Lediga Tjänster | Synos Medical`,
 			description:
 				job.shortDescription ||
-				`Ansök till tjänsten ${job.title} hos Synos Medical.`,
-			...(job.featuredImage && { images: [job.featuredImage] }),
-		},
-	};
+				`Ansök till tjänsten ${job.title} hos Synos Medical. ${job.location ? `Plats: ${job.location}.` : ""} ${job.employmentType || ""}`,
+			openGraph: {
+				title: `${job.title} | Karriär hos Synos Medical`,
+				description:
+					job.shortDescription ||
+					`Ansök till tjänsten ${job.title} hos Synos Medical.`,
+				...(job.featuredImage && { images: [job.featuredImage] }),
+			},
+		};
+	} catch {
+		return { title: "Job | Synos Medical" };
+	}
 }
 
 export async function generateStaticParams() {
-	const jobs = await careersPageService.getActiveJobs();
-
-	return jobs
-		.filter((job) => job.slug)
-		.map((job) => ({
-			slug: job.slug!,
-		}));
+	try {
+		const jobs = await careersPageService.getActiveJobs();
+		return jobs
+			.filter((job) => job.slug)
+			.map((job) => ({
+				slug: job.slug!,
+			}));
+	} catch {
+		return [];
+	}
 }
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {

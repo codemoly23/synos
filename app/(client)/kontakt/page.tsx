@@ -11,42 +11,48 @@ import {
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [seo, siteSettings] = await Promise.all([
-		getKontaktPageSeo(),
-		getSiteSettings(),
-	]);
+	try {
+		const [seo, siteSettings] = await Promise.all([
+			getKontaktPageSeo(),
+			getSiteSettings(),
+		]);
 
-	const siteName = siteSettings.seo?.siteName || "Synos Medical";
-	const title = seo?.title || `Kontakt - ${siteName}`;
-	const description =
-		seo?.description ||
-		`Kontakta ${siteName} för frågor om medicinsk utrustning, utbildningar eller att starta din egen klinik.`;
+		const siteName = siteSettings.seo?.siteName || "Synos Medical";
+		const title = seo?.title || `Kontakt - ${siteName}`;
+		const description =
+			seo?.description ||
+			`Kontakta ${siteName} för frågor om medicinsk utrustning, utbildningar eller att starta din egen klinik.`;
 
-	return {
-		title,
-		description,
-		openGraph: {
+		return {
 			title,
 			description,
-			type: "website",
-			siteName,
-			...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
-		},
-		twitter: {
-			card: "summary_large_image",
-			title,
-			description,
-			...(seo?.ogImage && { images: [seo.ogImage] }),
-		},
-	};
+			openGraph: {
+				title,
+				description,
+				type: "website",
+				siteName,
+				...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
+			},
+			twitter: {
+				card: "summary_large_image",
+				title,
+				description,
+				...(seo?.ogImage && { images: [seo.ogImage] }),
+			},
+		};
+	} catch {
+		return { title: "Kontakta oss | Synos Medical" };
+	}
 }
 
 export default async function ContactPage() {
 	// Fetch CMS data
 	const [kontaktPage, siteSettings] = await Promise.all([
-		getKontaktPage(),
-		getSiteSettings(),
+		getKontaktPage().catch(() => null),
+		getSiteSettings().catch(() => null),
 	]);
+
+	if (!kontaktPage || !siteSettings) return <></>;
 
 	// Filter visible offices
 	const visibleOffices = siteSettings.offices.filter(

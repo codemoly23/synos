@@ -39,49 +39,53 @@ export async function generateMetadata({
 }: {
 	searchParams: Promise<{ technology?: string }>;
 }): Promise<Metadata> {
-	const { technology } = await searchParams;
-	const [siteConfig, group] = await Promise.all([
-		getSiteConfig(),
-		technology ? getTechnologyGroupByName(technology) : Promise.resolve(null),
-	]);
+	try {
+		const { technology } = await searchParams;
+		const [siteConfig, group] = await Promise.all([
+			getSiteConfig(),
+			technology ? getTechnologyGroupByName(technology) : Promise.resolve(null),
+		]);
 
-	const baseDescription =
-		"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
+		const baseDescription =
+			"Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
 
-	const title = group
-		? group.seo?.title || `${group.name} | Produkter | ${siteConfig.name}`
-		: `Produkter | ${siteConfig.name}`;
+		const title = group
+			? group.seo?.title || `${group.name} | Produkter | ${siteConfig.name}`
+			: `Produkter | ${siteConfig.name}`;
 
-	const description = group
-		? group.seo?.description ||
-		  (group.description
-				? group.description.replace(/<[^>]*>/g, "").trim().slice(0, 160)
-				: baseDescription)
-		: baseDescription;
+		const description = group
+			? group.seo?.description ||
+			  (group.description
+					? group.description.replace(/<[^>]*>/g, "").trim().slice(0, 160)
+					: baseDescription)
+			: baseDescription;
 
-	const ogImage = group?.seo?.ogImage || group?.image || undefined;
+		const ogImage = group?.seo?.ogImage || group?.image || undefined;
 
-	const canonical = group
-		? `${siteConfig.url}/produkter?technology=${encodeURIComponent(group.name)}`
-		: `${siteConfig.url}/produkter`;
+		const canonical = group
+			? `${siteConfig.url}/produkter?technology=${encodeURIComponent(group.name)}`
+			: `${siteConfig.url}/produkter`;
 
-	return {
-		title,
-		description,
-		robots: group?.seo?.noindex ? { index: false, follow: false } : undefined,
-		openGraph: {
+		return {
 			title,
 			description,
-			url: canonical,
-			siteName: siteConfig.name,
-			locale: "sv_SE",
-			type: "website",
-			...(ogImage ? { images: [ogImage] } : {}),
-		},
-		alternates: {
-			canonical,
-		},
-	};
+			robots: group?.seo?.noindex ? { index: false, follow: false } : undefined,
+			openGraph: {
+				title,
+				description,
+				url: canonical,
+				siteName: siteConfig.name,
+				locale: "sv_SE",
+				type: "website",
+				...(ogImage ? { images: [ogImage] } : {}),
+			},
+			alternates: {
+				canonical,
+			},
+		};
+	} catch {
+		return { title: "Produkter | Synos Medical" };
+	}
 }
 // Product Card Component
 function ProductCardDB({
@@ -310,10 +314,10 @@ export default async function ProductsPage({
 }) {
 	const { technology: selectedTech } = await searchParams;
 	const [products, categories, techGroups, selectedGroup] = await Promise.all([
-		getNewestProducts(100),
-		getActiveCategories(),
-		getActiveTechnologyGroupNames(),
-		selectedTech ? getTechnologyGroupByName(selectedTech) : Promise.resolve(null),
+		getNewestProducts(100).catch(() => [] as IProduct[]),
+		getActiveCategories().catch(() => [] as ICategory[]),
+		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		selectedTech ? getTechnologyGroupByName(selectedTech).catch(() => null) : Promise.resolve(null),
 	]);
 
 	// Filter products by selected technology (using technologyGroups array on product)

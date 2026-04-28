@@ -38,25 +38,29 @@ import type { ICategory } from "@/models/category.model";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-	const siteConfig = await getSiteConfig();
+	try {
+		const siteConfig = await getSiteConfig();
 
-	return {
-		title: `Kategori | ${siteConfig.name}`,
-		description:
-			"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
-		openGraph: {
+		return {
 			title: `Kategori | ${siteConfig.name}`,
 			description:
-				"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-			url: `${siteConfig.url}/kategori`,
-			siteName: siteConfig.name,
-			locale: "sv_SE",
-			type: "website",
-		},
-		alternates: {
-			canonical: `${siteConfig.url}/kategori`,
-		},
-	};
+				"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
+			openGraph: {
+				title: `Kategori | ${siteConfig.name}`,
+				description:
+					"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
+				url: `${siteConfig.url}/kategori`,
+				siteName: siteConfig.name,
+				locale: "sv_SE",
+				type: "website",
+			},
+			alternates: {
+				canonical: `${siteConfig.url}/kategori`,
+			},
+		};
+	} catch {
+		return { title: "Klinikutrustning | Synos Medical" };
+	}
 }
 
 // Product Card Component for Database Products
@@ -271,8 +275,8 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 
 export default async function KategoriPage() {
 	const [categories, products] = await Promise.all([
-		getActiveCategories(),
-		getPublishedProducts({ limit: 100 }),
+		getActiveCategories().catch(() => [] as ICategory[]),
+		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 	]);
 
 	// Create a map of category ID to slug for product cards

@@ -23,7 +23,7 @@ export const SITE_SETTINGS_CACHE_TAG = "site-settings";
  */
 export const getSiteSettings = unstable_cache(
 	async (): Promise<SiteSettingsData> => {
-		return siteSettingsRepository.get();
+		return siteSettingsRepository.get().catch(() => ({} as SiteSettingsData));
 	},
 	["site-settings"],
 	{
@@ -41,7 +41,7 @@ export const getContactInfo = unstable_cache(
 		email: string;
 		offices: IOffice[];
 	}> => {
-		return siteSettingsRepository.getContact();
+		return siteSettingsRepository.getContact().catch(() => ({ phone: "", email: "", offices: [] }));
 	},
 	["site-settings-contact"],
 	{
@@ -59,7 +59,7 @@ export const getCompanyInfo = unstable_cache(
 		orgNumber: string;
 		vatNumber?: string;
 	}> => {
-		return siteSettingsRepository.getCompanyInfo();
+		return siteSettingsRepository.getCompanyInfo().catch(() => ({ companyName: "Synos Medical AB", orgNumber: "" }));
 	},
 	["site-settings-company"],
 	{
@@ -73,7 +73,7 @@ export const getCompanyInfo = unstable_cache(
  */
 export const getSocialMedia = unstable_cache(
 	async (): Promise<ISocialMedia> => {
-		return siteSettingsRepository.getSocialMedia();
+		return siteSettingsRepository.getSocialMedia().catch(() => ({} as ISocialMedia));
 	},
 	["site-settings-social"],
 	{
@@ -87,7 +87,7 @@ export const getSocialMedia = unstable_cache(
  */
 export const getSeoSettings = unstable_cache(
 	async (): Promise<ISeoSettings> => {
-		return siteSettingsRepository.getSeo();
+		return siteSettingsRepository.getSeo().catch(() => ({} as ISeoSettings));
 	},
 	["site-settings-seo"],
 	{
@@ -101,7 +101,7 @@ export const getSeoSettings = unstable_cache(
  */
 export const getHeadquarters = unstable_cache(
 	async (): Promise<IOffice | undefined> => {
-		return siteSettingsRepository.getHeadquarters();
+		return siteSettingsRepository.getHeadquarters().catch(() => undefined);
 	},
 	["site-settings-headquarters"],
 	{
@@ -115,7 +115,7 @@ export const getHeadquarters = unstable_cache(
  */
 export const getBrandingSettings = unstable_cache(
 	async (): Promise<IBrandingSettings> => {
-		return siteSettingsRepository.getBranding();
+		return siteSettingsRepository.getBranding().catch(() => ({ logoUrl: "" } as IBrandingSettings));
 	},
 	["site-settings-branding"],
 	{
@@ -129,7 +129,7 @@ export const getBrandingSettings = unstable_cache(
  */
 export const getFooterSettings = unstable_cache(
 	async (): Promise<IFooterSettings> => {
-		return siteSettingsRepository.getFooter();
+		return siteSettingsRepository.getFooter().catch(() => ({} as IFooterSettings));
 	},
 	["site-settings-footer"],
 	{
@@ -174,9 +174,27 @@ export interface LegacySiteConfig {
  * Get site settings in legacy siteConfig format
  * For backwards compatibility during migration
  */
+const DEFAULT_LEGACY_SITE_CONFIG: LegacySiteConfig = {
+	name: "Synos Medical",
+	description: "Sveriges ledande leverantör av MDR-certifierad klinikutrustning.",
+	url: process.env.SITE_URL || process.env.BETTER_AUTH_URL || "http://localhost:3000",
+	ogImage: "/og-image.jpg",
+	links: { facebook: "", instagram: "", linkedin: "" },
+	company: {
+		name: "Synos Medical AB",
+		orgNumber: "",
+		email: "",
+		phone: "",
+		noreplyEmail: "noreply@synos.se",
+		addresses: [],
+	},
+};
+
 export const getLegacySiteConfig = unstable_cache(
 	async (): Promise<LegacySiteConfig> => {
-		const settings = await siteSettingsRepository.get();
+		const settings = await siteSettingsRepository.get().catch(() => null);
+
+		if (!settings) return DEFAULT_LEGACY_SITE_CONFIG;
 
 		return {
 			name: settings.seo?.siteName || "Synos Medical",
@@ -196,13 +214,12 @@ export const getLegacySiteConfig = unstable_cache(
 				email: settings.email,
 				phone: settings.phone,
 				noreplyEmail: settings.noreplyEmail || "noreply@synos.se",
-				addresses: settings.offices.map((office) => ({
+				addresses: (settings.offices || []).map((office) => ({
 					name: office.name,
 					street: office.street,
 					postalCode: office.postalCode,
 					city: office.city,
 					country: office.country,
-					// Default coordinates - can be enhanced later
 					lat: 0,
 					lng: 0,
 				})),

@@ -3,27 +3,33 @@ import { trainingPageService } from "@/lib/services/training-page.service";
 import { TrainingPageClient } from "./training-page-client";
 
 export async function generateMetadata(): Promise<Metadata> {
-	const data = await trainingPageService.getTrainingPage();
+	try {
+		const data = await trainingPageService.getTrainingPage();
 
-	return {
-		title: data.seo?.title || "Utbildningar",
-		description:
-			data.seo?.description ||
-			"När du köper maskin hos oss ingår även flera dagar utbildning - helt skräddarsydd efter dina förutsättningar, förkunskaper och behov!",
-		openGraph: {
-			title:
-				data.seo?.title ||
-				"Synos Utbildningar - Vi utbildar dig i samband med köp av maskin",
+		return {
+			title: data.seo?.title || "Utbildningar",
 			description:
 				data.seo?.description ||
 				"När du köper maskin hos oss ingår även flera dagar utbildning - helt skräddarsydd efter dina förutsättningar, förkunskaper och behov!",
-			...(data.seo?.ogImage && { images: [data.seo.ogImage] }),
-		},
-	};
+			openGraph: {
+				title:
+					data.seo?.title ||
+					"Synos Utbildningar - Vi utbildar dig i samband med köp av maskin",
+				description:
+					data.seo?.description ||
+					"När du köper maskin hos oss ingår även flera dagar utbildning - helt skräddarsydd efter dina förutsättningar, förkunskaper och behov!",
+				...(data.seo?.ogImage && { images: [data.seo.ogImage] }),
+			},
+		};
+	} catch {
+		return { title: "Utbildningar | Synos Medical" };
+	}
 }
 
 export default async function UtbildningarPage() {
-	const data = await trainingPageService.getTrainingPage();
+	const data = await trainingPageService.getTrainingPage().catch(() => null);
+
+	if (!data) return <></>;
 
 	return <TrainingPageClient data={data} />;
 }

@@ -8,25 +8,32 @@ import { AboutPageClient } from "./_components/about-page-client";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-	const seo = await getAboutPageSeo();
+	try {
+		const seo = await getAboutPageSeo();
 
-	const title = seo?.title || "Om oss - Synos Medical";
-	const description =
-		seo?.description ||
-		"Synos Medical erbjuder professionella lasermaskiner och utrustning till kliniker och salonger runt om i Skandinavien.";
+		const title = seo?.title || "Om oss - Synos Medical";
+		const description =
+			seo?.description ||
+			"Synos Medical erbjuder professionella lasermaskiner och utrustning till kliniker och salonger runt om i Skandinavien.";
 
-	return {
-		title,
-		description,
-		openGraph: {
+		return {
 			title,
 			description,
-			...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
-		},
-	};
+			openGraph: {
+				title,
+				description,
+				...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
+			},
+		};
+	} catch {
+		return { title: "Om oss | Synos Medical" };
+	}
 }
 
 export default async function AboutPage() {
-	const aboutPage = await getAboutPage();
+	const aboutPage = await getAboutPage().catch(() => null);
+
+	if (!aboutPage) return <></>;
+
 	return <AboutPageClient data={aboutPage} />;
 }

@@ -1,6 +1,8 @@
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { DashboardShell } from "@/components/admin";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Dashboard Layout - Server Component
  *

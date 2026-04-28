@@ -39,21 +39,25 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-	const pageData = await kopguidePageService.getKopguidePage();
+	try {
+		const pageData = await kopguidePageService.getKopguidePage();
 
-	return {
-		title: pageData.seo?.title || "Köpguide | Synos Medical",
-		description:
-			pageData.seo?.description ||
-			"Din kompletta guide till att köpa rätt klinikutrustning. Lär dig vad du ska tänka på innan du investerar i lasermaskiner och medicinsk utrustning.",
-		openGraph: {
-			title: pageData.seo?.title || "Köpguide för klinikutrustning | Synos Medical",
+		return {
+			title: pageData.seo?.title || "Köpguide | Synos Medical",
 			description:
 				pageData.seo?.description ||
-				"Din kompletta guide till att köpa rätt klinikutrustning. Lär dig vad du ska tänka på innan du investerar.",
-			images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
-		},
-	};
+				"Din kompletta guide till att köpa rätt klinikutrustning. Lär dig vad du ska tänka på innan du investerar i lasermaskiner och medicinsk utrustning.",
+			openGraph: {
+				title: pageData.seo?.title || "Köpguide för klinikutrustning | Synos Medical",
+				description:
+					pageData.seo?.description ||
+					"Din kompletta guide till att köpa rätt klinikutrustning. Lär dig vad du ska tänka på innan du investerar.",
+				images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
+			},
+		};
+	} catch {
+		return { title: "Köpguide | Synos Medical" };
+	}
 }
 
 // Default data for fallback
@@ -100,7 +104,9 @@ const defaultChecklist = [
 ];
 
 export default async function KopguidePage() {
-	const pageData = await kopguidePageService.getKopguidePage();
+	const pageData = await kopguidePageService.getKopguidePage().catch(() => null);
+
+	if (!pageData) return <></>;
 
 	const visibility = pageData.sectionVisibility || {
 		hero: true,

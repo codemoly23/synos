@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getAuth } from "@/lib/db/auth";
 import { formSubmissionService } from "@/lib/services/form-submission.service";
+import { sendSubmissionNotification } from "@/lib/services/email-notification.service";
 import { formSubmissionListQuerySchema } from "@/lib/validations/form-submission.validation";
 import {
 	createdResponse,
@@ -18,6 +19,7 @@ import {
 	ValidationError,
 	NotFoundError,
 	DatabaseError,
+	BadRequestError,
 } from "@/lib/utils/api-error";
 
 /**
@@ -87,6 +89,9 @@ export async function POST(request: NextRequest) {
 
 		logger.info(`Form submission created: ${submission._id}`);
 
+		// Fire-and-forget — email failure never blocks the response
+		sendSubmissionNotification(submission).catch(() => {});
+
 		return createdResponse(
 			{
 				id: submission._id.toString(),
@@ -109,6 +114,10 @@ export async function POST(request: NextRequest) {
 
 		if (error instanceof ValidationError) {
 			return validationErrorResponse(error.message, error.errors);
+		}
+
+		if (error instanceof BadRequestError) {
+			return badRequestResponse(error.message);
 		}
 
 		if (error instanceof DatabaseError) {

@@ -49,6 +49,13 @@ import {
 import { MediaPicker } from "@/components/storage/media-picker";
 import { SeoPreview } from "@/components/admin/seo/SeoPreview";
 import { TagInput } from "@/components/admin/TagInput";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 // Validation schema matching the API
 const officeSchema = z.object({
@@ -133,6 +140,19 @@ const settingsFormSchema = z.object({
 		apiKey: z.string().optional(),
 		apiBaseUrl: z.string().optional(),
 	}),
+
+	// SMTP email settings
+	smtp: z.object({
+		enabled: z.boolean().optional(),
+		host: z.string().optional(),
+		port: z.coerce.number().int().min(1).max(65535).optional(),
+		encryption: z.enum(["none", "ssl", "tls"]).optional(),
+		username: z.string().optional(),
+		password: z.string().optional(),
+		fromName: z.string().optional(),
+		fromEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+		adminNotificationEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+	}),
 });
 
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
@@ -190,6 +210,17 @@ export default function SettingsPage() {
 				widgetKey: "",
 				apiKey: "",
 				apiBaseUrl: "https://app.convolo.ai",
+			},
+			smtp: {
+				enabled: false,
+				host: "",
+				port: 587,
+				encryption: "tls" as const,
+				username: "",
+				password: "",
+				fromName: "",
+				fromEmail: "",
+				adminNotificationEmail: "",
 			},
 		},
 	});
@@ -281,6 +312,17 @@ export default function SettingsPage() {
 						apiBaseUrl:
 							settings.brightcall?.apiBaseUrl || "https://app.convolo.ai",
 					},
+					smtp: {
+						enabled: settings.smtp?.enabled ?? false,
+						host: settings.smtp?.host || "",
+						port: settings.smtp?.port ?? 587,
+						encryption: (settings.smtp?.encryption as "none" | "ssl" | "tls") || "tls",
+						username: settings.smtp?.username || "",
+						password: settings.smtp?.password || "",
+						fromName: settings.smtp?.fromName || "",
+						fromEmail: settings.smtp?.fromEmail || "",
+						adminNotificationEmail: settings.smtp?.adminNotificationEmail || "",
+					},
 				});
 			} catch (error) {
 				console.error("Error fetching settings:", error);
@@ -343,7 +385,7 @@ export default function SettingsPage() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<Tabs defaultValue="company" className="space-y-6">
-						<TabsList className="grid w-full grid-cols-8">
+						<TabsList className="grid w-full grid-cols-9">
 							<TabsTrigger value="company" className="flex items-center gap-2">
 								<Building2 className="h-4 w-4" />
 								<span className="hidden sm:inline">Company</span>
@@ -375,6 +417,10 @@ export default function SettingsPage() {
 							<TabsTrigger value="brightcall" className="flex items-center gap-2">
 								<PhoneCall className="h-4 w-4" />
 								<span className="hidden sm:inline">Brightcall</span>
+							</TabsTrigger>
+							<TabsTrigger value="smtp" className="flex items-center gap-2">
+								<Mail className="h-4 w-4" />
+								<span className="hidden sm:inline">Email / SMTP</span>
 							</TabsTrigger>
 						</TabsList>
 
@@ -1544,6 +1590,192 @@ export default function SettingsPage() {
 													Base URL that hosts the Brightcall widget script
 													(<code>/js/icallback.js</code>). Leave as default
 													unless Brightcall directs you otherwise.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Email / SMTP Tab */}
+						<TabsContent value="smtp" className="space-y-6">
+							{/* Email Notifications Toggle */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Email Notifications</CardTitle>
+									<CardDescription>
+										Enable or disable admin email notifications for form submissions.
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<FormField
+										control={form.control}
+										name="smtp.enabled"
+										render={({ field }) => (
+											<FormItem className="flex items-center justify-between rounded-lg border p-4">
+												<div className="space-y-0.5">
+													<FormLabel className="text-base">Enable Email Notifications</FormLabel>
+													<FormDescription>
+														Send an email to the admin when a new form submission is received.
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={field.value ?? false}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+
+							{/* SMTP Server */}
+							<Card>
+								<CardHeader>
+									<CardTitle>SMTP Server</CardTitle>
+									<CardDescription>Outgoing mail server configuration.</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField
+											control={form.control}
+											name="smtp.host"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>SMTP Host</FormLabel>
+													<FormControl>
+														<Input placeholder="smtp.example.com" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="smtp.port"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>SMTP Port</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="587"
+															{...field}
+															onChange={(e) => field.onChange(e.target.valueAsNumber)}
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+									<FormField
+										control={form.control}
+										name="smtp.encryption"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Encryption</FormLabel>
+												<Select onValueChange={field.onChange} value={field.value}>
+													<FormControl>
+														<SelectTrigger>
+															<SelectValue placeholder="Select encryption" />
+														</SelectTrigger>
+													</FormControl>
+													<SelectContent>
+														<SelectItem value="tls">TLS (STARTTLS)</SelectItem>
+														<SelectItem value="ssl">SSL</SelectItem>
+														<SelectItem value="none">None</SelectItem>
+													</SelectContent>
+												</Select>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField
+											control={form.control}
+											name="smtp.username"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>SMTP Username</FormLabel>
+													<FormControl>
+														<Input placeholder="user@example.com" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="smtp.password"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>SMTP Password</FormLabel>
+													<FormControl>
+														<Input type="password" placeholder="••••••••" {...field} />
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Sender & Recipient */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Sender &amp; Recipient</CardTitle>
+									<CardDescription>
+										Who notifications are sent from and where they are delivered.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid gap-4 sm:grid-cols-2">
+										<FormField
+											control={form.control}
+											name="smtp.fromName"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>From Name</FormLabel>
+													<FormControl>
+														<Input placeholder="Synos Medical" {...field} />
+													</FormControl>
+													<FormDescription>Display name for outgoing emails.</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="smtp.fromEmail"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>From Email</FormLabel>
+													<FormControl>
+														<Input placeholder="info@synos.se" {...field} />
+													</FormControl>
+													<FormDescription>Sender email address.</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+									<FormField
+										control={form.control}
+										name="smtp.adminNotificationEmail"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Admin Notification Email</FormLabel>
+												<FormControl>
+													<Input placeholder="admin@synos.se" {...field} />
+												</FormControl>
+												<FormDescription>
+													All form submission notifications will be sent to this address.
 												</FormDescription>
 												<FormMessage />
 											</FormItem>
