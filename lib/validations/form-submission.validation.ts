@@ -155,34 +155,53 @@ export const productInquirySchema = z
 
 /**
  * Contact Inquiry Form Schema
+ * Simpler schema — no country code picker, accepts full phone numbers.
  */
-export const contactInquirySchema = z
-	.object({
-		...baseFormFields,
+export const contactInquirySchema = z.object({
+	fullName: z
+		.string()
+		.min(2, "Namnet måste vara minst 2 tecken")
+		.max(100, "Namnet får inte överstiga 100 tecken")
+		.trim(),
 
-		subject: z
-			.string()
-			.min(3, "Ämne måste vara minst 3 tecken")
-			.max(200, "Ämne får inte överstiga 200 tecken")
-			.trim(),
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
 
-		// Override message to be required for contact form
-		message: z
-			.string()
-			.min(10, "Meddelandet måste vara minst 10 tecken")
-			.max(2000, "Meddelandet får inte överstiga 2000 tecken")
-			.trim(),
-	})
-	.refine(
-		(data) => {
-			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
-			return isValidPhoneNumber(fullPhone);
-		},
-		{
-			message: "Ogiltigt telefonnummer för valt land",
-			path: ["phone"],
-		}
-	);
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 tecken")
+		.trim(),
+
+	subject: z
+		.string()
+		.min(3, "Ämne måste vara minst 3 tecken")
+		.max(200, "Ämne får inte överstiga 200 tecken")
+		.trim(),
+
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	message: z
+		.string()
+		.min(10, "Meddelandet måste vara minst 10 tecken")
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim(),
+
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+
+	marketingConsent: z.boolean().optional(),
+});
 
 /**
  * Training Inquiry Form Schema

@@ -146,6 +146,21 @@ export const brightcallSettingsSchema = z.object({
 });
 
 /**
+ * SMTP settings schema
+ */
+export const smtpSettingsSchema = z.object({
+	enabled: z.boolean().optional(),
+	host: z.string().max(200).optional(),
+	port: z.number().int().min(1).max(65535).optional(),
+	encryption: z.enum(["none", "ssl", "tls"]).optional(),
+	username: z.string().max(200).optional(),
+	password: z.string().max(500).optional(),
+	fromName: z.string().max(100).optional(),
+	fromEmail: z.string().email().optional().or(z.literal("")),
+	adminNotificationEmail: z.string().email().optional().or(z.literal("")),
+});
+
+/**
  * Reviews settings schema
  */
 export const reviewsSettingsSchema = z.object({
@@ -219,6 +234,9 @@ export const updateSiteSettingsSchema = z.object({
 
 	// Brightcall (Convolo.ai)
 	brightcall: brightcallSettingsSchema.partial().optional(),
+
+	// SMTP email settings
+	smtp: smtpSettingsSchema.partial().optional(),
 });
 
 // Type exports
@@ -230,4 +248,5 @@ export type FooterLinkInput = z.infer<typeof footerLinkSchema>;
 export type FooterSettingsInput = z.infer<typeof footerSettingsSchema>;
 export type ReviewsSettingsInput = z.infer<typeof reviewsSettingsSchema>;
 export type BrightcallSettingsInput = z.infer<typeof brightcallSettingsSchema>;
+export type SmtpSettingsInput = z.infer<typeof smtpSettingsSchema>;
 export type UpdateSiteSettingsInput = z.infer<typeof updateSiteSettingsSchema>;

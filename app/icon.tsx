@@ -18,7 +18,7 @@ export const revalidate = 60;
  * Otherwise, generates a branded fallback icon with the "S" logo.
  */
 export default async function Icon() {
-	const brandingSettings = await getBrandingSettings();
+	const brandingSettings = await getBrandingSettings().catch(() => null);
 	const faviconUrl = brandingSettings?.faviconUrl;
 
 	// If custom favicon is set, try to fetch and return it

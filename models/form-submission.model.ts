@@ -174,19 +174,19 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			type: String,
 			required: [true, "Phone number is required"],
 			trim: true,
-			maxlength: [20, "Phone number cannot exceed 20 characters"],
+			maxlength: [25, "Phone number cannot exceed 25 characters"],
 		},
 		countryCode: {
 			type: String,
-			required: [true, "Country code is required"],
 			trim: true,
 			maxlength: [10, "Country code cannot exceed 10 characters"],
+			default: null,
 		},
 		countryName: {
 			type: String,
-			required: [true, "Country name is required"],
 			trim: true,
 			maxlength: [100, "Country name cannot exceed 100 characters"],
+			default: null,
 		},
 		corporationNumber: {
 			type: String,
@@ -365,6 +365,11 @@ export const getFormSubmissionModel = async (): Promise<
 > => {
 	await connectMongoose();
 
+	// In dev, delete cached model so schema changes take effect without full restart
+	if (process.env.NODE_ENV === "development") {
+		delete mongoose.models.FormSubmission;
+	}
+
 	return (
 		(mongoose.models.FormSubmission as Model<IFormSubmission>) ||
 		mongoose.model<IFormSubmission>("FormSubmission", FormSubmissionSchema)
@@ -375,6 +380,11 @@ export const getFormSubmissionModel = async (): Promise<
  * Synchronous model getter
  */
 export function getFormSubmissionModelSync(): Model<IFormSubmission> {
+	// In dev, delete cached model so schema changes take effect without full restart
+	if (process.env.NODE_ENV === "development") {
+		delete mongoose.models.FormSubmission;
+	}
+
 	return (
 		(mongoose.models.FormSubmission as Model<IFormSubmission>) ||
 		mongoose.model<IFormSubmission>("FormSubmission", FormSubmissionSchema)

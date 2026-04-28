@@ -34,8 +34,20 @@ const DEFAULT_KEYWORDS = [
 /**
  * Generate dynamic metadata from database site settings
  */
+const DEFAULT_SITE_SETTINGS = {
+	seo: {
+		siteName: "Synos Medical",
+		siteDescription:
+			"Sveriges ledande leverantör av MDR-certifierad klinikutrustning för laser, hårborttagning, tatueringsborttagning och hudföryngring.",
+		ogImage: "/og-image.jpg",
+		keywords: DEFAULT_KEYWORDS,
+		twitterHandle: undefined as string | undefined,
+	},
+	companyName: "Synos Medical AB",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
-	const settings = await getSiteSettings();
+	const settings = await getSiteSettings().catch(() => DEFAULT_SITE_SETTINGS);
 
 	const siteUrl =
 		process.env.SITE_URL ||

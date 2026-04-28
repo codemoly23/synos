@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -110,9 +110,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
 															)}
 														>
-															<Link href={item.href}>
 																{item.title}
-															</Link>
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]!">
 															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
@@ -201,9 +199,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
 															)}
 														>
-															<Link href={item.href}>
 																{item.title}
-															</Link>
 														</NavigationMenuTrigger>
 														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl">
 															<div className="min-w-[180px] p-3 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm">

@@ -40,21 +40,25 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-	const pageData = await varforValjaSynosPageService.getVarforValjaSynosPage();
+	try {
+		const pageData = await varforValjaSynosPageService.getVarforValjaSynosPage();
 
-	return {
-		title: pageData.seo?.title || "Varför välja Synos? | Synos Medical",
-		description:
-			pageData.seo?.description ||
-			"Upptäck varför Synos Medical är rätt val för din klinik. MDR-certifierad utrustning, världsledande utbildning och livstids support.",
-		openGraph: {
-			title: pageData.seo?.title || "Varför välja Synos Medical?",
+		return {
+			title: pageData.seo?.title || "Varför välja Synos? | Synos Medical",
 			description:
 				pageData.seo?.description ||
 				"Upptäck varför Synos Medical är rätt val för din klinik. MDR-certifierad utrustning, världsledande utbildning och livstids support.",
-			images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
-		},
-	};
+			openGraph: {
+				title: pageData.seo?.title || "Varför välja Synos Medical?",
+				description:
+					pageData.seo?.description ||
+					"Upptäck varför Synos Medical är rätt val för din klinik. MDR-certifierad utrustning, världsledande utbildning och livstids support.",
+				images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
+			},
+		};
+	} catch {
+		return { title: "Varför välja Synos | Synos Medical" };
+	}
 }
 
 // Default data for fallback
@@ -95,7 +99,9 @@ const defaultBenefits = [
 ];
 
 export default async function VarforValjaSynosPage() {
-	const pageData = await varforValjaSynosPageService.getVarforValjaSynosPage();
+	const pageData = await varforValjaSynosPageService.getVarforValjaSynosPage().catch(() => null);
+
+	if (!pageData) return <></>;
 
 	const visibility = pageData.sectionVisibility || {
 		hero: true,

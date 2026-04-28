@@ -58,6 +58,21 @@ export interface IBrightcallSettings {
 }
 
 /**
+ * SMTP email settings interface
+ */
+export interface ISmtpSettings {
+	enabled?: boolean;
+	host?: string;
+	port?: number;
+	encryption?: "none" | "ssl" | "tls";
+	username?: string;
+	password?: string;
+	fromName?: string;
+	fromEmail?: string;
+	adminNotificationEmail?: string;
+}
+
+/**
  * Reviews settings interface
  */
 export interface IReviewsSettings {
@@ -127,6 +142,9 @@ export interface ISiteSettings extends Document {
 
 	// Brightcall (Convolo.ai)
 	brightcall: IBrightcallSettings;
+
+	// SMTP email settings
+	smtp: ISmtpSettings;
 
 	// Timestamps
 	updatedAt: Date;
@@ -245,6 +263,24 @@ const BrightcallSettingsSchema = new Schema<IBrightcallSettings>(
 			trim: true,
 			default: "https://app.convolo.ai",
 		},
+	},
+	{ _id: false }
+);
+
+/**
+ * SMTP settings sub-schema
+ */
+const SmtpSettingsSchema = new Schema<ISmtpSettings>(
+	{
+		enabled: { type: Boolean, default: false },
+		host: { type: String, trim: true },
+		port: { type: Number, default: 587 },
+		encryption: { type: String, enum: ["none", "ssl", "tls"], default: "tls" },
+		username: { type: String, trim: true },
+		password: { type: String },
+		fromName: { type: String, trim: true },
+		fromEmail: { type: String, trim: true, lowercase: true },
+		adminNotificationEmail: { type: String, trim: true, lowercase: true },
 	},
 	{ _id: false }
 );
@@ -444,6 +480,14 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
 			default: {
 				enabled: false,
 				apiBaseUrl: "https://app.convolo.ai",
+			},
+		},
+		smtp: {
+			type: SmtpSettingsSchema,
+			default: {
+				enabled: false,
+				port: 587,
+				encryption: "tls",
 			},
 		},
 	},

@@ -39,21 +39,25 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-	const pageData = await miniutbildningPageService.getMiniutbildningPage();
+	try {
+		const pageData = await miniutbildningPageService.getMiniutbildningPage();
 
-	return {
-		title: pageData.seo?.title || "Miniutbildning | Synos Medical",
-		description:
-			pageData.seo?.description ||
-			"Kostnadsfri miniutbildning om laserteknik och klinikutrustning. Lär dig grunderna för att fatta rätt beslut om din investering.",
-		openGraph: {
-			title: pageData.seo?.title || "Kostnadsfri miniutbildning | Synos Medical",
+		return {
+			title: pageData.seo?.title || "Miniutbildning | Synos Medical",
 			description:
 				pageData.seo?.description ||
-				"Kostnadsfri miniutbildning om laserteknik och klinikutrustning. Lär dig grunderna för att fatta rätt beslut.",
-			images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
-		},
-	};
+				"Kostnadsfri miniutbildning om laserteknik och klinikutrustning. Lär dig grunderna för att fatta rätt beslut om din investering.",
+			openGraph: {
+				title: pageData.seo?.title || "Kostnadsfri miniutbildning | Synos Medical",
+				description:
+					pageData.seo?.description ||
+					"Kostnadsfri miniutbildning om laserteknik och klinikutrustning. Lär dig grunderna för att fatta rätt beslut.",
+				images: pageData.seo?.ogImage ? [{ url: pageData.seo.ogImage }] : [],
+			},
+		};
+	} catch {
+		return { title: "Miniutbildning | Synos Medical" };
+	}
 }
 
 // Default data for fallback
@@ -106,7 +110,9 @@ const defaultProcessSteps = [
 ];
 
 export default async function MiniutbildningPage() {
-	const pageData = await miniutbildningPageService.getMiniutbildningPage();
+	const pageData = await miniutbildningPageService.getMiniutbildningPage().catch(() => null);
+
+	if (!pageData) return <></>;
 
 	const visibility = pageData.sectionVisibility || {
 		hero: true,

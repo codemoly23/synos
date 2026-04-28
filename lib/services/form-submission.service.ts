@@ -224,8 +224,6 @@ class FormSubmissionService {
 			fullName: this.sanitizeInput(validData.fullName),
 			email: validData.email.toLowerCase().trim(),
 			phone: this.sanitizeInput(validData.phone),
-			countryCode: validData.countryCode,
-			countryName: this.sanitizeInput(validData.countryName),
 			corporationNumber:
 				this.sanitizeInput(validData.corporationNumber) || null,
 			subject: this.sanitizeInput(validData.subject),

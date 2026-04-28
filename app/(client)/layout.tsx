@@ -10,30 +10,52 @@ import {
 	getBrandingSettings,
 	getFooterSettings,
 	getSiteSettings,
+	type LegacySiteConfig,
 } from "@/lib/services/site-settings.service";
 
-/**
- * Client Layout - Public pages with Navbar and Footer
- * This wraps all public-facing pages
- * Now fetches dynamic settings from database
- */
+const DEFAULT_SITE_CONFIG: LegacySiteConfig = {
+	name: "Synos Medical",
+	description: "Sveriges ledande leverantör av MDR-certifierad klinikutrustning.",
+	url: process.env.SITE_URL || "http://localhost:3000",
+	ogImage: "/og-image.jpg",
+	links: { facebook: "", instagram: "", linkedin: "" },
+	company: {
+		name: "Synos Medical",
+		orgNumber: "",
+		email: "",
+		phone: "",
+		noreplyEmail: "noreply@synos.se",
+		addresses: [],
+	},
+};
+
 export default async function ClientLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	// Fetch site settings from database in parallel
-	const [siteConfig, brandingSettings, footerSettings, siteSettings] =
-		await Promise.all([
+	const [siteConfigResult, brandingResult, footerResult, siteSettingsResult] =
+		await Promise.allSettled([
 			getLegacySiteConfig(),
 			getBrandingSettings(),
 			getFooterSettings(),
 			getSiteSettings(),
 		]);
 
+	const siteConfig =
+		siteConfigResult.status === "fulfilled"
+			? siteConfigResult.value
+			: DEFAULT_SITE_CONFIG;
+	const brandingSettings =
+		brandingResult.status === "fulfilled" ? brandingResult.value : null;
+	const footerSettings =
+		footerResult.status === "fulfilled" ? footerResult.value : null;
+	const siteSettings =
+		siteSettingsResult.status === "fulfilled" ? siteSettingsResult.value : null;
+
 	const logoUrl = brandingSettings?.logoUrl;
 	const brightcallActive = Boolean(
-		siteSettings.brightcall?.enabled && siteSettings.brightcall?.widgetKey
+		siteSettings?.brightcall?.enabled && siteSettings?.brightcall?.widgetKey
 	);
 
 	return (
@@ -44,14 +66,14 @@ export default async function ClientLayout({
 					<main className="flex-1 w-full">{children}</main>
 					<Footer
 						config={siteConfig}
-						footerSettings={footerSettings}
+						footerSettings={footerSettings ?? undefined}
 						logoUrl={logoUrl}
 					/>
 					<MobileBottomNav />
 					{brightcallActive && (
 						<BrightcallScript
-							widgetKey={siteSettings.brightcall!.widgetKey!}
-							apiBaseUrl={siteSettings.brightcall?.apiBaseUrl}
+							widgetKey={siteSettings!.brightcall!.widgetKey!}
+							apiBaseUrl={siteSettings!.brightcall?.apiBaseUrl}
 						/>
 					)}
 					<CookieConsent />

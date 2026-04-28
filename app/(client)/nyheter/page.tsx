@@ -15,57 +15,63 @@ import { NyheterListing } from "./_components/nyheter-listing";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-	const siteConfig = await getSiteConfig();
+	try {
+		const siteConfig = await getSiteConfig();
 
-	return {
-		title: "Nyheter | Synos Medical",
-		description:
-			"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
-		keywords: [
-			"nyheter",
-			"artiklar",
-			"hårborttagning",
-			"tatueringsborttagning",
-			"hudvård",
-			"laser",
-			"klinikutrustning",
-		],
-		openGraph: {
+		return {
 			title: "Nyheter | Synos Medical",
 			description:
-				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-			url: `${siteConfig.url}/nyheter`,
-			siteName: siteConfig.name,
-			images: [
-				{
-					url: `${siteConfig.url}/images/og/nyheter.jpg`,
-					width: 1200,
-					height: 630,
-					alt: "Synos Medical Nyheter",
-				},
+				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
+			keywords: [
+				"nyheter",
+				"artiklar",
+				"hårborttagning",
+				"tatueringsborttagning",
+				"hudvård",
+				"laser",
+				"klinikutrustning",
 			],
-			locale: "sv_SE",
-			type: "website",
-		},
-		twitter: {
-			card: "summary_large_image",
-			title: "Nyheter | Synos Medical",
-			description:
-				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-			images: [`${siteConfig.url}/images/og/nyheter.jpg`],
-		},
-		alternates: {
-			canonical: `${siteConfig.url}/nyheter`,
-		},
-	};
+			openGraph: {
+				title: "Nyheter | Synos Medical",
+				description:
+					"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+				url: `${siteConfig.url}/nyheter`,
+				siteName: siteConfig.name,
+				images: [
+					{
+						url: `${siteConfig.url}/images/og/nyheter.jpg`,
+						width: 1200,
+						height: 630,
+						alt: "Synos Medical Nyheter",
+					},
+				],
+				locale: "sv_SE",
+				type: "website",
+			},
+			twitter: {
+				card: "summary_large_image",
+				title: "Nyheter | Synos Medical",
+				description:
+					"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+				images: [`${siteConfig.url}/images/og/nyheter.jpg`],
+			},
+			alternates: {
+				canonical: `${siteConfig.url}/nyheter`,
+			},
+		};
+	} catch {
+		return { title: "Nyheter | Synos Medical" };
+	}
 }
 
 export default async function NyheterPage() {
 	const [articles, categories, siteConfig] = await Promise.all([
-		getAllArticles(),
-		getAllCategories(),
-		getSiteConfig(),
+		getAllArticles().catch(() => []),
+		getAllCategories().catch(() => []),
+		getSiteConfig().catch(() => null),
 	]);
+
+	if (!siteConfig) return <></>;
 
 	return (
 		<>

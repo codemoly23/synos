@@ -21,36 +21,40 @@ import { SearchPageSkeleton } from "@/components/search/SearchSkeleton";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [seo, siteSettings] = await Promise.all([
-		getHomePageSeo(),
-		getSiteSettings(),
-	]);
+	try {
+		const [seo, siteSettings] = await Promise.all([
+			getHomePageSeo(),
+			getSiteSettings(),
+		]);
 
-	const siteName = siteSettings.seo?.siteName || "Synos Medical";
-	const siteDescription =
-		siteSettings.seo?.siteDescription ||
-		"Sveriges ledande leverantör av MDR-certifierad klinikutrustning";
+		const siteName = siteSettings.seo?.siteName || "Synos Medical";
+		const siteDescription =
+			siteSettings.seo?.siteDescription ||
+			"Sveriges ledande leverantör av MDR-certifierad klinikutrustning";
 
-	const title = seo?.title || `${siteName} - Medicinsk utrustning`;
-	const description = seo?.description || siteDescription;
+		const title = seo?.title || `${siteName} - Medicinsk utrustning`;
+		const description = seo?.description || siteDescription;
 
-	return {
-		title,
-		description,
-		openGraph: {
+		return {
 			title,
 			description,
-			type: "website",
-			siteName,
-			...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
-		},
-		twitter: {
-			card: "summary_large_image",
-			title,
-			description,
-			...(seo?.ogImage && { images: [seo.ogImage] }),
-		},
-	};
+			openGraph: {
+				title,
+				description,
+				type: "website",
+				siteName,
+				...(seo?.ogImage && { images: [{ url: seo.ogImage }] }),
+			},
+			twitter: {
+				card: "summary_large_image",
+				title,
+				description,
+				...(seo?.ogImage && { images: [seo.ogImage] }),
+			},
+		};
+	} catch {
+		return { title: "Synos Medical" };
+	}
 }
 
 interface HomeProps {
@@ -97,9 +101,11 @@ export default async function Home({ searchParams }: HomeProps) {
 
 	// Fetch CMS data for homepage
 	const [homePage, siteSettings] = await Promise.all([
-		getHomePage(),
-		getSiteSettings(),
+		getHomePage().catch(() => null),
+		getSiteSettings().catch(() => null),
 	]);
+
+	if (!homePage || !siteSettings) return <></>;
 
 	// Section visibility settings (defaults to all visible if not set)
 	const visibility = homePage.sectionVisibility || {

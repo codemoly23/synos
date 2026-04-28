@@ -6,6 +6,8 @@ import {
 	getFooterSettings,
 } from "@/lib/services/site-settings.service";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Auth Layout - Login/Register pages with Navbar and Footer
  */
@@ -14,12 +16,14 @@ export default async function AuthLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const [siteConfig, brandingSettings, footerSettings] = await Promise.all([
-		getSiteConfig(),
+	const siteConfig = await getSiteConfig();
+	const [brandingResult, footerResult] = await Promise.allSettled([
 		getBrandingSettings(),
 		getFooterSettings(),
 	]);
 
+	const brandingSettings = brandingResult.status === "fulfilled" ? brandingResult.value : null;
+	const footerSettings = footerResult.status === "fulfilled" ? footerResult.value : undefined;
 	const logoUrl = brandingSettings?.logoUrl || undefined;
 
 	return (

@@ -12,6 +12,7 @@ import {
 	type IFooterSettings,
 	type IReviewsSettings,
 	type IBrightcallSettings,
+	type ISmtpSettings,
 } from "@/models/site-settings.model";
 
 /**
@@ -31,6 +32,7 @@ export interface UpdateSiteSettingsInput {
 	footer?: Partial<IFooterSettings>;
 	reviews?: Partial<IReviewsSettings>;
 	brightcall?: Partial<IBrightcallSettings>;
+	smtp?: Partial<ISmtpSettings>;
 }
 
 /**
@@ -150,6 +152,14 @@ class SiteSettingsRepository {
 				updateData.brightcall = {
 					...existing.brightcall,
 					...data.brightcall,
+				};
+			}
+
+			if (data.smtp !== undefined) {
+				const existing = await this.get();
+				updateData.smtp = {
+					...existing.smtp,
+					...data.smtp,
 				};
 			}
 

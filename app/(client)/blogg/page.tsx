@@ -19,56 +19,65 @@ import { BlogListingClient } from "./_components/blog-listing-client";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-	const siteConfig = await getSiteConfig();
+	try {
+		const siteConfig = await getSiteConfig();
 
-	return {
-		title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
-		description:
-			"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
-		keywords: [
-			"blogg",
-			"nyheter",
-			"artiklar",
-			"hårborttagning",
-			"tatueringsborttagning",
-			"hudvård",
-			"laser",
-			"klinikutrustning",
-		],
-		openGraph: {
+		return {
 			title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
 			description:
-				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-			url: `${siteConfig.url}/blogg`,
-			siteName: siteConfig.name,
-			images: [
-				{
-					url: `${siteConfig.url}/images/og/blogg.jpg`,
-					width: 1200,
-					height: 630,
-					alt: `${siteConfig.name} Blogg`,
-				},
+				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning. Expertguider, tekniska genomgångar och branschnyheter.",
+			keywords: [
+				"blogg",
+				"nyheter",
+				"artiklar",
+				"hårborttagning",
+				"tatueringsborttagning",
+				"hudvård",
+				"laser",
+				"klinikutrustning",
 			],
-			locale: "sv_SE",
-			type: "website",
-		},
-		twitter: {
-			card: "summary_large_image",
-			title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
-			description:
-				"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
-			images: [`${siteConfig.url}/images/og/blogg.jpg`],
-		},
-		alternates: {
-			canonical: `${siteConfig.url}/blogg`,
-		},
-	};
+			openGraph: {
+				title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
+				description:
+					"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+				url: `${siteConfig.url}/blogg`,
+				siteName: siteConfig.name,
+				images: [
+					{
+						url: `${siteConfig.url}/images/og/blogg.jpg`,
+						width: 1200,
+						height: 630,
+						alt: `${siteConfig.name} Blogg`,
+					},
+				],
+				locale: "sv_SE",
+				type: "website",
+			},
+			twitter: {
+				card: "summary_large_image",
+				title: `Blogg – Nyheter & Artiklar | ${siteConfig.name}`,
+				description:
+					"Ta del av det allra senaste inom hårborttagning, hudvård, microneedling och tatueringsborttagning.",
+				images: [`${siteConfig.url}/images/og/blogg.jpg`],
+			},
+			alternates: {
+				canonical: `${siteConfig.url}/blogg`,
+			},
+		};
+	} catch {
+		return { title: "Blogg | Synos Medical" };
+	}
 }
 
 export default async function BlogPage() {
-	const [articles, categories, recentArticles, siteConfig] = await Promise.all(
-		[getAllArticles(), getAllCategories(), getRecentArticles(5), getSiteConfig()]
-	);
+	const [articles, categories, recentArticles, siteConfig] = await Promise.all([
+		getAllArticles().catch(() => []),
+		getAllCategories().catch(() => []),
+		getRecentArticles(5).catch(() => []),
+		getSiteConfig().catch(() => null),
+	]);
+
+	if (!siteConfig) return <></>;
 
 	return (
 		<>
