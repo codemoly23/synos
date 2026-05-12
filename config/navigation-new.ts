@@ -39,7 +39,7 @@ export const mainNavNew: NavItem[] = [
 	// KATEGORI - Categories
 	{
 		title: "KATEGORI",
-		href: "/kategori",
+		href: "/klinikutrustning",
 		isDynamic: true,
 		isCategoryMenu: true, // Renders static category-map list
 	},
