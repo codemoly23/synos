@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,13 @@ interface NavbarProps {
 
 export function Navbar({ config, logoUrl }: NavbarProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [isHidden, setIsHidden] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 	const [isMounted, setIsMounted] = useState(false);
+	const lastScrollY = useRef(0);
+	const router = useRouter();
+	const pathname = usePathname();
+	const [menuValue, setMenuValue] = useState("");
 	const { data: navigationData } = useNavigation();
 	const { variant } = useNavbarVariant();
 
@@ -45,11 +51,23 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 
 	useEffect(() => {
 		const handleScroll = () => {
-			setIsScrolled(window.scrollY > 20);
+			const currentY = window.scrollY;
+			setIsScrolled(currentY > 20);
+
+			if (currentY > 60) {
+				setIsHidden(currentY > lastScrollY.current);
+			} else {
+				setIsHidden(false);
+			}
+			lastScrollY.current = currentY;
 		};
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+	useEffect(() => {
+		setMenuValue("");
+	}, [pathname]);
 
 	if (!isMounted) {
 		return (
@@ -78,7 +96,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 
 	return (
 		<div>
-			<div className="fixed top-3 sm:top-6 left-0 z-50 w-full">
+			<div className={`fixed top-3 sm:top-6 left-0 z-50 w-full transition-transform duration-300 ${isHidden ? "-translate-y-[calc(100%+12px)] lg:translate-y-0" : "translate-y-0"}`}>
 				<header className={"_container"}>
 					<nav
 						className={`py-1.5 sm:py-2 transition-all backdrop-blur-xl duration-300 rounded-full border px-2 sm:px-3 bg-secondary/70 shadow-lg ${
@@ -95,7 +113,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 
 							{/* Desktop Nav */}
 							<div className="hidden lg:flex items-center justify-center flex-1">
-								<NavigationMenu>
+								<NavigationMenu value={menuValue} onValueChange={setMenuValue}>
 									<NavigationMenuList>
 										{mainNavNew.map((item) => (
 											<NavigationMenuItem key={item.title}>
@@ -109,11 +127,12 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
 															)}
+																onClick={() => router.push(item.href)}
 														>
 																{item.title}
 														</NavigationMenuTrigger>
-														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]!">
-															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-sm max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
+														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]! rounded-2xl! overflow-hidden!">
+															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-2xl max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
 																{item.isTechnologyMenu ? (
 																	/* UTRUSTNING: DB technology groups */
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
@@ -122,6 +141,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																				<Link
 																					href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
 																					className="text-sm font-bold text-primary hover:underline"
+																					onClick={() => setMenuValue("")}
 																				>
 																					{tech.name}
 																				</Link>
@@ -131,6 +151,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																							<Link
 																								href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																								className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
+																								onClick={() => setMenuValue("")}
 																							>
 																								{product.title}
 																							</Link>
@@ -154,6 +175,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																				<Link
 																					href={`/klinikutrustning/${category.slug}`}
 																					className="text-sm font-bold text-primary hover:underline"
+																					onClick={() => setMenuValue("")}
 																				>
 																					{category.name}
 																				</Link>
@@ -164,6 +186,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																								<Link
 																									href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
 																									className="block text-sm text-slate-600 hover:text-secondary transition-colors line-clamp-1 hover:underline"
+																									onClick={() => setMenuValue("")}
 																								>
 																									{product.title}
 																								</Link>

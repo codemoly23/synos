@@ -24,6 +24,8 @@ interface ProductContentProps {
 	baseLabel?: string;
 	/** Optional extra breadcrumb items to prepend before the product title */
 	parentBreadcrumbs?: BreadcrumbItem[];
+	contactPhone?: string;
+	contactEmail?: string;
 }
 
 /**
@@ -35,6 +37,8 @@ export function ProductContent({
 	basePath = "/produkter",
 	baseLabel = "Produkter",
 	parentBreadcrumbs,
+	contactPhone,
+	contactEmail,
 }: ProductContentProps) {
 	const primaryImage = product.overviewImage;
 
@@ -264,6 +268,11 @@ export function ProductContent({
 					productId={product.id}
 					productSlug={product.slug}
 					categoryName={baseLabel}
+					purchaseTitle={product.purchaseInfo?.title}
+					purchaseDescription={product.purchaseInfo?.description}
+					productImage={product.overviewImage}
+					contactPhone={contactPhone}
+					contactEmail={contactEmail}
 				/>
 			</div>
 

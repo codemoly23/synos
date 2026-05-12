@@ -5,6 +5,7 @@ import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { productRepository } from "@/lib/repositories/product.repository";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import type { ProductType } from "@/types";
 
 /**
@@ -192,7 +193,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 		notFound();
 	}
 
-	const product = await getProduct(slug);
+	const [product, contactInfo] = await Promise.all([
+		getProduct(slug),
+		getContactInfo(),
+	]);
 
 	if (!product) {
 		notFound();
@@ -221,6 +225,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 					{ label: "Kategori", href: "/kategori" },
 					{ label: category.name, href: `/klinikutrustning/${category.slug}` },
 				]}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
 			/>
 		</>
 	);

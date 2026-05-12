@@ -65,12 +65,12 @@ export function MobileBottomNav() {
 		<>
 			{/* Floating Bottom Navigation - Mobile Only */}
 			<nav
-				className="fixed bottom-4 w-full left-0 px-3  z-50 md:hidden"
+				className="fixed bottom-0 w-full left-0 z-50 md:hidden"
 				aria-label="Mobile navigation"
 			>
 				{/* Outer container with dark bg matching top navbar */}
 				<div className={cn(
-					"relative backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] overflow-hidden transition-colors duration-300",
+					"relative backdrop-blur-xl rounded-t-4xl shadow-[0_-4px_32px_rgba(0,0,0,0.20)] overflow-hidden transition-colors duration-300",
 					nearFooter
 						? "bg-white/90 border border-slate-200"
 						: "bg-secondary/70 border border-secondary/50"
@@ -79,7 +79,7 @@ export function MobileBottomNav() {
 					<div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent pointer-events-none" />
 
 					{/* Navigation items container */}
-					<div className="relative flex items-center justify-evenly px-1 py-2">
+					<div className="relative flex items-center justify-evenly px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
 						{/* Animated active indicator - slides smoothly */}
 						<motion.div
 							className="absolute top-2 bottom-2 bg-white/10 rounded-xl"

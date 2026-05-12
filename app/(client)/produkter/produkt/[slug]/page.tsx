@@ -4,6 +4,7 @@ import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "./product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import type { ProductType } from "@/types";
 
 interface ProductPageProps {
@@ -153,7 +154,10 @@ export async function generateMetadata({
  */
 export default async function ProductPage({ params }: ProductPageProps) {
 	const { slug } = await params;
-	const product = await getProduct(slug);
+	const [product, contactInfo] = await Promise.all([
+		getProduct(slug),
+		getContactInfo(),
+	]);
 
 	if (!product) {
 		notFound();
@@ -174,7 +178,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 			))}
 
 			{/* Client Component with all product data */}
-			<ProductContent product={product} />
+			<ProductContent
+				product={product}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
 		</>
 	);
 }
