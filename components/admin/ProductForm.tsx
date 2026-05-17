@@ -375,6 +375,7 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 		fields: [
 			"description",
 			"productDescription",
+			"additionalDescription",
 			"hiddenDescription",
 			"seoAccordions",
 			"qa",
@@ -412,6 +413,7 @@ const FIELD_LABELS: Record<string, string> = {
 	shortDescription: "Short Description",
 	description: "Description",
 	productDescription: "Extended Description",
+	additionalDescription: "Additional Description (above FAQ)",
 	hiddenDescription: "Hidden Description",
 	seoAccordions: "SEO Accordions",
 	categories: "Categories",
@@ -727,6 +729,8 @@ export function ProductForm({
 			description: product?.description || "",
 			shortDescription: product?.shortDescription || "",
 			productDescription: product?.productDescription || "",
+			additionalDescription: product?.additionalDescription || "",
+			additionalDescriptionTitle: product?.additionalDescriptionTitle || "",
 			hiddenDescription: product?.hiddenDescription || "",
 			benefits: product?.benefits || [],
 			certifications: product?.certifications || [],
@@ -1391,6 +1395,55 @@ export function ProductForm({
 											})
 										}
 										placeholder="Enter extended product description..."
+										variant={"advanceFull"}
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Additional Description (shown between About and FAQ) */}
+								<div className="space-y-2">
+									<Label>
+										Additional Description{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional, displayed between About and FAQ)
+										</span>
+									</Label>
+									<p className="text-sm text-muted-foreground">
+										Extra content shown on the product page in its own
+										card, between &quot;Om Produkten&quot; and the FAQ
+										section.
+									</p>
+
+									<Label className="pt-2">
+										Section Heading{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional)
+										</span>
+									</Label>
+									<Input
+										value={watch("additionalDescriptionTitle") || ""}
+										onChange={(e) =>
+											setValue(
+												"additionalDescriptionTitle",
+												e.target.value,
+												{ shouldDirty: true }
+											)
+										}
+										placeholder="e.g. Köpguide, Garanti & service…"
+										maxLength={200}
+									/>
+
+									<Label className="pt-2">Content</Label>
+									<TextEditor
+										height="350px"
+										defaultValue={watch("additionalDescription") || ""}
+										onChange={(val) =>
+											setValue("additionalDescription", val, {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Enter additional content shown above the FAQ section..."
 										variant={"advanceFull"}
 									/>
 								</div>
