@@ -4,10 +4,14 @@ import { motion } from "framer-motion";
 
 interface ProductLongDescriptionProps {
 	description: string;
+	title?: string;
+	sectionId?: string;
 }
 
 export function ProductLongDescription({
 	description,
+	title = "Om Produkten",
+	sectionId = "about",
 }: ProductLongDescriptionProps) {
 	return (
 		<motion.section
@@ -16,11 +20,13 @@ export function ProductLongDescription({
 			viewport={{ once: true, margin: "-100px" }}
 			transition={{ duration: 0.6, ease: "easeOut" }}
 			className="mb-12"
-			id="about"
+			id={sectionId}
 		>
-			<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
-				Om Produkten
-			</h2>
+			{title && (
+				<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
+					{title}
+				</h2>
+			)}
 			<div className="p-4 sm:p-6 md:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
 				<div className="prose prose-slate prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 overflow-wrap-anywhere">
 					<div

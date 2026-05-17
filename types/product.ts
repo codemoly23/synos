@@ -48,6 +48,8 @@ export type ProductType = {
 	description: string;
 	shortDescription: string;
 	productDescription: string | null;
+	additionalDescription: string | null;
+	additionalDescriptionTitle: string | null;
 	hiddenDescription: string | null;
 	benefits: Array<string> | null;
 	certifications: Array<string> | null;

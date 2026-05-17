@@ -24,8 +24,54 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
+import { ProductFAQ } from "@/components/products/ProductFAQ";
+import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
+
+/**
+ * Fallback FAQ content for the bottom of /produkter.
+ * TODO: Replace with admin-editable content from site settings.
+ */
+const PRODUKTER_FAQ_TITLE = "Vanliga frågor";
+const PRODUKTER_FAQS = [
+	{
+		_id: "produkter-faq-1",
+		question: "Är alla era produkter MDR-certifierade?",
+		answer:
+			"<p>Ja, samtliga produkter i vårt sortiment är certifierade enligt EU:s medicintekniska förordning (MDR). Detta garanterar att utrustningen uppfyller de högsta säkerhets- och kvalitetskraven inom medicinteknik.</p>",
+		visible: true,
+	},
+	{
+		_id: "produkter-faq-2",
+		question: "Vilken garanti ingår vid köp av en maskin?",
+		answer:
+			"<p>Vi erbjuder 2 års full garanti på alla komponenter. Dessutom ingår teknisk support inom 48 timmar samt tillgång till ersättningsmaskin under serviceperioder för att minimera driftstopp i din verksamhet.</p>",
+		visible: true,
+	},
+	{
+		_id: "produkter-faq-3",
+		question: "Kan jag leasa eller hyra utrustningen?",
+		answer:
+			"<p>Ja, vi erbjuder flexibla finansieringsalternativ – köp, leasing eller hyra. Vårt team hjälper dig att räkna fram den lösning som passar bäst för din ekonomi och dina långsiktiga mål.</p>",
+		visible: true,
+	},
+	{
+		_id: "produkter-faq-4",
+		question: "Får jag utbildning när jag köper en maskin?",
+		answer:
+			"<p>Ja, komplett operatörsutbildning för upp till 2 personer ingår vid varje maskinköp. Utbildningen sker på plats hos er eller hos oss, och vi tillhandahåller även kontinuerliga uppdateringar och behandlingsprotokoll.</p>",
+		visible: true,
+	},
+	{
+		_id: "produkter-faq-5",
+		question: "Hur snabbt får jag svar på en förfrågan?",
+		answer:
+			"<p>Vi återkommer alltid inom 24 timmar på alla förfrågningar. För akuta servicefrågor finns vår tekniska support tillgänglig dygnet runt och kan vara på plats inom 48 arbetstimmar.</p>",
+		visible: true,
+	},
+];
 /**
  * Products Page
  *
@@ -313,11 +359,12 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories, techGroups, selectedGroup] = await Promise.all([
+	const [products, categories, techGroups, selectedGroup, contactInfo] = await Promise.all([
 		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
 		selectedTech ? getTechnologyGroupByName(selectedTech).catch(() => null) : Promise.resolve(null),
+		getContactInfo().catch(() => ({ phone: "", email: "" })),
 	]);
 
 	// Filter products by selected technology (using technologyGroups array on product)
@@ -445,6 +492,38 @@ export default async function ProductsPage({
 				</div>
 			</div>
 			</div>
+
+			{/* Contact form (dark, product-inquiry styling, generic mode) */}
+			<ProductInquiryForm
+				pillLabel={
+					selectedGroup
+						? `${selectedGroup.name.toUpperCase()} FÖRFRÅGAN`
+						: "SYNOS MEDICAL"
+				}
+				purchaseTitle={
+					selectedGroup
+						? `Frågor om ${selectedGroup.name}?`
+						: "Kontakta oss"
+				}
+				purchaseDescription={
+					selectedGroup
+						? `<p>Behöver du hjälp att välja rätt maskin inom ${selectedGroup.name}? Vårt team återkommer inom 24 timmar.</p>`
+						: "<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
+				}
+				categoryName={selectedGroup?.name}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
+
+			{/* FAQ Footer Section (fallback content; admin-editable later) */}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ
+						title={PRODUKTER_FAQ_TITLE}
+						faqs={PRODUKTER_FAQS}
+					/>
+				</div>
+			</section>
 		</div>
 	);
 

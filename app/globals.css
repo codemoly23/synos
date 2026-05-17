@@ -3733,3 +3733,24 @@
 .rdp-day_button:disabled:hover {
   background: transparent !important;
 }
+
+/* ============================================
+   BROWSER TRANSLATION SWAP (Chrome / Edge only)
+   - Default (Swedish source): show .lang-sv, hide .lang-en
+   - When Chrome translates the page it adds
+     `translated-ltr` / `translated-rtl` on <html>
+     → then swap to .lang-en
+   ============================================ */
+.lang-en {
+  display: none;
+}
+
+html.translated-ltr .lang-sv,
+html.translated-rtl .lang-sv {
+  display: none;
+}
+
+html.translated-ltr .lang-en,
+html.translated-rtl .lang-en {
+  display: inline;
+}

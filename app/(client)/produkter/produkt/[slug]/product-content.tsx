@@ -2,13 +2,17 @@
 
 import { ProductType } from "@/types";
 import { Breadcrumb, type BreadcrumbItem } from "@/components/shared/Breadcrumb";
-import { ProductDetailSidebar } from "@/components/products/ProductDetailSidebar";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import { ProductDetailSidebar } from "@/components/products/ProductDetailSidebar";
 import { ProductShareButtons } from "@/components/products/ProductShareButtons";
 import { ProductLongDescription } from "@/components/products/ProductLongDescription";
 import { BeforeAfterShowcase } from "@/components/products/BeforeAfterShowcase";
+import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatureSplit";
+import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
+import { ProductFeatureGrid } from "@/components/products/sections/ProductFeatureGrid";
+import { getProductCustomSections } from "@/lib/data/product-sections";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
@@ -41,6 +45,11 @@ export function ProductContent({
 	contactEmail,
 }: ProductContentProps) {
 	const primaryImage = product.overviewImage;
+	const customSections = getProductCustomSections(
+		product.slug,
+		product.title,
+		primaryImage
+	);
 
 	return (
 		<div className="min-h-screen">
@@ -169,95 +178,101 @@ export function ProductContent({
 				</div>
 			</section>
 
+			{/* Custom Feature Sections (per-product, after hero) */}
+			{customSections && (
+				<div className="py-8 md:py-10 lg:py-12">
+					<ProductFeatureSplit {...customSections.section1} corners="top" />
+					<ProductFeatureImageList
+						{...customSections.section2}
+						corners="middle"
+					/>
+					<ProductFeatureGrid {...customSections.section3} corners="bottom" />
+				</div>
+			)}
+
 			{/* Main Content Section */}
 			<section className="py-12 md:py-16">
 				<div className="_container">
-					<div className="grid gap-8 lg:grid-cols-[1fr_340px] items-start">
-						{/* Main Content */}
-						<article className="min-w-0">
-							{/* Share Button - below image, above Om Produkten */}
-							<div className="mb-6 flex justify-end">
-								<ProductShareButtons
-									productName={product.title}
-									productUrl={`/produkter/produkt/${product.slug}`}
-								/>
+					<article className="min-w-0">
+						{/* Share Button - below image, above Om Produkten */}
+						<div className="mb-6 flex justify-end">
+							<ProductShareButtons
+								productName={product.title}
+								productUrl={`/produkter/produkt/${product.slug}`}
+							/>
+						</div>
+
+						{/* Long Description Section */}
+						{product.productDescription && (
+							<ProductLongDescription
+								description={product.productDescription}
+							/>
+						)}
+
+						{/* FAQ Section - Right after description */}
+						{product.qa && product.qa.length > 0 && (
+							<div className="mb-12">
+								<ProductFAQ faqs={product.qa} title={product.faqTitle} />
 							</div>
+						)}
 
-							{/* Long Description Section */}
-							{product.productDescription && (
-								<ProductLongDescription
-									description={product.productDescription}
-								/>
-							)}
-
-							{/* FAQ Section - Right after description */}
-							{product.qa && product.qa.length > 0 && (
-								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
-								</div>
-							)}
-
-							{/* Before & After Section */}
-							{product.beforeAfterImages &&
-								product.beforeAfterImages.length > 0 && (
-									<BeforeAfterShowcase
-										pairs={product.beforeAfterImages}
-										productName={product.title}
-									/>
-								)}
-
-							{/* Specifications Section */}
-							{product?.techSpecifications &&
-								product?.techSpecifications?.length > 0 && (
-									<motion.section
-										initial={{ opacity: 0, y: 30 }}
-										whileInView={{ opacity: 1, y: 0 }}
-										viewport={{ once: true, margin: "-100px" }}
-										transition={{ duration: 0.6 }}
-										className="mb-12"
-										id="specifications"
-									>
-										<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
-											Tekniska Specifikationer
-										</h2>
-										<div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
-											<div className="divide-y divide-slate-100">
-												{product?.techSpecifications?.map(
-													(spec, index) => (
-														<div
-															key={index}
-															className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 px-6 hover:bg-slate-50/80 transition-colors duration-200 gap-1 sm:gap-4"
-														>
-															<span className="font-medium text-foreground">
-																{spec.title}
-															</span>
-															<span className="text-muted-foreground sm:text-right">
-																{spec.description}
-															</span>
-														</div>
-													)
-												)}
-											</div>
-										</div>
-									</motion.section>
-								)}
-						</article>
-
-						{/* Sidebar - Sticky */}
-						<aside className="sticky top-28 self-start space-y-4">
+						{/* Sidebar - mobile only, below FAQ */}
+						<div className="md:hidden mb-12">
 							<ProductDetailSidebar
-								brochureUrl={product.documentation}
-								videoUrl={product.youtubeUrl}
-								benefits={product.benefits}
 								certifications={product.certifications}
-								onScrollToForm={() =>
+								onScrollToForm={() => {
 									document
 										.getElementById("product-inquiry-form")
-										?.scrollIntoView({ behavior: "smooth" })
-								}
+										?.scrollIntoView({ behavior: "smooth", block: "start" });
+								}}
 							/>
-						</aside>
-					</div>
+						</div>
+
+						{/* Before & After Section */}
+						{product.beforeAfterImages &&
+							product.beforeAfterImages.length > 0 && (
+								<BeforeAfterShowcase
+									pairs={product.beforeAfterImages}
+									productName={product.title}
+								/>
+							)}
+
+						{/* Specifications Section */}
+						{product?.techSpecifications &&
+							product?.techSpecifications?.length > 0 && (
+								<motion.section
+									initial={{ opacity: 0, y: 30 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true, margin: "-100px" }}
+									transition={{ duration: 0.6 }}
+									className="mb-12"
+									id="specifications"
+								>
+									<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
+										Tekniska Specifikationer
+									</h2>
+									<div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+										<div className="divide-y divide-slate-100">
+											{product?.techSpecifications?.map(
+												(spec, index) => (
+													<div
+														key={index}
+														className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 px-6 hover:bg-slate-50/80 transition-colors duration-200 gap-1 sm:gap-4"
+													>
+														<span className="font-medium text-foreground">
+															{spec.title}
+														</span>
+														<span className="text-muted-foreground sm:text-right">
+															{spec.description}
+														</span>
+													</div>
+												)
+											)}
+										</div>
+									</div>
+								</motion.section>
+							)}
+					</article>
 				</div>
 			</section>
 
