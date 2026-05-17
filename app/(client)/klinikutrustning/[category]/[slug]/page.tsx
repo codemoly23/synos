@@ -219,6 +219,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 			{/* Product Content with kategori navigation */}
 			<ProductContent
 				product={product}
+				hardcodedHero={true}
 				basePath={`/klinikutrustning/${category.slug}`}
 				baseLabel={category.name}
 				parentBreadcrumbs={[
