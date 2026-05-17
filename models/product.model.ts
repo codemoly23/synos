@@ -63,6 +63,8 @@ export interface IProduct extends Document {
 	description: string; // Rich HTML
 	shortDescription?: string;
 	productDescription?: string; // Second rich HTML block
+	additionalDescription?: string; // Third rich HTML block, shown between About and FAQ
+	additionalDescriptionTitle?: string; // Optional heading for additional description
 	hiddenDescription?: string; // Hidden description (not shown on product page)
 	benefits: string[]; // Array of paragraphs or simple text blocks
 	certifications: string[]; // Tags
@@ -257,6 +259,16 @@ const ProductSchema = new Schema<IProduct>(
 		productDescription: {
 			type: String,
 			default: "",
+		},
+		additionalDescription: {
+			type: String,
+			default: "",
+		},
+		additionalDescriptionTitle: {
+			type: String,
+			default: "",
+			trim: true,
+			maxlength: [200, "Additional description title cannot exceed 200 characters"],
 		},
 		hiddenDescription: {
 			type: String,

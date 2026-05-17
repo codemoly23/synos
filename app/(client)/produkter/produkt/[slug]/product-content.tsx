@@ -9,6 +9,10 @@ import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { ProductShareButtons } from "@/components/products/ProductShareButtons";
 import { ProductLongDescription } from "@/components/products/ProductLongDescription";
 import { BeforeAfterShowcase } from "@/components/products/BeforeAfterShowcase";
+import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatureSplit";
+import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
+import { ProductFeatureGrid } from "@/components/products/sections/ProductFeatureGrid";
+import { getProductCustomSections } from "@/lib/data/product-sections";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
@@ -44,6 +48,11 @@ export function ProductContent({
 	hardcodedHero = false,
 }: ProductContentProps) {
 	const primaryImage = product.overviewImage;
+	const customSections = getProductCustomSections(
+		product.slug,
+		product.title,
+		primaryImage
+	);
 
 	return (
 		<div className="min-h-screen">
@@ -293,6 +302,18 @@ export function ProductContent({
 				</section>
 			)}
 
+			{/* Custom Feature Sections (per-product, after hero) */}
+			{customSections && (
+				<div className="py-8 md:py-10 lg:py-12">
+					<ProductFeatureSplit {...customSections.section1} corners="top" />
+					<ProductFeatureImageList
+						{...customSections.section2}
+						corners="middle"
+					/>
+					<ProductFeatureGrid {...customSections.section3} corners="bottom" />
+				</div>
+			)}
+
 			{/* Main Content Section */}
 			<section className="py-12 md:py-16">
 				<div className="_container">
@@ -366,6 +387,18 @@ export function ProductContent({
 								</div>
 							)}
 
+							{/* Sidebar - mobile only, below FAQ */}
+							<div className="md:hidden mb-12">
+								<ProductDetailSidebar
+									certifications={product.certifications}
+									onScrollToForm={() => {
+										document
+											.getElementById("product-inquiry-form")
+											?.scrollIntoView({ behavior: "smooth", block: "start" });
+									}}
+								/>
+							</div>
+
 							{/* Before & After Section */}
 							{product.beforeAfterImages &&
 								product.beforeAfterImages.length > 0 && (
@@ -412,8 +445,8 @@ export function ProductContent({
 								)}
 						</article>
 
-						{/* Sidebar - Sticky */}
-						<aside className="sticky top-28 self-start space-y-4">
+						{/* Sidebar - Sticky (Desktop) */}
+						<aside className="sticky top-28 self-start space-y-4 hidden md:block">
 							<ProductDetailSidebar
 								brochureUrl={product.documentation}
 								videoUrl={product.youtubeUrl}

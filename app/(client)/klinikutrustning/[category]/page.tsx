@@ -22,10 +22,57 @@ import {
 } from "@/components/ui/drawer";
 import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
+import { ProductFAQ } from "@/components/products/ProductFAQ";
+import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import { technologyMap } from "@/config/technology-map";
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
+
+/**
+ * Fallback FAQ content for the category listing pages.
+ * Uses the category name so the same fallback is mildly personalised per page.
+ * TODO: Replace with admin-editable content from the Category model.
+ */
+function buildCategoryFaqs(name: string) {
+	const lower = name.toLowerCase();
+	return [
+		{
+			_id: "cat-faq-1",
+			question: `Vilken maskin passar bäst för ${lower}?`,
+			answer: `<p>Det optimala valet beror på vilken volym ni planerar, vilka hudtyper ni främst behandlar och er befintliga utrustning. Vårt team hjälper dig gärna med en kostnadsfri behovsanalys där vi tar fram ett par alternativ inom ${lower} som passar just din klinik.</p>`,
+			visible: true,
+		},
+		{
+			_id: "cat-faq-2",
+			question: "Är alla maskiner MDR-certifierade?",
+			answer:
+				"<p>Ja. Samtliga produkter vi säljer är certifierade enligt EU:s medicintekniska förordning (MDR). Det innebär att utrustningen uppfyller högt ställda krav på säkerhet, spårbarhet och klinisk evidens.</p>",
+			visible: true,
+		},
+		{
+			_id: "cat-faq-3",
+			question: "Ingår utbildning vid köp?",
+			answer:
+				"<p>Ja, komplett operatörsutbildning för upp till två personer ingår alltid. Utbildningen sker på plats hos er eller hos oss, och vi tillhandahåller även uppdaterade behandlingsprotokoll i takt med att tekniken utvecklas.</p>",
+			visible: true,
+		},
+		{
+			_id: "cat-faq-4",
+			question: "Hur ser garantin och servicen ut?",
+			answer:
+				"<p>Vi erbjuder 2 års full garanti på alla maskiner samt teknisk support inom 48 arbetstimmar. Under längre servicetillfällen kan vi många gånger erbjuda en ersättningsmaskin så att driften kan fortsätta utan avbrott.</p>",
+			visible: true,
+		},
+		{
+			_id: "cat-faq-5",
+			question: "Kan jag boka en demo innan köp?",
+			answer: `<p>Självklart. Vi erbjuder kostnadsfria demonstrationer av våra ${lower}-maskiner – antingen hos oss eller på din klinik. Kontakta oss via formuläret eller telefon så bokar vi in en tid som passar.</p>`,
+			visible: true,
+		},
+	];
+}
 
 /**
  * Product Category Page
@@ -415,7 +462,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const products = await getProductsByCategory(category._id.toString());
+	const [products, contactInfo] = await Promise.all([
+		getProductsByCategory(category._id.toString()),
+		getContactInfo().catch(() => ({ phone: "", email: "" })),
+	]);
 
 	const heroSubtitle = category.description
 		? stripHtml(category.description).slice(0, 300)
@@ -689,6 +739,26 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 				</div>
 			</div>
 			</div>
+
+			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
+			<ProductInquiryForm
+				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
+				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
+				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
+				categoryName={category.name}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
+
+			{/* FAQ Footer Section (fallback content; per-category content via admin panel later) */}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ
+						title={`Vanliga frågor om ${category.name.toLowerCase()}`}
+						faqs={buildCategoryFaqs(category.name)}
+					/>
+				</div>
+			</section>
 		</div>
 	);
 }

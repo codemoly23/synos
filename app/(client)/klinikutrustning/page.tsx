@@ -23,8 +23,54 @@ import {
 import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
 import { technologyMap } from "@/config/technology-map";
 import { ImageComponent } from "@/components/common/image-component";
+import { ProductFAQ } from "@/components/products/ProductFAQ";
+import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
+
+/**
+ * Fallback FAQ content for the bottom of /klinikutrustning.
+ * TODO: Replace with admin-editable content from site settings.
+ */
+const KLINIK_FAQ_TITLE = "Vanliga frågor om klinikutrustning";
+const KLINIK_FAQS = [
+	{
+		_id: "klinik-faq-1",
+		question: "Vilken laser passar bäst för min klinik?",
+		answer:
+			"<p>Valet av laser beror på vilka behandlingar du vill erbjuda och din målgrupp. För hårborttagning passar alexandrit- och Nd:YAG-lasrar bäst, medan tatueringsborttagning kräver Q-switched-teknik. Kontakta oss för en kostnadsfri behovsanalys där vi hjälper dig att hitta rätt utrustning.</p>",
+		visible: true,
+	},
+	{
+		_id: "klinik-faq-2",
+		question: "Är det säkert att använda laserutrustning på alla hudtyper?",
+		answer:
+			"<p>Ja, men det kräver rätt utrustning och rätt inställningar. Våra maskiner är utvecklade för att kunna anpassas till samtliga hudtyper enligt Fitzpatrick-skalan. Vid operatörsutbildningen får ni komplett kunskap om hur ni säkert behandlar olika hudtyper.</p>",
+		visible: true,
+	},
+	{
+		_id: "klinik-faq-3",
+		question: "Hur lång är leveranstiden på en ny maskin?",
+		answer:
+			"<p>Leveranstiden varierar mellan 2–6 veckor beroende på modell och tillgänglighet i lager. Vid akut behov kan vi i många fall ordna ersättningsmaskin under tiden. Kontakta oss för aktuella leveranstider.</p>",
+		visible: true,
+	},
+	{
+		_id: "klinik-faq-4",
+		question: "Erbjuder ni service och reparationer?",
+		answer:
+			"<p>Ja, vi har egen serviceavdelning med certifierade tekniker. Vi erbjuder både planerat underhåll och akuta reparationer, med en garanterad responstid på 48 arbetstimmar. Under serviceperioder kan ni få tillgång till en ersättningsmaskin.</p>",
+		visible: true,
+	},
+	{
+		_id: "klinik-faq-5",
+		question: "Kan jag se en maskin innan jag köper?",
+		answer:
+			"<p>Absolut. Vi erbjuder kostnadsfria demonstrationer både hos er klinik och på vårt huvudkontor. Vid demonstrationen får ni testa maskinen, ställa frågor till våra experter och få en personlig ROI-beräkning för din verksamhet.</p>",
+		visible: true,
+	},
+];
 
 /**
  * Kategori (Category) Main Listing Page
@@ -274,9 +320,10 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 }
 
 export default async function KategoriPage() {
-	const [categories, products] = await Promise.all([
+	const [categories, products, contactInfo] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
+		getContactInfo().catch(() => ({ phone: "", email: "" })),
 	]);
 
 	// Create a map of category ID to slug for product cards
@@ -526,6 +573,22 @@ export default async function KategoriPage() {
 					</div>
 				</div>
 			</div>
+
+			{/* Contact form (dark, product-inquiry styling, generic mode) */}
+			<ProductInquiryForm
+				pillLabel="SYNOS MEDICAL"
+				purchaseTitle="Kontakta oss"
+				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
+
+			{/* FAQ Footer Section (fallback content; admin-editable later) */}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ title={KLINIK_FAQ_TITLE} faqs={KLINIK_FAQS} />
+				</div>
+			</section>
 		</div>
 	);
 }

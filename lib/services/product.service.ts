@@ -419,6 +419,9 @@ class ProductService {
 				productDescription: data.productDescription
 					? sanitizeHtml(data.productDescription)
 					: "",
+				additionalDescription: data.additionalDescription
+					? sanitizeHtml(data.additionalDescription)
+					: "",
 				hiddenDescription: data.hiddenDescription
 					? sanitizeHtml(data.hiddenDescription)
 					: "",
@@ -564,6 +567,11 @@ class ProductService {
 			if (data.productDescription !== undefined) {
 				sanitizedData.productDescription = sanitizeHtml(
 					data.productDescription
+				);
+			}
+			if (data.additionalDescription !== undefined) {
+				sanitizedData.additionalDescription = sanitizeHtml(
+					data.additionalDescription
 				);
 			}
 			if (data.hiddenDescription !== undefined) {
@@ -955,6 +963,8 @@ class ProductService {
 			description: product.description,
 			shortDescription: product.shortDescription,
 			productDescription: product.productDescription,
+			additionalDescription: product.additionalDescription,
+			additionalDescriptionTitle: product.additionalDescriptionTitle,
 			benefits: [...product.benefits],
 			certifications: [...product.certifications],
 			treatments: [...product.treatments],

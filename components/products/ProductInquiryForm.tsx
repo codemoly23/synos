@@ -24,28 +24,38 @@ import { cn } from "@/lib/utils/cn";
 import { z } from "zod";
 
 interface ProductInquiryFormProps {
-	productName: string;
-	productId: string;
-	productSlug: string;
+	/** Product context — when omitted, the form runs in generic "contact" mode */
+	productName?: string;
+	productId?: string;
+	productSlug?: string;
 	categoryName?: string;
+	/** Heading shown above the form (left column). Falls back per mode. */
 	purchaseTitle?: string;
+	/** Rich-HTML description shown under the heading. */
 	purchaseDescription?: string;
+	/** Image rendered below the contact details (left column). */
 	productImage?: string;
 	contactPhone?: string;
 	contactEmail?: string;
+	/** Override the small pill label above the form (e.g. "SYNOS MEDICAL"). */
+	pillLabel?: string;
 }
 
 const clientFormSchema = z.object({
-	fullName: z
+	firstName: z
 		.string()
-		.min(2, "Namnet måste vara minst 2 tecken")
-		.max(100, "Namnet får inte överstiga 100 tecken"),
+		.min(1, "Förnamn är obligatoriskt")
+		.max(50, "Förnamn får inte överstiga 50 tecken"),
+	lastName: z
+		.string()
+		.min(1, "Efternamn är obligatoriskt")
+		.max(50, "Efternamn får inte överstiga 50 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
 		.max(20, "Telefonnummer får inte överstiga 20 siffror"),
-	companyName: z.string().min(1, "Klinik / företag är obligatoriskt"),
+	companyName: z.string().min(1, "Org. nummer är obligatoriskt"),
 	message: z
 		.string()
 		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
@@ -53,9 +63,9 @@ const clientFormSchema = z.object({
 	gdprConsent: z.literal(true, {
 		message: "Du måste godkänna integritetspolicyn",
 	}),
-	productId: z.string(),
-	productName: z.string(),
-	productSlug: z.string(),
+	productId: z.string().optional(),
+	productName: z.string().optional(),
+	productSlug: z.string().optional(),
 });
 
 type FormData = z.infer<typeof clientFormSchema>;
@@ -73,7 +83,16 @@ export function ProductInquiryForm({
 	productImage,
 	contactPhone,
 	contactEmail,
+	pillLabel,
 }: ProductInquiryFormProps) {
+	// "generic" = no product context (used on listing/category pages)
+	const isGeneric = !productId;
+	const resolvedPillLabel =
+		pillLabel ?? (productName ? `${productName.toUpperCase()} DEMO` : "SYNOS MEDICAL");
+	const resolvedTitle =
+		purchaseTitle ||
+		(productName ? `Intresserad av ${productName}?` : "Kontakta oss");
+	const successContext = productName || "din förfrågan";
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
@@ -87,15 +106,16 @@ export function ProductInquiryForm({
 	} = useForm<FormData>({
 		resolver: zodResolver(clientFormSchema),
 		defaultValues: {
-			fullName: "",
+			firstName: "",
+			lastName: "",
 			email: "",
 			phone: "",
 			companyName: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
-			productId,
-			productName,
-			productSlug,
+			productId: productId ?? "",
+			productName: productName ?? "",
+			productSlug: productSlug ?? "",
 		},
 	});
 
@@ -111,8 +131,14 @@ export function ProductInquiryForm({
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					type: "product_inquiry",
+					type: isGeneric ? "contact" : "product_inquiry",
 					...data,
+					fullName: `${data.firstName} ${data.lastName}`.trim(),
+					subject: isGeneric
+						? categoryName
+							? `Förfrågan: ${categoryName}`
+							: "Allmän förfrågan"
+						: undefined,
 					pageUrl: window.location.href,
 				}),
 			});
@@ -177,7 +203,7 @@ export function ProductInquiryForm({
 							Tack för din förfrågan!
 						</h2>
 						<p className="text-lg text-zinc-400 mb-6">
-							Vi har mottagit din förfrågan gällande {productName} och
+							Vi har mottagit {successContext} och
 							återkommer till dig inom 24 timmar.
 						</p>
 						<Button
@@ -209,7 +235,7 @@ export function ProductInquiryForm({
 					<div className="space-y-8">
 						<div className="space-y-4">
 							<h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-								{purchaseTitle || `Intresserad av ${productName}?`}
+								{resolvedTitle}
 							</h2>
 							<div className="w-10 h-0.5" style={{ background: BRAND }} />
 							{purchaseDescription ? (
@@ -295,7 +321,7 @@ export function ProductInquiryForm({
 								/>
 								<ImageComponent
 									src={productImage}
-									alt={productName}
+									alt={productName ?? "Synos Medical"}
 									width={0}
 									height={0}
 									sizes="(max-width: 1024px) 0vw, 45vw"
@@ -309,7 +335,7 @@ export function ProductInquiryForm({
 					{/* Right — Form Card */}
 <div className="relative min-w-0 rounded-[24px] p-[2px] overflow-hidden">
 
-	{/* ───────────────── CINEMATIC LIGHT SYSTEM ───────────────── */}
+	{/* ───────────────── REFINED CINEMATIC LIGHT SYSTEM ───────────────── */}
 	<div className="absolute inset-0 rounded-[24px] pointer-events-none">
 
 		{/* BASE LIGHT FIELD */}
@@ -319,196 +345,203 @@ export function ProductInquiryForm({
 				background: `
 					linear-gradient(
 						135deg,
-						rgba(${BRAND_RGB},0.14) 0%,
-						rgba(${BRAND_RGB},0.06) 30%,
-						rgba(${BRAND_RGB},0.02) 65%,
+						rgba(${BRAND_RGB},0.10) 0%,
+						rgba(${BRAND_RGB},0.04) 30%,
+						rgba(${BRAND_RGB},0.01) 65%,
 						transparent 100%
 					)
 				`,
 			}}
 		/>
 
-		{/* LEFT LIGHT SOURCE */}
+		{/* TOP-LEFT CORNER WARM GLOW BLOOM */}
 		<div
-			className="absolute left-0 top-0 w-[200px] h-[60%]"
+			className="absolute left-0 top-0 w-[120px] h-[60%]"
 			style={{
 				background: `
 					radial-gradient(
-						ellipse at top left,
-						rgba(${BRAND_RGB},0.92) 0%,
-						rgba(${BRAND_RGB},0.48) 20%,
-						rgba(${BRAND_RGB},0.20) 45%,
-						rgba(${BRAND_RGB},0.06) 70%,
+						ellipse 52% 95% at 0% 25%,
+						rgba(${BRAND_RGB},0.95) 0%,
+						rgba(${BRAND_RGB},0.85) 12%,
+						rgba(${BRAND_RGB},0.65) 28%,
+						rgba(${BRAND_RGB},0.40) 48%,
+						rgba(${BRAND_RGB},0.18) 70%,
+						rgba(${BRAND_RGB},0.04) 88%,
 						transparent 100%
 					)
 				`,
-				transform: "translate(-38%, -5%)",
+				transform: "translate(-20%, 0)",
 				filter: `
-					blur(44px)
-					drop-shadow(0 0 40px rgba(${BRAND_RGB},0.30))
-					drop-shadow(0 0 90px rgba(${BRAND_RGB},0.14))
+					blur(28px)
+					drop-shadow(0 0 48px rgba(${BRAND_RGB},0.70))
+					drop-shadow(0 0 100px rgba(${BRAND_RGB},0.35))
+					drop-shadow(0 0 160px rgba(${BRAND_RGB},0.15))
 				`,
 			}}
 		/>
 
-		{/* LEFT BORDER — TOP ORIGIN ENERGY STRIP */}
-<div
-	className="absolute left-0 top-0 h-full w-[10px]"
-	style={{
-		background: `
-			linear-gradient(
-				to bottom,
+		{/* TIGHT TOP-LEFT CORE ACCENT */}
+		<div
+			className="absolute left-0 top-0 w-[50px] h-[28%]"
+			style={{
+				background: `
+					radial-gradient(
+						ellipse 38% 98% at 0% 6%,
+						rgba(${BRAND_RGB},0.98) 0%,
+						rgba(${BRAND_RGB},0.88) 20%,
+						rgba(${BRAND_RGB},0.50) 48%,
+						rgba(${BRAND_RGB},0.18) 76%,
+						transparent 100%
+					)
+				`,
+				transform: "translate(-10%, 0)",
+				filter: `
+					blur(14px)
+					drop-shadow(0 0 32px rgba(${BRAND_RGB},0.80))
+					drop-shadow(0 0 64px rgba(${BRAND_RGB},0.40))
+				`,
+			}}
+		/>
 
-				rgba(${BRAND_RGB},1)    0%,
-				rgba(${BRAND_RGB},0.82) 8%,
-				rgba(${BRAND_RGB},0.55) 20%,
-				rgba(${BRAND_RGB},0.30) 38%,
-				rgba(${BRAND_RGB},0.12) 58%,
-				rgba(${BRAND_RGB},0.04) 78%,
-
-				transparent 100%
-			)
-		`,
-
-		filter: `
-			blur(20px)
-			drop-shadow(0 0 80px rgba(${BRAND_RGB},0.65))
-			drop-shadow(0 0 160px rgba(${BRAND_RGB},0.30))
-		`,
-
-		opacity: 0.95,
-		pointerEvents: "none",
-	}}
-/>
+		{/* LEFT BORDER — WARM REFINED LINE */}
+		<div
+			className="absolute left-0 top-0 h-full w-[12px]"
+			style={{
+				background: `
+					linear-gradient(
+						to bottom,
+						rgba(${BRAND_RGB},0.95) 0%,
+						rgba(${BRAND_RGB},0.92) 10%,
+						rgba(${BRAND_RGB},0.85) 22%,
+						rgba(${BRAND_RGB},0.72) 36%,
+						rgba(${BRAND_RGB},0.55) 50%,
+						rgba(${BRAND_RGB},0.38) 64%,
+						rgba(${BRAND_RGB},0.22) 76%,
+						rgba(${BRAND_RGB},0.10) 86%,
+						rgba(${BRAND_RGB},0.03) 94%,
+						transparent 100%
+					)
+				`,
+				filter: `
+					blur(9px)
+					drop-shadow(0 0 28px rgba(${BRAND_RGB},0.65))
+					drop-shadow(0 0 65px rgba(${BRAND_RGB},0.32))
+					drop-shadow(0 0 110px rgba(${BRAND_RGB},0.15))
+				`,
+				opacity: 1,
+				pointerEvents: "none",
+			}}
+		/>
 
 		{/* SOFT LEFT HAZE */}
 		<div
-			className="absolute left-0 top-0 h-[65%] w-[28px]"
+			className="absolute left-0 top-0 h-[85%] w-[26px]"
 			style={{
 				background: `
 					linear-gradient(
 						to bottom,
-						rgba(${BRAND_RGB},0.35) 0%,
-						rgba(${BRAND_RGB},0.22) 30%,
-						rgba(${BRAND_RGB},0.08) 65%,
+						rgba(${BRAND_RGB},0.28) 0%,
+						rgba(${BRAND_RGB},0.22) 20%,
+						rgba(${BRAND_RGB},0.15) 40%,
+						rgba(${BRAND_RGB},0.08) 60%,
+						rgba(${BRAND_RGB},0.03) 80%,
 						transparent 100%
 					)
 				`,
-				filter: "blur(18px)",
-				opacity: 0.75,
-			}}
-		/>
-
-		{/* INNER WHITE SPECULAR */}
-		<div
-			className="absolute left-[1px] top-0 h-[55%] w-[1px]"
-			style={{
-				background: `
-					linear-gradient(
-						to bottom,
-						rgba(255,255,255,0.75) 0%,
-						rgba(255,255,255,0.40) 20%,
-						rgba(255,255,255,0.12) 55%,
-						transparent 100%
-					)
-				`,
+				filter: "blur(20px)",
 				opacity: 0.70,
-				filter: "blur(0.3px)",
 			}}
 		/>
 
-		{/* TOP FADE (NOW CONNECTED TO MID LIGHT) */}
+		{/* TOP RIGHT ACCENT GLOW */}
 		<div
-			className="absolute top-0 right-0 w-[3px] h-[45%]"
+			className="absolute right-0 w-[140px] h-[75%]"
 			style={{
+				top: "55%",
+				transform: "translate(20%, -50%)",
 				background: `
-					linear-gradient(
-						to bottom,
-						rgba(${BRAND_RGB},0.12) 0%,
-						rgba(${BRAND_RGB},0.35) 40%,
-						rgba(${BRAND_RGB},0.75) 70%,
-						rgba(${BRAND_RGB},0.95) 100%
-					)
-				`,
-				filter: "blur(1.2px)",
-			}}
-		/>
-
-		
-{/* RIGHT BORDER — TRUE MID-ORIGIN ENERGY STRIP */}
-<div
-	className="absolute right-0 top-0 h-full w-[10px]"
-	style={{
-		background: `
-			linear-gradient(
-				to bottom,
-
-				transparent 0%,
-
-				rgba(${BRAND_RGB},0.15) 20%,
-				rgba(${BRAND_RGB},0.45) 35%,
-
-				rgba(${BRAND_RGB},1) 50%,
-
-				rgba(${BRAND_RGB},0.45) 65%,
-				rgba(${BRAND_RGB},0.15) 80%,
-
-				transparent 100%
-			)
-		`,
-
-		filter: `
-			blur(22px)
-			drop-shadow(0 0 80px rgba(${BRAND_RGB},0.75))
-			drop-shadow(0 0 160px rgba(${BRAND_RGB},0.35))
-		`,
-
-		opacity: 0.95,
-		pointerEvents: "none",
-	}}
-/>
-
-		{/* BOTTOM FADE (SOFT CONTINUATION, NOT SEPARATE) */}
-		<div
-			className="absolute bottom-0 right-0 w-[3px] h-[45%]"
-			style={{
-				background: `
-					linear-gradient(
-						to bottom,
-						rgba(${BRAND_RGB},0.35) 0%,
-						rgba(${BRAND_RGB},0.15) 50%,
+					radial-gradient(
+						ellipse at right center,
+						rgba(${BRAND_RGB},0.45) 0%,
+						rgba(${BRAND_RGB},0.28) 20%,
+						rgba(${BRAND_RGB},0.15) 42%,
+						rgba(${BRAND_RGB},0.04) 65%,
 						transparent 100%
 					)
 				`,
-				filter: "blur(1.4px)",
+				filter: `
+					blur(38px)
+					drop-shadow(0 0 28px rgba(${BRAND_RGB},0.18))
+				`,
 			}}
 		/>
 
-		{/* GLOBAL RIGHT EDGE GLOW FIELD (CONNECTS EVERYTHING) */}
+		{/* RIGHT BORDER — SUBTLE WARM LINE */}
 		<div
-			className="absolute right-0 top-0 w-[40px] h-full"
+			className="absolute right-0 top-0 h-full w-[2.5px]"
 			style={{
 				background: `
 					linear-gradient(
-						to left,
-						rgba(${BRAND_RGB},0.25),
-						rgba(${BRAND_RGB},0.10),
-						transparent
+						to bottom,
+						transparent 0%,
+						rgba(${BRAND_RGB},0.06) 8%,
+						rgba(${BRAND_RGB},0.20) 18%,
+						rgba(${BRAND_RGB},0.48) 28%,
+						rgba(${BRAND_RGB},0.78) 38%,
+						rgba(${BRAND_RGB},0.95) 45%,
+						rgba(${BRAND_RGB},1) 50%,
+						rgba(${BRAND_RGB},0.95) 55%,
+						rgba(${BRAND_RGB},0.78) 62%,
+						rgba(${BRAND_RGB},0.48) 72%,
+						rgba(${BRAND_RGB},0.20) 82%,
+						rgba(${BRAND_RGB},0.06) 92%,
+						transparent 100%
 					)
 				`,
-				filter: "blur(24px)",
-				opacity: 0.8,
+				filter: `
+					blur(2px)
+					drop-shadow(0 0 16px rgba(${BRAND_RGB},0.48))
+					drop-shadow(0 0 42px rgba(${BRAND_RGB},0.22))
+					drop-shadow(0 0 80px rgba(${BRAND_RGB},0.10))
+				`,
+				opacity: 1,
+				pointerEvents: "none",
 			}}
 		/>
 
-		{/* OUTER GLOW FIELD */}
+		{/* SOFT RIGHT HAZE */}
+		<div
+			className="absolute right-0 w-[30px] h-[86%]"
+			style={{
+				top: "50%",
+				transform: "translateY(-50%)",
+				background: `
+					linear-gradient(
+						to bottom,
+						transparent 0%,
+						rgba(${BRAND_RGB},0.07) 10%,
+						rgba(${BRAND_RGB},0.16) 25%,
+						rgba(${BRAND_RGB},0.24) 40%,
+						rgba(${BRAND_RGB},0.27) 50%,
+						rgba(${BRAND_RGB},0.24) 60%,
+						rgba(${BRAND_RGB},0.16) 75%,
+						rgba(${BRAND_RGB},0.07) 90%,
+						transparent 100%
+					)
+				`,
+				filter: "blur(20px)",
+				opacity: 0.72,
+			}}
+		/>
+
+		{/* OUTER WARM GLOW FIELD */}
 		<div
 			className="absolute -left-12 -top-12 w-44 h-44 rounded-full"
 			style={{
-				background: `rgba(${BRAND_RGB},0.20)`,
+				background: `rgba(${BRAND_RGB},0.15)`,
 				filter: `
-					blur(60px)
-					drop-shadow(0 0 90px rgba(${BRAND_RGB},0.18))
+					blur(56px)
+					drop-shadow(0 0 80px rgba(${BRAND_RGB},0.12))
 				`,
 			}}
 		/>
@@ -544,7 +577,7 @@ export function ProductInquiryForm({
 						textShadow: `0 0 16px rgba(${BRAND_RGB},0.25)`,
 					}}
 				>
-					{productName.toUpperCase()} DEMO
+					{resolvedPillLabel}
 				</span>
 			</div>
 
@@ -556,13 +589,44 @@ export function ProductInquiryForm({
 		{/* BODY */}
 		<div className="p-6 space-y-4">
 
-			<div className="space-y-1.5">
-				<Label className="text-sm font-semibold text-zinc-200">
-					Namn <span className="text-red-400">*</span>
-				</Label>
-				<div className="relative">
-					<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-					<Input {...register("fullName")} className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				<div className="space-y-1.5">
+					<Label className="text-sm font-semibold text-zinc-200">
+						Förnamn <span className="text-red-400">*</span>
+					</Label>
+					<div className="relative">
+						<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+						<Input
+							{...register("firstName")}
+							className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white"
+						/>
+					</div>
+					{errors.firstName && (
+						<p className="text-xs text-red-400">
+							{errors.firstName.message}
+						</p>
+					)}
+				</div>
+				<div className="space-y-1.5">
+					<Label className="text-sm font-semibold text-zinc-200">
+						<span className="notranslate">
+							<span className="lang-sv">Efternamn</span>
+							<span className="lang-en">Last name</span>
+						</span>{" "}
+						<span className="text-red-400">*</span>
+					</Label>
+					<div className="relative">
+						<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+						<Input
+							{...register("lastName")}
+							className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white"
+						/>
+					</div>
+					{errors.lastName && (
+						<p className="text-xs text-red-400">
+							{errors.lastName.message}
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -583,10 +647,16 @@ export function ProductInquiryForm({
 			</div>
 
 			<div className="space-y-1.5">
-				<Label className="text-sm font-semibold text-zinc-200">Klinik / företag *</Label>
+				<Label className="text-sm font-semibold text-zinc-200">
+					Org. nummer <span className="text-red-400">*</span>
+				</Label>
 				<div className="relative">
 					<Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-					<Input {...register("companyName")} className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+					<Input
+						{...register("companyName")}
+						placeholder="t.ex. 556789-1234"
+						className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white"
+					/>
 				</div>
 			</div>
 
@@ -595,16 +665,65 @@ export function ProductInquiryForm({
 				<Textarea {...register("message")} className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
 			</div>
 
+			{/* GDPR consent */}
+			<div className="flex items-start gap-3 pt-1">
+				<Checkbox
+					id="gdpr-consent"
+					checked={gdprChecked}
+					onCheckedChange={(checked) =>
+						handleGdprChange(checked === true)
+					}
+					className="mt-0.5 border-zinc-700 data-[state=checked]:bg-[#dba784] data-[state=checked]:border-[#dba784] data-[state=checked]:text-black"
+				/>
+				<label
+					htmlFor="gdpr-consent"
+					className="text-xs text-zinc-400 leading-relaxed cursor-pointer select-none"
+				>
+					Jag godkänner Synos Medical AB:s{" "}
+					<Link
+						href="/integritetspolicy"
+						className="underline"
+						style={{ color: BRAND }}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						integritetspolicy
+					</Link>{" "}
+					och samtycker till att mina uppgifter behandlas enligt GDPR.{" "}
+					<span className="text-red-400">*</span>
+				</label>
+			</div>
+			{errors.gdprConsent && (
+				<p className="text-xs text-red-400 -mt-2">
+					{errors.gdprConsent.message}
+				</p>
+			)}
+
 			<button
 				type="submit"
-				className="w-full h-12 rounded-md font-semibold text-black"
+				disabled={isSubmitting}
+				className="w-full h-12 rounded-md font-semibold text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
 				style={{
 					background: BRAND,
 					boxShadow: `0 0 26px rgba(${BRAND_RGB},0.25)`,
 				}}
 			>
-				Skicka förfrågan
+				{isSubmitting ? (
+					<>
+						<Loader2 className="h-4 w-4 animate-spin" />
+						Skickar...
+					</>
+				) : (
+					<>
+						<Send className="h-4 w-4" />
+						Skicka förfrågan
+					</>
+				)}
 			</button>
+
+			<p className="text-center text-xs text-zinc-500">
+				<span className="text-red-400">*</span> Obligatoriska fält
+			</p>
 
 		</div>
 	</form>

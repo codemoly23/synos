@@ -671,35 +671,6 @@ export function ProductSpecificationsSkeleton() {
 }
 
 /**
- * Product Sidebar Skeleton
- */
-export function ProductDetailSidebarSkeleton() {
-	return (
-		<div className="space-y-4">
-			{/* Benefits card */}
-			<div className="rounded-2xl bg-white border p-6">
-				<Skeleton className="h-6 w-24 mb-4" />
-				<div className="space-y-3">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<div key={i} className="flex items-start gap-3">
-							<Skeleton className="h-5 w-5 rounded-full shrink-0" />
-							<Skeleton className="h-5 flex-1" />
-						</div>
-					))}
-				</div>
-			</div>
-
-			{/* Video/Brochure card */}
-			<div className="rounded-2xl bg-white border p-6">
-				<Skeleton className="h-6 w-28 mb-4" />
-				<Skeleton className="h-10 w-full rounded-md mb-3" />
-				<Skeleton className="h-10 w-full rounded-md" />
-			</div>
-		</div>
-	);
-}
-
-/**
  * Product FAQ Skeleton
  */
 export function ProductFAQSkeleton() {
@@ -761,32 +732,20 @@ export function ProductDetailPageSkeleton() {
 			{/* Main content section */}
 			<section className="py-12 md:py-16">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-						{/* Main content */}
-						<div>
-							{/* Description */}
-							<div className="mb-12">
-								<Skeleton className="h-8 w-48 mb-6" />
-								<div className="space-y-4">
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-3/4" />
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-5/6" />
-								</div>
-							</div>
-
-							{/* Specifications */}
-							<ProductSpecificationsSkeleton />
+					{/* Description */}
+					<div className="mb-12">
+						<Skeleton className="h-8 w-48 mb-6" />
+						<div className="space-y-4">
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-3/4" />
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-5/6" />
 						</div>
-
-						{/* Sidebar */}
-						<aside>
-							<div className="sticky top-24">
-								<ProductDetailSidebarSkeleton />
-							</div>
-						</aside>
 					</div>
+
+					{/* Specifications */}
+					<ProductSpecificationsSkeleton />
 				</div>
 			</section>
 
@@ -1321,32 +1280,20 @@ export function KlinikutrustningDetailPageSkeleton() {
 			{/* Content Section */}
 			<section className="py-12 md:py-16">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-						{/* Main Content */}
-						<div>
-							{/* Description */}
-							<div className="mb-12">
-								<Skeleton className="h-8 w-48 mb-6" />
-								<div className="space-y-4">
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-3/4" />
-									<Skeleton className="h-5 w-full" />
-									<Skeleton className="h-5 w-5/6" />
-								</div>
-							</div>
-
-							{/* Specifications */}
-							<ProductSpecificationsSkeleton />
+					{/* Description */}
+					<div className="mb-12">
+						<Skeleton className="h-8 w-48 mb-6" />
+						<div className="space-y-4">
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-3/4" />
+							<Skeleton className="h-5 w-full" />
+							<Skeleton className="h-5 w-5/6" />
 						</div>
-
-						{/* Sidebar */}
-						<aside>
-							<div className="sticky top-24">
-								<ProductDetailSidebarSkeleton />
-							</div>
-						</aside>
 					</div>
+
+					{/* Specifications */}
+					<ProductSpecificationsSkeleton />
 				</div>
 			</section>
 
