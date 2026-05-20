@@ -27,21 +27,30 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getProdukterFaqSection } from "@/lib/services/produkter-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
 /**
- * Fallback FAQ content for the bottom of /produkter.
- * TODO: Replace with admin-editable content from site settings.
+ * Fallback FAQ used if the database fetch fails. The DB is auto-seeded with
+ * the same content on first read (see produkter-page model defaults), so this
+ * fallback only kicks in on a hard error.
  */
-const PRODUKTER_FAQ_TITLE = "Vanliga frågor";
-const PRODUKTER_FAQS = [
+const FALLBACK_FAQ_TITLE = "Vanliga frågor";
+const FALLBACK_FAQS: Array<{
+	_id: string;
+	question: string;
+	answer: string;
+	visible: boolean;
+	order: number;
+}> = [
 	{
 		_id: "produkter-faq-1",
 		question: "Är alla era produkter MDR-certifierade?",
 		answer:
 			"<p>Ja, samtliga produkter i vårt sortiment är certifierade enligt EU:s medicintekniska förordning (MDR). Detta garanterar att utrustningen uppfyller de högsta säkerhets- och kvalitetskraven inom medicinteknik.</p>",
 		visible: true,
+		order: 0,
 	},
 	{
 		_id: "produkter-faq-2",
@@ -49,6 +58,7 @@ const PRODUKTER_FAQS = [
 		answer:
 			"<p>Vi erbjuder 2 års full garanti på alla komponenter. Dessutom ingår teknisk support inom 48 timmar samt tillgång till ersättningsmaskin under serviceperioder för att minimera driftstopp i din verksamhet.</p>",
 		visible: true,
+		order: 1,
 	},
 	{
 		_id: "produkter-faq-3",
@@ -56,6 +66,7 @@ const PRODUKTER_FAQS = [
 		answer:
 			"<p>Ja, vi erbjuder flexibla finansieringsalternativ – köp, leasing eller hyra. Vårt team hjälper dig att räkna fram den lösning som passar bäst för din ekonomi och dina långsiktiga mål.</p>",
 		visible: true,
+		order: 2,
 	},
 	{
 		_id: "produkter-faq-4",
@@ -63,6 +74,7 @@ const PRODUKTER_FAQS = [
 		answer:
 			"<p>Ja, komplett operatörsutbildning för upp till 2 personer ingår vid varje maskinköp. Utbildningen sker på plats hos er eller hos oss, och vi tillhandahåller även kontinuerliga uppdateringar och behandlingsprotokoll.</p>",
 		visible: true,
+		order: 3,
 	},
 	{
 		_id: "produkter-faq-5",
@@ -70,6 +82,7 @@ const PRODUKTER_FAQS = [
 		answer:
 			"<p>Vi återkommer alltid inom 24 timmar på alla förfrågningar. För akuta servicefrågor finns vår tekniska support tillgänglig dygnet runt och kan vara på plats inom 48 arbetstimmar.</p>",
 		visible: true,
+		order: 4,
 	},
 ];
 /**
@@ -359,13 +372,32 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories, techGroups, selectedGroup, contactInfo] = await Promise.all([
+	const [products, categories, techGroups, selectedGroup, contactInfo, faqSection] = await Promise.all([
 		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
 		selectedTech ? getTechnologyGroupByName(selectedTech).catch(() => null) : Promise.resolve(null),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
+		getProdukterFaqSection().catch(() => ({
+			title: FALLBACK_FAQ_TITLE,
+			faqs: FALLBACK_FAQS,
+		})),
 	]);
+
+	// Sort by `order` then normalize _id to string for ProductFAQ.
+	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
+	const rawFaqs = Array.isArray(faqSection?.faqs) ? faqSection.faqs : [];
+	const produkterFaqs =
+		rawFaqs.length > 0
+			? [...rawFaqs]
+					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+					.map((f, idx) => ({
+						_id: (f._id ?? `produkter-faq-${idx}`).toString(),
+						question: f.question,
+						answer: f.answer,
+						visible: f.visible ?? true,
+					}))
+			: FALLBACK_FAQS;
 
 	// Filter products by selected technology (using technologyGroups array on product)
 	const filteredProducts = selectedTech
@@ -652,12 +684,12 @@ export default async function ProductsPage({
 				contactEmail={contactInfo.email}
 			/>
 
-			{/* FAQ Footer Section (fallback content; admin-editable later) */}
+			{/* FAQ Footer Section (managed via /dashboard/products/settings) */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 				<div className="_container mx-auto px-4">
 					<ProductFAQ
-						title={PRODUKTER_FAQ_TITLE}
-						faqs={PRODUKTER_FAQS}
+						title={faqTitle}
+						faqs={produkterFaqs}
 					/>
 				</div>
 			</section>

@@ -33,8 +33,8 @@ import type { ICategory } from "@/models/category.model";
 
 /**
  * Fallback FAQ content for the category listing pages.
+ * Used when the admin has not added per-category FAQs via the dashboard.
  * Uses the category name so the same fallback is mildly personalised per page.
- * TODO: Replace with admin-editable content from the Category model.
  */
 function buildCategoryFaqs(name: string) {
 	const lower = name.toLowerCase();
@@ -112,15 +112,34 @@ export async function generateStaticParams() {
 /**
  * Fallback data for uncategorized products
  */
-const UNCATEGORIZED_FALLBACK = {
+type UncategorizedFallback = {
+	_id: { toString: () => string };
+	slug: string;
+	name: string;
+	description: string;
+	image: string | null;
+	isActive: boolean;
+	faqTitle: string;
+	faqs: Array<{
+		_id?: { toString: () => string };
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
+	seo: undefined;
+};
+
+const UNCATEGORIZED_FALLBACK: UncategorizedFallback = {
 	_id: { toString: () => "uncategorized" },
 	slug: "uncategorized",
 	name: "Okategoriserad",
 	description: "Produkter som inte tillhör någon specifik kategori.",
 	image: null,
 	isActive: true,
+	faqTitle: "",
+	faqs: [],
 	seo: undefined,
-} as const;
+};
 
 async function getCategory(slug: string) {
 	// Handle uncategorized products
@@ -710,15 +729,32 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			</div>
 			</div>
 
-			{/* FAQ Footer Section (fallback content; per-category content via admin panel later) */}
-			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-				<div className="_container mx-auto px-4">
-					<ProductFAQ
-						title={`Vanliga frågor om ${category.name.toLowerCase()}`}
-						faqs={buildCategoryFaqs(category.name)}
-					/>
-				</div>
-			</section>
+			{/* FAQ Footer Section — admin-controllable via dashboard, falls back to default content */}
+			{(() => {
+				const adminFaqs = category.faqs
+					?.filter((f) => f.visible)
+					.map((f) => ({
+						_id: f._id?.toString() || `cat-faq-${Math.random()}`,
+						question: f.question,
+						answer: f.answer,
+						visible: f.visible,
+					}));
+				const faqs =
+					adminFaqs && adminFaqs.length > 0
+						? adminFaqs
+						: buildCategoryFaqs(category.name);
+				const faqTitle =
+					category.faqTitle && category.faqTitle.trim().length > 0
+						? category.faqTitle
+						: `Vanliga frågor om ${category.name.toLowerCase()}`;
+				return (
+					<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+						<div className="_container mx-auto px-4">
+							<ProductFAQ title={faqTitle} faqs={faqs} />
+						</div>
+					</section>
+				);
+			})()}
 
 			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
 			<ProductInquiryForm

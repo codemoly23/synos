@@ -11,6 +11,7 @@ import {
 	Eye,
 	EyeOff,
 	Tag,
+	Settings,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -141,12 +142,20 @@ export default function TechnologyCategoriesPage() {
 							Manage technology groups shown on the /produkter page
 						</p>
 					</div>
-					<Link href="/dashboard/technology-categories/new">
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Add Group
-						</Button>
-					</Link>
+					<div className="flex items-center gap-2">
+						<Link href="/dashboard/technology-categories/settings">
+							<Button variant="outline">
+								<Settings className="h-4 w-4 mr-2" />
+								Settings
+							</Button>
+						</Link>
+						<Link href="/dashboard/technology-categories/new">
+							<Button>
+								<Plus className="h-4 w-4 mr-2" />
+								Add Group
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				{/* Stats */}

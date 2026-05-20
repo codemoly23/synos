@@ -14,6 +14,7 @@ import {
 	Trash2,
 	Eye,
 	EyeOff,
+	Settings,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -349,12 +350,20 @@ export default function CategoriesPage() {
 							Manage your product categories
 						</p>
 					</div>
-					<Link href="/dashboard/categories/new">
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Add Category
-						</Button>
-					</Link>
+					<div className="flex items-center gap-2">
+						<Link href="/dashboard/categories/settings">
+							<Button variant="outline">
+								<Settings className="h-4 w-4 mr-2" />
+								Settings
+							</Button>
+						</Link>
+						<Link href="/dashboard/categories/new">
+							<Button>
+								<Plus className="h-4 w-4 mr-2" />
+								Add Category
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				{/* Stats */}

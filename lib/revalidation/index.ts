@@ -43,6 +43,8 @@ export const CACHE_TAGS = {
 	FAQ_PAGE: "faq-page",
 	CONTACT_PAGE: "contact-page",
 	CUSTOM_404_PAGE: "custom-404-page",
+	KLINIKUTRUSTNING_PAGE: "klinikutrustning-page",
+	PRODUKTER_PAGE: "produkter-page",
 
 	// Sitemaps
 	SITEMAPS: "sitemaps",
