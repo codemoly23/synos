@@ -13,8 +13,19 @@ export const produkterFaqSectionSchema = z.object({
 	faqs: z.array(produkterFaqSchema).optional(),
 });
 
+export const produkterHeroSectionSchema = z.object({
+	title: z.string().max(200).optional(),
+	subtitle: z.string().max(400).optional(),
+	bulletPoints: z.array(z.string().max(150)).max(6).optional(),
+	bgMobile: z.string().max(500).optional(),
+	bgDesktop: z.string().max(500).optional(),
+});
+
 export const updateProdukterPageSchema = z.object({
 	faqSection: produkterFaqSectionSchema.optional(),
+	heroSection: produkterHeroSectionSchema.optional(),
+	inquiryBgMobile: z.string().max(500).optional(),
+	inquiryBgDesktop: z.string().max(500).optional(),
 });
 
 export type UpdateProdukterPageData = z.infer<

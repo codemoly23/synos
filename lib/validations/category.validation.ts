@@ -117,6 +117,13 @@ export const createCategorySchema = z.object({
 		.optional()
 		.default(""),
 	faqs: z.array(categoryFaqSchema).optional().default([]),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
+	heroTitle: z.string().max(200).optional(),
+	heroSubtitle: z.string().max(300).optional(),
+	heroBulletPoints: z.array(z.string().max(100)).max(6).optional().default([]),
+	heroBgMobile: z.string().optional(),
+	heroBgDesktop: z.string().optional(),
 	seo: categorySeoSchema.optional(),
 });
 
@@ -146,6 +153,13 @@ export const updateCategorySchema = z.object({
 		.max(200, "FAQ title cannot exceed 200 characters")
 		.optional(),
 	faqs: z.array(categoryFaqSchema).optional(),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
+	heroTitle: z.string().max(200).optional(),
+	heroSubtitle: z.string().max(300).optional(),
+	heroBulletPoints: z.array(z.string().max(100)).max(6).optional(),
+	heroBgMobile: z.string().optional(),
+	heroBgDesktop: z.string().optional(),
 	seo: categorySeoSchema.optional(),
 });
 

@@ -13,8 +13,19 @@ export const klinikFaqSectionSchema = z.object({
 	faqs: z.array(klinikFaqSchema).optional(),
 });
 
+export const klinikHeroSectionSchema = z.object({
+	title: z.string().max(200).optional(),
+	subtitle: z.string().max(400).optional(),
+	bulletPoints: z.array(z.string().max(150)).max(6).optional(),
+	bgMobile: z.string().max(500).optional(),
+	bgDesktop: z.string().max(500).optional(),
+});
+
 export const updateKlinikutrustningPageSchema = z.object({
 	faqSection: klinikFaqSectionSchema.optional(),
+	heroSection: klinikHeroSectionSchema.optional(),
+	inquiryBgMobile: z.string().max(500).optional(),
+	inquiryBgDesktop: z.string().max(500).optional(),
 });
 
 export type UpdateKlinikutrustningPageData = z.infer<

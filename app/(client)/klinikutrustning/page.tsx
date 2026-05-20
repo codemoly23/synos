@@ -26,7 +26,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { getKlinikutrustningFaqSection } from "@/lib/services/klinikutrustning-page.service";
+import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -333,7 +333,7 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 }
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection, pageData] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
@@ -341,7 +341,17 @@ export default async function KategoriPage() {
 			title: FALLBACK_FAQ_TITLE,
 			faqs: FALLBACK_FAQS,
 		})),
+		getKlinikutrustningHeroSection().catch(() => null),
+		getKlinikutrustningPage().catch(() => null),
 	]);
+
+	const heroTitle = heroSection?.title || "Motus Pro";
+	const heroSubtitle = heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
+	const heroBullets = heroSection?.bulletPoints?.length
+		? heroSection.bulletPoints
+		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
+	const heroBgMobile = heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then filter to only visible items; normalize _id to string.
 	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
@@ -392,44 +402,26 @@ export default async function KategoriPage() {
 				{/* ── MOBILE LAYOUT ── */}
 				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 					<ImageComponent
-						src="/images/Background Mobile.jpeg"
+						src={heroBgMobile}
 						alt=""
 						fill
 						priority
 						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
 						sizes="100vw"
 					/>
-					{/* Machine image */}
-					<div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-						<div className="relative w-full h-full">
-							<ImageComponent
-								src="/images/motus-ax-3.jpg"
-								alt="Motus Pro"
-								fill
-								className="object-contain drop-shadow-2xl"
-								priority
-								sizes="100vw"
-							/>
-						</div>
 					</div>
-				</div>
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
 					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
-						Motus Pro
+						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
 					<p className="text-white/70 text-sm mb-8 leading-relaxed">
-						Avancerad laserplattform för professionella behandlingar
+						{heroSubtitle}
 					</p>
 					<ul className="space-y-4">
-						{[
-							"Snabb och effektiv behandling",
-							"Skonsam teknik med hög precision",
-							"Intuitiv touchskärm och smart arbetsflöde",
-							"Anpassad för professionella kliniker",
-						].map((item) => (
+						{heroBullets.map((item) => (
 							<li key={item} className="flex items-center gap-3">
 								<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
 									<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
@@ -438,17 +430,17 @@ export default async function KategoriPage() {
 							</li>
 						))}
 					</ul>
-					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
-					</button>
+					</a>
 				</div>
 
 				{/* ── DESKTOP LAYOUT ── */}
 				<div className="hidden lg:block">
 					<div className="_container relative overflow-hidden min-h-[740px]">
 						<ImageComponent
-							src="/images/Product detail breadcrumbs background.jpeg"
+							src={heroBgDesktop}
 							alt=""
 							fill
 							priority
@@ -456,68 +448,14 @@ export default async function KategoriPage() {
 							sizes="100vw"
 						/>
 						<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
-							{/* Left — machine grounded on floor */}
-							<div className="relative h-[740px] flex flex-col items-center justify-center">
-								{/* Warm floor glow matching background lighting */}
-								<div
-									className="absolute inset-x-[8%] pointer-events-none z-0"
-									style={{
-										bottom: '14%',
-										height: '90px',
-										background: 'radial-gradient(ellipse at 50% 80%, rgba(184,138,58,0.22) 0%, transparent 70%)',
-										filter: 'blur(22px)',
-									}}
-								/>
-								{/* Product image — anchored to floor */}
-								<div className="relative w-full h-[620px] z-10">
-									<ImageComponent
-										src="/images/motus.png"
-										alt="Motus Pro"
-										fill
-										className="object-contain object-bottom"
-										priority
-										sizes="700px"
-									/>
-								</div>
-								{/* Contact shadow + floor reflection */}
-								<div className="relative z-10 w-full shrink-0 -mt-3">
-									<div
-										className="mx-auto pointer-events-none"
-										style={{
-											width: '46%',
-											height: '16px',
-											background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)',
-											filter: 'blur(9px)',
-										}}
-									/>
-									<div
-										className="w-full mt-1 overflow-hidden"
-										style={{
-											height: '68px',
-											opacity: 0.35,
-											maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-											WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-										}}
-									>
-										<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-											<ImageComponent
-												src="/images/motus.png"
-												fill
-												alt=""
-												className="object-contain object-bottom"
-												sizes="700px"
-											/>
-										</div>
-									</div>
-								</div>
-							</div>
+							<div />
 							{/* Right — Form */}
 							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 								<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
-									Motus Pro
+									{heroTitle}
 								</h2>
 								<p className="text-white/60 text-base mb-8 leading-relaxed">
-									Avancerad laserplattform för professionella behandlingar
+									{heroSubtitle}
 								</p>
 								<div className="space-y-4">
 									<div className="grid grid-cols-2 gap-4">
@@ -614,13 +552,17 @@ export default async function KategoriPage() {
 			</section>
 
 			{/* Contact form (dark, product-inquiry styling, generic mode) */}
-			<ProductInquiryForm
-				pillLabel="SYNOS MEDICAL"
-				purchaseTitle="Kontakta oss"
-				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-			/>
+			<div id="inquiry-form">
+				<ProductInquiryForm
+					pillLabel="SYNOS MEDICAL"
+					purchaseTitle="Kontakta oss"
+					purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
+					contactPhone={contactInfo.phone}
+					contactEmail={contactInfo.email}
+					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
+					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+				/>
+			</div>
 		</div>
 	);
 }

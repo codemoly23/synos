@@ -14,9 +14,20 @@ export interface IProdukterFaqSection {
 	faqs: IProdukterFaq[];
 }
 
+export interface IProdukterHeroSection {
+	title: string;
+	subtitle: string;
+	bulletPoints: string[];
+	bgMobile: string;
+	bgDesktop: string;
+}
+
 export interface IProdukterPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	faqSection: IProdukterFaqSection;
+	heroSection: IProdukterHeroSection;
+	inquiryBgMobile: string;
+	inquiryBgDesktop: string;
 	updatedAt: Date;
 	createdAt: Date;
 }
@@ -81,6 +92,17 @@ const DEFAULT_FAQS: Omit<IProdukterFaq, "_id">[] = [
 	},
 ];
 
+const ProdukterHeroSectionSchema = new Schema<IProdukterHeroSection>(
+	{
+		title: { type: String, trim: true, default: "" },
+		subtitle: { type: String, trim: true, default: "" },
+		bulletPoints: { type: [String], default: [] },
+		bgMobile: { type: String, default: "" },
+		bgDesktop: { type: String, default: "" },
+	},
+	{ _id: false }
+);
+
 const ProdukterPageSchema = new Schema<IProdukterPage>(
 	{
 		faqSection: {
@@ -91,6 +113,12 @@ const ProdukterPageSchema = new Schema<IProdukterPage>(
 				faqs: DEFAULT_FAQS,
 			},
 		},
+		heroSection: {
+			type: ProdukterHeroSectionSchema,
+			default: { title: "", subtitle: "", bulletPoints: [], bgMobile: "", bgDesktop: "" },
+		},
+		inquiryBgMobile: { type: String, default: "" },
+		inquiryBgDesktop: { type: String, default: "" },
 	},
 	{
 		timestamps: true,
@@ -109,19 +137,21 @@ ProdukterPageSchema.set("toJSON", {
 
 ProdukterPageSchema.set("toObject", { virtuals: true });
 
-export const getProdukterPageModel = async (): Promise<
-	Model<IProdukterPage>
-> => {
+function buildProdukterPageModel(): Model<IProdukterPage> {
+	const cached = mongoose.models.ProdukterPage as Model<IProdukterPage> | undefined;
+	if (cached) {
+		if (cached.schema.path("heroSection") && cached.schema.path("inquiryBgMobile")) return cached;
+		delete mongoose.models.ProdukterPage;
+		delete (mongoose as unknown as { modelSchemas?: Record<string, unknown> }).modelSchemas?.ProdukterPage;
+	}
+	return mongoose.model<IProdukterPage>("ProdukterPage", ProdukterPageSchema);
+}
+
+export const getProdukterPageModel = async (): Promise<Model<IProdukterPage>> => {
 	await connectMongoose();
-	return (
-		(mongoose.models.ProdukterPage as Model<IProdukterPage>) ||
-		mongoose.model<IProdukterPage>("ProdukterPage", ProdukterPageSchema)
-	);
+	return buildProdukterPageModel();
 };
 
 export function getProdukterPageModelSync(): Model<IProdukterPage> {
-	return (
-		(mongoose.models.ProdukterPage as Model<IProdukterPage>) ||
-		mongoose.model<IProdukterPage>("ProdukterPage", ProdukterPageSchema)
-	);
+	return buildProdukterPageModel();
 }

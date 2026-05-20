@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
+import { ImageComponent } from "@/components/common/image-component";
 
 interface ProductInquiryFormProps {
 	productName?: string;
@@ -34,6 +35,8 @@ interface ProductInquiryFormProps {
 	contactPhone?: string;
 	contactEmail?: string;
 	pillLabel?: string;
+	bgMobile?: string;
+	bgDesktop?: string;
 }
 
 const desktopSchema = z.object({
@@ -529,21 +532,38 @@ export function ProductInquiryForm({
 	contactPhone,
 	contactEmail,
 	pillLabel,
+	bgMobile,
+	bgDesktop,
 }: ProductInquiryFormProps) {
 	const isGeneric = !productId;
 	const resolvedPillLabel = pillLabel ?? (productName ? `${productName.toUpperCase()} DEMO` : "SYNOS MEDICAL");
 	const resolvedTitle = purchaseTitle || (productName ? `Intresserad av ${productName}?` : "Kontakta oss");
 	const successContext = productName || "din förfrågan";
 
+	const defaultBg = "/images/Product detail breadcrumbs background.jpeg";
+
 	return (
-		<section
-			className="py-16 md:py-24 relative overflow-hidden"
-			style={{
-				backgroundImage: "url('/images/Product detail breadcrumbs background.jpeg')",
-				backgroundSize: "cover",
-				backgroundPosition: "left bottom",
-			}}
-		>
+		<section className="py-16 md:py-24 relative overflow-hidden">
+			{/* Mobile background */}
+			<div className="absolute inset-0 lg:hidden">
+				<ImageComponent
+					src={bgMobile || bgDesktop || defaultBg}
+					alt=""
+					fill
+					className="object-cover object-[left_bottom]"
+					sizes="100vw"
+				/>
+			</div>
+			{/* Desktop background */}
+			<div className="absolute inset-0 hidden lg:block">
+				<ImageComponent
+					src={bgDesktop || bgMobile || defaultBg}
+					alt=""
+					fill
+					className="object-cover object-[left_bottom]"
+					sizes="100vw"
+				/>
+			</div>
 			<div className="_container relative z-10">
 
 				{/* ── MOBILE (< lg) ── */}
