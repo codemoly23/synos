@@ -420,9 +420,12 @@ export function ProductsList({
 
 										{/* Date */}
 										<div className="text-sm text-slate-500 hidden lg:block">
-											{new Date(
-												product.updatedAt
-											).toLocaleDateString()}
+											{new Date(product.updatedAt)
+												.toISOString()
+												.slice(0, 10)
+												.split("-")
+												.reverse()
+												.join("/")}
 										</div>
 
 										{/* Actions */}

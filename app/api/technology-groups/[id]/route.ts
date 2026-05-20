@@ -26,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 	try {
 		const { id } = await params;
 		const body = await request.json();
-		const { name, slug, description, image, isActive, order, seo } = body;
+		const { name, slug, description, image, isActive, order, seo, faqTitle, faqs } = body;
 
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.findById(id);
@@ -54,6 +54,42 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			group.order = Number(order);
 		}
 		if (seo !== undefined) group.seo = { ...(group.seo || {}), ...seo };
+
+		// FAQ fields
+		if (faqTitle !== undefined) {
+			group.faqTitle = typeof faqTitle === "string" ? faqTitle.trim() : "";
+		}
+		if (faqs !== undefined) {
+			if (!Array.isArray(faqs)) {
+				return badRequestResponse("faqs must be an array");
+			}
+			// Sanitize and validate each FAQ item
+			const sanitizedFaqs = faqs
+				.map((f: unknown) => {
+					if (!f || typeof f !== "object") return null;
+					const item = f as {
+						question?: unknown;
+						answer?: unknown;
+						visible?: unknown;
+					};
+					const question =
+						typeof item.question === "string" ? item.question.trim() : "";
+					const answer =
+						typeof item.answer === "string" ? item.answer.trim() : "";
+					if (!question || !answer) return null;
+					return {
+						question,
+						answer,
+						visible: typeof item.visible === "boolean" ? item.visible : true,
+					};
+				})
+				.filter(Boolean) as Array<{
+				question: string;
+				answer: string;
+				visible: boolean;
+			}>;
+			group.set("faqs", sanitizedFaqs);
+		}
 
 		await group.save();
 

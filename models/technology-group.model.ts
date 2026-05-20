@@ -9,6 +9,13 @@ export interface ITechnologyGroupSeo {
 	noindex?: boolean;
 }
 
+export interface ITechnologyGroupFaq {
+	_id?: mongoose.Types.ObjectId;
+	question: string;
+	answer: string;
+	visible: boolean;
+}
+
 export interface ITechnologyGroup extends Document {
 	_id: mongoose.Types.ObjectId;
 	name: string;
@@ -17,10 +24,32 @@ export interface ITechnologyGroup extends Document {
 	image?: string | null;
 	isActive: boolean;
 	order: number;
+	faqTitle?: string;
+	faqs: ITechnologyGroupFaq[];
 	seo?: ITechnologyGroupSeo;
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+const TechnologyGroupFaqSchema = new Schema<ITechnologyGroupFaq>(
+	{
+		question: {
+			type: String,
+			required: [true, "Question is required"],
+			trim: true,
+		},
+		answer: {
+			type: String,
+			required: [true, "Answer is required"],
+			trim: true,
+		},
+		visible: {
+			type: Boolean,
+			default: true,
+		},
+	},
+	{ _id: true }
+);
 
 const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 	{
@@ -51,6 +80,15 @@ const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 		order: {
 			type: Number,
 			default: 0,
+		},
+		faqTitle: {
+			type: String,
+			trim: true,
+			default: "",
+		},
+		faqs: {
+			type: [TechnologyGroupFaqSchema],
+			default: [],
 		},
 		seo: {
 			title: { type: String, default: "", maxlength: 70 },
@@ -101,7 +139,9 @@ function resolveTechnologyGroupModel(): Model<ITechnologyGroup> {
 		const hasDescription = !!cached.schema.path("description");
 		const hasImage = !!cached.schema.path("image");
 		const hasSeo = !!cached.schema.path("seo");
-		if (hasDescription && hasImage && hasSeo) {
+		const hasFaqs = !!cached.schema.path("faqs");
+		const hasFaqTitle = !!cached.schema.path("faqTitle");
+		if (hasDescription && hasImage && hasSeo && hasFaqs && hasFaqTitle) {
 			return cached;
 		}
 		// Stale cache — drop and re-register

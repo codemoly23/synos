@@ -1,7 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Loader2 } from "lucide-react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,13 @@ export interface TechnologyGroupFormData {
 	image?: string | null;
 	order?: number;
 	isActive?: boolean;
+	faqTitle?: string;
+	faqs?: Array<{
+		_id?: string;
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -43,6 +50,13 @@ export interface ITechnologyGroupInput {
 	image?: string | null;
 	order?: number;
 	isActive?: boolean;
+	faqTitle?: string;
+	faqs?: Array<{
+		_id?: string;
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -73,6 +87,7 @@ export function TechnologyGroupForm({
 		handleSubmit,
 		setValue,
 		watch,
+		control,
 		formState: { errors, isDirty },
 	} = useForm<TechnologyGroupFormData>({
 		defaultValues: {
@@ -82,6 +97,14 @@ export function TechnologyGroupForm({
 			image: group?.image || "",
 			order: group?.order ?? 0,
 			isActive: group?.isActive ?? true,
+			faqTitle: group?.faqTitle || "",
+			faqs:
+				group?.faqs?.map((faq) => ({
+					_id: faq._id,
+					question: faq.question,
+					answer: faq.answer,
+					visible: faq.visible ?? true,
+				})) || [],
 			seo: {
 				title: group?.seo?.title || "",
 				description: group?.seo?.description || "",
@@ -89,6 +112,15 @@ export function TechnologyGroupForm({
 				noindex: group?.seo?.noindex || false,
 			},
 		},
+	});
+
+	const {
+		fields: faqFields,
+		append: appendFaq,
+		remove: removeFaq,
+	} = useFieldArray({
+		control,
+		name: "faqs",
 	});
 
 	const name = watch("name");
@@ -218,6 +250,110 @@ export function TechnologyGroupForm({
 					disabled={isLoading}
 					galleryTitle="Select Technology Group Image"
 				/>
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* Technology FAQ Section */}
+			<div className="space-y-4">
+				<div>
+					<h3 className="text-lg font-semibold">Technology FAQ</h3>
+					<p className="text-sm text-muted-foreground mt-1">
+						Add frequently asked questions for this technology. Shown on
+						/produkter when this technology is selected via the sidebar.
+						Leave empty to use the default fallback FAQ.
+					</p>
+				</div>
+
+				{/* FAQ Section Title */}
+				<div className="space-y-2">
+					<Label htmlFor="faqTitle">FAQ Section Title</Label>
+					<Input
+						id="faqTitle"
+						{...register("faqTitle")}
+						placeholder={`e.g. Vanliga frågor om ${
+							watch("name") || "denna teknologi"
+						}`}
+						disabled={isLoading}
+					/>
+					<p className="text-xs text-slate-500">
+						Optional. If left empty, an auto-generated title will be used.
+					</p>
+				</div>
+
+				{/* FAQ Items */}
+				<div className="space-y-4">
+					{faqFields.map((field, index) => (
+						<div
+							key={field.id}
+							className="p-4 border rounded-lg space-y-3 bg-slate-50/50"
+						>
+							<div className="flex justify-between items-start">
+								<span className="text-sm font-medium">
+									FAQ #{index + 1}
+								</span>
+								<div className="flex items-center gap-2">
+									<label className="flex items-center gap-2 text-sm">
+										<input
+											type="checkbox"
+											{...register(`faqs.${index}.visible`)}
+											disabled={isLoading}
+											className="h-4 w-4"
+										/>
+										Visible
+									</label>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={() => removeFaq(index)}
+										disabled={isLoading}
+										className="text-red-500 h-8 w-8"
+									>
+										<Trash2 className="h-4 w-4" />
+									</Button>
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor={`faqs.${index}.question`}>
+									Question
+								</Label>
+								<Input
+									{...register(`faqs.${index}.question`)}
+									placeholder="Enter the question"
+									disabled={isLoading}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor={`faqs.${index}.answer`}>
+									Answer (HTML allowed)
+								</Label>
+								<Textarea
+									id={`faqs.${index}.answer`}
+									{...register(`faqs.${index}.answer`)}
+									placeholder="Svar på frågan. Plain text eller HTML (t.ex. <p>...</p>, <strong>...</strong>, <a href='...'>...</a>)."
+									rows={5}
+									disabled={isLoading}
+								/>
+							</div>
+						</div>
+					))}
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() =>
+							appendFaq({
+								question: "",
+								answer: "",
+								visible: true,
+							})
+						}
+						disabled={isLoading}
+					>
+						<Plus className="h-4 w-4 mr-1" />
+						Add FAQ
+					</Button>
+				</div>
 			</div>
 
 			<Separator className="my-8" />
