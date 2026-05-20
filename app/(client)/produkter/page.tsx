@@ -387,11 +387,12 @@ export default async function ProductsPage({
 		getProdukterPage().catch(() => null),
 	]);
 
-	const heroBullets = heroSection?.bulletPoints?.length
-		? heroSection.bulletPoints
-		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
-	const heroBgMobile = heroSection?.bgMobile || "/images/Background Mobile.jpeg";
-	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
+	const defaultBullets = ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
+	const heroBullets = (selectedGroup?.heroBulletPoints?.length ? selectedGroup.heroBulletPoints : null)
+		?? (heroSection?.bulletPoints?.length ? heroSection.bulletPoints : null)
+		?? defaultBullets;
+	const heroBgMobile = selectedGroup?.heroBgMobile || heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const heroBgDesktop = selectedGroup?.heroBgDesktop || heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then normalize _id to string for ProductFAQ.
 	const globalFaqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
@@ -434,9 +435,9 @@ export default async function ProductsPage({
 		  )
 		: products;
 
-	// Hero content: technology filter takes priority, then DB hero, then hardcoded defaults
-	const heroTitle = selectedGroup?.name || heroSection?.title || "Våra Produkter";
-	const heroSubtitle = heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
+	// Hero content: technology-specific fields take priority, then global DB hero, then hardcoded defaults
+	const heroTitle = selectedGroup?.heroTitle?.trim() || selectedGroup?.name || heroSection?.title || "Våra Produkter";
+	const heroSubtitle = selectedGroup?.heroSubtitle?.trim() || heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
 	const heroDescription = selectedGroup?.description
 		? selectedGroup.description.replace(/<[^>]*>/g, "").trim().slice(0, 300)
 		: heroSection?.subtitle || "Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
@@ -609,8 +610,8 @@ export default async function ProductsPage({
 					categoryName={selectedGroup?.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
-					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+					bgMobile={selectedGroup?.inquiryBgMobile || (pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
+					bgDesktop={selectedGroup?.inquiryBgDesktop || (pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
 				/>
 			</div>
 
