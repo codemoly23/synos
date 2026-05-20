@@ -4,6 +4,7 @@ import {
 	getKlinikutrustningPageModelSync,
 	type IKlinikutrustningPage,
 	type IKlinikFaqSection,
+	type IKlinikHeroSection,
 	type IKlinikFaq,
 } from "@/models/klinikutrustning-page.model";
 
@@ -11,6 +12,13 @@ export interface UpdateKlinikutrustningPageInput {
 	faqSection?: {
 		title?: string;
 		faqs?: Array<Partial<IKlinikFaq>>;
+	};
+	heroSection?: {
+		title?: string;
+		subtitle?: string;
+		bulletPoints?: string[];
+		bgMobile?: string;
+		bgDesktop?: string;
 	};
 }
 
@@ -55,6 +63,15 @@ class KlinikutrustningPageRepository {
 			}
 		}
 
+		if (data.heroSection) {
+			const h = data.heroSection;
+			if (h.title !== undefined) updateData["heroSection.title"] = h.title;
+			if (h.subtitle !== undefined) updateData["heroSection.subtitle"] = h.subtitle;
+			if (h.bulletPoints !== undefined) updateData["heroSection.bulletPoints"] = h.bulletPoints;
+			if (h.bgMobile !== undefined) updateData["heroSection.bgMobile"] = h.bgMobile;
+			if (h.bgDesktop !== undefined) updateData["heroSection.bgDesktop"] = h.bgDesktop;
+		}
+
 		const updated = await KlinikutrustningPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
@@ -71,6 +88,11 @@ class KlinikutrustningPageRepository {
 	async getFaqSection(): Promise<IKlinikFaqSection> {
 		const page = await this.get();
 		return page.faqSection;
+	}
+
+	async getHeroSection(): Promise<IKlinikHeroSection> {
+		const page = await this.get();
+		return page.heroSection ?? { title: "", subtitle: "", bulletPoints: [], bgMobile: "", bgDesktop: "" };
 	}
 }
 

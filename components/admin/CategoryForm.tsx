@@ -46,6 +46,11 @@ type CategoryFormData = {
 	}>;
 	inquiryBgMobile?: string;
 	inquiryBgDesktop?: string;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string;
+	heroBgDesktop?: string;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -105,6 +110,11 @@ export function CategoryForm({
 				})) || [],
 			inquiryBgMobile: (category as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || "",
 			inquiryBgDesktop: (category as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
+			heroTitle: (category as unknown as { heroTitle?: string })?.heroTitle || "",
+			heroSubtitle: (category as unknown as { heroSubtitle?: string })?.heroSubtitle || "",
+			heroBulletPoints: (category as unknown as { heroBulletPoints?: string[] })?.heroBulletPoints || [],
+			heroBgMobile: (category as unknown as { heroBgMobile?: string })?.heroBgMobile || "",
+			heroBgDesktop: (category as unknown as { heroBgDesktop?: string })?.heroBgDesktop || "",
 			seo: {
 				title: category?.seo?.title || "",
 				description: category?.seo?.description || "",
@@ -121,6 +131,15 @@ export function CategoryForm({
 	} = useFieldArray({
 		control,
 		name: "faqs",
+	});
+
+	const {
+		fields: bulletFields,
+		append: appendBullet,
+		remove: removeBullet,
+	} = useFieldArray({
+		control,
+		name: "heroBulletPoints" as never,
 	});
 
 	const name = watch("name");
@@ -251,6 +270,109 @@ export function CategoryForm({
 					Leave empty for a root-level category
 				</p>
 			</div>
+
+			{/* ── HERO SECTION ── */}
+			<div className="space-y-6 p-4 border border-slate-200 rounded-lg bg-slate-50/50">
+				<div>
+					<h3 className="text-sm font-semibold text-slate-700">Hero Section</h3>
+					<p className="text-xs text-slate-500 mt-1">
+						Controls the category hero section. Falls back to the built-in config if not set.
+					</p>
+				</div>
+
+				{/* Hero Title */}
+				<div className="space-y-2">
+					<Label htmlFor="heroTitle">Hero Title</Label>
+					<Input
+						id="heroTitle"
+						{...register("heroTitle")}
+						placeholder="e.g. Tatueringsborttagning"
+						disabled={isLoading}
+						maxLength={200}
+					/>
+				</div>
+
+				{/* Hero Subtitle */}
+				<div className="space-y-2">
+					<Label htmlFor="heroSubtitle">Hero Subtitle</Label>
+					<Input
+						id="heroSubtitle"
+						{...register("heroSubtitle")}
+						placeholder="e.g. Precis och effektiv borttagning av tatueringar med Pico-teknik"
+						disabled={isLoading}
+						maxLength={300}
+					/>
+				</div>
+
+				{/* Hero Bullet Points */}
+				<div className="space-y-2">
+					<Label>Hero Bullet Points <span className="text-muted-foreground font-normal">(max 6)</span></Label>
+					<div className="space-y-2">
+						{bulletFields.map((field, index) => (
+							<div key={field.id} className="flex gap-2">
+								<Input
+									{...register(`heroBulletPoints.${index}` as const)}
+									placeholder="e.g. Effektiv på alla färger och hudtyper"
+									disabled={isLoading}
+									maxLength={100}
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									onClick={() => removeBullet(index)}
+									disabled={isLoading}
+									className="text-red-500"
+								>
+									<Trash2 className="h-4 w-4" />
+								</Button>
+							</div>
+						))}
+						{bulletFields.length < 6 && (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => appendBullet("")}
+								disabled={isLoading}
+							>
+								<Plus className="h-4 w-4 mr-1" />
+								Add Bullet Point
+							</Button>
+						)}
+					</div>
+				</div>
+
+				{/* Hero Background — Mobile */}
+				<div className="space-y-2">
+					<Label>Hero Background — Mobile</Label>
+					<p className="text-xs text-slate-500">Falls back to the default if not set.</p>
+					<MediaPicker
+						type="image"
+						value={watch("heroBgMobile") || null}
+						onChange={(url) => setValue("heroBgMobile", url || "", { shouldDirty: true })}
+						placeholder="Select mobile hero background"
+						disabled={isLoading}
+						galleryTitle="Select Mobile Hero Background"
+					/>
+				</div>
+
+				{/* Hero Background — Desktop */}
+				<div className="space-y-2">
+					<Label>Hero Background — Desktop</Label>
+					<p className="text-xs text-slate-500">Falls back to the default if not set.</p>
+					<MediaPicker
+						type="image"
+						value={watch("heroBgDesktop") || null}
+						onChange={(url) => setValue("heroBgDesktop", url || "", { shouldDirty: true })}
+						placeholder="Select desktop hero background"
+						disabled={isLoading}
+						galleryTitle="Select Desktop Hero Background"
+					/>
+				</div>
+			</div>
+
+			<Separator className="my-8" />
 
 			{/* Category Image */}
 			<div className="space-y-2">

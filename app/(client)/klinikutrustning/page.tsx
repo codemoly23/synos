@@ -26,7 +26,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { getKlinikutrustningFaqSection } from "@/lib/services/klinikutrustning-page.service";
+import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection } from "@/lib/services/klinikutrustning-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -333,7 +333,7 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 }
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
@@ -341,7 +341,16 @@ export default async function KategoriPage() {
 			title: FALLBACK_FAQ_TITLE,
 			faqs: FALLBACK_FAQS,
 		})),
+		getKlinikutrustningHeroSection().catch(() => null),
 	]);
+
+	const heroTitle = heroSection?.title || "Motus Pro";
+	const heroSubtitle = heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
+	const heroBullets = heroSection?.bulletPoints?.length
+		? heroSection.bulletPoints
+		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
+	const heroBgMobile = heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then filter to only visible items; normalize _id to string.
 	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
@@ -392,7 +401,7 @@ export default async function KategoriPage() {
 				{/* ── MOBILE LAYOUT ── */}
 				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 					<ImageComponent
-						src="/images/Background Mobile.jpeg"
+						src={heroBgMobile}
 						alt=""
 						fill
 						priority
@@ -404,19 +413,14 @@ export default async function KategoriPage() {
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
 					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
-						Motus Pro
+						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
 					<p className="text-white/70 text-sm mb-8 leading-relaxed">
-						Avancerad laserplattform för professionella behandlingar
+						{heroSubtitle}
 					</p>
 					<ul className="space-y-4">
-						{[
-							"Snabb och effektiv behandling",
-							"Skonsam teknik med hög precision",
-							"Intuitiv touchskärm och smart arbetsflöde",
-							"Anpassad för professionella kliniker",
-						].map((item) => (
+						{heroBullets.map((item) => (
 							<li key={item} className="flex items-center gap-3">
 								<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
 									<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
@@ -435,7 +439,7 @@ export default async function KategoriPage() {
 				<div className="hidden lg:block">
 					<div className="_container relative overflow-hidden min-h-[740px]">
 						<ImageComponent
-							src="/images/Product detail breadcrumbs background.jpeg"
+							src={heroBgDesktop}
 							alt=""
 							fill
 							priority
@@ -447,10 +451,10 @@ export default async function KategoriPage() {
 							{/* Right — Form */}
 							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 								<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
-									Motus Pro
+									{heroTitle}
 								</h2>
 								<p className="text-white/60 text-base mb-8 leading-relaxed">
-									Avancerad laserplattform för professionella behandlingar
+									{heroSubtitle}
 								</p>
 								<div className="space-y-4">
 									<div className="grid grid-cols-2 gap-4">

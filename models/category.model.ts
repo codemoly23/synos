@@ -39,6 +39,11 @@ export interface ICategory extends Document {
 	seo?: ICategorySeo;
 	inquiryBgMobile?: string;
 	inquiryBgDesktop?: string;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string;
+	heroBgDesktop?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -137,6 +142,28 @@ const CategorySchema = new Schema<ICategory>(
 			default: "",
 		},
 		inquiryBgDesktop: {
+			type: String,
+			default: "",
+		},
+		heroTitle: {
+			type: String,
+			default: "",
+			trim: true,
+		},
+		heroSubtitle: {
+			type: String,
+			default: "",
+			trim: true,
+		},
+		heroBulletPoints: {
+			type: [String],
+			default: [],
+		},
+		heroBgMobile: {
+			type: String,
+			default: "",
+		},
+		heroBgDesktop: {
 			type: String,
 			default: "",
 		},

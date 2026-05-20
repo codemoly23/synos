@@ -493,17 +493,35 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
 	const heroConfig = categoryHeroConfig[categorySlug];
 
+	const catExtra = category as unknown as {
+		heroTitle?: string;
+		heroSubtitle?: string;
+		heroBulletPoints?: string[];
+		heroBgMobile?: string;
+		heroBgDesktop?: string;
+	};
+
+	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title;
+	const resolvedHeroSubtitle = catExtra.heroSubtitle || heroConfig?.subtitle;
+	const resolvedBulletPoints =
+		catExtra.heroBulletPoints?.filter(Boolean).length
+			? catExtra.heroBulletPoints
+			: heroConfig?.bulletPoints ?? [];
+	const resolvedBgMobile = catExtra.heroBgMobile || "/images/Background Mobile.jpeg";
+	const resolvedBgDesktop = catExtra.heroBgDesktop || "/images/Product detail breadcrumbs background.jpeg";
+	const showHeroLayout = !!resolvedHeroTitle;
+
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 
-				{heroConfig ? (
+				{showHeroLayout ? (
 					<>
 						{/* ── MOBILE LAYOUT ── */}
 						<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 							<ImageComponent
-								src="/images/Background Mobile.jpeg"
+								src={resolvedBgMobile}
 								alt=""
 								fill
 								priority
@@ -515,22 +533,26 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						{/* Mobile text */}
 						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
 							<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
-								{heroConfig.title}
+								{resolvedHeroTitle}
 							</h1>
 							<div className="w-14 h-[2px] bg-primary mb-4" />
-							<p className="text-white/70 text-sm mb-8 leading-relaxed">
-								{heroConfig.subtitle}
-							</p>
-							<ul className="space-y-4">
-								{heroConfig.bulletPoints.map((item) => (
-									<li key={item} className="flex items-center gap-3">
-										<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
-											<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
-										</div>
-										<span className="text-white/90 text-sm font-thin">{item}</span>
-									</li>
-								))}
-							</ul>
+							{resolvedHeroSubtitle && (
+								<p className="text-white/70 text-sm mb-8 leading-relaxed">
+									{resolvedHeroSubtitle}
+								</p>
+							)}
+							{resolvedBulletPoints.length > 0 && (
+								<ul className="space-y-4">
+									{resolvedBulletPoints.map((item) => (
+										<li key={item} className="flex items-center gap-3">
+											<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
+												<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
+											</div>
+											<span className="text-white/90 text-sm font-thin">{item}</span>
+										</li>
+									))}
+								</ul>
+							)}
 							<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 								<FileText className="h-4 w-4 shrink-0" />
 								Begär offert
@@ -541,7 +563,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						<div className="hidden lg:block">
 							<div className="_container relative overflow-hidden min-h-[740px]">
 								<ImageComponent
-									src="/images/Product detail breadcrumbs background.jpeg"
+									src={resolvedBgDesktop}
 									alt=""
 									fill
 									priority
@@ -553,12 +575,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									{/* Right — Form */}
 									<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 										<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
-											{heroConfig.title}
+											{resolvedHeroTitle}
 										</h2>
-										<p className="text-white/60 text-base mb-8 leading-relaxed">
-											{heroConfig.subtitle}
-										</p>
-										<HeroCategoryForm categoryName={heroConfig.title} />
+										{resolvedHeroSubtitle && (
+											<p className="text-white/60 text-base mb-8 leading-relaxed">
+												{resolvedHeroSubtitle}
+											</p>
+										)}
+										<HeroCategoryForm categoryName={resolvedHeroTitle} />
 									</div>
 								</div>
 							</div>
