@@ -20,6 +20,8 @@ export interface UpdateKlinikutrustningPageInput {
 		bgMobile?: string;
 		bgDesktop?: string;
 	};
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 }
 
 export type KlinikutrustningPageData = Omit<
@@ -71,6 +73,9 @@ class KlinikutrustningPageRepository {
 			if (h.bgMobile !== undefined) updateData["heroSection.bgMobile"] = h.bgMobile;
 			if (h.bgDesktop !== undefined) updateData["heroSection.bgDesktop"] = h.bgDesktop;
 		}
+
+		if (data.inquiryBgMobile !== undefined) updateData["inquiryBgMobile"] = data.inquiryBgMobile;
+		if (data.inquiryBgDesktop !== undefined) updateData["inquiryBgDesktop"] = data.inquiryBgDesktop;
 
 		const updated = await KlinikutrustningPage.findOneAndUpdate(
 			{},

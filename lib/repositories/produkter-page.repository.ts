@@ -4,6 +4,7 @@ import {
 	getProdukterPageModelSync,
 	type IProdukterPage,
 	type IProdukterFaqSection,
+	type IProdukterHeroSection,
 	type IProdukterFaq,
 } from "@/models/produkter-page.model";
 
@@ -12,6 +13,15 @@ export interface UpdateProdukterPageInput {
 		title?: string;
 		faqs?: Array<Partial<IProdukterFaq>>;
 	};
+	heroSection?: {
+		title?: string;
+		subtitle?: string;
+		bulletPoints?: string[];
+		bgMobile?: string;
+		bgDesktop?: string;
+	};
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 }
 
 export type ProdukterPageData = Omit<IProdukterPage, keyof Document>;
@@ -52,6 +62,18 @@ class ProdukterPageRepository {
 			}
 		}
 
+		if (data.heroSection) {
+			const h = data.heroSection;
+			if (h.title !== undefined) updateData["heroSection.title"] = h.title;
+			if (h.subtitle !== undefined) updateData["heroSection.subtitle"] = h.subtitle;
+			if (h.bulletPoints !== undefined) updateData["heroSection.bulletPoints"] = h.bulletPoints;
+			if (h.bgMobile !== undefined) updateData["heroSection.bgMobile"] = h.bgMobile;
+			if (h.bgDesktop !== undefined) updateData["heroSection.bgDesktop"] = h.bgDesktop;
+		}
+
+		if (data.inquiryBgMobile !== undefined) updateData["inquiryBgMobile"] = data.inquiryBgMobile;
+		if (data.inquiryBgDesktop !== undefined) updateData["inquiryBgDesktop"] = data.inquiryBgDesktop;
+
 		const updated = await ProdukterPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
@@ -68,6 +90,11 @@ class ProdukterPageRepository {
 	async getFaqSection(): Promise<IProdukterFaqSection> {
 		const page = await this.get();
 		return page.faqSection;
+	}
+
+	async getHeroSection(): Promise<IProdukterHeroSection> {
+		const page = await this.get();
+		return page.heroSection ?? { title: "", subtitle: "", bulletPoints: [], bgMobile: "", bgDesktop: "" };
 	}
 }
 

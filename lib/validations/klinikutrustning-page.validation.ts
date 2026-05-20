@@ -24,6 +24,8 @@ export const klinikHeroSectionSchema = z.object({
 export const updateKlinikutrustningPageSchema = z.object({
 	faqSection: klinikFaqSectionSchema.optional(),
 	heroSection: klinikHeroSectionSchema.optional(),
+	inquiryBgMobile: z.string().max(500).optional(),
+	inquiryBgDesktop: z.string().max(500).optional(),
 });
 
 export type UpdateKlinikutrustningPageData = z.infer<

@@ -132,7 +132,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="sv">
+		<html lang="sv" className="scroll-smooth">
 			<head>
 				{/* Google Tag Manager - only loads when GTM_ID is configured */}
 				{GTM_ID && (

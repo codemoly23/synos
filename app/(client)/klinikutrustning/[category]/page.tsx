@@ -553,10 +553,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									))}
 								</ul>
 							)}
-							<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+							<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 								<FileText className="h-4 w-4 shrink-0" />
 								Begär offert
-							</button>
+							</a>
 						</div>
 
 						{/* ── DESKTOP LAYOUT ── */}
@@ -718,16 +718,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			})()}
 
 			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
-			<ProductInquiryForm
-				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
-				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
-				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
-				categoryName={category.name}
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-				bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || undefined}
-				bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || undefined}
-			/>
+			<div id="inquiry-form">
+				<ProductInquiryForm
+					pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
+					purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
+					purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
+					categoryName={category.name}
+					contactPhone={contactInfo.phone}
+					contactEmail={contactInfo.email}
+					bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || undefined}
+					bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || undefined}
+				/>
+			</div>
 		</div>
 	);
 }

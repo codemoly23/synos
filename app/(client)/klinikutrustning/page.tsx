@@ -26,7 +26,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection } from "@/lib/services/klinikutrustning-page.service";
+import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -333,7 +333,7 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 }
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection, heroSection] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection, pageData] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
@@ -342,6 +342,7 @@ export default async function KategoriPage() {
 			faqs: FALLBACK_FAQS,
 		})),
 		getKlinikutrustningHeroSection().catch(() => null),
+		getKlinikutrustningPage().catch(() => null),
 	]);
 
 	const heroTitle = heroSection?.title || "Motus Pro";
@@ -429,10 +430,10 @@ export default async function KategoriPage() {
 							</li>
 						))}
 					</ul>
-					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
-					</button>
+					</a>
 				</div>
 
 				{/* ── DESKTOP LAYOUT ── */}
@@ -551,13 +552,17 @@ export default async function KategoriPage() {
 			</section>
 
 			{/* Contact form (dark, product-inquiry styling, generic mode) */}
-			<ProductInquiryForm
-				pillLabel="SYNOS MEDICAL"
-				purchaseTitle="Kontakta oss"
-				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-			/>
+			<div id="inquiry-form">
+				<ProductInquiryForm
+					pillLabel="SYNOS MEDICAL"
+					purchaseTitle="Kontakta oss"
+					purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
+					contactPhone={contactInfo.phone}
+					contactEmail={contactInfo.email}
+					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
+					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+				/>
+			</div>
 		</div>
 	);
 }

@@ -49,6 +49,8 @@ const formSchema = z.object({
 		bgMobile: z.string().optional(),
 		bgDesktop: z.string().optional(),
 	}),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
 	faqSection: z.object({
 		title: z.string().max(200).optional(),
 		faqs: z.array(faqItemSchema),
@@ -65,6 +67,8 @@ const defaultValues: FormData = {
 		bgMobile: "",
 		bgDesktop: "",
 	},
+	inquiryBgMobile: "",
+	inquiryBgDesktop: "",
 	faqSection: {
 		title: "",
 		faqs: [],
@@ -122,6 +126,8 @@ export default function CategoriesSettingsPage() {
 							bgMobile: data?.heroSection?.bgMobile ?? "",
 							bgDesktop: data?.heroSection?.bgDesktop ?? "",
 						},
+						inquiryBgMobile: data?.inquiryBgMobile ?? "",
+						inquiryBgDesktop: data?.inquiryBgDesktop ?? "",
 						faqSection: {
 							title:
 								data?.faqSection?.title ?? "Vanliga frågor om klinikutrustning",
@@ -185,6 +191,8 @@ export default function CategoriesSettingsPage() {
 					bgMobile: data.heroSection.bgMobile,
 					bgDesktop: data.heroSection.bgDesktop,
 				},
+				inquiryBgMobile: data.inquiryBgMobile,
+				inquiryBgDesktop: data.inquiryBgDesktop,
 				faqSection: {
 					title: data.faqSection.title,
 					faqs: data.faqSection.faqs.map((f, idx) => ({
@@ -213,6 +221,8 @@ export default function CategoriesSettingsPage() {
 						bgMobile: updated?.heroSection?.bgMobile ?? "",
 						bgDesktop: updated?.heroSection?.bgDesktop ?? "",
 					},
+					inquiryBgMobile: updated?.inquiryBgMobile ?? "",
+					inquiryBgDesktop: updated?.inquiryBgDesktop ?? "",
 					faqSection: {
 						title: updated?.faqSection?.title ?? "",
 						faqs: (updated?.faqSection?.faqs ?? []).map(
@@ -376,6 +386,38 @@ export default function CategoriesSettingsPage() {
 									onChange={(url) => form.setValue("heroSection.bgDesktop", url || "", { shouldDirty: true })}
 									placeholder="Select desktop background image"
 									galleryTitle="Select Desktop Hero Background"
+								/>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Inquiry Form Backgrounds */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Inquiry Form Backgrounds</CardTitle>
+							<CardDescription>
+								Background images for the contact form section at the bottom of the page. Falls back to default if not set.
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-6">
+							<div className="space-y-2">
+								<Label>Background — Mobile</Label>
+								<MediaPicker
+									type="image"
+									value={form.watch("inquiryBgMobile") || null}
+									onChange={(url) => form.setValue("inquiryBgMobile", url || "", { shouldDirty: true })}
+									placeholder="Select mobile inquiry background"
+									galleryTitle="Select Mobile Inquiry Background"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label>Background — Desktop</Label>
+								<MediaPicker
+									type="image"
+									value={form.watch("inquiryBgDesktop") || null}
+									onChange={(url) => form.setValue("inquiryBgDesktop", url || "", { shouldDirty: true })}
+									placeholder="Select desktop inquiry background"
+									galleryTitle="Select Desktop Inquiry Background"
 								/>
 							</div>
 						</CardContent>

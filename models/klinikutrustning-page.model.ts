@@ -26,6 +26,8 @@ export interface IKlinikutrustningPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	faqSection: IKlinikFaqSection;
 	heroSection: IKlinikHeroSection;
+	inquiryBgMobile: string;
+	inquiryBgDesktop: string;
 	updatedAt: Date;
 	createdAt: Date;
 }
@@ -121,6 +123,8 @@ const KlinikutrustningPageSchema = new Schema<IKlinikutrustningPage>(
 				bgDesktop: "",
 			},
 		},
+		inquiryBgMobile: { type: String, default: "" },
+		inquiryBgDesktop: { type: String, default: "" },
 	},
 	{
 		timestamps: true,
@@ -143,7 +147,7 @@ function buildKlinikutrustningPageModel(): Model<IKlinikutrustningPage> {
 	const cached = mongoose.models.KlinikutrustningPage as Model<IKlinikutrustningPage> | undefined;
 	if (cached) {
 		// Recompile if heroSection field is missing (stale HMR cache)
-		if (cached.schema.path("heroSection")) return cached;
+		if (cached.schema.path("heroSection") && cached.schema.path("inquiryBgMobile")) return cached;
 		delete mongoose.models.KlinikutrustningPage;
 		delete (mongoose as unknown as { modelSchemas?: Record<string, unknown> }).modelSchemas?.KlinikutrustningPage;
 	}
