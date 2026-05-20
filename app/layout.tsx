@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Gelasio, Roboto } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -16,6 +16,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
 	subsets: ["latin"],
+});
+
+const gelasio = Gelasio({
+	variable: "--font-gelasio-loaded",
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
+});
+
+const roboto = Roboto({
+	variable: "--font-roboto",
+	subsets: ["latin"],
+	weight: ["100", "300", "400"],
 });
 
 // Default keywords as fallback
@@ -172,7 +184,7 @@ export default function RootLayout({
 				)}
 			</head>
 			<body
-				className={`${geistSans.className} ${geistMono.variable} antialiased bg-slate-100`}
+				className={`${geistSans.className} ${geistMono.variable} ${gelasio.variable} ${roboto.variable} antialiased bg-slate-100`}
 			>
 				{/* Google Tag Manager (noscript) - only loads when GTM_ID is configured */}
 				{GTM_ID && (

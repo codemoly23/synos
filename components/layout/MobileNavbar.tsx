@@ -32,6 +32,11 @@ const MobileNavbar = ({ useLightText = false }: MobileNavbarProps) => {
 const [open, setOpen] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 	const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+	const [expandedDynamic, setExpandedDynamic] = useState<string | null>(null);
+
+	const toggleDynamic = (title: string) => {
+		setExpandedDynamic(expandedDynamic === title ? null : title);
+	};
 	const { data: navigationData, isLoading } = useNavigation();
 
 	const handleQuoteClick = () => {
@@ -77,29 +82,35 @@ const toggleCategory = (categoryId: string) => {
 {/* Scrollable Navigation */}
 					<div className="flex-1 overflow-y-auto nav-dropdown-scroll">
 						<div className="px-2 py-2 pb-4">
-							<Accordion
-								type="single"
-								collapsible
-								className="w-full space-y-0.5"
-							>
+							<div className="w-full space-y-0.5">
 								{mainNavNew.map((item, index) => (
-									<AccordionItem
-										key={item.title}
-										value={`item-${index}`}
-										className="border-0"
-									>
-										{/* Dynamic Produkter menu */}
+									<div key={item.title}>
 										{item.isDynamic ? (
+											/* Dynamic items: Link + expand button */
 											<>
-												<AccordionTrigger className="px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary hover:bg-secondary/5 hover:no-underline rounded-lg transition-all data-[state=open]:bg-secondary/5 data-[state=open]:text-secondary">
-													<span className="flex-1 text-left">
+												<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
+													<Link
+														href={item.href}
+														className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary"
+														onClick={() => setOpen(false)}
+													>
 														{item.title}
-													</span>
-												</AccordionTrigger>
-												<AccordionContent className="pb-1 pt-0.5">
-													<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
+													</Link>
+													<button
+														onClick={() => toggleDynamic(item.title)}
+														className="px-3 py-2 text-muted-foreground hover:text-secondary transition-colors"
+													>
+														<ChevronDown
+															className={cn(
+																"h-4 w-4 transition-transform duration-200",
+																expandedDynamic === item.title && "rotate-180"
+															)}
+														/>
+													</button>
+												</div>
+												{expandedDynamic === item.title && (
+													<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5 pb-1 pt-0.5">
 														{item.isTechnologyMenu ? (
-															/* UTRUSTNING: DB technology groups */
 															<>
 																{(navigationData?.technologyGroups || []).map((tech) => (
 																	<div key={tech.name}>
@@ -131,69 +142,65 @@ const toggleCategory = (categoryId: string) => {
 														) : item.isCategoryMenu ? (
 															<>
 																{isLoading && (
-																	<div className="px-3 py-2 text-sm text-gray-400">
-																		Laddar...
-																	</div>
+																	<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
 																)}
-																{navigationData?.categories.map(
-																	(category) => (
-																		<div key={category._id}>
-																			{category.products.length > 0 ? (
-																				<>
-																					<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-																						<Link
-																							href={`/klinikutrustning/${category.slug}`}
-																							className="flex-1 px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-																							onClick={() => setOpen(false)}
-																						>
-																							{category.name}
-																						</Link>
-																						<button
-																							onClick={() => toggleCategory(category._id)}
-																							className="px-2 py-2 text-muted-foreground hover:text-secondary transition-colors"
-																						>
-																							<ChevronDown
-																								className={cn(
-																									"h-4 w-4 transition-transform duration-200",
-																									expandedCategory === category._id && "rotate-180"
-																								)}
-																							/>
-																						</button>
-																					</div>
-																					{expandedCategory === category._id && (
-																						<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200 max-h-[200px] overflow-y-auto nav-dropdown-scroll">
-																							{category.products.map((product) => (
-																								<Link
-																									key={product._id}
-																									href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																									className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
-																									onClick={() => setOpen(false)}
-																								>
-																									{product.title}
-																								</Link>
-																							))}
+																{navigationData?.categories.map((category) => (
+																	<div key={category._id}>
+																		{category.products.length > 0 ? (
+																			<>
+																				<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
+																					<Link
+																						href={`/klinikutrustning/${category.slug}`}
+																						className="flex-1 px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+																						onClick={() => setOpen(false)}
+																					>
+																						{category.name}
+																					</Link>
+																					<button
+																						onClick={() => toggleCategory(category._id)}
+																						className="px-2 py-2 text-muted-foreground hover:text-secondary transition-colors"
+																					>
+																						<ChevronDown
+																							className={cn(
+																								"h-4 w-4 transition-transform duration-200",
+																								expandedCategory === category._id && "rotate-180"
+																							)}
+																						/>
+																					</button>
+																				</div>
+																				{expandedCategory === category._id && (
+																					<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200 max-h-[200px] overflow-y-auto nav-dropdown-scroll">
+																						{category.products.map((product) => (
 																							<Link
-																								href={`/klinikutrustning/${category.slug}`}
-																								className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																								key={product._id}
+																								href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
+																								className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																								onClick={() => setOpen(false)}
 																							>
-																								Visa alla →
+																								{product.title}
 																							</Link>
-																						</div>
-																					)}
-																				</>
-																			) : (
-																				<Link
-																					href={`/klinikutrustning/${category.slug}`}
-																					className="flex items-center px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-secondary/5 rounded-lg transition-all"
-																					onClick={() => setOpen(false)}
-																				>
-																					{category.name}
-																				</Link>
-																			)}
-																		</div>
-																	)
-																)}
+																						))}
+																						<Link
+																							href={`/klinikutrustning/${category.slug}`}
+																							className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																							onClick={() => setOpen(false)}
+																						>
+																							Visa alla →
+																						</Link>
+																					</div>
+																				)}
+																			</>
+																		) : (
+																			<Link
+																				href={`/klinikutrustning/${category.slug}`}
+																				className="flex items-center px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-secondary/5 rounded-lg transition-all"
+																				onClick={() => setOpen(false)}
+																			>
+																				{category.name}
+																			</Link>
+																		)}
+																	</div>
+																))}
 																{navigationData && navigationData.categories.length === 0 && (
 																	<div className="px-3 py-2 text-sm text-gray-400">
 																		Inga kategorier tillgängliga
@@ -202,33 +209,33 @@ const toggleCategory = (categoryId: string) => {
 															</>
 														) : null}
 													</div>
-												</AccordionContent>
+												)}
 											</>
 										) : item.items ? (
-											// Static menu items with subitems (Starta Eget, Om Oss)
-											<>
-												<AccordionTrigger className="px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary hover:bg-secondary/5 hover:no-underline rounded-lg transition-all data-[state=open]:bg-secondary/5 data-[state=open]:text-secondary">
-													<span className="flex-1 text-left">
-														{item.title}
-													</span>
-												</AccordionTrigger>
-												<AccordionContent className="pb-1 pt-0.5">
-													<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
-														{item.items.map((subItem) => (
-															<Link
-																key={subItem.title}
-																href={subItem.href}
-																className="block px-3 py-2 text-sm text-gray-600 hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
-																onClick={() => setOpen(false)}
-															>
-																{subItem.title}
-															</Link>
-														))}
-													</div>
-												</AccordionContent>
-											</>
+											/* Static subitems (Starta Eget, Om Oss) */
+											<Accordion type="single" collapsible className="w-full">
+												<AccordionItem value={`item-${index}`} className="border-0">
+													<AccordionTrigger className="px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary hover:bg-secondary/5 hover:no-underline rounded-lg transition-all data-[state=open]:bg-secondary/5 data-[state=open]:text-secondary">
+														<span className="flex-1 text-left">{item.title}</span>
+													</AccordionTrigger>
+													<AccordionContent className="pb-1 pt-0.5">
+														<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
+															{item.items.map((subItem) => (
+																<Link
+																	key={subItem.title}
+																	href={subItem.href}
+																	className="block px-3 py-2 text-sm text-gray-600 hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
+																	onClick={() => setOpen(false)}
+																>
+																	{subItem.title}
+																</Link>
+															))}
+														</div>
+													</AccordionContent>
+												</AccordionItem>
+											</Accordion>
 										) : (
-											// Simple link items (Nyheter och artiklar, Utbildningar, Kontakt)
+											/* Simple link items */
 											<Link
 												href={item.href}
 												className="flex items-center px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
@@ -237,9 +244,9 @@ const toggleCategory = (categoryId: string) => {
 												{item.title}
 											</Link>
 										)}
-									</AccordionItem>
+									</div>
 								))}
-							</Accordion>
+							</div>
 						</div>
 					</div>
 

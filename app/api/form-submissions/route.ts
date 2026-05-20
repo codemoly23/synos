@@ -83,6 +83,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "hero_inquiry") {
+			submission = await formSubmissionService.createHeroInquiry(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

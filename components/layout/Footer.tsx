@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import {
 	Facebook,
 	Linkedin,
@@ -200,12 +201,19 @@ export function Footer({
 
 				<div className="h-px w-full bg-white/10 my-8" />
 
-				<div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/50">
+				<div className="flex flex-col md:grid md:grid-cols-3 items-center gap-4 text-sm text-primary-foreground/50">
 					<p>
 						© {currentYear} {config.company.name}. Alla rättigheter
 						förbehållna.
 					</p>
-					<div className="flex gap-6">
+					<div className="flex justify-center items-center" style={{ zoom: 0.4 }}>
+						<div id="reco--badge-yearsInRowBadge" />
+						<Script
+							src="https://widget.reco.se/yearsInRowBadge/4026137.js"
+							strategy="lazyOnload"
+						/>
+					</div>
+					<div className="flex justify-end gap-6">
 						{settings.bottomLinks
 							.filter((link) => link.label !== "Sitemap")
 							.map((link) => (

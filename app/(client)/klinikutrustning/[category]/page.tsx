@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
@@ -20,12 +20,14 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { ListFilter, ShieldCheck, BookOpen, Settings } from "lucide-react";
+import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
 import { technologyMap } from "@/config/technology-map";
+import { categoryHeroConfig } from "@/config/category-hero-config";
+import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -470,41 +472,179 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		? stripHtml(category.description).slice(0, 300)
 		: undefined;
 
+	const heroConfig = categoryHeroConfig[categorySlug];
+
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
-			<section className="relative overflow-hidden bg-secondary padding-top pb-0">
-				<div className="_container relative z-10">
-					<div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 min-h-[280px]">
-						<div className="py-12 lg:py-16">
-							<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
-								Klinikutrustning
-							</p>
-							<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
-								{category.name}
-							</h1>
-							{heroSubtitle && (
-								<p className="text-white/60 text-base max-w-lg leading-relaxed">
-									{heroSubtitle}
-								</p>
-							)}
-						</div>
-						{category.image && (
-							<div className="hidden lg:flex items-center justify-end">
-								<div className="relative w-[500px] h-80 drop-shadow-2xl">
+			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
+
+				{heroConfig ? (
+					<>
+						{/* ── MOBILE LAYOUT ── */}
+						<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
+							<ImageComponent
+								src="/images/Background Mobile.jpeg"
+								alt=""
+								fill
+								priority
+								className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+								sizes="100vw"
+							/>
+							<div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
+								<div className="relative w-full h-full">
 									<ImageComponent
-										src={category.image}
-										alt={category.name}
+										src={heroConfig.mobileImage}
+										alt={heroConfig.title}
 										fill
-										className="object-contain object-center"
+										className="object-contain drop-shadow-2xl"
 										priority
-										sizes="500px"
+										sizes="100vw"
 									/>
 								</div>
 							</div>
-						)}
+						</div>
+
+						{/* Mobile text */}
+						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
+							<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
+								{heroConfig.title}
+							</h1>
+							<div className="w-14 h-[2px] bg-primary mb-4" />
+							<p className="text-white/70 text-sm mb-8 leading-relaxed">
+								{heroConfig.subtitle}
+							</p>
+							<ul className="space-y-4">
+								{heroConfig.bulletPoints.map((item) => (
+									<li key={item} className="flex items-center gap-3">
+										<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
+											<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
+										</div>
+										<span className="text-white/90 text-sm font-thin">{item}</span>
+									</li>
+								))}
+							</ul>
+							<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+								<FileText className="h-4 w-4 shrink-0" />
+								Begär offert
+							</button>
+						</div>
+
+						{/* ── DESKTOP LAYOUT ── */}
+						<div className="hidden lg:block">
+							<div className="_container relative overflow-hidden min-h-[740px]">
+								<ImageComponent
+									src="/images/Product detail breadcrumbs background.jpeg"
+									alt=""
+									fill
+									priority
+									className="object-cover object-[30%_top]"
+									sizes="100vw"
+								/>
+								<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
+									{/* Left — machine */}
+									<div className="relative h-[740px] flex flex-col items-center justify-center">
+										<div
+											className="absolute inset-x-[8%] pointer-events-none z-0"
+											style={{
+												bottom: "14%",
+												height: "90px",
+												background: "radial-gradient(ellipse at 50% 80%, rgba(184,138,58,0.22) 0%, transparent 70%)",
+												filter: "blur(22px)",
+											}}
+										/>
+										<div className="relative w-full h-[620px] z-10">
+											<ImageComponent
+												src={heroConfig.desktopImage}
+												alt={heroConfig.title}
+												fill
+												className="object-contain object-bottom"
+												priority
+												sizes="700px"
+											/>
+										</div>
+										<div className="relative z-10 w-full shrink-0 -mt-3">
+											<div
+												className="mx-auto pointer-events-none"
+												style={{
+													width: "46%",
+													height: "16px",
+													background: "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)",
+													filter: "blur(9px)",
+												}}
+											/>
+											<div
+												className="w-full mt-1 overflow-hidden"
+												style={{
+													height: "68px",
+													opacity: 0.35,
+													maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)",
+													WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)",
+												}}
+											>
+												<div className="relative w-full h-[620px]" style={{ transform: "scaleY(-1)" }}>
+													<ImageComponent
+														src={heroConfig.desktopImage}
+														fill
+														alt=""
+														className="object-contain object-bottom"
+														sizes="700px"
+													/>
+												</div>
+											</div>
+										</div>
+									</div>
+									{/* Right — Form */}
+									<div className="flex flex-col justify-center py-10 pl-10 pr-8">
+										<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
+											{heroConfig.title}
+										</h2>
+										<p className="text-white/60 text-base mb-8 leading-relaxed">
+											{heroConfig.subtitle}
+										</p>
+										<HeroCategoryForm categoryName={heroConfig.title} />
+									</div>
+								</div>
+							</div>
+						</div>
+					</>
+				) : (
+					/* Fallback for categories without hero config */
+					<div className="relative bg-secondary pt-20 sm:pt-24 pb-0">
+						<div className="_container relative z-10">
+							<div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 min-h-[280px]">
+								<div className="py-12 lg:py-16">
+									<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
+										Klinikutrustning
+									</p>
+									<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
+										{category.name}
+									</h1>
+									{heroSubtitle && (
+										<p className="text-white/60 text-base max-w-lg leading-relaxed">
+											{heroSubtitle}
+										</p>
+									)}
+								</div>
+								{category.image && (
+									<div className="hidden lg:flex items-center justify-end">
+										<div className="relative w-[500px] h-80 drop-shadow-2xl">
+											<ImageComponent
+												src={category.image}
+												alt={category.name}
+												fill
+												className="object-contain object-center"
+												priority
+												sizes="500px"
+											/>
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
 					</div>
-				</div>
+				)}
+
 			</section>
 
 			<div className="bg-linear-to-b from-slate-100 to-primary/10">
@@ -570,16 +710,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			</div>
 			</div>
 
-			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
-			<ProductInquiryForm
-				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
-				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
-				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
-				categoryName={category.name}
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-			/>
-
 			{/* FAQ Footer Section (fallback content; per-category content via admin panel later) */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 				<div className="_container mx-auto px-4">
@@ -589,6 +719,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					/>
 				</div>
 			</section>
+
+			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
+			<ProductInquiryForm
+				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
+				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
+				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
+				categoryName={category.name}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
 		</div>
 	);
 }

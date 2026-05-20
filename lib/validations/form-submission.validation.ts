@@ -13,6 +13,7 @@ export const formSubmissionTypes = [
 	"callback_request",
 	"tour_request",
 	"job_application",
+	"hero_inquiry",
 ] as const;
 
 /**
@@ -96,10 +97,10 @@ const baseFormFields = {
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
-		.max(20, "Telefonnummer får inte överstiga 20 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 siffror")
 		.regex(
-			/^[0-9\s\-]+$/,
-			"Endast siffror, mellanslag och bindestreck tillåtna"
+			/^[+]?[0-9\s\-()+]+$/,
+			"Ogiltigt telefonnummer"
 		)
 		.trim(),
 
@@ -126,24 +127,54 @@ const baseFormFields = {
 
 /**
  * Product Inquiry Form Schema
+ * phone/countryCode/countryName/helpType are optional for mobile compatibility.
+ * Desktop enforces them via its own frontend schema.
  */
 export const productInquirySchema = z
 	.object({
-		...baseFormFields,
+		// Required base fields
+		fullName: baseFormFields.fullName,
+		email: baseFormFields.email,
+		corporationNumber: baseFormFields.corporationNumber,
+		message: baseFormFields.message,
+		gdprConsent: baseFormFields.gdprConsent,
+		marketingConsent: baseFormFields.marketingConsent,
 
-		// Product inquiry specific fields
-		helpType: z.enum(helpTypes, {
-			message: "Välj hur vi kan hjälpa dig",
-		}),
+		// Optional for mobile (desktop provides via CountryCodeSelect)
+		countryCode: z
+			.string()
+			.min(2, "Landskod krävs")
+			.max(10, "Ogiltig landskod")
+			.regex(/^\+\d{1,4}$/, "Ogiltig landskod")
+			.optional()
+			.or(z.literal("")),
+		countryName: z
+			.string()
+			.min(2, "Land krävs")
+			.max(100, "Landets namn får inte överstiga 100 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
+		phone: z
+			.string()
+			.min(6, "Telefonnummer måste vara minst 6 siffror")
+			.max(25, "Telefonnummer får inte överstiga 25 siffror")
+			.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
+			.trim()
+			.optional()
+			.or(z.literal("")),
+		helpType: z
+			.enum(helpTypes, { message: "Välj hur vi kan hjälpa dig" })
+			.optional(),
 
-		// Hidden/readonly fields from product
+		// Required product fields
 		productId: z.string().min(1, "Produkt-ID krävs"),
 		productName: z.string().min(1, "Produktnamn krävs"),
 		productSlug: z.string().min(1, "Produkt-slug krävs"),
 	})
 	.refine(
 		(data) => {
-			// Validate phone number with country code
+			if (!data.countryCode || !data.phone) return true;
 			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
 			return isValidPhoneNumber(fullPhone);
 		},
@@ -486,6 +517,47 @@ export const jobApplicationSchema = z.object({
 		.or(z.literal("")),
 });
 
+/**
+ * Hero Inquiry Form Schema
+ * Minimal schema for the category hero section contact form.
+ * No phone required — name, company, email, optional message.
+ */
+export const heroInquirySchema = z.object({
+	fullName: z
+		.string()
+		.min(2, "Namnet måste vara minst 2 tecken")
+		.max(100, "Namnet får inte överstiga 100 tecken")
+		.trim(),
+
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+
+	companyName: z
+		.string()
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	message: z
+		.string()
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	categoryName: z
+		.string()
+		.max(200)
+		.trim()
+		.optional()
+		.or(z.literal("")),
+});
+
 // Type exports
 export type ProductInquiryInput = z.infer<typeof productInquirySchema>;
 export type TrainingInquiryInput = z.infer<typeof trainingInquirySchema>;
@@ -499,3 +571,4 @@ export type FormSubmissionListQuery = z.infer<
 >;
 export type UpdateStatusInput = z.infer<typeof updateStatusSchema>;
 export type BulkExportInput = z.infer<typeof bulkExportSchema>;
+export type HeroInquiryInput = z.infer<typeof heroInquirySchema>;

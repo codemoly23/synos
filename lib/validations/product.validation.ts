@@ -122,6 +122,44 @@ const seoSchema = z.object({
 });
 
 /**
+ * Feature Section Item Schema
+ */
+const featureSectionItemSchema = z.object({
+	iconName: z.string().max(100).optional().default(""),
+	title: z.string().max(200).optional().default(""),
+	description: z.string().max(500).optional().default(""),
+});
+
+const featureSectionsSchema = z.object({
+	section1: z.object({
+		eyebrow: z.string().max(100).optional().default(""),
+		heading: z.string().max(200).optional().default(""),
+		paragraph1: z.string().max(1000).optional().default(""),
+		paragraph2: z.string().max(1000).optional().default(""),
+		numberedFeatures: z.array(featureSectionItemSchema).max(3).optional().default([]),
+		benefits: z.array(featureSectionItemSchema).max(6).optional().default([]),
+	}).optional(),
+	section2: z.object({
+		eyebrow: z.string().max(100).optional().default(""),
+		heading: z.string().max(200).optional().default(""),
+		description: z.string().max(500).optional().default(""),
+		topItems: z.array(featureSectionItemSchema).max(4).optional().default([]),
+		bottomTitle: z.string().max(200).optional().default(""),
+		bottomDescription: z.string().max(500).optional().default(""),
+		bottomItems: z.array(featureSectionItemSchema).max(3).optional().default([]),
+	}).optional(),
+	section3: z.object({
+		eyebrow: z.string().max(100).optional().default(""),
+		heading: z.string().max(200).optional().default(""),
+		description: z.string().max(500).optional().default(""),
+		gridFeatures: z.array(featureSectionItemSchema).max(4).optional().default([]),
+		bottomTitle: z.string().max(200).optional().default(""),
+		bottomDescription: z.string().max(500).optional().default(""),
+		bottomItems: z.array(featureSectionItemSchema).max(3).optional().default([]),
+	}).optional(),
+}).optional();
+
+/**
  * Base Product Schema (for drafts - minimal validation)
  */
 export const createProductDraftSchema = z.object({
@@ -148,10 +186,13 @@ export const createProductDraftSchema = z.object({
 	faqTitle: z.string().max(200).optional(),
 	qa: z.array(qnaSchema).optional().default([]),
 	seoAccordions: z.array(seoAccordionSchema).optional().default([]),
+	heroBackgroundMobile: z.string().optional(),
+	heroBackgroundDesktop: z.string().optional(),
 	youtubeUrl: optionalUrlSchema,
 	videoThumbnail: z.string().optional(),
 	rubric: z.string().max(1000).optional(),
 	technologyGroups: z.array(z.string().max(100)).optional().default([]),
+	featureSections: featureSectionsSchema,
 	publishType: z.enum(["publish", "draft", "pending", "private"]).default("draft"),
 	visibility: z.enum(["public", "hidden"]).default("public"),
 });
@@ -183,10 +224,13 @@ export const updateProductSchema = z.object({
 	faqTitle: z.string().max(200).optional(),
 	qa: z.array(qnaSchema).optional(),
 	seoAccordions: z.array(seoAccordionSchema).optional(),
+	heroBackgroundMobile: z.string().optional(),
+	heroBackgroundDesktop: z.string().optional(),
 	youtubeUrl: optionalUrlSchema,
 	videoThumbnail: z.string().optional(),
 	rubric: z.string().max(1000).optional(),
 	technologyGroups: z.array(z.string().max(100)).optional().default([]),
+	featureSections: featureSectionsSchema,
 	publishType: z.enum(["publish", "draft", "pending", "private"]).optional(),
 	visibility: z.enum(["public", "hidden"]).optional(),
 });

@@ -26,10 +26,11 @@ export function NumberMark({
 		return (
 			<span
 				className={cn(
-					"block font-light text-slate-300 leading-none select-none",
+					"block text-slate-300 leading-none select-none",
 					"text-7xl sm:text-8xl md:text-[7rem] lg:text-[8rem]",
 					className
 				)}
+				style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
 			>
 				{number}
 			</span>
@@ -40,10 +41,11 @@ export function NumberMark({
 		return (
 			<span
 				className={cn(
-					"font-bold text-[#98a7b5] tracking-tight leading-none",
+					"text-[#98a7b5] tracking-tight leading-none",
 					"text-xl sm:text-2xl",
 					className
 				)}
+				style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
 			>
 				{number}
 			</span>
@@ -53,10 +55,11 @@ export function NumberMark({
 	return (
 		<span
 			className={cn(
-				"block font-bold text-[#98a7b5] tracking-tight leading-none",
+				"block text-[#98a7b5] tracking-tight leading-none",
 				"text-3xl sm:text-4xl",
 				className
 			)}
+			style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
 		>
 			{number}
 		</span>

@@ -54,7 +54,7 @@ export function ProductFeatureSplit({
 	return (
 		<section>
 			<div className="_container">
-				<div className={`${cornerClassMap[corners]} bg-[#fafafa] p-6 sm:p-10 lg:p-16 ring-1 ring-slate-200/70`}>
+				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16 font-gelasio`}>
 					{/* Top split */}
 					<motion.div
 						initial={{ opacity: 0, y: 24 }}
@@ -65,7 +65,7 @@ export function ProductFeatureSplit({
 					>
 						<div>
 							{eyebrow && <EyebrowTag className="mb-6">{eyebrow}</EyebrowTag>}
-							<h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-secondary leading-[1.15] mb-6">
+							<h2 className="font-gelasio text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-secondary leading-[1.15] mb-6">
 								{heading}
 							</h2>
 							<div className="space-y-4 text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[520px]">
@@ -132,7 +132,7 @@ export function ProductFeatureSplit({
 												className="h-7 w-7 text-slate-700"
 											/>
 										</div>
-										<h3 className="text-lg sm:text-xl font-semibold text-secondary mb-2.5 leading-snug">
+										<h3 className="font-gelasio text-lg sm:text-xl font-semibold text-secondary mb-2.5 leading-snug">
 											{feature.title}
 										</h3>
 										<p className="text-sm leading-relaxed text-slate-600">
@@ -159,20 +159,24 @@ export function ProductFeatureSplit({
 									return (
 										<div
 											key={idx}
-											className="flex flex-col gap-2.5 p-4 sm:p-5 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-primary/50 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(220,167,131,0.25)] transition-all duration-300"
+											className="flex items-start gap-3 p-4 sm:p-5 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-primary/50 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(220,167,131,0.25)] transition-all duration-300"
 										>
-											<Icon
-												strokeWidth={1.5}
-												className="h-6 w-6 text-[#98a7b5]"
-											/>
-											<h4 className="text-sm font-semibold text-secondary leading-snug">
-												{b.title}
-											</h4>
-											{b.description && (
-												<p className="text-xs leading-relaxed text-slate-500">
-													{b.description}
-												</p>
-											)}
+											<div className="shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-slate-100">
+												<Icon
+													strokeWidth={1.5}
+													className="h-5 w-5 sm:h-7 sm:w-7 text-[#98a7b5]"
+												/>
+											</div>
+											<div className="min-w-0 overflow-hidden">
+												<h4 className="font-gelasio text-xs sm:text-sm font-semibold text-secondary leading-snug break-words">
+													{b.title}
+												</h4>
+												{b.description && (
+													<p className="text-[10px] sm:text-xs leading-relaxed text-slate-500 mt-1 break-words">
+														{b.description}
+													</p>
+												)}
+											</div>
 										</div>
 									);
 								})}

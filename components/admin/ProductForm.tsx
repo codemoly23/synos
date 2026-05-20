@@ -52,6 +52,7 @@ import {
 	type UpdateProductInput,
 } from "@/lib/validations/product.validation";
 import { generateSlug } from "@/lib/utils/product-helpers";
+import { ICON_NAMES } from "@/lib/data/product-sections";
 import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
 import type { PublishValidationError } from "@/lib/services/product.service";
@@ -280,6 +281,108 @@ function DocumentPicker({
 }
 
 /**
+ * Reusable editor for a list of {iconName, title, description} items
+ */
+interface FeatureSectionItemListProps {
+	items: { iconName: string; title: string; description: string }[];
+	maxItems: number;
+	onChange: (items: { iconName: string; title: string; description: string }[]) => void;
+	disabled?: boolean;
+}
+
+function FeatureSectionItemList({
+	items,
+	maxItems,
+	onChange,
+	disabled = false,
+}: FeatureSectionItemListProps) {
+	const updateItem = (index: number, field: string, value: string) => {
+		const updated = items.map((item, i) =>
+			i === index ? { ...item, [field]: value } : item
+		);
+		onChange(updated);
+	};
+
+	const removeItem = (index: number) => {
+		onChange(items.filter((_, i) => i !== index));
+	};
+
+	const addItem = () => {
+		if (items.length >= maxItems) return;
+		onChange([...items, { iconName: "Shield", title: "", description: "" }]);
+	};
+
+	return (
+		<div className="space-y-3 mt-3">
+			{items.map((item, index) => (
+				<div key={index} className="p-4 border rounded-lg space-y-3 bg-slate-50/50">
+					<div className="flex justify-between items-center">
+						<span className="text-sm font-medium">Item #{index + 1}</span>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon"
+							onClick={() => removeItem(index)}
+							disabled={disabled}
+							className="text-red-500 h-8 w-8"
+						>
+							<Trash2 className="h-4 w-4" />
+						</Button>
+					</div>
+					<div className="space-y-2">
+						<Label>Icon</Label>
+						<select
+							value={item.iconName}
+							onChange={(e) => updateItem(index, "iconName", e.target.value)}
+							disabled={disabled}
+							className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm"
+						>
+							{ICON_NAMES.map((name) => (
+								<option key={name} value={name}>{name}</option>
+							))}
+						</select>
+					</div>
+					<div className="space-y-2">
+						<Label>Title</Label>
+						<Input
+							value={item.title}
+							onChange={(e) => updateItem(index, "title", e.target.value)}
+							placeholder="Feature title"
+							disabled={disabled}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label>Description</Label>
+						<Textarea
+							value={item.description}
+							onChange={(e) => updateItem(index, "description", e.target.value)}
+							placeholder="Feature description"
+							disabled={disabled}
+							rows={2}
+						/>
+					</div>
+				</div>
+			))}
+			{items.length < maxItems && (
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={addItem}
+					disabled={disabled}
+				>
+					<Plus className="h-4 w-4 mr-1" />
+					Add Item ({items.length}/{maxItems})
+				</Button>
+			)}
+			{items.length >= maxItems && (
+				<p className="text-xs text-muted-foreground">Maximum {maxItems} items reached.</p>
+			)}
+		</div>
+	);
+}
+
+/**
  * Form data type that works for both create and update
  */
 export type ProductFormData = CreateProductDraftInput | UpdateProductInput;
@@ -352,7 +455,7 @@ export function normalizeCategories(
 /**
  * Tab definitions for the product form
  */
-type TabId = "basic" | "content" | "media" | "specs" | "seo";
+type TabId = "basic" | "content" | "media" | "specs" | "seo" | "sections";
 
 const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 	basic: {
@@ -389,6 +492,8 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 		fields: [
 			"productImages",
 			"overviewImage",
+			"heroBackgroundMobile",
+			"heroBackgroundDesktop",
 			"beforeAfterImages",
 			"youtubeUrl",
 			"videoThumbnail",
@@ -401,6 +506,10 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 	seo: {
 		label: "SEO",
 		fields: ["seo"],
+	},
+	sections: {
+		label: "Sections",
+		fields: ["featureSections"],
 	},
 };
 
@@ -585,6 +694,7 @@ function countErrorsPerTab(errors: FormError[]): Record<TabId, number> {
 		media: 0,
 		specs: 0,
 		seo: 0,
+		sections: 0,
 	};
 
 	for (const error of errors) {
@@ -783,10 +893,40 @@ export function ProductForm({
 					content: s.content,
 					order: s.order,
 				})) || [],
+			heroBackgroundMobile: (product as unknown as { heroBackgroundMobile?: string })?.heroBackgroundMobile || "",
+			heroBackgroundDesktop: (product as unknown as { heroBackgroundDesktop?: string })?.heroBackgroundDesktop || "",
 			youtubeUrl: product?.youtubeUrl || "",
 			videoThumbnail: product?.videoThumbnail || "",
 			rubric: product?.rubric || "",
 			technologyGroups: (product as unknown as { technologyGroups?: string[] })?.technologyGroups || [],
+			featureSections: {
+				section1: {
+					eyebrow: product?.featureSections?.section1?.eyebrow || (product?.title ? `VARFÖR ${product.title.toUpperCase()}` : ""),
+					heading: product?.featureSections?.section1?.heading || "Byggd för moderna kliniker",
+					paragraph1: product?.featureSections?.section1?.paragraph1 || "",
+					paragraph2: product?.featureSections?.section1?.paragraph2 || "",
+					numberedFeatures: product?.featureSections?.section1?.numberedFeatures || [],
+					benefits: product?.featureSections?.section1?.benefits || [],
+				},
+				section2: {
+					eyebrow: product?.featureSections?.section2?.eyebrow || "KLINISK KONTROLL · ANVÄNDARVÄNLIGHET · KOMFORT",
+					heading: product?.featureSections?.section2?.heading || "Utvecklad för precision och komfort",
+					description: product?.featureSections?.section2?.description || "",
+					topItems: product?.featureSections?.section2?.topItems || [],
+					bottomTitle: product?.featureSections?.section2?.bottomTitle || "Effektiv prestanda, hög komfort",
+					bottomDescription: product?.featureSections?.section2?.bottomDescription || "",
+					bottomItems: product?.featureSections?.section2?.bottomItems || [],
+				},
+				section3: {
+					eyebrow: product?.featureSections?.section3?.eyebrow || (product?.title ? `VARFÖR ${product.title.toUpperCase()}` : ""),
+					heading: product?.featureSections?.section3?.heading || "Tekniska fördelar som märks i vardagen",
+					description: product?.featureSections?.section3?.description || "",
+					gridFeatures: product?.featureSections?.section3?.gridFeatures || [],
+					bottomTitle: product?.featureSections?.section3?.bottomTitle || "Byggd för moderna kliniker",
+					bottomDescription: product?.featureSections?.section3?.bottomDescription || "",
+					bottomItems: product?.featureSections?.section3?.bottomItems || [],
+				},
+			},
 			publishType: product?.publishType || "draft",
 			visibility: product?.visibility || "public",
 		},
@@ -967,6 +1107,7 @@ export function ProductForm({
 			media: [],
 			specs: [],
 			seo: [],
+			sections: [],
 		};
 		for (const error of formErrors) {
 			if (error.tab) {
@@ -1120,6 +1261,14 @@ export function ProductForm({
 							{tabErrorCounts.seo > 0 && (
 								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
 									{tabErrorCounts.seo}
+								</span>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="sections" className="relative">
+							Sections
+							{tabErrorCounts.sections > 0 && (
+								<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{tabErrorCounts.sections}
 								</span>
 							)}
 						</TabsTrigger>
@@ -1741,6 +1890,22 @@ export function ProductForm({
 										}
 										placeholder="Enter extended product description..."
 									/>
+									<div className="space-y-1.5">
+										<Label className="text-sm text-muted-foreground">Form Subtitle (Desktop)</Label>
+										<Input
+											{...register("purchaseInfo.formSubtitle")}
+											placeholder='e.g. "Fyll i dina uppgifter så kontaktar vi dig"'
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-1.5">
+										<Label className="text-sm text-muted-foreground">Button Text</Label>
+										<Input
+											{...register("purchaseInfo.buttonText")}
+											placeholder='e.g. "Skicka förfrågan"'
+											disabled={isLoading}
+										/>
+									</div>
 								</div>
 
 								<Separator />
@@ -1811,6 +1976,52 @@ export function ProductForm({
 										placeholder="Select overview image"
 										disabled={isLoading}
 										galleryTitle="Select Overview Image"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Hero Background — Mobile */}
+								<div className="space-y-2">
+									<Label>Hero Background — Mobile</Label>
+									<p className="text-xs text-muted-foreground">
+										Background image shown in the hero section on mobile devices.
+										Falls back to the default dark background if not set.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("heroBackgroundMobile") || null}
+										onChange={(url) =>
+											setValue("heroBackgroundMobile", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select mobile hero background"
+										disabled={isLoading}
+										galleryTitle="Select Mobile Hero Background"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Hero Background — Desktop */}
+								<div className="space-y-2">
+									<Label>Hero Background — Desktop</Label>
+									<p className="text-xs text-muted-foreground">
+										Background image shown in the hero section on desktop.
+										Falls back to the default dark background if not set.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("heroBackgroundDesktop") || null}
+										onChange={(url) =>
+											setValue("heroBackgroundDesktop", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select desktop hero background"
+										disabled={isLoading}
+										galleryTitle="Select Desktop Hero Background"
 									/>
 								</div>
 
@@ -2214,6 +2425,246 @@ export function ProductForm({
 							</div>
 						</div>
 					</TabsContent>
+
+				{/* Sections Tab */}
+				<TabsContent value="sections">
+					<div className="space-y-8">
+						{/* Section 1 — Feature Split */}
+						<Card>
+							<CardHeader>
+								<CardTitle>Section 1 — Feature Split</CardTitle>
+								<CardDescription>
+									Heading left, product image right, numbered features + benefit chips below.
+									Leave Heading empty to use the generic fallback text.
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Eyebrow Tag</Label>
+										<Input
+											{...register("featureSections.section1.eyebrow")}
+											placeholder="e.g. VARFÖR BODYSTIM PRO"
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Heading</Label>
+										<Input
+											{...register("featureSections.section1.heading")}
+											placeholder="e.g. Byggd för moderna kliniker"
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+								<div className="space-y-2">
+									<Label>Paragraph 1</Label>
+									<Textarea
+										{...register("featureSections.section1.paragraph1")}
+										placeholder="First paragraph text..."
+										disabled={isLoading}
+										rows={3}
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label>Paragraph 2</Label>
+									<Textarea
+										{...register("featureSections.section1.paragraph2")}
+										placeholder="Second paragraph text..."
+										disabled={isLoading}
+										rows={3}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-2">
+									<Label className="text-base font-semibold">Numbered Features</Label>
+									<p className="text-sm text-muted-foreground">Max 3 items. Each shown with a number mark and icon.</p>
+									<FeatureSectionItemList
+										items={(watch("featureSections.section1.numberedFeatures") as { iconName: string; title: string; description: string }[]) || []}
+										maxItems={3}
+										onChange={(val) => setValue("featureSections.section1.numberedFeatures", val, { shouldDirty: true })}
+										disabled={isLoading}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-2">
+									<Label className="text-base font-semibold">Benefit Chips</Label>
+									<p className="text-sm text-muted-foreground">Max 6 items. Shown as cards in a grid below the numbered features.</p>
+									<FeatureSectionItemList
+										items={(watch("featureSections.section1.benefits") as { iconName: string; title: string; description: string }[]) || []}
+										maxItems={6}
+										onChange={(val) => setValue("featureSections.section1.benefits", val, { shouldDirty: true })}
+										disabled={isLoading}
+									/>
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* Section 2 — Feature Image List */}
+						<Card>
+							<CardHeader>
+								<CardTitle>Section 2 — Feature Image List</CardTitle>
+								<CardDescription>
+									Centered heading, image + numbered list (top), features + image (bottom).
+									Leave Heading empty to use the generic fallback.
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Eyebrow Tag</Label>
+										<Input
+											{...register("featureSections.section2.eyebrow")}
+											placeholder="e.g. KLINISK KONTROLL · KOMFORT"
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Heading</Label>
+										<Input
+											{...register("featureSections.section2.heading")}
+											placeholder="e.g. Developed for precision and comfort"
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+								<div className="space-y-2">
+									<Label>Description</Label>
+									<Textarea
+										{...register("featureSections.section2.description")}
+										placeholder="Section description text..."
+										disabled={isLoading}
+										rows={3}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-2">
+									<Label className="text-base font-semibold">Top Block Items</Label>
+									<p className="text-sm text-muted-foreground">Max 4 items. Shown beside the product image.</p>
+									<FeatureSectionItemList
+										items={(watch("featureSections.section2.topItems") as { iconName: string; title: string; description: string }[]) || []}
+										maxItems={4}
+										onChange={(val) => setValue("featureSections.section2.topItems", val, { shouldDirty: true })}
+										disabled={isLoading}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-4">
+									<Label className="text-base font-semibold">Bottom Block</Label>
+									<div className="space-y-2">
+										<Label>Title</Label>
+										<Input
+											{...register("featureSections.section2.bottomTitle")}
+											placeholder="e.g. Efficient performance, high comfort"
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Description</Label>
+										<Textarea
+											{...register("featureSections.section2.bottomDescription")}
+											placeholder="Bottom block description..."
+											disabled={isLoading}
+											rows={3}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Items</Label>
+										<p className="text-sm text-muted-foreground">Max 3 items.</p>
+										<FeatureSectionItemList
+											items={(watch("featureSections.section2.bottomItems") as { iconName: string; title: string; description: string }[]) || []}
+											maxItems={3}
+											onChange={(val) => setValue("featureSections.section2.bottomItems", val, { shouldDirty: true })}
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* Section 3 — Feature Grid */}
+						<Card>
+							<CardHeader>
+								<CardTitle>Section 3 — Feature Grid</CardTitle>
+								<CardDescription>
+									Image left, 2×2 feature grid right, bottom row with large number mark.
+									Leave Heading empty to use the generic fallback.
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label>Eyebrow Tag</Label>
+										<Input
+											{...register("featureSections.section3.eyebrow")}
+											placeholder="e.g. VARFÖR BODYSTIM PRO"
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Heading</Label>
+										<Input
+											{...register("featureSections.section3.heading")}
+											placeholder="e.g. Technical advantages that are noticeable in everyday life"
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+								<div className="space-y-2">
+									<Label>Description</Label>
+									<Textarea
+										{...register("featureSections.section3.description")}
+										placeholder="Section description text..."
+										disabled={isLoading}
+										rows={3}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-2">
+									<Label className="text-base font-semibold">Grid Features</Label>
+									<p className="text-sm text-muted-foreground">Max 4 items. Shown in a 2×2 card grid.</p>
+									<FeatureSectionItemList
+										items={(watch("featureSections.section3.gridFeatures") as { iconName: string; title: string; description: string }[]) || []}
+										maxItems={4}
+										onChange={(val) => setValue("featureSections.section3.gridFeatures", val, { shouldDirty: true })}
+										disabled={isLoading}
+									/>
+								</div>
+								<Separator />
+								<div className="space-y-4">
+									<Label className="text-base font-semibold">Bottom Block</Label>
+									<div className="space-y-2">
+										<Label>Title</Label>
+										<Input
+											{...register("featureSections.section3.bottomTitle")}
+											placeholder="e.g. Byggd för moderna kliniker"
+											disabled={isLoading}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Description</Label>
+										<Textarea
+											{...register("featureSections.section3.bottomDescription")}
+											placeholder="Bottom block description..."
+											disabled={isLoading}
+											rows={3}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Items</Label>
+										<p className="text-sm text-muted-foreground">Max 3 items. Shown in a horizontal row.</p>
+										<FeatureSectionItemList
+											items={(watch("featureSections.section3.bottomItems") as { iconName: string; title: string; description: string }[]) || []}
+											maxItems={3}
+											onChange={(val) => setValue("featureSections.section3.bottomItems", val, { shouldDirty: true })}
+											disabled={isLoading}
+										/>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
+				</TabsContent>
 				</Tabs>
 
 				{/* Form Actions */}

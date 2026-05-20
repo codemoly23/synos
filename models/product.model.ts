@@ -36,6 +36,8 @@ export interface IBeforeAfterImage {
 export interface IPurchaseInfo {
 	title?: string;
 	description?: string; // Rich HTML
+	formSubtitle?: string;
+	buttonText?: string;
 }
 
 export interface ISeo {
@@ -51,6 +53,47 @@ export interface ISeoAccordion {
 	title: string;
 	content: string;
 	order: number;
+}
+
+export interface IFeatureSectionItem {
+	iconName: string;
+	title: string;
+	description: string;
+}
+
+export interface IFeatureSectionSection1 {
+	eyebrow?: string;
+	heading?: string;
+	paragraph1?: string;
+	paragraph2?: string;
+	numberedFeatures?: IFeatureSectionItem[];
+	benefits?: IFeatureSectionItem[];
+}
+
+export interface IFeatureSectionSection2 {
+	eyebrow?: string;
+	heading?: string;
+	description?: string;
+	topItems?: IFeatureSectionItem[];
+	bottomTitle?: string;
+	bottomDescription?: string;
+	bottomItems?: IFeatureSectionItem[];
+}
+
+export interface IFeatureSectionSection3 {
+	eyebrow?: string;
+	heading?: string;
+	description?: string;
+	gridFeatures?: IFeatureSectionItem[];
+	bottomTitle?: string;
+	bottomDescription?: string;
+	bottomItems?: IFeatureSectionItem[];
+}
+
+export interface IFeatureSections {
+	section1?: IFeatureSectionSection1;
+	section2?: IFeatureSectionSection2;
+	section3?: IFeatureSectionSection3;
 }
 
 /**
@@ -81,10 +124,13 @@ export interface IProduct extends Document {
 	faqTitle?: string;
 	qa: IQnA[];
 	seoAccordions: ISeoAccordion[];
+	heroBackgroundMobile?: string;
+	heroBackgroundDesktop?: string;
 	youtubeUrl?: string;
 	videoThumbnail?: string;
 	rubric?: string;
 	technologyGroups?: string[];
+	featureSections?: IFeatureSections;
 	publishType: PublishType;
 	visibility: Visibility;
 	lastEditedBy?: mongoose.Types.ObjectId;
@@ -178,6 +224,16 @@ const PurchaseInfoSchema = new Schema<IPurchaseInfo>(
 			type: String,
 			default: "",
 		},
+		formSubtitle: {
+			type: String,
+			default: "",
+			trim: true,
+		},
+		buttonText: {
+			type: String,
+			default: "",
+			trim: true,
+		},
 	},
 	{ _id: false }
 );
@@ -227,6 +283,62 @@ const SeoAccordionSchema = new Schema<ISeoAccordion>(
 		},
 	},
 	{ _id: true }
+);
+
+const FeatureSectionItemSchema = new Schema<IFeatureSectionItem>(
+	{
+		iconName: { type: String, trim: true, default: "" },
+		title: { type: String, trim: true, default: "" },
+		description: { type: String, trim: true, default: "" },
+	},
+	{ _id: false }
+);
+
+const FeatureSectionSection1Schema = new Schema<IFeatureSectionSection1>(
+	{
+		eyebrow: { type: String, trim: true, default: "" },
+		heading: { type: String, trim: true, default: "" },
+		paragraph1: { type: String, trim: true, default: "" },
+		paragraph2: { type: String, trim: true, default: "" },
+		numberedFeatures: { type: [FeatureSectionItemSchema], default: [] },
+		benefits: { type: [FeatureSectionItemSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+const FeatureSectionSection2Schema = new Schema<IFeatureSectionSection2>(
+	{
+		eyebrow: { type: String, trim: true, default: "" },
+		heading: { type: String, trim: true, default: "" },
+		description: { type: String, trim: true, default: "" },
+		topItems: { type: [FeatureSectionItemSchema], default: [] },
+		bottomTitle: { type: String, trim: true, default: "" },
+		bottomDescription: { type: String, trim: true, default: "" },
+		bottomItems: { type: [FeatureSectionItemSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+const FeatureSectionSection3Schema = new Schema<IFeatureSectionSection3>(
+	{
+		eyebrow: { type: String, trim: true, default: "" },
+		heading: { type: String, trim: true, default: "" },
+		description: { type: String, trim: true, default: "" },
+		gridFeatures: { type: [FeatureSectionItemSchema], default: [] },
+		bottomTitle: { type: String, trim: true, default: "" },
+		bottomDescription: { type: String, trim: true, default: "" },
+		bottomItems: { type: [FeatureSectionItemSchema], default: [] },
+	},
+	{ _id: false }
+);
+
+const FeatureSectionsSchema = new Schema<IFeatureSections>(
+	{
+		section1: { type: FeatureSectionSection1Schema, default: () => ({}) },
+		section2: { type: FeatureSectionSection2Schema, default: () => ({}) },
+		section3: { type: FeatureSectionSection3Schema, default: () => ({}) },
+	},
+	{ _id: false }
 );
 
 /**
@@ -333,6 +445,14 @@ const ProductSchema = new Schema<IProduct>(
 			type: [SeoAccordionSchema],
 			default: [],
 		},
+		heroBackgroundMobile: {
+			type: String,
+			default: "",
+		},
+		heroBackgroundDesktop: {
+			type: String,
+			default: "",
+		},
 		youtubeUrl: {
 			type: String,
 			default: "",
@@ -348,6 +468,10 @@ const ProductSchema = new Schema<IProduct>(
 		technologyGroups: {
 			type: [String],
 			default: [],
+		},
+		featureSections: {
+			type: FeatureSectionsSchema,
+			default: () => ({}),
 		},
 		publishType: {
 			type: String,

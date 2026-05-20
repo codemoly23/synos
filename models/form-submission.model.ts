@@ -12,7 +12,8 @@ export type FormSubmissionType =
 	| "quote_request"
 	| "callback_request"
 	| "tour_request"
-	| "job_application";
+	| "job_application"
+	| "hero_inquiry";
 
 /**
  * Form submission status
@@ -61,9 +62,9 @@ export interface IFormSubmission extends Document {
 	// Common Fields
 	fullName: string;
 	email: string;
-	phone: string;
-	countryCode: string;
-	countryName: string;
+	phone?: string | null;
+	countryCode?: string | null;
+	countryName?: string | null;
 	corporationNumber?: string;
 	message?: string;
 
@@ -151,7 +152,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		// Form Type
 		type: {
 			type: String,
-			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application"],
+			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application", "hero_inquiry"],
 			required: [true, "Form type is required"],
 			index: true,
 		},
@@ -172,9 +173,10 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		},
 		phone: {
 			type: String,
-			required: [true, "Phone number is required"],
+			required: false,
 			trim: true,
 			maxlength: [25, "Phone number cannot exceed 25 characters"],
+			default: null,
 		},
 		countryCode: {
 			type: String,
@@ -191,7 +193,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		corporationNumber: {
 			type: String,
 			trim: true,
-			maxlength: [30, "Corporation number cannot exceed 30 characters"],
+			maxlength: [200, "Corporation number cannot exceed 200 characters"],
 			default: null,
 		},
 		message: {
