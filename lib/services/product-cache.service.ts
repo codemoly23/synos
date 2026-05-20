@@ -154,6 +154,13 @@ export interface TechnologyGroupDetail {
 	description?: string;
 	image?: string | null;
 	order: number;
+	faqTitle?: string;
+	faqs?: Array<{
+		_id: string;
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -195,6 +202,7 @@ export const getTechnologyGroupByName = unstable_cache(
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.findOne({ name, isActive: true }).lean();
 		if (!group) return null;
+		const rawFaqs = Array.isArray(group.faqs) ? group.faqs : [];
 		return {
 			_id: group._id.toString(),
 			name: group.name,
@@ -202,6 +210,13 @@ export const getTechnologyGroupByName = unstable_cache(
 			description: group.description || "",
 			image: group.image || null,
 			order: group.order,
+			faqTitle: group.faqTitle || "",
+			faqs: rawFaqs.map((f, idx) => ({
+				_id: f._id?.toString() || `tech-faq-${idx}`,
+				question: f.question,
+				answer: f.answer,
+				visible: f.visible ?? true,
+			})),
 			seo: group.seo,
 		};
 	},

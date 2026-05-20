@@ -394,9 +394,9 @@ export default async function ProductsPage({
 	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then normalize _id to string for ProductFAQ.
-	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
+	const globalFaqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
 	const rawFaqs = Array.isArray(faqSection?.faqs) ? faqSection.faqs : [];
-	const produkterFaqs =
+	const globalProdukterFaqs =
 		rawFaqs.length > 0
 			? [...rawFaqs]
 					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -407,6 +407,25 @@ export default async function ProductsPage({
 						visible: f.visible ?? true,
 					}))
 			: FALLBACK_FAQS;
+
+	// Per-technology FAQ override:
+	// When a technology is selected (?technology=X) and that technology has
+	// admin-managed FAQs, show those instead of the global /produkter FAQ.
+	// If the selected technology has no FAQs, fall through to the global ones.
+	const techFaqs =
+		selectedGroup?.faqs?.filter((f) => f.visible).map((f) => ({
+			_id: f._id,
+			question: f.question,
+			answer: f.answer,
+			visible: f.visible,
+		})) || [];
+	const useTechFaqs = !!selectedGroup && techFaqs.length > 0;
+	const faqTitle = useTechFaqs
+		? selectedGroup?.faqTitle && selectedGroup.faqTitle.trim().length > 0
+			? selectedGroup.faqTitle
+			: `Vanliga frågor om ${selectedGroup!.name}`
+		: globalFaqTitle;
+	const produkterFaqs = useTechFaqs ? techFaqs : globalProdukterFaqs;
 
 	// Filter products by selected technology (using technologyGroups array on product)
 	const filteredProducts = selectedTech
