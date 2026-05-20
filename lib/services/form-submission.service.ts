@@ -69,6 +69,7 @@ class FormSubmissionService {
 	 * Check rate limit for IP address
 	 */
 	async checkRateLimit(ip: string): Promise<boolean> {
+		if (process.env.NODE_ENV === "development") return true;
 		const windowStart = new Date(Date.now() - RATE_LIMIT.windowMs);
 		const count = await formSubmissionRepository.countByIpInWindow(
 			ip,
