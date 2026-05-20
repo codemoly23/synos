@@ -80,14 +80,12 @@ export default async function ContactPage() {
 				linkedinUrl={siteSettings.socialMedia?.linkedin || ""}
 			/>
 
-			{/* Contact Form Section */}
-			<section className="section-padding bg-white">
-				<div className="_container">
-					<div className="mx-auto max-w-3xl">
-						<AnimatedFormSection data={kontaktPage.formSection} />
-					</div>
-				</div>
-			</section>
+			{/* Contact Form Section — uses ProductInquiryForm (same as /produkter) */}
+			<AnimatedFormSection
+				data={kontaktPage.formSection}
+				contactPhone={siteSettings.phone}
+				contactEmail={siteSettings.email}
+			/>
 
 			{/* Office Locations Section */}
 			<section className="section-padding bg-slate-50">
