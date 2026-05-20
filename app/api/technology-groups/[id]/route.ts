@@ -26,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 	try {
 		const { id } = await params;
 		const body = await request.json();
-		const { name, slug, description, image, isActive, order, seo, faqTitle, faqs } = body;
+		const { name, slug, description, image, heroTitle, heroSubtitle, heroBulletPoints, heroBgMobile, heroBgDesktop, inquiryBgMobile, inquiryBgDesktop, isActive, order, seo, faqTitle, faqs } = body;
 
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.findById(id);
@@ -49,6 +49,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 		if (description !== undefined) group.description = description;
 		if (image !== undefined) group.image = image || null;
+		if (heroTitle !== undefined) group.heroTitle = typeof heroTitle === "string" ? heroTitle.trim() : "";
+		if (heroSubtitle !== undefined) group.heroSubtitle = typeof heroSubtitle === "string" ? heroSubtitle.trim() : "";
+		if (heroBulletPoints !== undefined) {
+			group.heroBulletPoints = Array.isArray(heroBulletPoints)
+				? heroBulletPoints.filter((b: unknown) => typeof b === "string" && (b as string).trim()).slice(0, 6)
+				: [];
+		}
+		if (heroBgMobile !== undefined) group.heroBgMobile = heroBgMobile || null;
+		if (heroBgDesktop !== undefined) group.heroBgDesktop = heroBgDesktop || null;
+		if (inquiryBgMobile !== undefined) group.inquiryBgMobile = inquiryBgMobile || null;
+		if (inquiryBgDesktop !== undefined) group.inquiryBgDesktop = inquiryBgDesktop || null;
 		if (isActive !== undefined) group.isActive = isActive;
 		if (order !== undefined && !Number.isNaN(Number(order))) {
 			group.order = Number(order);

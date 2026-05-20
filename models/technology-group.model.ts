@@ -22,6 +22,13 @@ export interface ITechnologyGroup extends Document {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string | null;
+	heroBgDesktop?: string | null;
+	inquiryBgMobile?: string | null;
+	inquiryBgDesktop?: string | null;
 	isActive: boolean;
 	order: number;
 	faqTitle?: string;
@@ -70,6 +77,34 @@ const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 			default: "",
 		},
 		image: {
+			type: String,
+			default: null,
+		},
+		heroTitle: {
+			type: String,
+			default: "",
+		},
+		heroSubtitle: {
+			type: String,
+			default: "",
+		},
+		heroBulletPoints: {
+			type: [String],
+			default: [],
+		},
+		heroBgMobile: {
+			type: String,
+			default: null,
+		},
+		heroBgDesktop: {
+			type: String,
+			default: null,
+		},
+		inquiryBgMobile: {
+			type: String,
+			default: null,
+		},
+		inquiryBgDesktop: {
 			type: String,
 			default: null,
 		},
@@ -141,7 +176,10 @@ function resolveTechnologyGroupModel(): Model<ITechnologyGroup> {
 		const hasSeo = !!cached.schema.path("seo");
 		const hasFaqs = !!cached.schema.path("faqs");
 		const hasFaqTitle = !!cached.schema.path("faqTitle");
-		if (hasDescription && hasImage && hasSeo && hasFaqs && hasFaqTitle) {
+		const hasHeroTitle = !!cached.schema.path("heroTitle");
+		const hasHeroBgDesktop = !!cached.schema.path("heroBgDesktop");
+		const hasInquiryBgDesktop = !!cached.schema.path("inquiryBgDesktop");
+		if (hasDescription && hasImage && hasSeo && hasFaqs && hasFaqTitle && hasHeroTitle && hasHeroBgDesktop && hasInquiryBgDesktop) {
 			return cached;
 		}
 		// Stale cache — drop and re-register

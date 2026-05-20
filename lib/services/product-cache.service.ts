@@ -153,6 +153,13 @@ export interface TechnologyGroupDetail {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string | null;
+	heroBgDesktop?: string | null;
+	inquiryBgMobile?: string | null;
+	inquiryBgDesktop?: string | null;
 	order: number;
 	faqTitle?: string;
 	faqs?: Array<{
@@ -209,6 +216,13 @@ export const getTechnologyGroupByName = unstable_cache(
 			slug: group.slug,
 			description: group.description || "",
 			image: group.image || null,
+			heroTitle: group.heroTitle || "",
+			heroSubtitle: group.heroSubtitle || "",
+			heroBulletPoints: Array.isArray(group.heroBulletPoints) ? group.heroBulletPoints : [],
+			heroBgMobile: group.heroBgMobile || null,
+			heroBgDesktop: group.heroBgDesktop || null,
+			inquiryBgMobile: group.inquiryBgMobile || null,
+			inquiryBgDesktop: group.inquiryBgDesktop || null,
 			order: group.order,
 			faqTitle: group.faqTitle || "",
 			faqs: rawFaqs.map((f, idx) => ({

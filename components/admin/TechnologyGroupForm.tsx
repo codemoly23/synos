@@ -25,6 +25,42 @@ export interface TechnologyGroupFormData {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string | null;
+	heroBgDesktop?: string | null;
+	inquiryBgMobile?: string | null;
+	inquiryBgDesktop?: string | null;
+	order?: number;
+	isActive?: boolean;
+	faqTitle?: string;
+	faqs?: Array<{
+		_id?: string;
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
+	seo?: {
+		title?: string;
+		description?: string;
+		ogImage?: string | null;
+		noindex?: boolean;
+	};
+}
+
+interface TechnologyGroupFormInternal {
+	name: string;
+	slug: string;
+	description?: string;
+	image?: string | null;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: Array<{ value: string }>;
+	heroBgMobile?: string | null;
+	heroBgDesktop?: string | null;
+	inquiryBgMobile?: string | null;
+	inquiryBgDesktop?: string | null;
 	order?: number;
 	isActive?: boolean;
 	faqTitle?: string;
@@ -48,6 +84,13 @@ export interface ITechnologyGroupInput {
 	slug?: string;
 	description?: string;
 	image?: string | null;
+	heroTitle?: string;
+	heroSubtitle?: string;
+	heroBulletPoints?: string[];
+	heroBgMobile?: string | null;
+	heroBgDesktop?: string | null;
+	inquiryBgMobile?: string | null;
+	inquiryBgDesktop?: string | null;
 	order?: number;
 	isActive?: boolean;
 	faqTitle?: string;
@@ -89,12 +132,19 @@ export function TechnologyGroupForm({
 		watch,
 		control,
 		formState: { errors, isDirty },
-	} = useForm<TechnologyGroupFormData>({
+	} = useForm<TechnologyGroupFormInternal>({
 		defaultValues: {
 			name: group?.name || "",
 			slug: group?.slug || "",
 			description: group?.description || "",
 			image: group?.image || "",
+			heroTitle: group?.heroTitle || "",
+			heroSubtitle: group?.heroSubtitle || "",
+			heroBulletPoints: (group?.heroBulletPoints || []).map((v) => ({ value: v })),
+			heroBgMobile: group?.heroBgMobile || "",
+			heroBgDesktop: group?.heroBgDesktop || "",
+			inquiryBgMobile: group?.inquiryBgMobile || "",
+			inquiryBgDesktop: group?.inquiryBgDesktop || "",
 			order: group?.order ?? 0,
 			isActive: group?.isActive ?? true,
 			faqTitle: group?.faqTitle || "",
@@ -123,6 +173,15 @@ export function TechnologyGroupForm({
 		name: "faqs",
 	});
 
+	const {
+		fields: bulletFields,
+		append: appendBullet,
+		remove: removeBullet,
+	} = useFieldArray({
+		control,
+		name: "heroBulletPoints",
+	});
+
 	const name = watch("name");
 	const slug = watch("slug");
 	const description = watch("description");
@@ -137,11 +196,17 @@ export function TechnologyGroupForm({
 		}
 	};
 
-	const onFormSubmit = async (data: TechnologyGroupFormData) => {
+	const onFormSubmit = async (data: TechnologyGroupFormInternal) => {
 		if (!data.slug && data.name) {
 			data.slug = generateSlug(data.name);
 		}
-		await onSubmit(data);
+		const submitData: TechnologyGroupFormData = {
+			...data,
+			heroBulletPoints: (data.heroBulletPoints || [])
+				.map((item) => item.value.trim())
+				.filter(Boolean),
+		};
+		await onSubmit(submitData);
 	};
 
 	return (
@@ -250,6 +315,154 @@ export function TechnologyGroupForm({
 					disabled={isLoading}
 					galleryTitle="Select Technology Group Image"
 				/>
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* Hero Section */}
+			<div className="space-y-4">
+				<div>
+					<h3 className="text-lg font-semibold">Hero Section</h3>
+					<p className="text-sm text-muted-foreground mt-1">
+						Customize the hero shown on /produkter when this technology is selected. Leave empty to use the global defaults.
+					</p>
+				</div>
+
+				{/* Hero Title */}
+				<div className="space-y-2">
+					<Label htmlFor="heroTitle">Hero Title</Label>
+					<Input
+						id="heroTitle"
+						{...register("heroTitle")}
+						placeholder={watch("name") || "e.g. Pico & Q-Switched"}
+						disabled={isLoading}
+					/>
+					<p className="text-xs text-slate-500">
+						If empty, the group name is used as the title.
+					</p>
+				</div>
+
+				{/* Hero Subtitle */}
+				<div className="space-y-2">
+					<Label htmlFor="heroSubtitle">Hero Subtitle</Label>
+					<Input
+						id="heroSubtitle"
+						{...register("heroSubtitle")}
+						placeholder="e.g. Avancerad laserplattform för professionella behandlingar"
+						disabled={isLoading}
+					/>
+				</div>
+
+				{/* Hero Bullet Points */}
+				<div className="space-y-2">
+					<Label>Hero Bullet Points</Label>
+					<p className="text-xs text-slate-500">
+						Up to 6 bullet points shown in the hero area.
+					</p>
+					<div className="space-y-2">
+						{bulletFields.map((field, index) => (
+							<div key={field.id} className="flex items-center gap-2">
+								<Input
+									{...register(`heroBulletPoints.${index}.value`)}
+									placeholder={`Bullet point ${index + 1}`}
+									disabled={isLoading}
+									className="flex-1"
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									onClick={() => removeBullet(index)}
+									disabled={isLoading}
+									className="text-red-500 h-8 w-8 shrink-0"
+								>
+									<Trash2 className="h-4 w-4" />
+								</Button>
+							</div>
+						))}
+						{bulletFields.length < 6 && (
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => appendBullet({ value: "" })}
+								disabled={isLoading}
+							>
+								<Plus className="h-4 w-4 mr-1" />
+								Add Bullet Point
+							</Button>
+						)}
+					</div>
+				</div>
+
+				{/* Hero Background Mobile */}
+				<div className="space-y-2">
+					<Label>Hero Background — Mobile</Label>
+					<MediaPicker
+						type="image"
+						value={watch("heroBgMobile") || null}
+						onChange={(url) =>
+							setValue("heroBgMobile", url || "", { shouldDirty: true })
+						}
+						placeholder="Select mobile background"
+						disabled={isLoading}
+						galleryTitle="Select Mobile Hero Background"
+					/>
+				</div>
+
+				{/* Hero Background Desktop */}
+				<div className="space-y-2">
+					<Label>Hero Background — Desktop</Label>
+					<MediaPicker
+						type="image"
+						value={watch("heroBgDesktop") || null}
+						onChange={(url) =>
+							setValue("heroBgDesktop", url || "", { shouldDirty: true })
+						}
+						placeholder="Select desktop background"
+						disabled={isLoading}
+						galleryTitle="Select Desktop Hero Background"
+					/>
+				</div>
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* Inquiry Form Background */}
+			<div className="space-y-4">
+				<div>
+					<h3 className="text-lg font-semibold">Inquiry Form Background</h3>
+					<p className="text-sm text-muted-foreground mt-1">
+						Background images for the inquiry form section on /produkter when this technology is selected. Leave empty to use the global defaults.
+					</p>
+				</div>
+
+				<div className="space-y-2">
+					<Label>Inquiry Background — Mobile</Label>
+					<MediaPicker
+						type="image"
+						value={watch("inquiryBgMobile") || null}
+						onChange={(url) =>
+							setValue("inquiryBgMobile", url || "", { shouldDirty: true })
+						}
+						placeholder="Select mobile inquiry background"
+						disabled={isLoading}
+						galleryTitle="Select Mobile Inquiry Background"
+					/>
+				</div>
+
+				<div className="space-y-2">
+					<Label>Inquiry Background — Desktop</Label>
+					<MediaPicker
+						type="image"
+						value={watch("inquiryBgDesktop") || null}
+						onChange={(url) =>
+							setValue("inquiryBgDesktop", url || "", { shouldDirty: true })
+						}
+						placeholder="Select desktop inquiry background"
+						disabled={isLoading}
+						galleryTitle="Select Desktop Inquiry Background"
+					/>
+				</div>
 			</div>
 
 			<Separator className="my-8" />

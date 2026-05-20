@@ -29,6 +29,13 @@ export async function POST(request: NextRequest) {
 			slug,
 			description,
 			image,
+			heroTitle,
+			heroSubtitle,
+			heroBulletPoints,
+			heroBgMobile,
+			heroBgDesktop,
+			inquiryBgMobile,
+			inquiryBgDesktop,
 			isActive = true,
 			order = 0,
 			seo,
@@ -78,12 +85,23 @@ export async function POST(request: NextRequest) {
 			}>;
 		}
 
+		const sanitizedBulletPoints = Array.isArray(heroBulletPoints)
+			? heroBulletPoints.filter((b: unknown) => typeof b === "string" && b.trim()).slice(0, 6)
+			: [];
+
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.create({
 			name: name.trim(),
 			slug: finalSlug,
 			description: description || "",
 			image: image || null,
+			heroTitle: typeof heroTitle === "string" ? heroTitle.trim() : "",
+			heroSubtitle: typeof heroSubtitle === "string" ? heroSubtitle.trim() : "",
+			heroBulletPoints: sanitizedBulletPoints,
+			heroBgMobile: heroBgMobile || null,
+			heroBgDesktop: heroBgDesktop || null,
+			inquiryBgMobile: inquiryBgMobile || null,
+			inquiryBgDesktop: inquiryBgDesktop || null,
 			isActive,
 			order,
 			seo: seo || {},
