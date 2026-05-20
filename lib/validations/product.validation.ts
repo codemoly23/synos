@@ -93,6 +93,8 @@ const beforeAfterImageSchema = z.object({
 const purchaseInfoSchema = z.object({
 	title: z.string().max(200).optional(),
 	description: z.string().optional(), // Rich HTML
+	formSubtitle: z.string().max(300).optional(),
+	buttonText: z.string().max(100).optional(),
 });
 
 /**
