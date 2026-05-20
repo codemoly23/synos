@@ -24,13 +24,59 @@ export async function GET() {
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { name, slug, description, image, isActive = true, order = 0, seo } = body;
+		const {
+			name,
+			slug,
+			description,
+			image,
+			isActive = true,
+			order = 0,
+			seo,
+			faqTitle,
+			faqs,
+		} = body;
 
 		if (!name?.trim()) {
 			return badRequestResponse("Name is required");
 		}
 
 		const finalSlug = (slug?.trim() || generateSlug(name)).toLowerCase();
+
+		// Sanitize FAQs (if provided)
+		let sanitizedFaqs: Array<{
+			question: string;
+			answer: string;
+			visible: boolean;
+		}> = [];
+		if (faqs !== undefined) {
+			if (!Array.isArray(faqs)) {
+				return badRequestResponse("faqs must be an array");
+			}
+			sanitizedFaqs = faqs
+				.map((f: unknown) => {
+					if (!f || typeof f !== "object") return null;
+					const item = f as {
+						question?: unknown;
+						answer?: unknown;
+						visible?: unknown;
+					};
+					const question =
+						typeof item.question === "string" ? item.question.trim() : "";
+					const answer =
+						typeof item.answer === "string" ? item.answer.trim() : "";
+					if (!question || !answer) return null;
+					return {
+						question,
+						answer,
+						visible: typeof item.visible === "boolean" ? item.visible : true,
+					};
+				})
+				.filter(Boolean) as Array<{
+				question: string;
+				answer: string;
+				visible: boolean;
+			}>;
+		}
 
 		const TechnologyGroup = await getTechnologyGroupModel();
 		const group = await TechnologyGroup.create({
@@ -41,6 +87,8 @@ export async function POST(request: NextRequest) {
 			isActive,
 			order,
 			seo: seo || {},
+			faqTitle: typeof faqTitle === "string" ? faqTitle.trim() : "",
+			faqs: sanitizedFaqs,
 		});
 
 		revalidateTag("technology-groups", "default");
