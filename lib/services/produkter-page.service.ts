@@ -3,7 +3,7 @@ import {
 	produkterPageRepository,
 	type ProdukterPageData,
 } from "@/lib/repositories/produkter-page.repository";
-import type { IProdukterFaqSection } from "@/models/produkter-page.model";
+import type { IProdukterFaqSection, IProdukterHeroSection } from "@/models/produkter-page.model";
 
 export const PRODUKTER_PAGE_CACHE_TAG = "produkter-page";
 
@@ -23,6 +23,17 @@ export const getProdukterFaqSection = unstable_cache(
 		return produkterPageRepository.getFaqSection();
 	},
 	["produkter-page-faq"],
+	{
+		tags: [PRODUKTER_PAGE_CACHE_TAG],
+		revalidate: 3600,
+	}
+);
+
+export const getProdukterHeroSection = unstable_cache(
+	async (): Promise<IProdukterHeroSection> => {
+		return produkterPageRepository.getHeroSection();
+	},
+	["produkter-page-hero"],
 	{
 		tags: [PRODUKTER_PAGE_CACHE_TAG],
 		revalidate: 3600,

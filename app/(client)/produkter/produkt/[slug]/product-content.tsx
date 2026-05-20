@@ -6,8 +6,6 @@ import { ProductDetailSidebar } from "@/components/products/ProductDetailSidebar
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { ProductShareButtons } from "@/components/products/ProductShareButtons";
-import { ProductLongDescription } from "@/components/products/ProductLongDescription";
 import { BeforeAfterShowcase } from "@/components/products/BeforeAfterShowcase";
 import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatureSplit";
 import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
@@ -90,16 +88,21 @@ export function ProductContent({
 							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
-						<p className="text-white/70 text-sm mb-8 leading-relaxed">
-							Avancerad laserplattform för professionella behandlingar
-						</p>
+						{(product as unknown as { heroSubtitle?: string }).heroSubtitle && (
+							<p className="text-white/70 text-sm mb-8 leading-relaxed">
+								{(product as unknown as { heroSubtitle?: string }).heroSubtitle}
+							</p>
+						)}
 						<ul className="space-y-4">
-							{[
-								"Snabb och effektiv behandling",
-								"Skonsam teknik med hög precision",
-								"Intuitiv touchskärm och smart arbetsflöde",
-								"Anpassad för professionella kliniker",
-							].map((item) => (
+							{((product as unknown as { heroFeatures?: string[] }).heroFeatures?.filter(Boolean).length
+								? (product as unknown as { heroFeatures?: string[] }).heroFeatures!
+								: [
+									"Snabb och effektiv behandling",
+									"Skonsam teknik med hög precision",
+									"Intuitiv touchskärm och smart arbetsflöde",
+									"Anpassad för professionella kliniker",
+								]
+							).map((item) => (
 								<li key={item} className="flex items-center gap-3">
 									<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
 										<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
@@ -108,7 +111,7 @@ export function ProductContent({
 								</li>
 							))}
 						</ul>
-						<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#dba481]/50 text-sm font-light" style={{ color: '#dba481', boxShadow: '-10px 0 8px -6px rgba(219,164,129,0.35), 10px 0 8px -6px rgba(219,164,129,0.35)' }}>
+						<button type="button" onClick={() => document.getElementById("product-inquiry-form")?.scrollIntoView({ behavior: "smooth" })} className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#dba481]/50 text-sm font-light" style={{ color: '#dba481', boxShadow: '-10px 0 8px -6px rgba(219,164,129,0.35), 10px 0 8px -6px rgba(219,164,129,0.35)' }}>
 							<FileText className="h-4 w-4 shrink-0" />
 							Begär offert
 						</button>
@@ -185,9 +188,11 @@ export function ProductContent({
 									<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
 										{product.title}
 									</h2>
-									<p className="text-white/60 text-base mb-8 leading-relaxed">
-										Avancerad laserplattform för professionella behandlingar
-									</p>
+									{(product as unknown as { heroSubtitle?: string }).heroSubtitle && (
+										<p className="text-white/60 text-base mb-8 leading-relaxed">
+											{(product as unknown as { heroSubtitle?: string }).heroSubtitle}
+										</p>
+									)}
 									<HeroCategoryForm categoryName={product.title} />
 								</div>
 							</div>
@@ -271,21 +276,6 @@ export function ProductContent({
 					<div className="w-full">
 						{/* Main Content */}
 						<article className="min-w-0">
-							{/* Share Button - below image, above Om Produkten */}
-							<div className="mb-6 flex justify-end">
-								<ProductShareButtons
-									productName={product.title}
-									productUrl={`/produkter/produkt/${product.slug}`}
-								/>
-							</div>
-
-							{/* Long Description Section */}
-							{product.productDescription && (
-								<ProductLongDescription
-									description={product.productDescription}
-								/>
-							)}
-
 							{/* FAQ Section - Right after description */}
 							{product.qa && product.qa.length > 0 && (
 								<div className="mb-12">
@@ -302,41 +292,6 @@ export function ProductContent({
 									/>
 								)}
 
-							{/* Specifications Section */}
-							{product?.techSpecifications &&
-								product?.techSpecifications?.length > 0 && (
-									<motion.section
-										initial={{ opacity: 0, y: 30 }}
-										whileInView={{ opacity: 1, y: 0 }}
-										viewport={{ once: true, margin: "-100px" }}
-										transition={{ duration: 0.6 }}
-										className="mb-12"
-										id="specifications"
-									>
-										<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
-											Tekniska Specifikationer
-										</h2>
-										<div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
-											<div className="divide-y divide-slate-100">
-												{product?.techSpecifications?.map(
-													(spec, index) => (
-														<div
-															key={index}
-															className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 px-6 hover:bg-slate-50/80 transition-colors duration-200 gap-1 sm:gap-4"
-														>
-															<span className="font-medium text-foreground">
-																{spec.title}
-															</span>
-															<span className="text-muted-foreground sm:text-right">
-																{spec.description}
-															</span>
-														</div>
-													)
-												)}
-											</div>
-										</div>
-									</motion.section>
-								)}
 						</article>
 
 						{/* Sidebar - Mobile only */}
@@ -368,6 +323,8 @@ export function ProductContent({
 					productImage={product.overviewImage}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}
+					bgMobile={product.inquiryBgMobile || undefined}
+					bgDesktop={product.inquiryBgDesktop || undefined}
 				/>
 			</div>
 

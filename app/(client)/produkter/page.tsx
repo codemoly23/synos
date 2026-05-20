@@ -27,7 +27,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { getProdukterFaqSection } from "@/lib/services/produkter-page.service";
+import { getProdukterFaqSection, getProdukterHeroSection, getProdukterPage } from "@/lib/services/produkter-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -372,7 +372,7 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories, techGroups, selectedGroup, contactInfo, faqSection] = await Promise.all([
+	const [products, categories, techGroups, selectedGroup, contactInfo, faqSection, heroSection, pageData] = await Promise.all([
 		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
@@ -382,7 +382,15 @@ export default async function ProductsPage({
 			title: FALLBACK_FAQ_TITLE,
 			faqs: FALLBACK_FAQS,
 		})),
+		getProdukterHeroSection().catch(() => null),
+		getProdukterPage().catch(() => null),
 	]);
+
+	const heroBullets = heroSection?.bulletPoints?.length
+		? heroSection.bulletPoints
+		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
+	const heroBgMobile = heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then normalize _id to string for ProductFAQ.
 	const globalFaqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
@@ -425,11 +433,12 @@ export default async function ProductsPage({
 		  )
 		: products;
 
-	// Hero content: if a technology is selected and has a group, use its data; otherwise defaults
-	const heroTitle = selectedGroup?.name || "Våra Produkter";
+	// Hero content: technology filter takes priority, then DB hero, then hardcoded defaults
+	const heroTitle = selectedGroup?.name || heroSection?.title || "Våra Produkter";
+	const heroSubtitle = heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
 	const heroDescription = selectedGroup?.description
 		? selectedGroup.description.replace(/<[^>]*>/g, "").trim().slice(0, 300)
-		: "Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
+		: heroSection?.subtitle || "Professionella lasermaskiner och medicinsk utrustning av högsta kvalitet. Alla våra produkter är MDR-certifierade och testade för bästa funktionalitet.";
 	const heroImage = selectedGroup?.image || "/storage/images/motus-ax-3-600x500.webp";
 	// Create a map of category ID to slug for product cards
 	const categorySlugMap = new Map<string, string>();
@@ -470,7 +479,7 @@ export default async function ProductsPage({
 				{/* ── MOBILE LAYOUT ── */}
 				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 					<ImageComponent
-						src="/images/Background Mobile.jpeg"
+						src={heroBgMobile}
 						alt=""
 						fill
 						priority
@@ -495,19 +504,14 @@ export default async function ProductsPage({
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
 					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
-						Motus Pro
+						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
 					<p className="text-white/70 text-sm mb-8 leading-relaxed">
-						Avancerad laserplattform för professionella behandlingar
+						{heroSubtitle}
 					</p>
 					<ul className="space-y-4">
-						{[
-							"Snabb och effektiv behandling",
-							"Skonsam teknik med hög precision",
-							"Intuitiv touchskärm och smart arbetsflöde",
-							"Anpassad för professionella kliniker",
-						].map((item) => (
+						{heroBullets.map((item) => (
 							<li key={item} className="flex items-center gap-3">
 								<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
 									<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
@@ -516,17 +520,17 @@ export default async function ProductsPage({
 							</li>
 						))}
 					</ul>
-					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
-					</button>
+					</a>
 				</div>
 
 				{/* ── DESKTOP LAYOUT ── */}
 				<div className="hidden lg:block">
 					<div className="_container relative overflow-hidden min-h-[740px]">
 						<ImageComponent
-							src="/images/Product detail breadcrumbs background.jpeg"
+							src={heroBgDesktop}
 							alt=""
 							fill
 							priority
@@ -682,26 +686,30 @@ export default async function ProductsPage({
 			</div>
 
 			{/* Contact form (dark, product-inquiry styling, generic mode) */}
-			<ProductInquiryForm
-				pillLabel={
-					selectedGroup
-						? `${selectedGroup.name.toUpperCase()} FÖRFRÅGAN`
-						: "SYNOS MEDICAL"
-				}
-				purchaseTitle={
-					selectedGroup
-						? `Frågor om ${selectedGroup.name}?`
-						: "Kontakta oss"
-				}
-				purchaseDescription={
-					selectedGroup
-						? `<p>Behöver du hjälp att välja rätt maskin inom ${selectedGroup.name}? Vårt team återkommer inom 24 timmar.</p>`
-						: "<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
-				}
-				categoryName={selectedGroup?.name}
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-			/>
+			<div id="inquiry-form">
+				<ProductInquiryForm
+					pillLabel={
+						selectedGroup
+							? `${selectedGroup.name.toUpperCase()} FÖRFRÅGAN`
+							: "SYNOS MEDICAL"
+					}
+					purchaseTitle={
+						selectedGroup
+							? `Frågor om ${selectedGroup.name}?`
+							: "Kontakta oss"
+					}
+					purchaseDescription={
+						selectedGroup
+							? `<p>Behöver du hjälp att välja rätt maskin inom ${selectedGroup.name}? Vårt team återkommer inom 24 timmar.</p>`
+							: "<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
+					}
+					categoryName={selectedGroup?.name}
+					contactPhone={contactInfo.phone}
+					contactEmail={contactInfo.email}
+					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
+					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+				/>
+			</div>
 
 			{/* FAQ Footer Section (managed via /dashboard/products/settings) */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">

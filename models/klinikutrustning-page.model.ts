@@ -14,9 +14,20 @@ export interface IKlinikFaqSection {
 	faqs: IKlinikFaq[];
 }
 
+export interface IKlinikHeroSection {
+	title: string;
+	subtitle: string;
+	bulletPoints: string[];
+	bgMobile: string;
+	bgDesktop: string;
+}
+
 export interface IKlinikutrustningPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	faqSection: IKlinikFaqSection;
+	heroSection: IKlinikHeroSection;
+	inquiryBgMobile: string;
+	inquiryBgDesktop: string;
 	updatedAt: Date;
 	createdAt: Date;
 }
@@ -81,6 +92,17 @@ const DEFAULT_FAQS: Omit<IKlinikFaq, "_id">[] = [
 	},
 ];
 
+const KlinikHeroSectionSchema = new Schema<IKlinikHeroSection>(
+	{
+		title: { type: String, trim: true, default: "" },
+		subtitle: { type: String, trim: true, default: "" },
+		bulletPoints: { type: [String], default: [] },
+		bgMobile: { type: String, default: "" },
+		bgDesktop: { type: String, default: "" },
+	},
+	{ _id: false }
+);
+
 const KlinikutrustningPageSchema = new Schema<IKlinikutrustningPage>(
 	{
 		faqSection: {
@@ -91,6 +113,18 @@ const KlinikutrustningPageSchema = new Schema<IKlinikutrustningPage>(
 				faqs: DEFAULT_FAQS,
 			},
 		},
+		heroSection: {
+			type: KlinikHeroSectionSchema,
+			default: {
+				title: "",
+				subtitle: "",
+				bulletPoints: [],
+				bgMobile: "",
+				bgDesktop: "",
+			},
+		},
+		inquiryBgMobile: { type: String, default: "" },
+		inquiryBgDesktop: { type: String, default: "" },
 	},
 	{
 		timestamps: true,
@@ -109,25 +143,24 @@ KlinikutrustningPageSchema.set("toJSON", {
 
 KlinikutrustningPageSchema.set("toObject", { virtuals: true });
 
+function buildKlinikutrustningPageModel(): Model<IKlinikutrustningPage> {
+	const cached = mongoose.models.KlinikutrustningPage as Model<IKlinikutrustningPage> | undefined;
+	if (cached) {
+		// Recompile if heroSection field is missing (stale HMR cache)
+		if (cached.schema.path("heroSection") && cached.schema.path("inquiryBgMobile")) return cached;
+		delete mongoose.models.KlinikutrustningPage;
+		delete (mongoose as unknown as { modelSchemas?: Record<string, unknown> }).modelSchemas?.KlinikutrustningPage;
+	}
+	return mongoose.model<IKlinikutrustningPage>("KlinikutrustningPage", KlinikutrustningPageSchema);
+}
+
 export const getKlinikutrustningPageModel = async (): Promise<
 	Model<IKlinikutrustningPage>
 > => {
 	await connectMongoose();
-	return (
-		(mongoose.models.KlinikutrustningPage as Model<IKlinikutrustningPage>) ||
-		mongoose.model<IKlinikutrustningPage>(
-			"KlinikutrustningPage",
-			KlinikutrustningPageSchema
-		)
-	);
+	return buildKlinikutrustningPageModel();
 };
 
 export function getKlinikutrustningPageModelSync(): Model<IKlinikutrustningPage> {
-	return (
-		(mongoose.models.KlinikutrustningPage as Model<IKlinikutrustningPage>) ||
-		mongoose.model<IKlinikutrustningPage>(
-			"KlinikutrustningPage",
-			KlinikutrustningPageSchema
-		)
-	);
+	return buildKlinikutrustningPageModel();
 }

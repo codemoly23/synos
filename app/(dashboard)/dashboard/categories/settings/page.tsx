@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/card";
 import { useConfirmModal } from "@/components/ui/confirm-modal";
 import { CMSPageSkeleton } from "@/components/admin/CMSPageSkeleton";
+import { MediaPicker } from "@/components/storage";
 
 const faqItemSchema = z.object({
 	_id: z.string().optional(),
@@ -41,6 +42,15 @@ const faqItemSchema = z.object({
 });
 
 const formSchema = z.object({
+	heroSection: z.object({
+		title: z.string().max(200).optional(),
+		subtitle: z.string().max(400).optional(),
+		bulletPoints: z.array(z.string().max(150)).max(6).optional(),
+		bgMobile: z.string().optional(),
+		bgDesktop: z.string().optional(),
+	}),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
 	faqSection: z.object({
 		title: z.string().max(200).optional(),
 		faqs: z.array(faqItemSchema),
@@ -50,6 +60,15 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const defaultValues: FormData = {
+	heroSection: {
+		title: "",
+		subtitle: "",
+		bulletPoints: [],
+		bgMobile: "",
+		bgDesktop: "",
+	},
+	inquiryBgMobile: "",
+	inquiryBgDesktop: "",
 	faqSection: {
 		title: "",
 		faqs: [],
@@ -75,6 +94,11 @@ export default function CategoriesSettingsPage() {
 		name: "faqSection.faqs",
 	});
 
+	const bullets = useFieldArray({
+		control: form.control,
+		name: "heroSection.bulletPoints" as never,
+	});
+
 	// Redirect if not authenticated
 	React.useEffect(() => {
 		if (!isPending && !session) {
@@ -93,6 +117,17 @@ export default function CategoriesSettingsPage() {
 					const json = await res.json();
 					const data = json?.data ?? json;
 					form.reset({
+						heroSection: {
+							title: data?.heroSection?.title ?? "",
+							subtitle: data?.heroSection?.subtitle ?? "",
+							bulletPoints: Array.isArray(data?.heroSection?.bulletPoints)
+								? data.heroSection.bulletPoints
+								: [],
+							bgMobile: data?.heroSection?.bgMobile ?? "",
+							bgDesktop: data?.heroSection?.bgDesktop ?? "",
+						},
+						inquiryBgMobile: data?.inquiryBgMobile ?? "",
+						inquiryBgDesktop: data?.inquiryBgDesktop ?? "",
 						faqSection: {
 							title:
 								data?.faqSection?.title ?? "Vanliga frågor om klinikutrustning",
@@ -148,8 +183,16 @@ export default function CategoriesSettingsPage() {
 	const onSubmit = async (data: FormData) => {
 		setIsSaving(true);
 		try {
-			// Normalize order based on array position so it stays consistent
 			const normalized: FormData = {
+				heroSection: {
+					title: data.heroSection.title,
+					subtitle: data.heroSection.subtitle,
+					bulletPoints: (data.heroSection.bulletPoints ?? []).filter(Boolean),
+					bgMobile: data.heroSection.bgMobile,
+					bgDesktop: data.heroSection.bgDesktop,
+				},
+				inquiryBgMobile: data.inquiryBgMobile,
+				inquiryBgDesktop: data.inquiryBgDesktop,
 				faqSection: {
 					title: data.faqSection.title,
 					faqs: data.faqSection.faqs.map((f, idx) => ({
@@ -168,31 +211,37 @@ export default function CategoriesSettingsPage() {
 			const responseData = await res.json();
 
 			if (res.ok) {
-				toast.success("FAQ settings saved successfully");
-				// Re-sync with returned data so _id values from new entries propagate
+				toast.success("Settings saved successfully");
 				const updated = responseData?.data ?? responseData;
-				if (updated?.faqSection) {
-					form.reset({
-						faqSection: {
-							title: updated.faqSection.title ?? "",
-							faqs: (updated.faqSection.faqs ?? []).map(
-								(f: {
-									_id?: string;
-									question?: string;
-									answer?: string;
-									visible?: boolean;
-									order?: number;
-								}) => ({
-									_id: f._id?.toString(),
-									question: f.question ?? "",
-									answer: f.answer ?? "",
-									visible: f.visible ?? true,
-									order: f.order ?? 0,
-								})
-							),
-						},
-					});
-				}
+				form.reset({
+					heroSection: {
+						title: updated?.heroSection?.title ?? "",
+						subtitle: updated?.heroSection?.subtitle ?? "",
+						bulletPoints: updated?.heroSection?.bulletPoints ?? [],
+						bgMobile: updated?.heroSection?.bgMobile ?? "",
+						bgDesktop: updated?.heroSection?.bgDesktop ?? "",
+					},
+					inquiryBgMobile: updated?.inquiryBgMobile ?? "",
+					inquiryBgDesktop: updated?.inquiryBgDesktop ?? "",
+					faqSection: {
+						title: updated?.faqSection?.title ?? "",
+						faqs: (updated?.faqSection?.faqs ?? []).map(
+							(f: {
+								_id?: string;
+								question?: string;
+								answer?: string;
+								visible?: boolean;
+								order?: number;
+							}) => ({
+								_id: f._id?.toString(),
+								question: f.question ?? "",
+								answer: f.answer ?? "",
+								visible: f.visible ?? true,
+								order: f.order ?? 0,
+							})
+						),
+					},
+				});
 			} else {
 				const errorMessage =
 					responseData.error ||
@@ -238,7 +287,7 @@ export default function CategoriesSettingsPage() {
 								Klinikutrustning Settings
 							</h1>
 							<p className="text-muted-foreground">
-								Manage the FAQ section shown on the Klinikutrustning page.
+								Manage the hero and FAQ sections shown on the Klinikutrustning page.
 							</p>
 						</div>
 					</div>
@@ -258,6 +307,122 @@ export default function CategoriesSettingsPage() {
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="space-y-6"
 				>
+					{/* Hero Section */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Hero Section</CardTitle>
+							<CardDescription>
+								Controls the hero banner shown at the top of the Klinikutrustning page. Leave fields empty to use the default hardcoded values.
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-6">
+							<div className="space-y-2">
+								<Label htmlFor="heroSection.title">Title</Label>
+								<Input
+									id="heroSection.title"
+									{...form.register("heroSection.title")}
+									placeholder="e.g. Motus Pro"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="heroSection.subtitle">Subtitle</Label>
+								<Input
+									id="heroSection.subtitle"
+									{...form.register("heroSection.subtitle")}
+									placeholder="e.g. Avancerad laserplattform för professionella behandlingar"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label>Bullet Points <span className="text-muted-foreground font-normal text-xs">(mobile only, max 6)</span></Label>
+								<div className="space-y-2">
+									{(bullets.fields as { id: string }[]).map((field, index) => (
+										<div key={field.id} className="flex gap-2">
+											<Input
+												{...form.register(`heroSection.bulletPoints.${index}` as const)}
+												placeholder="e.g. Snabb och effektiv behandling"
+												maxLength={150}
+											/>
+											<Button
+												type="button"
+												variant="ghost"
+												size="icon"
+												onClick={() => bullets.remove(index)}
+												className="text-destructive"
+											>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</div>
+									))}
+									{bullets.fields.length < 6 && (
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() => bullets.append("" as never)}
+										>
+											<Plus className="h-4 w-4 mr-1" />
+											Add Bullet Point
+										</Button>
+									)}
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label>Background Image — Mobile</Label>
+								<p className="text-xs text-muted-foreground">Falls back to default if not set.</p>
+								<MediaPicker
+									type="image"
+									value={form.watch("heroSection.bgMobile") || null}
+									onChange={(url) => form.setValue("heroSection.bgMobile", url || "", { shouldDirty: true })}
+									placeholder="Select mobile background image"
+									galleryTitle="Select Mobile Hero Background"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label>Background Image — Desktop</Label>
+								<p className="text-xs text-muted-foreground">Falls back to default if not set.</p>
+								<MediaPicker
+									type="image"
+									value={form.watch("heroSection.bgDesktop") || null}
+									onChange={(url) => form.setValue("heroSection.bgDesktop", url || "", { shouldDirty: true })}
+									placeholder="Select desktop background image"
+									galleryTitle="Select Desktop Hero Background"
+								/>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Inquiry Form Backgrounds */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Inquiry Form Backgrounds</CardTitle>
+							<CardDescription>
+								Background images for the contact form section at the bottom of the page. Falls back to default if not set.
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-6">
+							<div className="space-y-2">
+								<Label>Background — Mobile</Label>
+								<MediaPicker
+									type="image"
+									value={form.watch("inquiryBgMobile") || null}
+									onChange={(url) => form.setValue("inquiryBgMobile", url || "", { shouldDirty: true })}
+									placeholder="Select mobile inquiry background"
+									galleryTitle="Select Mobile Inquiry Background"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label>Background — Desktop</Label>
+								<MediaPicker
+									type="image"
+									value={form.watch("inquiryBgDesktop") || null}
+									onChange={(url) => form.setValue("inquiryBgDesktop", url || "", { shouldDirty: true })}
+									placeholder="Select desktop inquiry background"
+									galleryTitle="Select Desktop Inquiry Background"
+								/>
+							</div>
+						</CardContent>
+					</Card>
+
 					{/* Section title */}
 					<Card>
 						<CardHeader>

@@ -494,6 +494,8 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 			"overviewImage",
 			"heroBackgroundMobile",
 			"heroBackgroundDesktop",
+			"inquiryBgMobile",
+			"inquiryBgDesktop",
 			"beforeAfterImages",
 			"youtubeUrl",
 			"videoThumbnail",
@@ -838,6 +840,8 @@ export function ProductForm({
 			slug: product?.slug || "",
 			description: product?.description || "",
 			shortDescription: product?.shortDescription || "",
+			heroSubtitle: (product as unknown as { heroSubtitle?: string })?.heroSubtitle || "",
+			heroFeatures: (product as unknown as { heroFeatures?: string[] })?.heroFeatures || [],
 			productDescription: product?.productDescription || "",
 			additionalDescription: product?.additionalDescription || "",
 			additionalDescriptionTitle: product?.additionalDescriptionTitle || "",
@@ -895,6 +899,8 @@ export function ProductForm({
 				})) || [],
 			heroBackgroundMobile: (product as unknown as { heroBackgroundMobile?: string })?.heroBackgroundMobile || "",
 			heroBackgroundDesktop: (product as unknown as { heroBackgroundDesktop?: string })?.heroBackgroundDesktop || "",
+			inquiryBgMobile: (product as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || "",
+			inquiryBgDesktop: (product as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
 			youtubeUrl: product?.youtubeUrl || "",
 			videoThumbnail: product?.videoThumbnail || "",
 			rubric: product?.rubric || "",
@@ -982,6 +988,15 @@ export function ProductForm({
 	} = useFieldArray({
 		control,
 		name: "benefits" as never,
+	});
+
+	const {
+		fields: heroFeatureFields,
+		append: appendHeroFeature,
+		remove: removeHeroFeature,
+	} = useFieldArray({
+		control,
+		name: "heroFeatures" as never,
 	});
 
 	const title = watch("title");
@@ -1303,6 +1318,79 @@ export function ProductForm({
 											{errors.title.message}
 										</p>
 									)}
+								</div>
+
+								<Separator />
+
+								{/* Hero Subtitle */}
+								<div className="space-y-2">
+									<Label htmlFor="heroSubtitle">
+										Hero Subtitle{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional)
+										</span>
+									</Label>
+									<Input
+										id="heroSubtitle"
+										{...register("heroSubtitle")}
+										placeholder="e.g. Avancerad laserplattform för professionella behandlingar"
+										disabled={isLoading}
+										maxLength={300}
+									/>
+									<p className="text-xs text-slate-500">
+										Short tagline shown in the product hero section. Max 300 characters.
+									</p>
+								</div>
+
+								<Separator />
+
+								{/* Mobile Hero Features */}
+								<div className="space-y-2">
+									<Label>
+										Mobile Hero Features{" "}
+										<span className="text-muted-foreground font-normal">
+											(optional, max 6)
+										</span>
+									</Label>
+									<div className="space-y-2">
+										{heroFeatureFields.map((field, index) => (
+											<div key={field.id} className="flex gap-2">
+												<Input
+													{...register(
+														`heroFeatures.${index}` as const
+													)}
+													placeholder="e.g. Snabb och effektiv behandling"
+													disabled={isLoading}
+													maxLength={100}
+												/>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={() => removeHeroFeature(index)}
+													disabled={isLoading}
+													className="text-red-500"
+												>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
+										))}
+										{heroFeatureFields.length < 6 && (
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={() => appendHeroFeature("")}
+												disabled={isLoading}
+											>
+												<Plus className="h-4 w-4 mr-1" />
+												Add Feature
+											</Button>
+										)}
+									</div>
+									<p className="text-xs text-slate-500">
+										Checkmark bullet points shown in the mobile hero section. Max 6 items, each max 100 characters.
+									</p>
 								</div>
 
 								<Separator />
@@ -2022,6 +2110,52 @@ export function ProductForm({
 										placeholder="Select desktop hero background"
 										disabled={isLoading}
 										galleryTitle="Select Desktop Hero Background"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Inquiry/Contact Background — Mobile */}
+								<div className="space-y-2">
+									<Label>Contact Section Background — Mobile</Label>
+									<p className="text-xs text-muted-foreground">
+										Background image shown in the contact/form section on mobile devices.
+										Falls back to the default dark background if not set.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("inquiryBgMobile") || null}
+										onChange={(url) =>
+											setValue("inquiryBgMobile", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select mobile contact background"
+										disabled={isLoading}
+										galleryTitle="Select Mobile Contact Background"
+									/>
+								</div>
+
+								<Separator />
+
+								{/* Inquiry/Contact Background — Desktop */}
+								<div className="space-y-2">
+									<Label>Contact Section Background — Desktop</Label>
+									<p className="text-xs text-muted-foreground">
+										Background image shown in the contact/form section on desktop.
+										Falls back to the default dark background if not set.
+									</p>
+									<MediaPicker
+										type="image"
+										value={watch("inquiryBgDesktop") || null}
+										onChange={(url) =>
+											setValue("inquiryBgDesktop", url || "", {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Select desktop contact background"
+										disabled={isLoading}
+										galleryTitle="Select Desktop Contact Background"
 									/>
 								</div>
 
