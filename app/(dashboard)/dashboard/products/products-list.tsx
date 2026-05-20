@@ -13,6 +13,7 @@ import {
 	Copy,
 	Send,
 	FileText,
+	Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -260,12 +261,20 @@ export function ProductsList({
 						<h1 className="text-3xl font-bold">Products</h1>
 						<p className="text-slate-600">Manage your product catalog</p>
 					</div>
-					<Link href="/dashboard/products/new">
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Add Product
-						</Button>
-					</Link>
+					<div className="flex items-center gap-2">
+						<Link href="/dashboard/products/settings">
+							<Button variant="outline">
+								<Settings className="h-4 w-4 mr-2" />
+								Settings
+							</Button>
+						</Link>
+						<Link href="/dashboard/products/new">
+							<Button>
+								<Plus className="h-4 w-4 mr-2" />
+								Add Product
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				{/* Stats Cards */}

@@ -56,7 +56,7 @@ const defaultValues: FormData = {
 	},
 };
 
-export default function TechnologyCategoriesSettingsPage() {
+export default function ProductsSettingsPage() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
 
@@ -78,7 +78,7 @@ export default function TechnologyCategoriesSettingsPage() {
 	// Redirect if not authenticated
 	React.useEffect(() => {
 		if (!isPending && !session) {
-			router.push("/login?callbackUrl=/dashboard/technology-categories/settings");
+			router.push("/login?callbackUrl=/dashboard/products/settings");
 		}
 	}, [session, isPending, router]);
 
@@ -225,14 +225,14 @@ export default function TechnologyCategoriesSettingsPage() {
 				{/* Header */}
 				<div className="flex items-start justify-between gap-4 flex-wrap">
 					<div className="flex items-center gap-3">
-						<Link href="/dashboard/technology-categories">
+						<Link href="/dashboard/products">
 							<Button variant="ghost" size="icon">
 								<ArrowLeft className="h-4 w-4" />
 							</Button>
 						</Link>
 						<div>
 							<h1 className="text-3xl font-bold tracking-tight">
-								Produkter Page Settings
+								Produkter Settings
 							</h1>
 							<p className="text-muted-foreground">
 								Manage the FAQ section shown on the Produkter page.
