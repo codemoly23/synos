@@ -1,8 +1,8 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,15 @@ type CategoryFormData = {
 	parent?: string | null;
 	image?: string | null;
 	order?: number;
+	faqTitle?: string;
+	faqs?: Array<{
+		_id?: string;
+		question: string;
+		answer: string;
+		visible: boolean;
+	}>;
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -73,6 +82,7 @@ export function CategoryForm({
 		handleSubmit,
 		setValue,
 		watch,
+		control,
 		formState: { errors, isDirty },
 	} = useForm<CategoryFormData>({
 		resolver: zodResolver(
@@ -85,6 +95,14 @@ export function CategoryForm({
 			parent: category?.parent?.toString() || null,
 			image: category?.image || "",
 			order: category?.order ?? 0,
+			faqTitle: category?.faqTitle || "",
+			faqs:
+				category?.faqs?.map((faq) => ({
+					_id: faq._id?.toString(),
+					question: faq.question,
+					answer: faq.answer,
+					visible: faq.visible ?? true,
+				})) || [],
 			inquiryBgMobile: (category as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || "",
 			inquiryBgDesktop: (category as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
 			seo: {
@@ -94,6 +112,15 @@ export function CategoryForm({
 				noindex: category?.seo?.noindex || false,
 			},
 		},
+	});
+
+	const {
+		fields: faqFields,
+		append: appendFaq,
+		remove: removeFaq,
+	} = useFieldArray({
+		control,
+		name: "faqs",
 	});
 
 	const name = watch("name");
@@ -244,6 +271,130 @@ export function CategoryForm({
 				{errors.image && (
 					<p className="text-sm text-red-500">{errors.image.message}</p>
 				)}
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* FAQ Section */}
+			<div className="space-y-4">
+				<div>
+					<h3 className="text-lg font-semibold">Category FAQ</h3>
+					<p className="text-sm text-muted-foreground mt-1">
+						Add frequently asked questions for this category. Shown at the
+						bottom of the category page. Leave empty to use the default
+						fallback FAQ.
+					</p>
+				</div>
+
+				{/* FAQ Section Title */}
+				<div className="space-y-2">
+					<Label htmlFor="faqTitle">FAQ Section Title</Label>
+					<Input
+						id="faqTitle"
+						{...register("faqTitle")}
+						placeholder={`e.g. Vanliga frågor om ${
+							watch("name")?.toLowerCase() || "kategori"
+						}`}
+						disabled={isLoading}
+					/>
+					<p className="text-xs text-slate-500">
+						Optional. If left empty, an auto-generated title will be used
+						on the category page.
+					</p>
+					{errors.faqTitle && (
+						<p className="text-sm text-red-500">
+							{errors.faqTitle.message}
+						</p>
+					)}
+				</div>
+
+				{/* FAQ Items */}
+				<div className="space-y-4">
+					{faqFields.map((field, index) => (
+						<div
+							key={field.id}
+							className="p-4 border rounded-lg space-y-3 bg-slate-50/50"
+						>
+							<div className="flex justify-between items-start">
+								<span className="text-sm font-medium">
+									FAQ #{index + 1}
+								</span>
+								<div className="flex items-center gap-2">
+									<label className="flex items-center gap-2 text-sm">
+										<input
+											type="checkbox"
+											{...register(`faqs.${index}.visible`)}
+											disabled={isLoading}
+											className="h-4 w-4"
+										/>
+										Visible
+									</label>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={() => removeFaq(index)}
+										disabled={isLoading}
+										className="text-red-500 h-8 w-8"
+									>
+										<Trash2 className="h-4 w-4" />
+									</Button>
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor={`faqs.${index}.question`}>
+									Question
+								</Label>
+								<Input
+									{...register(`faqs.${index}.question`)}
+									placeholder="Enter the question"
+									disabled={isLoading}
+								/>
+								{errors.faqs?.[index]?.question && (
+									<p className="text-sm text-red-500">
+										{errors.faqs[index]?.question?.message}
+									</p>
+								)}
+							</div>
+							<div className="space-y-2">
+								<Label>Answer</Label>
+								<TextEditor
+									name={`faqs.${index}.answer`}
+									defaultValue={watch(`faqs.${index}.answer`) || ""}
+									onChange={(val) =>
+										setValue(`faqs.${index}.answer`, val, {
+											shouldDirty: true,
+										})
+									}
+									placeholder="Enter the answer (supports rich text)"
+									variant="detailedSimple"
+									height="150px"
+									disable={isLoading}
+								/>
+								{errors.faqs?.[index]?.answer && (
+									<p className="text-sm text-red-500">
+										{errors.faqs[index]?.answer?.message}
+									</p>
+								)}
+							</div>
+						</div>
+					))}
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() =>
+							appendFaq({
+								question: "",
+								answer: "",
+								visible: true,
+							})
+						}
+						disabled={isLoading}
+					>
+						<Plus className="h-4 w-4 mr-1" />
+						Add FAQ
+					</Button>
+				</div>
 			</div>
 
 			<Separator className="my-8" />

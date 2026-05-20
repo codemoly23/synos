@@ -47,7 +47,7 @@ const tourFormSchema = z.object({
 		.string()
 		.max(1000, "Meddelandet får inte överstiga 1000 tecken")
 		.optional(),
-	gdprConsent: z.boolean({ required_error: "Du måste godkänna integritetspolicyn", invalid_type_error: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
+	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 });
 
 type FormData = z.infer<typeof tourFormSchema>;

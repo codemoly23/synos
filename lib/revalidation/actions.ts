@@ -278,3 +278,21 @@ export async function revalidateContactPage(): Promise<void> {
 export async function revalidateCustom404Page(): Promise<void> {
 	revalidateTag(CACHE_TAGS.CUSTOM_404_PAGE, "default");
 }
+
+/**
+ * Revalidate klinikutrustning page
+ * Call this when klinikutrustning page content (FAQ etc.) is updated
+ */
+export async function revalidateKlinikutrustningPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.KLINIKUTRUSTNING_PAGE, "default");
+	revalidatePath(PATHS.KLINIKUTRUSTNING);
+}
+
+/**
+ * Revalidate produkter page
+ * Call this when produkter page content (FAQ etc.) is updated
+ */
+export async function revalidateProdukterPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.PRODUKTER_PAGE, "default");
+	revalidatePath(PATHS.PRODUCTS);
+}

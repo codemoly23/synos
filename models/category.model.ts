@@ -12,6 +12,16 @@ export interface ICategorySeo {
 }
 
 /**
+ * FAQ item interface for categories
+ */
+export interface ICategoryFaq {
+	_id?: mongoose.Types.ObjectId;
+	question: string;
+	answer: string;
+	visible: boolean;
+}
+
+/**
  * Category interface extending Mongoose Document
  * Supports infinite nesting via parent reference
  */
@@ -24,6 +34,8 @@ export interface ICategory extends Document {
 	image?: string | null; // URL
 	order: number; // For sorting siblings
 	isActive: boolean;
+	faqTitle?: string;
+	faqs: ICategoryFaq[];
 	seo?: ICategorySeo;
 	inquiryBgMobile?: string;
 	inquiryBgDesktop?: string;
@@ -47,6 +59,29 @@ export interface ICategoryTreeNode {
 	depth: number;
 	path: string; // Full path like "parent/child/grandchild"
 }
+
+/**
+ * FAQ Sub-schema for categories
+ */
+const CategoryFaqSchema = new Schema<ICategoryFaq>(
+	{
+		question: {
+			type: String,
+			required: [true, "Question is required"],
+			trim: true,
+		},
+		answer: {
+			type: String,
+			required: [true, "Answer is required"],
+			trim: true,
+		},
+		visible: {
+			type: Boolean,
+			default: true,
+		},
+	},
+	{ _id: true }
+);
 
 /**
  * Category Schema
@@ -87,6 +122,15 @@ const CategorySchema = new Schema<ICategory>(
 		isActive: {
 			type: Boolean,
 			default: true,
+		},
+		faqTitle: {
+			type: String,
+			trim: true,
+			default: "",
+		},
+		faqs: {
+			type: [CategoryFaqSchema],
+			default: [],
 		},
 		inquiryBgMobile: {
 			type: String,
@@ -149,16 +193,34 @@ CategorySchema.set("toJSON", {
 CategorySchema.set("toObject", { virtuals: true });
 
 /**
+ * Build (or return) the Category model with current schema.
+ * In dev (HMR), if a stale model is cached without our latest schema fields
+ * (e.g. faqs/faqTitle were added later), we recompile so saves don't silently
+ * drop unknown fields under Mongoose's default `strict: true`.
+ */
+function buildCategoryModel(): Model<ICategory> {
+	const cached = mongoose.models.Category as Model<ICategory> | undefined;
+	if (cached) {
+		const hasFaqsPath = !!cached.schema.path("faqs");
+		const hasFaqTitlePath = !!cached.schema.path("faqTitle");
+		if (hasFaqsPath && hasFaqTitlePath) {
+			return cached;
+		}
+		// Stale cached model — recompile with latest schema
+		delete mongoose.models.Category;
+		delete (mongoose as unknown as { modelSchemas?: Record<string, unknown> })
+			.modelSchemas?.Category;
+	}
+	return mongoose.model<ICategory>("Category", CategorySchema);
+}
+
+/**
  * Get Category Model
  * Uses function to prevent model overwrite during hot reload
  */
 export const getCategoryModel = async (): Promise<Model<ICategory>> => {
 	await connectMongoose();
-
-	return (
-		(mongoose.models.Category as Model<ICategory>) ||
-		mongoose.model<ICategory>("Category", CategorySchema)
-	);
+	return buildCategoryModel();
 };
 
 /**
@@ -166,8 +228,5 @@ export const getCategoryModel = async (): Promise<Model<ICategory>> => {
  * Note: Ensure connectMongoose is called before using this
  */
 export function getCategoryModelSync(): Model<ICategory> {
-	return (
-		(mongoose.models.Category as Model<ICategory>) ||
-		mongoose.model<ICategory>("Category", CategorySchema)
-	);
+	return buildCategoryModel();
 }
