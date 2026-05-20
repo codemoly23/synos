@@ -342,9 +342,6 @@ export function ProductContent({
 						{/* Sidebar - Mobile only */}
 						<aside className="sticky top-28 self-start space-y-4 block md:hidden">
 							<ProductDetailSidebar
-								brochureUrl={product.documentation}
-								videoUrl={product.youtubeUrl}
-								benefits={product.benefits}
 								certifications={product.certifications}
 								onScrollToForm={() =>
 									document
