@@ -28,6 +28,7 @@ import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
 import { getProdukterFaqSection, getProdukterHeroSection, getProdukterPage } from "@/lib/services/produkter-page.service";
+import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -486,19 +487,6 @@ export default async function ProductsPage({
 						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
 						sizes="100vw"
 					/>
-					{/* Machine image — absolute, centered in circle */}
-					<div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-						<div className="relative w-full h-full">
-							<ImageComponent
-								src="/images/motus-ax-3.jpg"
-								alt="Motus Pro"
-								fill
-								className="object-contain drop-shadow-2xl"
-								priority
-								sizes="100vw"
-							/>
-						</div>
-					</div>
 				</div>
 
 				{/* Mobile text — below background */}
@@ -538,101 +526,16 @@ export default async function ProductsPage({
 							sizes="100vw"
 						/>
 						<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
-							{/* Left — machine grounded on floor */}
-							<div className="relative h-[740px] flex flex-col items-center justify-center">
-								{/* Warm floor glow matching background lighting */}
-								<div
-									className="absolute inset-x-[8%] pointer-events-none z-0"
-									style={{
-										bottom: '14%',
-										height: '90px',
-										background: 'radial-gradient(ellipse at 50% 80%, rgba(184,138,58,0.22) 0%, transparent 70%)',
-										filter: 'blur(22px)',
-									}}
-								/>
-								{/* Product image — anchored to floor */}
-								<div className="relative w-full h-[620px] z-10">
-									<ImageComponent
-										src="/images/motus.png"
-										alt="Motus Pro"
-										fill
-										className="object-contain object-bottom"
-										priority
-										sizes="700px"
-									/>
-								</div>
-								{/* Contact shadow + floor reflection */}
-								<div className="relative z-10 w-full shrink-0 -mt-3">
-									<div
-										className="mx-auto pointer-events-none"
-										style={{
-											width: '46%',
-											height: '16px',
-											background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)',
-											filter: 'blur(9px)',
-										}}
-									/>
-									<div
-										className="w-full mt-1 overflow-hidden"
-										style={{
-											height: '68px',
-											opacity: 0.35,
-											maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-											WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-										}}
-									>
-										<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-											<ImageComponent
-												src="/images/motus.png"
-												fill
-												alt=""
-												className="object-contain object-bottom"
-												sizes="700px"
-											/>
-										</div>
-									</div>
-								</div>
-							</div>
-							{/* Right — Form */}
+							<div />
+						{/* Right — Form */}
 							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 								<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
-									Motus Pro
+									{heroTitle}
 								</h2>
 								<p className="text-white/60 text-base mb-8 leading-relaxed">
-									Avancerad laserplattform för professionella behandlingar
+									{heroSubtitle}
 								</p>
-								<div className="space-y-4">
-									<div className="grid grid-cols-2 gap-4">
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Förnamn <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt förnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Efternamn <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt efternamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-									</div>
-									<div className="grid grid-cols-2 gap-4">
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Företag <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt företagsnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">E-post <span className="text-primary">*</span></label>
-											<input type="email" placeholder="din.email@exempel.se" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-									</div>
-									<div>
-										<label className="block text-xs text-white/60 mb-1.5">När är du intresserad av att ta nästa steg? <span className="text-primary">*</span></label>
-										<textarea rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none resize-none" />
-									</div>
-									<button type="button" className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base">
-										Skicka förfrågan
-									</button>
-									<p className="text-center text-xs text-white/40">
-										Vi behandlar dina uppgifter konfidentiellt och delar dem inte med tredje part.
-									</p>
-								</div>
+								<HeroCategoryForm categoryName={heroTitle} />
 							</div>
 						</div>
 					</div>
