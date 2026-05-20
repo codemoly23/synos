@@ -57,7 +57,7 @@ const clientFormSchema = z.object({
 		.string()
 		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
 		.optional(),
-	gdprConsent: z.boolean({ required_error: "Du måste godkänna integritetspolicyn", invalid_type_error: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
+	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	marketingConsent: z.boolean().optional(),
 });
 

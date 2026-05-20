@@ -26,21 +26,30 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getKlinikutrustningFaqSection } from "@/lib/services/klinikutrustning-page.service";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
 /**
- * Fallback FAQ content for the bottom of /klinikutrustning.
- * TODO: Replace with admin-editable content from site settings.
+ * Fallback FAQ used if the database fetch fails. The DB is auto-seeded with
+ * the same content on first read (see klinikutrustning-page model defaults),
+ * so this fallback only kicks in on a hard error.
  */
-const KLINIK_FAQ_TITLE = "Vanliga frågor om klinikutrustning";
-const KLINIK_FAQS = [
+const FALLBACK_FAQ_TITLE = "Vanliga frågor om klinikutrustning";
+const FALLBACK_FAQS: Array<{
+	_id: string;
+	question: string;
+	answer: string;
+	visible: boolean;
+	order: number;
+}> = [
 	{
 		_id: "klinik-faq-1",
 		question: "Vilken laser passar bäst för min klinik?",
 		answer:
 			"<p>Valet av laser beror på vilka behandlingar du vill erbjuda och din målgrupp. För hårborttagning passar alexandrit- och Nd:YAG-lasrar bäst, medan tatueringsborttagning kräver Q-switched-teknik. Kontakta oss för en kostnadsfri behovsanalys där vi hjälper dig att hitta rätt utrustning.</p>",
 		visible: true,
+		order: 0,
 	},
 	{
 		_id: "klinik-faq-2",
@@ -48,6 +57,7 @@ const KLINIK_FAQS = [
 		answer:
 			"<p>Ja, men det kräver rätt utrustning och rätt inställningar. Våra maskiner är utvecklade för att kunna anpassas till samtliga hudtyper enligt Fitzpatrick-skalan. Vid operatörsutbildningen får ni komplett kunskap om hur ni säkert behandlar olika hudtyper.</p>",
 		visible: true,
+		order: 1,
 	},
 	{
 		_id: "klinik-faq-3",
@@ -55,6 +65,7 @@ const KLINIK_FAQS = [
 		answer:
 			"<p>Leveranstiden varierar mellan 2–6 veckor beroende på modell och tillgänglighet i lager. Vid akut behov kan vi i många fall ordna ersättningsmaskin under tiden. Kontakta oss för aktuella leveranstider.</p>",
 		visible: true,
+		order: 2,
 	},
 	{
 		_id: "klinik-faq-4",
@@ -62,6 +73,7 @@ const KLINIK_FAQS = [
 		answer:
 			"<p>Ja, vi har egen serviceavdelning med certifierade tekniker. Vi erbjuder både planerat underhåll och akuta reparationer, med en garanterad responstid på 48 arbetstimmar. Under serviceperioder kan ni få tillgång till en ersättningsmaskin.</p>",
 		visible: true,
+		order: 3,
 	},
 	{
 		_id: "klinik-faq-5",
@@ -69,6 +81,7 @@ const KLINIK_FAQS = [
 		answer:
 			"<p>Absolut. Vi erbjuder kostnadsfria demonstrationer både hos er klinik och på vårt huvudkontor. Vid demonstrationen får ni testa maskinen, ställa frågor till våra experter och få en personlig ROI-beräkning för din verksamhet.</p>",
 		visible: true,
+		order: 4,
 	},
 ];
 
@@ -320,11 +333,30 @@ function MobileDrawer({ categories }: { categories: ICategory[] }) {
 }
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo] = await Promise.all([
+	const [categories, products, contactInfo, faqSection] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
+		getKlinikutrustningFaqSection().catch(() => ({
+			title: FALLBACK_FAQ_TITLE,
+			faqs: FALLBACK_FAQS,
+		})),
 	]);
+
+	// Sort by `order` then filter to only visible items; normalize _id to string.
+	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
+	const rawFaqs = Array.isArray(faqSection?.faqs) ? faqSection.faqs : [];
+	const klinikFaqs =
+		rawFaqs.length > 0
+			? [...rawFaqs]
+					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+					.map((f, idx) => ({
+						_id: (f._id ?? `klinik-faq-${idx}`).toString(),
+						question: f.question,
+						answer: f.answer,
+						visible: f.visible ?? true,
+					}))
+			: FALLBACK_FAQS;
 
 	// Create a map of category ID to slug for product cards
 	const categorySlugMap = new Map<string, string>();
@@ -574,10 +606,10 @@ export default async function KategoriPage() {
 				</div>
 			</div>
 
-			{/* FAQ Footer Section (fallback content; admin-editable later) */}
+			{/* FAQ Footer Section (managed via /dashboard/categories/settings) */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 				<div className="_container mx-auto px-4">
-					<ProductFAQ title={KLINIK_FAQ_TITLE} faqs={KLINIK_FAQS} />
+					<ProductFAQ title={faqTitle} faqs={klinikFaqs} />
 				</div>
 			</section>
 

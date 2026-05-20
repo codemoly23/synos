@@ -71,6 +71,22 @@ const categorySeoSchema = z.object({
 });
 
 /**
+ * FAQ item schema for categories
+ */
+const categoryFaqSchema = z.object({
+	_id: z.string().optional(),
+	question: z
+		.string()
+		.min(1, "Question is required")
+		.max(500, "Question cannot exceed 500 characters"),
+	answer: z
+		.string()
+		.min(1, "Answer is required")
+		.max(5000, "Answer cannot exceed 5000 characters"),
+	visible: z.boolean().optional().default(true),
+});
+
+/**
  * Create Category Schema
  */
 export const createCategorySchema = z.object({
@@ -95,6 +111,12 @@ export const createCategorySchema = z.object({
 		.min(0, "Order must be 0 or greater")
 		.optional()
 		.default(0),
+	faqTitle: z
+		.string()
+		.max(200, "FAQ title cannot exceed 200 characters")
+		.optional()
+		.default(""),
+	faqs: z.array(categoryFaqSchema).optional().default([]),
 	seo: categorySeoSchema.optional(),
 });
 
@@ -119,6 +141,11 @@ export const updateCategorySchema = z.object({
 	image: optionalUrlSchema,
 	order: z.coerce.number().int().min(0, "Order must be 0 or greater").optional(),
 	isActive: z.boolean().optional(),
+	faqTitle: z
+		.string()
+		.max(200, "FAQ title cannot exceed 200 characters")
+		.optional(),
+	faqs: z.array(categoryFaqSchema).optional(),
 	seo: categorySeoSchema.optional(),
 });
 
