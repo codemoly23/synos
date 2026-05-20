@@ -353,19 +353,15 @@ export function CategoryForm({
 								)}
 							</div>
 							<div className="space-y-2">
-								<Label>Answer</Label>
-								<TextEditor
-									name={`faqs.${index}.answer`}
-									defaultValue={watch(`faqs.${index}.answer`) || ""}
-									onChange={(val) =>
-										setValue(`faqs.${index}.answer`, val, {
-											shouldDirty: true,
-										})
-									}
-									placeholder="Enter the answer (supports rich text)"
-									variant="detailedSimple"
-									height="150px"
-									disable={isLoading}
+								<Label htmlFor={`faqs.${index}.answer`}>
+									Answer (HTML allowed)
+								</Label>
+								<Textarea
+									id={`faqs.${index}.answer`}
+									{...register(`faqs.${index}.answer`)}
+									placeholder="Svar på frågan. Plain text eller HTML (t.ex. <p>...</p>, <strong>...</strong>, <a href='...'>...</a>)."
+									rows={5}
+									disabled={isLoading}
 								/>
 								{errors.faqs?.[index]?.answer && (
 									<p className="text-sm text-red-500">
