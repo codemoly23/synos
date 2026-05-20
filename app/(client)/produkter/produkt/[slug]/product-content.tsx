@@ -211,38 +211,8 @@ export function ProductContent({
 							className="object-cover object-[30%_top]"
 							sizes="100vw"
 						/>
-						<div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center min-h-[640px] lg:min-h-[740px] gap-8">
-							{/* Left – Product image + floor reflection */}
-							<div className="relative h-[640px] lg:h-[740px] flex flex-col items-center justify-center">
-								<div className="relative w-full h-[520px] lg:h-[620px]">
-									<ImageComponent
-										src={product.overviewImage || product.productImages?.[0] || ""}
-										alt={product.title}
-										fill
-										className="object-contain drop-shadow-2xl"
-										priority
-										sizes="(max-width: 1024px) 100vw, 700px"
-									/>
-								</div>
-								{/* Reflection */}
-								<div
-									className="w-full h-16 overflow-hidden opacity-50 shrink-0 -mt-16"
-									style={{
-										maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-										WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-									}}
-								>
-									<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-										<ImageComponent
-											src={product.overviewImage || product.productImages?.[0] || ""}
-											fill
-											alt=""
-											className="object-contain object-bottom"
-											sizes="(max-width: 1024px) 100vw, 700px"
-										/>
-									</div>
-								</div>
-							</div>
+						<div className="relative z-10 grid grid-cols-2 items-center min-h-[640px] lg:min-h-[740px] gap-8">
+							<div />
 							{/* Right – text */}
 							<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
 								<h1 className="text-6xl lg:text-8xl font-serif font-light text-white mb-3 leading-tight">

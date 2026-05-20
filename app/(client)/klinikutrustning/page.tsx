@@ -27,6 +27,7 @@ import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
 import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
+import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -457,38 +458,7 @@ export default async function KategoriPage() {
 								<p className="text-white/60 text-base mb-8 leading-relaxed">
 									{heroSubtitle}
 								</p>
-								<div className="space-y-4">
-									<div className="grid grid-cols-2 gap-4">
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Förnamn <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt förnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Efternamn <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt efternamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-									</div>
-									<div className="grid grid-cols-2 gap-4">
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">Företag <span className="text-primary">*</span></label>
-											<input type="text" placeholder="Ditt företagsnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">E-post <span className="text-primary">*</span></label>
-											<input type="email" placeholder="din.email@exempel.se" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-										</div>
-									</div>
-									<div>
-										<label className="block text-xs text-white/60 mb-1.5">När är du intresserad av att ta nästa steg? <span className="text-primary">*</span></label>
-										<textarea rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none resize-none" />
-									</div>
-									<button type="button" className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base">
-										Skicka förfrågan
-									</button>
-									<p className="text-center text-xs text-white/40">
-										Vi behandlar dina uppgifter konfidentiellt och delar dem inte med tredje part.
-									</p>
-								</div>
+								<HeroCategoryForm categoryName={heroTitle} />
 							</div>
 						</div>
 					</div>
