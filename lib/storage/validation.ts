@@ -14,7 +14,7 @@ import {
  * Storage folder enum schema
  */
 export const storageFolderSchema = z.enum(["images", "documents"], {
-	error: "Folder must be 'images' or 'documents'",
+	errorMap: () => ({ message: "Folder must be 'images' or 'documents'" }),
 });
 
 /**
@@ -41,7 +41,7 @@ export const filenameSchema = z
 export const mimeTypeSchema = z.enum(
 	ALLOWED_MIME_TYPES as unknown as [string, ...string[]],
 	{
-		error: `File type must be one of: ${ALLOWED_MIME_TYPES.join(", ")}`,
+		errorMap: () => ({ message: `File type must be one of: ${ALLOWED_MIME_TYPES.join(", ")}` }),
 	}
 );
 

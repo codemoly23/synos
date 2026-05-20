@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductType } from "@/types";
-import { Breadcrumb, type BreadcrumbItem } from "@/components/shared/Breadcrumb";
+import { type BreadcrumbItem } from "@/components/shared/Breadcrumb";
 import { ProductDetailSidebar } from "@/components/products/ProductDetailSidebar";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
@@ -13,6 +13,7 @@ import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatu
 import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
 import { ProductFeatureGrid } from "@/components/products/sections/ProductFeatureGrid";
 import { getProductCustomSections } from "@/lib/data/product-sections";
+import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
@@ -51,7 +52,8 @@ export function ProductContent({
 	const customSections = getProductCustomSections(
 		product.slug,
 		product.title,
-		primaryImage
+		primaryImage,
+		product.featureSections
 	);
 
 	return (
@@ -62,14 +64,14 @@ export function ProductContent({
 					{/* ── MOBILE LAYOUT ── */}
 					<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 						<ImageComponent
-							src="/images/Background Mobile.jpeg"
+							src={product.heroBackgroundMobile || "/images/Background Mobile.jpeg"}
 							alt=""
 							fill
 							priority
 							className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
 							sizes="100vw"
 						/>
-						<div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
+						{/* <div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
 							<div className="relative w-full h-full">
 								<ImageComponent
 									src="/images/motus-ax-3.jpg"
@@ -80,12 +82,12 @@ export function ProductContent({
 									sizes="100vw"
 								/>
 							</div>
-						</div>
+						</div> */}
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
 						<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
-							Motus Pro
+							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
 						<p className="text-white/70 text-sm mb-8 leading-relaxed">
@@ -106,7 +108,7 @@ export function ProductContent({
 								</li>
 							))}
 						</ul>
-						<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-white/30 text-white/90 text-sm font-light">
+						<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#dba481]/50 text-sm font-light" style={{ color: '#dba481', boxShadow: '-10px 0 8px -6px rgba(219,164,129,0.35), 10px 0 8px -6px rgba(219,164,129,0.35)' }}>
 							<FileText className="h-4 w-4 shrink-0" />
 							Begär offert
 						</button>
@@ -115,23 +117,13 @@ export function ProductContent({
 					<div className="hidden lg:block">
 						<div className="_container relative overflow-hidden min-h-[740px]">
 							<ImageComponent
-								src="/images/Product detail breadcrumbs background.jpeg"
+								src={product.heroBackgroundDesktop || "/images/Product detail breadcrumbs background.jpeg"}
 								alt=""
 								fill
 								priority
 								className="object-cover object-[30%_top]"
 								sizes="100vw"
 							/>
-							{/* Breadcrumb */}
-							<div className="absolute top-6 left-0 right-0 z-20 px-4">
-								<Breadcrumb
-									items={
-										parentBreadcrumbs
-											? [...parentBreadcrumbs, { label: product.title }]
-											: [{ label: baseLabel, href: basePath }, { label: product.title }]
-									}
-								/>
-							</div>
 							<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
 								{/* Left — machine grounded on floor */}
 								<div className="relative h-[740px] flex flex-col items-center justify-center">
@@ -146,7 +138,7 @@ export function ProductContent({
 										}}
 									/>
 									{/* Product image — anchored to floor */}
-									<div className="relative w-full h-[620px] z-10">
+									{/* <div className="relative w-full h-[620px] z-10">
 										<ImageComponent
 											src="/images/motus.png"
 											alt="Motus Pro"
@@ -155,9 +147,9 @@ export function ProductContent({
 											priority
 											sizes="700px"
 										/>
-									</div>
+									</div> */}
 									{/* Contact shadow + floor reflection */}
-									<div className="relative z-10 w-full shrink-0 -mt-3">
+									{/* <div className="relative z-10 w-full shrink-0 -mt-3">
 										<div
 											className="mx-auto pointer-events-none"
 											style={{
@@ -186,48 +178,17 @@ export function ProductContent({
 												/>
 											</div>
 										</div>
-									</div>
+									</div> */}
 								</div>
 								{/* Right — Form */}
 								<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 									<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
-										Motus Pro
+										{product.title}
 									</h2>
 									<p className="text-white/60 text-base mb-8 leading-relaxed">
 										Avancerad laserplattform för professionella behandlingar
 									</p>
-									<div className="space-y-4">
-										<div className="grid grid-cols-2 gap-4">
-											<div>
-												<label className="block text-xs text-white/60 mb-1.5">Förnamn <span className="text-primary">*</span></label>
-												<input type="text" placeholder="Ditt förnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-											</div>
-											<div>
-												<label className="block text-xs text-white/60 mb-1.5">Efternamn <span className="text-primary">*</span></label>
-												<input type="text" placeholder="Ditt efternamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-											</div>
-										</div>
-										<div className="grid grid-cols-2 gap-4">
-											<div>
-												<label className="block text-xs text-white/60 mb-1.5">Företag <span className="text-primary">*</span></label>
-												<input type="text" placeholder="Ditt företagsnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-											</div>
-											<div>
-												<label className="block text-xs text-white/60 mb-1.5">E-post <span className="text-primary">*</span></label>
-												<input type="email" placeholder="din.email@exempel.se" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-											</div>
-										</div>
-										<div>
-											<label className="block text-xs text-white/60 mb-1.5">När är du intresserad av att ta nästa steg? <span className="text-primary">*</span></label>
-											<textarea rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none resize-none" />
-										</div>
-										<button type="button" className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base">
-											Skicka förfrågan
-										</button>
-										<p className="text-center text-xs text-white/40">
-											Vi behandlar dina uppgifter konfidentiellt och delar dem inte med tredje part.
-										</p>
-									</div>
+									<HeroCategoryForm categoryName={product.title} />
 								</div>
 							</div>
 						</div>
@@ -245,16 +206,6 @@ export function ProductContent({
 							className="object-cover object-[30%_top]"
 							sizes="100vw"
 						/>
-						{/* Breadcrumb */}
-						<div className="absolute top-6 left-0 right-0 z-20 hidden md:block px-4">
-							<Breadcrumb
-								items={
-									parentBreadcrumbs
-										? [...parentBreadcrumbs, { label: product.title }]
-										: [{ label: baseLabel, href: basePath }, { label: product.title }]
-								}
-							/>
-						</div>
 						<div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center min-h-[640px] lg:min-h-[740px] gap-8">
 							{/* Left – Product image + floor reflection */}
 							<div className="relative h-[640px] lg:h-[740px] flex flex-col items-center justify-center">
@@ -317,52 +268,7 @@ export function ProductContent({
 			{/* Main Content Section */}
 			<section className="py-12 md:py-16">
 				<div className="_container">
-					{/* Certifications */}
-					{product.certifications && product.certifications.length > 0 && (
-						<div className="mb-8 flex flex-wrap items-center gap-2">
-							{product.certifications.map((cert, index) => (
-								<div
-									key={index}
-									className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-sm font-medium"
-								>
-									<svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fillRule="evenodd"
-											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-											clipRule="evenodd"
-										/>
-									</svg>
-									{cert}
-								</div>
-							))}
-						</div>
-					)}
-					{/* Image Gallery */}
-					<div className="mb-12">
-						{product.productImages && product.productImages.length > 0 ? (
-							<ProductImageGallery
-								images={product.productImages}
-								productName={product.title}
-								youtubeUrl={product.youtubeUrl}
-								videoThumbnail={product.videoThumbnail}
-							/>
-						) : primaryImage ? (
-							<div className="relative aspect-video md:aspect-21/9 w-full overflow-hidden rounded-2xl shadow-xl">
-								<ImageComponent
-									src={primaryImage}
-									alt={product.title}
-									className="object-cover w-full h-full"
-									priority
-									height={0}
-									width={0}
-									sizes="100vw"
-									wrapperClasses="w-full h-full"
-									showLoader={true}
-								/>
-							</div>
-						) : null}
-					</div>
-					<div className="grid gap-8 lg:grid-cols-[1fr_340px] items-start">
+					<div className="w-full">
 						{/* Main Content */}
 						<article className="min-w-0">
 							{/* Share Button - below image, above Om Produkten */}
@@ -386,18 +292,6 @@ export function ProductContent({
 									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
 								</div>
 							)}
-
-							{/* Sidebar - mobile only, below FAQ */}
-							<div className="md:hidden mb-12">
-								<ProductDetailSidebar
-									certifications={product.certifications}
-									onScrollToForm={() => {
-										document
-											.getElementById("product-inquiry-form")
-											?.scrollIntoView({ behavior: "smooth", block: "start" });
-									}}
-								/>
-							</div>
 
 							{/* Before & After Section */}
 							{product.beforeAfterImages &&
@@ -445,8 +339,8 @@ export function ProductContent({
 								)}
 						</article>
 
-						{/* Sidebar - Sticky (Desktop) */}
-						<aside className="sticky top-28 self-start space-y-4 hidden md:block">
+						{/* Sidebar - Mobile only */}
+						<aside className="sticky top-28 self-start space-y-4 block md:hidden">
 							<ProductDetailSidebar
 								brochureUrl={product.documentation}
 								videoUrl={product.youtubeUrl}
@@ -472,6 +366,8 @@ export function ProductContent({
 					categoryName={baseLabel}
 					purchaseTitle={product.purchaseInfo?.title}
 					purchaseDescription={product.purchaseInfo?.description}
+					formSubtitle={product.purchaseInfo?.formSubtitle}
+					buttonText={product.purchaseInfo?.buttonText}
 					productImage={product.overviewImage}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}

@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
 import {
@@ -406,7 +406,7 @@ export default async function KategoriPage() {
 							</li>
 						))}
 					</ul>
-					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-white/30 text-white/90 text-sm font-light">
+					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
 					</button>
@@ -574,6 +574,13 @@ export default async function KategoriPage() {
 				</div>
 			</div>
 
+			{/* FAQ Footer Section (fallback content; admin-editable later) */}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ title={KLINIK_FAQ_TITLE} faqs={KLINIK_FAQS} />
+				</div>
+			</section>
+
 			{/* Contact form (dark, product-inquiry styling, generic mode) */}
 			<ProductInquiryForm
 				pillLabel="SYNOS MEDICAL"
@@ -582,13 +589,6 @@ export default async function KategoriPage() {
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
 			/>
-
-			{/* FAQ Footer Section (fallback content; admin-editable later) */}
-			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-				<div className="_container mx-auto px-4">
-					<ProductFAQ title={KLINIK_FAQ_TITLE} faqs={KLINIK_FAQS} />
-				</div>
-			</section>
 		</div>
 	);
 }

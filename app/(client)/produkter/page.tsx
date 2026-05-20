@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
 import {
@@ -465,7 +465,7 @@ export default async function ProductsPage({
 							</li>
 						))}
 					</ul>
-					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-white/30 text-white/90 text-sm font-light">
+					<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
 					</button>

@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
@@ -27,6 +27,7 @@ import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
 import { technologyMap } from "@/config/technology-map";
 import { categoryHeroConfig } from "@/config/category-hero-config";
+import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -523,7 +524,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									</li>
 								))}
 							</ul>
-							<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-white/30 text-white/90 text-sm font-light">
+							<button type="button" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
 								<FileText className="h-4 w-4 shrink-0" />
 								Begär offert
 							</button>
@@ -601,38 +602,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 										<p className="text-white/60 text-base mb-8 leading-relaxed">
 											{heroConfig.subtitle}
 										</p>
-										<div className="space-y-4">
-											<div className="grid grid-cols-2 gap-4">
-												<div>
-													<label className="block text-xs text-white/60 mb-1.5">Förnamn <span className="text-primary">*</span></label>
-													<input type="text" placeholder="Ditt förnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-												</div>
-												<div>
-													<label className="block text-xs text-white/60 mb-1.5">Efternamn <span className="text-primary">*</span></label>
-													<input type="text" placeholder="Ditt efternamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-												</div>
-											</div>
-											<div className="grid grid-cols-2 gap-4">
-												<div>
-													<label className="block text-xs text-white/60 mb-1.5">Företag <span className="text-primary">*</span></label>
-													<input type="text" placeholder="Ditt företagsnamn" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-												</div>
-												<div>
-													<label className="block text-xs text-white/60 mb-1.5">E-post <span className="text-primary">*</span></label>
-													<input type="email" placeholder="din.email@exempel.se" className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none" />
-												</div>
-											</div>
-											<div>
-												<label className="block text-xs text-white/60 mb-1.5">När är du intresserad av att ta nästa steg? <span className="text-primary">*</span></label>
-												<textarea rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className="w-full bg-transparent border border-white/20 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none resize-none" />
-											</div>
-											<button type="button" className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base">
-												Skicka förfrågan
-											</button>
-											<p className="text-center text-xs text-white/40">
-												Vi behandlar dina uppgifter konfidentiellt och delar dem inte med tredje part.
-											</p>
-										</div>
+										<HeroCategoryForm categoryName={heroConfig.title} />
 									</div>
 								</div>
 							</div>
@@ -740,16 +710,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			</div>
 			</div>
 
-			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
-			<ProductInquiryForm
-				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
-				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
-				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
-				categoryName={category.name}
-				contactPhone={contactInfo.phone}
-				contactEmail={contactInfo.email}
-			/>
-
 			{/* FAQ Footer Section (fallback content; per-category content via admin panel later) */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 				<div className="_container mx-auto px-4">
@@ -759,6 +719,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					/>
 				</div>
 			</section>
+
+			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
+			<ProductInquiryForm
+				pillLabel={`${category.name.toUpperCase()} FÖRFRÅGAN`}
+				purchaseTitle={`Frågor om ${category.name.toLowerCase()}?`}
+				purchaseDescription={`<p>Vill du veta mer om vårt sortiment inom ${category.name.toLowerCase()}? Vårt team återkommer inom 24 timmar med personlig rådgivning och kan boka in en kostnadsfri demonstration.</p>`}
+				categoryName={category.name}
+				contactPhone={contactInfo.phone}
+				contactEmail={contactInfo.email}
+			/>
 		</div>
 	);
 }

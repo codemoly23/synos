@@ -7,41 +7,60 @@
  * Add a new entry keyed by product `slug` to enable feature sections for a product.
  */
 
-import {
-	// Section 1 — numbered features
+import * as LucideIcons from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+// Icons used directly in the hardcoded build functions below
+const {
 	MonitorSmartphone,
 	Hand,
 	Layers,
-	// Section 1 — benefit chips
 	Shield,
 	SlidersHorizontal,
 	Snowflake,
 	Cable,
 	TrendingUp,
 	Headphones,
-	// Section 2 — numbered list (top)
 	Workflow,
 	Smartphone,
 	Sliders,
 	Settings2,
-	// Section 2 — feature list (bottom)
 	Zap,
 	HeartHandshake,
 	BadgeCheck,
-	// Section 3 — 2×2 grid
 	Target,
 	Leaf,
 	Activity,
 	Clock,
-	// Section 3 — bottom horizontal features
 	MousePointer2,
 	Wrench,
 	ServerCog,
-} from "lucide-react";
+} = LucideIcons;
+
+/**
+ * Map of icon name strings (stored in DB) → Lucide icon components.
+ * Includes all ~1000+ icons from lucide-react available in the dashboard dropdown.
+ * Excludes the aliased *Icon duplicates and non-component exports.
+ */
+export const ICON_MAP: Record<string, LucideIcon> = Object.fromEntries(
+	Object.entries(LucideIcons).filter(
+		([key]) => !key.endsWith("Icon") && /^[A-Z]/.test(key)
+	)
+) as Record<string, LucideIcon>;
+
+/** Sorted list of icon names for the dashboard dropdown */
+export const ICON_NAMES = Object.keys(ICON_MAP).sort();
+
+/** Resolve an icon name string to a LucideIcon, falling back to Shield */
+function resolveIcon(name: string | undefined): LucideIcon {
+	if (!name) return Shield;
+	return ICON_MAP[name] ?? Shield;
+}
 
 import type { ProductFeatureSplitProps } from "@/components/products/sections/ProductFeatureSplit";
 import type { ProductFeatureImageListProps } from "@/components/products/sections/ProductFeatureImageList";
 import type { ProductFeatureGridProps } from "@/components/products/sections/ProductFeatureGrid";
+import type { FeatureSections } from "@/types/product";
 
 export interface ProductCustomSections {
 	section1: ProductFeatureSplitProps;
@@ -456,17 +475,116 @@ function buildGenericContent(
 }
 
 /**
- * Returns custom section content for a given product. Falls back to a generic
- * builder so every product detail page shows the feature sections.
+ * Build sections from CMS data (featureSections field on product).
+ * Falls back to generic content for any section that has no CMS heading set.
+ */
+function buildFromCmsData(
+	cmsData: FeatureSections,
+	productName: string,
+	productImage: string
+): ProductCustomSections {
+	const generic = buildGenericContent(productName, productImage);
+	const s1 = cmsData.section1;
+	const s2 = cmsData.section2;
+	const s3 = cmsData.section3;
+
+	const section1: ProductFeatureSplitProps = s1?.heading
+		? {
+				eyebrow: s1.eyebrow || generic.section1.eyebrow,
+				heading: s1.heading,
+				paragraphs: [s1.paragraph1 || "", s1.paragraph2 || ""].filter(Boolean),
+				image: productImage,
+				imageAlt: productName,
+				numberedFeatures: (s1.numberedFeatures ?? []).map((f) => ({
+					icon: resolveIcon(f.iconName),
+					title: f.title,
+					description: f.description,
+				})),
+				benefits: (s1.benefits ?? []).map((b) => ({
+					icon: resolveIcon(b.iconName),
+					title: b.title,
+					description: b.description,
+				})),
+		  }
+		: generic.section1;
+
+	const section2: ProductFeatureImageListProps = s2?.heading
+		? {
+				eyebrow: s2.eyebrow || generic.section2.eyebrow,
+				heading: s2.heading,
+				description: s2.description,
+				topBlock: {
+					image: productImage,
+					imageAlt: productName,
+					items: (s2.topItems ?? []).map((f) => ({
+						icon: resolveIcon(f.iconName),
+						title: f.title,
+						description: f.description,
+					})),
+				},
+				bottomBlock: {
+					sectionNumber: "02",
+					title: s2.bottomTitle || generic.section2.bottomBlock.title,
+					description: s2.bottomDescription,
+					items: (s2.bottomItems ?? []).map((f) => ({
+						icon: resolveIcon(f.iconName),
+						title: f.title,
+						description: f.description,
+					})),
+					image: productImage,
+					imageAlt: productName,
+				},
+		  }
+		: generic.section2;
+
+	const section3: ProductFeatureGridProps = s3?.heading
+		? {
+				eyebrow: s3.eyebrow || generic.section3.eyebrow,
+				heading: s3.heading,
+				description: s3.description,
+				image: productImage,
+				imageAlt: productName,
+				features: (s3.gridFeatures ?? []).map((f) => ({
+					icon: resolveIcon(f.iconName),
+					title: f.title,
+					description: f.description,
+				})),
+				bottomBlock: {
+					sectionNumber: "03",
+					title: s3.bottomTitle || generic.section3.bottomBlock?.title || "",
+					description: s3.bottomDescription,
+					items: (s3.bottomItems ?? []).map((f) => ({
+						icon: resolveIcon(f.iconName),
+						title: f.title,
+						description: f.description,
+					})),
+				},
+		  }
+		: generic.section3;
+
+	return { section1, section2, section3 };
+}
+
+/**
+ * Returns custom section content for a given product.
  *
- * To override a product with custom copy, add a `case` to the switch returning
- * a dedicated builder (see `buildMotusAyContent`).
+ * Priority order:
+ * 1. CMS data from featureSections (if any section heading is set)
+ * 2. Hardcoded per-product builder (e.g. motus-ay)
+ * 3. Generic fallback builder
  */
 export function getProductCustomSections(
 	slug: string,
 	productName: string,
-	productImage: string
+	productImage: string,
+	cmsData?: FeatureSections
 ): ProductCustomSections | null {
+	// If CMS data has at least one section with a heading, use CMS data
+	if (cmsData && (cmsData.section1?.heading || cmsData.section2?.heading || cmsData.section3?.heading)) {
+		return buildFromCmsData(cmsData, productName, productImage);
+	}
+
+	// Fall back to hardcoded or generic content
 	switch (slug) {
 		case "motus-ay":
 			return buildMotusAyContent(productImage);

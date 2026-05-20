@@ -41,6 +41,41 @@ export interface SeoAccordionItem {
 	_id: string;
 }
 
+export interface FeatureSectionItem {
+	iconName: string;
+	title: string;
+	description: string;
+}
+
+export interface FeatureSections {
+	section1?: {
+		eyebrow?: string;
+		heading?: string;
+		paragraph1?: string;
+		paragraph2?: string;
+		numberedFeatures?: FeatureSectionItem[];
+		benefits?: FeatureSectionItem[];
+	};
+	section2?: {
+		eyebrow?: string;
+		heading?: string;
+		description?: string;
+		topItems?: FeatureSectionItem[];
+		bottomTitle?: string;
+		bottomDescription?: string;
+		bottomItems?: FeatureSectionItem[];
+	};
+	section3?: {
+		eyebrow?: string;
+		heading?: string;
+		description?: string;
+		gridFeatures?: FeatureSectionItem[];
+		bottomTitle?: string;
+		bottomDescription?: string;
+		bottomItems?: FeatureSectionItem[];
+	};
+}
+
 export type ProductType = {
 	_id: string;
 	title: string;
@@ -70,6 +105,8 @@ export type ProductType = {
 	purchaseInfo: {
 		title: string;
 		description: string;
+		formSubtitle?: string;
+		buttonText?: string;
 	};
 	seo: {
 		title: string;
@@ -98,9 +135,12 @@ export type ProductType = {
 		_id: string;
 	}>;
 	seoAccordions: Array<SeoAccordionItem> | null;
+	heroBackgroundMobile?: string;
+	heroBackgroundDesktop?: string;
 	youtubeUrl: string;
 	videoThumbnail?: string;
 	rubric: string;
+	featureSections?: FeatureSections;
 	publishType: string;
 	visibility: string;
 	lastEditedBy: {

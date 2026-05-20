@@ -14,6 +14,7 @@ import {
 	tourRequestSchema,
 	quoteRequestSchema,
 	jobApplicationSchema,
+	heroInquirySchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
@@ -21,6 +22,7 @@ import {
 	type TourRequestInput,
 	type QuoteRequestInput,
 	type JobApplicationInput,
+	type HeroInquiryInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -106,9 +108,9 @@ class FormSubmissionService {
 			type: "product_inquiry" as FormSubmissionType,
 			fullName: this.sanitizeInput(validData.fullName),
 			email: validData.email.toLowerCase().trim(),
-			phone: this.sanitizeInput(validData.phone),
-			countryCode: validData.countryCode,
-			countryName: this.sanitizeInput(validData.countryName),
+			phone: validData.phone ? this.sanitizeInput(validData.phone) : null,
+			countryCode: validData.countryCode || null,
+			countryName: validData.countryName ? this.sanitizeInput(validData.countryName) : null,
 			corporationNumber:
 				this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
@@ -120,7 +122,7 @@ class FormSubmissionService {
 			productId: new mongoose.Types.ObjectId(validData.productId),
 			productName: this.sanitizeInput(validData.productName),
 			productSlug: validData.productSlug,
-			helpType: validData.helpType,
+			helpType: validData.helpType ?? null,
 			metadata: {
 				...metadata,
 				submittedAt: new Date(),
@@ -456,6 +458,49 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Job application created: ${submission._id} for ${validData.jobTitle || "General Position"}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a hero inquiry submission (category hero form)
+	 */
+	async createHeroInquiry(
+		data: HeroInquiryInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		const validationResult = heroInquirySchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError("Validation failed", validationResult.error.issues);
+		}
+
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError("För många förfrågningar. Försök igen om 15 minuter.");
+		}
+
+		const validData = validationResult.data;
+
+		const sanitizedData = {
+			type: "hero_inquiry" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+				pageUrl: metadata.pageUrl,
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Hero inquiry created: ${submission._id}`);
 
 		return submission;
 	}
