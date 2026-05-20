@@ -491,18 +491,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 								className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
 								sizes="100vw"
 							/>
-							<div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-								<div className="relative w-full h-full">
-									<ImageComponent
-										src={heroConfig.mobileImage}
-										alt={heroConfig.title}
-										fill
-										className="object-contain drop-shadow-2xl"
-										priority
-										sizes="100vw"
-									/>
-								</div>
-							</div>
 						</div>
 
 						{/* Mobile text */}
@@ -542,58 +530,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									sizes="100vw"
 								/>
 								<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
-									{/* Left — machine */}
-									<div className="relative h-[740px] flex flex-col items-center justify-center">
-										<div
-											className="absolute inset-x-[8%] pointer-events-none z-0"
-											style={{
-												bottom: "14%",
-												height: "90px",
-												background: "radial-gradient(ellipse at 50% 80%, rgba(184,138,58,0.22) 0%, transparent 70%)",
-												filter: "blur(22px)",
-											}}
-										/>
-										<div className="relative w-full h-[620px] z-10">
-											<ImageComponent
-												src={heroConfig.desktopImage}
-												alt={heroConfig.title}
-												fill
-												className="object-contain object-bottom"
-												priority
-												sizes="700px"
-											/>
-										</div>
-										<div className="relative z-10 w-full shrink-0 -mt-3">
-											<div
-												className="mx-auto pointer-events-none"
-												style={{
-													width: "46%",
-													height: "16px",
-													background: "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)",
-													filter: "blur(9px)",
-												}}
-											/>
-											<div
-												className="w-full mt-1 overflow-hidden"
-												style={{
-													height: "68px",
-													opacity: 0.35,
-													maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)",
-													WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)",
-												}}
-											>
-												<div className="relative w-full h-[620px]" style={{ transform: "scaleY(-1)" }}>
-													<ImageComponent
-														src={heroConfig.desktopImage}
-														fill
-														alt=""
-														className="object-contain object-bottom"
-														sizes="700px"
-													/>
-												</div>
-											</div>
-										</div>
-									</div>
+									<div />
 									{/* Right — Form */}
 									<div className="flex flex-col justify-center py-10 pl-10 pr-8">
 										<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
@@ -728,6 +665,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 				categoryName={category.name}
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
+				bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || undefined}
+				bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || undefined}
 			/>
 		</div>
 	);

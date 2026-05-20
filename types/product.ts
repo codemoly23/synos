@@ -82,6 +82,8 @@ export type ProductType = {
 	slug: string;
 	description: string;
 	shortDescription: string;
+	heroSubtitle: string | null;
+	heroFeatures?: string[] | null;
 	productDescription: string | null;
 	additionalDescription: string | null;
 	additionalDescriptionTitle: string | null;
@@ -137,6 +139,8 @@ export type ProductType = {
 	seoAccordions: Array<SeoAccordionItem> | null;
 	heroBackgroundMobile?: string;
 	heroBackgroundDesktop?: string;
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 	youtubeUrl: string;
 	videoThumbnail?: string;
 	rubric: string;

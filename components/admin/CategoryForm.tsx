@@ -85,6 +85,8 @@ export function CategoryForm({
 			parent: category?.parent?.toString() || null,
 			image: category?.image || "",
 			order: category?.order ?? 0,
+			inquiryBgMobile: (category as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || "",
+			inquiryBgDesktop: (category as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
 			seo: {
 				title: category?.seo?.title || "",
 				description: category?.seo?.description || "",
@@ -242,6 +244,48 @@ export function CategoryForm({
 				{errors.image && (
 					<p className="text-sm text-red-500">{errors.image.message}</p>
 				)}
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* Contact Section Background — Mobile */}
+			<div className="space-y-2">
+				<Label>Contact Section Background — Mobile</Label>
+				<p className="text-xs text-slate-500">
+					Background image shown in the contact/form section on mobile devices.
+					Falls back to the default dark background if not set.
+				</p>
+				<MediaPicker
+					type="image"
+					value={watch("inquiryBgMobile") || null}
+					onChange={(url) =>
+						setValue("inquiryBgMobile", url || "", { shouldDirty: true })
+					}
+					placeholder="Select mobile contact background"
+					disabled={isLoading}
+					galleryTitle="Select Mobile Contact Background"
+				/>
+			</div>
+
+			<Separator className="my-8" />
+
+			{/* Contact Section Background — Desktop */}
+			<div className="space-y-2">
+				<Label>Contact Section Background — Desktop</Label>
+				<p className="text-xs text-slate-500">
+					Background image shown in the contact/form section on desktop.
+					Falls back to the default dark background if not set.
+				</p>
+				<MediaPicker
+					type="image"
+					value={watch("inquiryBgDesktop") || null}
+					onChange={(url) =>
+						setValue("inquiryBgDesktop", url || "", { shouldDirty: true })
+					}
+					placeholder="Select desktop contact background"
+					disabled={isLoading}
+					galleryTitle="Select Desktop Contact Background"
+				/>
 			</div>
 
 			<Separator className="my-8" />

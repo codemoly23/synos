@@ -25,6 +25,8 @@ export interface ICategory extends Document {
 	order: number; // For sorting siblings
 	isActive: boolean;
 	seo?: ICategorySeo;
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -85,6 +87,14 @@ const CategorySchema = new Schema<ICategory>(
 		isActive: {
 			type: Boolean,
 			default: true,
+		},
+		inquiryBgMobile: {
+			type: String,
+			default: "",
+		},
+		inquiryBgDesktop: {
+			type: String,
+			default: "",
 		},
 		seo: {
 			title: {

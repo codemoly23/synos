@@ -95,6 +95,8 @@ export const createCategorySchema = z.object({
 		.min(0, "Order must be 0 or greater")
 		.optional()
 		.default(0),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
 	seo: categorySeoSchema.optional(),
 });
 
@@ -119,6 +121,8 @@ export const updateCategorySchema = z.object({
 	image: optionalUrlSchema,
 	order: z.coerce.number().int().min(0, "Order must be 0 or greater").optional(),
 	isActive: z.boolean().optional(),
+	inquiryBgMobile: z.string().optional(),
+	inquiryBgDesktop: z.string().optional(),
 	seo: categorySeoSchema.optional(),
 });
 

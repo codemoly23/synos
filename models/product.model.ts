@@ -105,6 +105,8 @@ export interface IProduct extends Document {
 	slug: string;
 	description: string; // Rich HTML
 	shortDescription?: string;
+	heroSubtitle?: string; // Short tagline shown in the product hero section
+	heroFeatures?: string[]; // Bullet point list shown in mobile hero
 	productDescription?: string; // Second rich HTML block
 	additionalDescription?: string; // Third rich HTML block, shown between About and FAQ
 	additionalDescriptionTitle?: string; // Optional heading for additional description
@@ -126,6 +128,8 @@ export interface IProduct extends Document {
 	seoAccordions: ISeoAccordion[];
 	heroBackgroundMobile?: string;
 	heroBackgroundDesktop?: string;
+	inquiryBgMobile?: string;
+	inquiryBgDesktop?: string;
 	youtubeUrl?: string;
 	videoThumbnail?: string;
 	rubric?: string;
@@ -368,6 +372,15 @@ const ProductSchema = new Schema<IProduct>(
 			default: "",
 			maxlength: [1500, "Short description cannot exceed 1500 characters"],
 		},
+		heroSubtitle: {
+			type: String,
+			default: "",
+			maxlength: [300, "Hero subtitle cannot exceed 300 characters"],
+		},
+		heroFeatures: {
+			type: [String],
+			default: [],
+		},
 		productDescription: {
 			type: String,
 			default: "",
@@ -450,6 +463,14 @@ const ProductSchema = new Schema<IProduct>(
 			default: "",
 		},
 		heroBackgroundDesktop: {
+			type: String,
+			default: "",
+		},
+		inquiryBgMobile: {
+			type: String,
+			default: "",
+		},
+		inquiryBgDesktop: {
 			type: String,
 			default: "",
 		},
