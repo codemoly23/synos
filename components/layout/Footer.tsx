@@ -179,6 +179,13 @@ export function Footer({
 								</a>
 							</li>
 						</ul>
+						<div className="flex items-center mt-20" style={{ zoom: 0.4 }}>
+							<div id="reco--badge-yearsInRowBadge" />
+							<Script
+								src="https://widget.reco.se/yearsInRowBadge/4026137.js"
+								strategy="lazyOnload"
+							/>
+						</div>
 					</div>
 
 					{/* Newsletter */}
@@ -201,18 +208,11 @@ export function Footer({
 
 				<div className="h-px w-full bg-white/10 my-8" />
 
-				<div className="flex flex-col md:grid md:grid-cols-3 items-center gap-4 text-sm text-primary-foreground/50">
+				<div className="flex flex-col md:grid md:grid-cols-2 items-center gap-4 text-sm text-primary-foreground/50">
 					<p>
 						© {currentYear} {config.company.name}. Alla rättigheter
 						förbehållna.
 					</p>
-					<div className="flex justify-center items-center" style={{ zoom: 0.4 }}>
-						<div id="reco--badge-yearsInRowBadge" />
-						<Script
-							src="https://widget.reco.se/yearsInRowBadge/4026137.js"
-							strategy="lazyOnload"
-						/>
-					</div>
 					<div className="flex justify-end gap-6">
 						{settings.bottomLinks
 							.filter((link) => link.label !== "Sitemap")

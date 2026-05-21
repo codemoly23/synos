@@ -243,18 +243,15 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														</NavigationMenuContent>
 													</>
 												) : (
-													// Simple link items (Nyheter och artiklar, Utbildningar, Kontakt)
-													<NavigationMenuLink
-														href={item.href}
-														className={cn(
+													// Simple link items (Nyheter, Utbildningar, Kontakt)
+													<NavigationMenuLink asChild className={cn(
 															navigationMenuTriggerStyle(),
 															"bg-transparent! hover:bg-secondary/10! focus:bg-secondary/10! active:bg-secondary/20! transition-colors text-base h-8 px-2",
 															useLightText
 																? "text-white/90! hover:text-white! focus:text-white! active:text-white!"
 																: "text-secondary! hover:text-primary! focus:text-primary! active:text-primary!"
-														)}
-													>
-														{item.title}
+														)}>
+														<Link href={item.href}>{item.title}</Link>
 													</NavigationMenuLink>
 												)}
 											</NavigationMenuItem>
