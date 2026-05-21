@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { BrightcallScript } from "@/components/callback/BrightcallScript";
 import { CookieConsent } from "@/components/cookie/CookieConsent";
 import { CookieConsentProvider } from "@/lib/context/cookie-consent-context";
@@ -62,6 +63,7 @@ export default async function ClientLayout({
 		<CookieConsentProvider>
 			<NavbarVariantProvider>
 				<div className="flex flex-col min-h-screen overflow-x-clip">
+					<ScrollToTop />
 					<Navbar config={siteConfig} logoUrl={logoUrl} />
 					<main className="flex-1 w-full">{children}</main>
 					<Footer

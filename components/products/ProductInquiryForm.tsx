@@ -69,8 +69,8 @@ const mobileSchema = z.object({
 type DesktopData = z.infer<typeof desktopSchema>;
 type MobileData = z.infer<typeof mobileSchema>;
 
-const BRAND = "#dba784";
-const BRAND_RGB = "219,167,132";
+const BRAND = "#e0bca6";
+const BRAND_RGB = "224,188,166";
 
 async function submitInquiry(
 	data: DesktopData | MobileData,
@@ -218,27 +218,38 @@ function DesktopInquiryForm({
 	}
 
 	return (
-		<div className="relative min-w-0 rounded-[24px] p-[2px] overflow-hidden">
+		<div className="relative">
+			{/* outer glow */}
+			<div className="absolute pointer-events-none" style={{ left: "-46px", top: "3%", width: "46px", height: "70%", background: `radial-gradient(ellipse at right top, rgba(${BRAND_RGB},0.08) 0%, rgba(${BRAND_RGB},0.04) 30%, rgba(${BRAND_RGB},0.015) 60%, transparent 85%)`, filter: "blur(20px)" }} />
+			{/* iron strip 2 */}
+			<div className="absolute pointer-events-none" style={{ left: "0px", top: "5%", width: "2px", height: "28%", background: `linear-gradient(to bottom, transparent 0%, rgba(${BRAND_RGB},0.60) 20%, rgba(${BRAND_RGB},0.80) 50%, rgba(${BRAND_RGB},0.50) 80%, rgba(${BRAND_RGB},0.06) 92%, rgba(${BRAND_RGB},0.02) 100%)`, filter: "blur(7px)", zIndex: 11 }} />
+			{/* iron strip 3 */}
+			<div className="absolute pointer-events-none" style={{ left: "0px", top: "5%", width: "2px", height: "16%", background: `linear-gradient(to bottom, transparent 0%, rgba(${BRAND_RGB},0.70) 25%, rgba(${BRAND_RGB},0.90) 55%, rgba(${BRAND_RGB},0.55) 85%, transparent 100%)`, filter: "blur(5px)", zIndex: 12 }} />
+			{/* iron strip 4 */}
+			<div className="absolute pointer-events-none" style={{ left: "0px", top: "5%", width: "2px", height: "9%", background: `linear-gradient(to bottom, transparent 0%, rgba(${BRAND_RGB},0.80) 30%, rgba(${BRAND_RGB},1) 60%, rgba(${BRAND_RGB},0.65) 90%, transparent 100%)`, filter: "blur(4px)", zIndex: 13 }} />
 
-			{/* ── GLOW SYSTEM ── */}
-			<div className="absolute inset-0 rounded-[24px] pointer-events-none">
-				<div className="absolute inset-0 rounded-[24px]" style={{ background: `linear-gradient(135deg,rgba(${BRAND_RGB},0.10) 0%,rgba(${BRAND_RGB},0.04) 30%,rgba(${BRAND_RGB},0.01) 65%,transparent 100%)` }} />
-				<div className="absolute left-0 top-0 w-[120px] h-[60%]" style={{ background: `radial-gradient(ellipse 52% 95% at 0% 25%,rgba(${BRAND_RGB},0.95) 0%,rgba(${BRAND_RGB},0.65) 28%,rgba(${BRAND_RGB},0.18) 70%,transparent 100%)`, transform: "translate(-20%,0)", filter: `blur(28px) drop-shadow(0 0 48px rgba(${BRAND_RGB},0.70))` }} />
-				<div className="absolute left-0 top-0 w-[50px] h-[28%]" style={{ background: `radial-gradient(ellipse 38% 98% at 0% 6%,rgba(${BRAND_RGB},0.98) 0%,rgba(${BRAND_RGB},0.50) 48%,transparent 100%)`, transform: "translate(-10%,0)", filter: `blur(14px) drop-shadow(0 0 32px rgba(${BRAND_RGB},0.80))` }} />
-				<div className="absolute left-0 top-0 h-full w-[12px]" style={{ background: `linear-gradient(to bottom,rgba(${BRAND_RGB},0.95) 0%,rgba(${BRAND_RGB},0.55) 50%,rgba(${BRAND_RGB},0.03) 94%,transparent 100%)`, filter: `blur(9px) drop-shadow(0 0 28px rgba(${BRAND_RGB},0.65))`, pointerEvents: "none" }} />
-				<div className="absolute left-0 top-0 h-[85%] w-[26px]" style={{ background: `linear-gradient(to bottom,rgba(${BRAND_RGB},0.28) 0%,rgba(${BRAND_RGB},0.08) 60%,transparent 100%)`, filter: "blur(20px)", opacity: 0.70 }} />
-				<div className="absolute right-0 w-[140px] h-[75%]" style={{ top: "55%", transform: "translate(20%,-50%)", background: `radial-gradient(ellipse at right center,rgba(${BRAND_RGB},0.45) 0%,rgba(${BRAND_RGB},0.04) 65%,transparent 100%)`, filter: `blur(38px) drop-shadow(0 0 28px rgba(${BRAND_RGB},0.18))` }} />
-				<div className="absolute right-0 top-0 h-full w-[2.5px]" style={{ background: `linear-gradient(to bottom,transparent 0%,rgba(${BRAND_RGB},0.48) 28%,rgba(${BRAND_RGB},1) 50%,rgba(${BRAND_RGB},0.48) 72%,transparent 100%)`, filter: `blur(2px) drop-shadow(0 0 16px rgba(${BRAND_RGB},0.48))`, pointerEvents: "none" }} />
-				<div className="absolute right-0 w-[30px] h-[86%]" style={{ top: "50%", transform: "translateY(-50%)", background: `linear-gradient(to bottom,transparent 0%,rgba(${BRAND_RGB},0.27) 50%,transparent 100%)`, filter: "blur(20px)", opacity: 0.72 }} />
-				<div className="absolute -left-12 -top-12 w-44 h-44 rounded-full" style={{ background: `rgba(${BRAND_RGB},0.15)`, filter: `blur(56px)` }} />
-			</div>
+			<div className="relative min-w-0 rounded-[24px] p-[2px] overflow-hidden">
+				{/* ── GLOW SYSTEM ── */}
+				<div className="absolute inset-0 rounded-[24px] pointer-events-none">
+					<div className="absolute inset-0 rounded-[24px]" style={{ background: `linear-gradient(135deg,rgba(${BRAND_RGB},0.10) 0%,rgba(${BRAND_RGB},0.04) 30%,rgba(${BRAND_RGB},0.01) 65%,transparent 100%)` }} />
+					<div className="absolute left-0 top-0 w-[120px] h-[60%]" style={{ background: `radial-gradient(ellipse 52% 95% at 0% 25%,rgba(${BRAND_RGB},0.95) 0%,rgba(${BRAND_RGB},0.65) 28%,rgba(${BRAND_RGB},0.18) 70%,transparent 100%)`, transform: "translate(-20%,0)", filter: `blur(28px) drop-shadow(0 0 48px rgba(${BRAND_RGB},0.70))` }} />
+					<div className="absolute left-0 top-0 w-[50px] h-[28%]" style={{ background: `radial-gradient(ellipse 38% 98% at 0% 6%,rgba(${BRAND_RGB},0.98) 0%,rgba(${BRAND_RGB},0.50) 48%,transparent 100%)`, transform: "translate(-10%,0)", filter: `blur(14px) drop-shadow(0 0 32px rgba(${BRAND_RGB},0.80))` }} />
+					<div className="absolute left-0 top-0 h-full w-[12px]" style={{ background: `linear-gradient(to bottom,transparent 0%,rgba(${BRAND_RGB},0.20) 4%,rgba(${BRAND_RGB},0.95) 8%,rgba(${BRAND_RGB},0.55) 50%,rgba(${BRAND_RGB},0.03) 94%,transparent 100%)`, filter: `blur(9px) drop-shadow(0 0 28px rgba(${BRAND_RGB},0.65))`, pointerEvents: "none" }} />
+					<div className="absolute left-0 top-0 h-[85%] w-[26px]" style={{ background: `linear-gradient(to bottom,rgba(${BRAND_RGB},0.28) 0%,rgba(${BRAND_RGB},0.08) 60%,transparent 100%)`, filter: "blur(20px)", opacity: 0.70 }} />
+					<div className="absolute right-0 w-[140px] h-[75%]" style={{ top: "55%", transform: "translate(20%,-50%)", background: `radial-gradient(ellipse at right center,rgba(${BRAND_RGB},0.45) 0%,rgba(${BRAND_RGB},0.04) 65%,transparent 100%)`, filter: `blur(38px) drop-shadow(0 0 28px rgba(${BRAND_RGB},0.18))` }} />
+					<div className="absolute right-0 top-0 h-full w-[2.5px]" style={{ background: `linear-gradient(to bottom,transparent 0%,rgba(${BRAND_RGB},0.48) 28%,rgba(${BRAND_RGB},1) 50%,rgba(${BRAND_RGB},0.48) 72%,transparent 100%)`, filter: `blur(2px) drop-shadow(0 0 16px rgba(${BRAND_RGB},0.48))`, pointerEvents: "none" }} />
+					<div className="absolute right-0 w-[30px] h-[86%]" style={{ top: "50%", transform: "translateY(-50%)", background: `linear-gradient(to bottom,transparent 0%,rgba(${BRAND_RGB},0.27) 50%,transparent 100%)`, filter: "blur(20px)", opacity: 0.72 }} />
+					<div className="absolute -left-12 -top-12 w-44 h-44 rounded-full" style={{ background: `rgba(${BRAND_RGB},0.15)`, filter: `blur(56px)` }} />
+				</div>
 
-			{/* ── FORM ── */}
-			<form
-				onSubmit={handleSubmit(onSubmit)}
-				className="relative rounded-[22.5px] overflow-hidden border border-white/[0.04] bg-zinc-950/96 backdrop-blur-xl"
-				style={{ transform: "translateZ(0)", boxShadow: `inset 0 1px 0 rgba(255,255,255,0.03),0 16px 55px rgba(0,0,0,0.55)` }}
-			>
+				{/* ── FORM ── */}
+				<form
+					onSubmit={handleSubmit(onSubmit)}
+					className="relative rounded-[22.5px] overflow-hidden border border-white/[0.04] bg-zinc-950/96 backdrop-blur-xl"
+					style={{ transform: "translateZ(0)", boxShadow: `inset 0 1px 0 rgba(255,255,255,0.03),0 16px 55px rgba(0,0,0,0.55)` }}
+				>
+					{/* inner glow */}
+					<div className="absolute pointer-events-none" style={{ left: 0, top: "3%", width: "46px", height: "70%", background: `radial-gradient(ellipse at left top, rgba(${BRAND_RGB},0.08) 0%, rgba(${BRAND_RGB},0.04) 30%, rgba(${BRAND_RGB},0.015) 60%, transparent 85%)`, filter: "blur(20px)", zIndex: 0 }} />
 				{/* HEADER */}
 				<div className="px-6 py-5">
 					<div className="flex items-center gap-2 mb-1.5">
@@ -255,7 +266,7 @@ function DesktopInquiryForm({
 							<Label className="text-sm font-semibold text-zinc-200">Förnamn <span className="text-red-400">*</span></Label>
 							<div className="relative">
 								<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-								<Input {...register("firstName")} className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+								<Input {...register("firstName")} placeholder="Ditt förnamn" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 							</div>
 							{errors.firstName && <p className="text-xs text-red-400">{errors.firstName.message}</p>}
 						</div>
@@ -263,7 +274,7 @@ function DesktopInquiryForm({
 							<Label className="text-sm font-semibold text-zinc-200">Efternamn <span className="text-red-400">*</span></Label>
 							<div className="relative">
 								<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-								<Input {...register("lastName")} className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+								<Input {...register("lastName")} placeholder="Ditt efternamn" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 							</div>
 							{errors.lastName && <p className="text-xs text-red-400">{errors.lastName.message}</p>}
 						</div>
@@ -273,7 +284,7 @@ function DesktopInquiryForm({
 						<Label className="text-sm font-semibold text-zinc-200">E-post <span className="text-red-400">*</span></Label>
 						<div className="relative">
 							<Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-							<Input {...register("email")} type="email" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+							<Input {...register("email")} type="email" placeholder="din@email.se" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 						</div>
 						{errors.email && <p className="text-xs text-red-400">{errors.email.message}</p>}
 					</div>
@@ -282,7 +293,7 @@ function DesktopInquiryForm({
 						<Label className="text-sm font-semibold text-zinc-200">Telefon <span className="text-red-400">*</span></Label>
 						<div className="relative">
 							<Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-							<Input {...register("phone")} type="tel" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+							<Input {...register("phone")} type="tel" placeholder="070 123 45 67" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 						</div>
 						{errors.phone && <p className="text-xs text-red-400">{errors.phone.message}</p>}
 					</div>
@@ -298,7 +309,7 @@ function DesktopInquiryForm({
 
 <div className="space-y-1.5">
 						<Label className="text-sm font-semibold text-zinc-200">Meddelande</Label>
-						<Textarea {...register("message")} className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
+						<Textarea {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål..." className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
 					</div>
 
 					<div className="flex items-start gap-3 pt-1">
@@ -331,6 +342,7 @@ function DesktopInquiryForm({
 					</p>
 				</div>
 			</form>
+		</div>
 		</div>
 	);
 }

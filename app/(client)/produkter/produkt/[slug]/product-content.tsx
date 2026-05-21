@@ -246,13 +246,6 @@ export function ProductContent({
 					<div className="w-full">
 						{/* Main Content */}
 						<article className="min-w-0">
-							{/* FAQ Section - Right after description */}
-							{product.qa && product.qa.length > 0 && (
-								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
-								</div>
-							)}
-
 							{/* Before & After Section */}
 							{product.beforeAfterImages &&
 								product.beforeAfterImages.length > 0 && (
@@ -261,6 +254,13 @@ export function ProductContent({
 										productName={product.title}
 									/>
 								)}
+
+							{/* FAQ Section */}
+							{product.qa && product.qa.length > 0 && (
+								<div className="mb-12">
+									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
+								</div>
+							)}
 
 						</article>
 
