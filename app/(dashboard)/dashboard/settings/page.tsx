@@ -22,6 +22,7 @@ import {
 	GripVertical,
 	Star,
 	PhoneCall,
+	BarChart3,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -153,6 +154,43 @@ const settingsFormSchema = z.object({
 		fromEmail: z.string().email("Invalid email").optional().or(z.literal("")),
 		adminNotificationEmail: z.string().email("Invalid email").optional().or(z.literal("")),
 	}),
+
+	// Tracking / analytics
+	tracking: z.object({
+		gtmId: z
+			.string()
+			.max(30)
+			.regex(/^(GTM-[A-Z0-9]+)?$/, "Must be a valid GTM ID (e.g. GTM-PQ42DDZ)")
+			.optional()
+			.or(z.literal("")),
+		ga4Id: z
+			.string()
+			.max(30)
+			.regex(/^(G-[A-Z0-9]+)?$/, "Must be a valid GA4 ID (e.g. G-XXXXXXXXXX)")
+			.optional()
+			.or(z.literal("")),
+		googleAdsId: z
+			.string()
+			.max(30)
+			.regex(/^(AW-[0-9]+)?$/, "Must be a valid Google Ads ID (e.g. AW-123456789)")
+			.optional()
+			.or(z.literal("")),
+		facebookPixelId: z
+			.string()
+			.max(30)
+			.regex(/^[0-9]*$/, "Must be a numeric Pixel ID")
+			.optional()
+			.or(z.literal("")),
+		cookiebotId: z
+			.string()
+			.max(40)
+			.regex(
+				/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/i,
+				"Must be a valid Cookiebot ID (UUID format)"
+			)
+			.optional()
+			.or(z.literal("")),
+	}),
 });
 
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
@@ -221,6 +259,13 @@ export default function SettingsPage() {
 				fromName: "",
 				fromEmail: "",
 				adminNotificationEmail: "",
+			},
+			tracking: {
+				gtmId: "",
+				ga4Id: "",
+				googleAdsId: "",
+				facebookPixelId: "",
+				cookiebotId: "",
 			},
 		},
 	});
@@ -323,6 +368,13 @@ export default function SettingsPage() {
 						fromEmail: settings.smtp?.fromEmail || "",
 						adminNotificationEmail: settings.smtp?.adminNotificationEmail || "",
 					},
+					tracking: {
+						gtmId: settings.tracking?.gtmId || "",
+						ga4Id: settings.tracking?.ga4Id || "",
+						googleAdsId: settings.tracking?.googleAdsId || "",
+						facebookPixelId: settings.tracking?.facebookPixelId || "",
+						cookiebotId: settings.tracking?.cookiebotId || "",
+					},
 				});
 			} catch (error) {
 				console.error("Error fetching settings:", error);
@@ -385,7 +437,7 @@ export default function SettingsPage() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<Tabs defaultValue="company" className="space-y-6">
-						<TabsList className="grid w-full grid-cols-9">
+						<TabsList className="grid w-full grid-cols-10">
 							<TabsTrigger value="company" className="flex items-center gap-2">
 								<Building2 className="h-4 w-4" />
 								<span className="hidden sm:inline">Company</span>
@@ -421,6 +473,10 @@ export default function SettingsPage() {
 							<TabsTrigger value="smtp" className="flex items-center gap-2">
 								<Mail className="h-4 w-4" />
 								<span className="hidden sm:inline">Email / SMTP</span>
+							</TabsTrigger>
+							<TabsTrigger value="tracking" className="flex items-center gap-2">
+								<BarChart3 className="h-4 w-4" />
+								<span className="hidden sm:inline">Tracking</span>
 							</TabsTrigger>
 						</TabsList>
 
@@ -1781,6 +1837,194 @@ export default function SettingsPage() {
 											</FormItem>
 										)}
 									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Tracking Tab */}
+						<TabsContent value="tracking" className="space-y-6">
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<BarChart3 className="h-5 w-5" />
+										Analytics &amp; Tracking
+									</CardTitle>
+									<CardDescription>
+										Configure your tracking IDs. Changes take effect on the live
+										site within seconds after saving.
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-6">
+									{/* Cookiebot */}
+									<div className="space-y-4">
+										<div>
+											<h3 className="text-sm font-semibold">Cookiebot — GDPR Consent</h3>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												Loads before all other tracking scripts. Required for GDPR
+												compliance — without it, GTM and Pixel fire on page load
+												without user consent.
+											</p>
+										</div>
+										<FormField
+											control={form.control}
+											name="tracking.cookiebotId"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Cookiebot ID</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+															{...field}
+															onChange={(e) =>
+																field.onChange(e.target.value.trim().toLowerCase())
+															}
+														/>
+													</FormControl>
+													<FormDescription>
+														Found in{" "}
+														<a href="https://manage.cookiebot.com/" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+															Cookiebot Manager
+														</a>{" "}
+														→ Your domain → Script tab.
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									<div className="border-t pt-6 space-y-4">
+										<div>
+											<h3 className="text-sm font-semibold">Google Tag Manager</h3>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												Recommended — manages GA4 and Google Ads tags from one place.
+											</p>
+										</div>
+										<FormField
+											control={form.control}
+											name="tracking.gtmId"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>GTM Container ID</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="GTM-XXXXXXX"
+															{...field}
+															onChange={(e) =>
+																field.onChange(e.target.value.trim().toUpperCase())
+															}
+														/>
+													</FormControl>
+													<FormDescription>
+														Found in your{" "}
+														<a href="https://tagmanager.google.com/" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+															GTM workspace
+														</a>{" "}
+														header (e.g. GTM-PQ42DDZ).
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									<div className="border-t pt-6 space-y-4">
+										<div>
+											<h3 className="text-sm font-semibold">
+												GA4 &amp; Google Ads — direct (optional)
+											</h3>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												Only needed if you are <strong>not</strong> using GTM.
+												Leave blank when GTM is configured — GA4/Ads tags should
+												live inside the GTM container instead.
+											</p>
+										</div>
+										<div className="grid gap-4 sm:grid-cols-2">
+											<FormField
+												control={form.control}
+												name="tracking.ga4Id"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>GA4 Measurement ID</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="G-XXXXXXXXXX"
+																{...field}
+																onChange={(e) =>
+																	field.onChange(e.target.value.trim().toUpperCase())
+																}
+															/>
+														</FormControl>
+														<FormDescription>
+															Found in{" "}
+															<a href="https://analytics.google.com/" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+																GA4
+															</a>{" "}
+															→ Admin → Data Streams.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="tracking.googleAdsId"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Google Ads Conversion ID</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="AW-123456789"
+																{...field}
+																onChange={(e) =>
+																	field.onChange(e.target.value.trim().toUpperCase())
+																}
+															/>
+														</FormControl>
+														<FormDescription>
+															Found in{" "}
+															<a href="https://ads.google.com/" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+																Google Ads
+															</a>{" "}
+															→ Tools → Conversions.
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
+									</div>
+
+									<div className="border-t pt-6 space-y-4">
+										<div>
+											<h3 className="text-sm font-semibold">Meta (Facebook)</h3>
+										</div>
+										<FormField
+											control={form.control}
+											name="tracking.facebookPixelId"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Facebook Pixel ID</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="2886484504973538"
+															{...field}
+															onChange={(e) =>
+																field.onChange(e.target.value.trim())
+															}
+														/>
+													</FormControl>
+													<FormDescription>
+														Numeric ID found in{" "}
+														<a href="https://business.facebook.com/events_manager/" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+															Meta Events Manager
+														</a>.
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									</div>
 								</CardContent>
 							</Card>
 						</TabsContent>
