@@ -589,6 +589,16 @@ export default async function ProductsPage({
 			</div>
 			</div>
 
+			{/* FAQ Footer Section (managed via /dashboard/products/settings) */}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ
+						title={faqTitle}
+						faqs={produkterFaqs}
+					/>
+				</div>
+			</section>
+
 			{/* Contact form (dark, product-inquiry styling, generic mode) */}
 			<div id="inquiry-form">
 				<ProductInquiryForm
@@ -614,16 +624,6 @@ export default async function ProductsPage({
 					bgDesktop={selectedGroup?.inquiryBgDesktop || (pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
 				/>
 			</div>
-
-			{/* FAQ Footer Section (managed via /dashboard/products/settings) */}
-			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-				<div className="_container mx-auto px-4">
-					<ProductFAQ
-						title={faqTitle}
-						faqs={produkterFaqs}
-					/>
-				</div>
-			</section>
 		</div>
 	);
 
