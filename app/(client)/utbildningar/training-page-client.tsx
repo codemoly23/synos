@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { pushEvent } from "@/lib/analytics/gtm";
+import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -110,6 +112,8 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 				reset();
 				toast.success("Tack! Vi återkommer inom kort.");
 				setTimeout(() => setIsSuccess(false), 5000);
+				pushEvent("generate_lead", { form_type: "utbildning" });
+				trackLead({ form_type: "utbildning" });
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

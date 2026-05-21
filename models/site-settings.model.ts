@@ -58,6 +58,17 @@ export interface IBrightcallSettings {
 }
 
 /**
+ * Tracking / analytics settings interface
+ */
+export interface ITrackingSettings {
+	gtmId?: string;           // e.g. GTM-PQ42DDZ
+	ga4Id?: string;           // e.g. G-XXXXXXXXXX
+	googleAdsId?: string;     // e.g. AW-XXXXXXXXX
+	facebookPixelId?: string; // e.g. 2886484504973538
+	cookiebotId?: string;     // e.g. xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+}
+
+/**
  * SMTP email settings interface
  */
 export interface ISmtpSettings {
@@ -145,6 +156,9 @@ export interface ISiteSettings extends Document {
 
 	// SMTP email settings
 	smtp: ISmtpSettings;
+
+	// Tracking / analytics
+	tracking: ITrackingSettings;
 
 	// Timestamps
 	updatedAt: Date;
@@ -263,6 +277,20 @@ const BrightcallSettingsSchema = new Schema<IBrightcallSettings>(
 			trim: true,
 			default: "https://app.convolo.ai",
 		},
+	},
+	{ _id: false }
+);
+
+/**
+ * Tracking sub-schema
+ */
+const TrackingSettingsSchema = new Schema<ITrackingSettings>(
+	{
+		gtmId: { type: String, trim: true },
+		ga4Id: { type: String, trim: true },
+		googleAdsId: { type: String, trim: true },
+		facebookPixelId: { type: String, trim: true },
+		cookiebotId: { type: String, trim: true },
 	},
 	{ _id: false }
 );
@@ -489,6 +517,10 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
 				port: 587,
 				encryption: "tls",
 			},
+		},
+		tracking: {
+			type: TrackingSettingsSchema,
+			default: {},
 		},
 	},
 	{

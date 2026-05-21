@@ -3,10 +3,9 @@ import { Geist, Geist_Mono, Gelasio, Roboto } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
-import { GTM_ID } from "@/lib/analytics/gtm";
-import { FB_PIXEL_ID } from "@/lib/analytics/facebook-pixel";
 import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
+import { TrackingScripts } from "@/components/analytics/tracking-scripts";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -30,7 +29,6 @@ const roboto = Roboto({
 	weight: ["100", "300", "400"],
 });
 
-// Default keywords as fallback
 const DEFAULT_KEYWORDS = [
 	"laser",
 	"medicinsk utrustning",
@@ -43,9 +41,6 @@ const DEFAULT_KEYWORDS = [
 	"Harmony XL PRO",
 ];
 
-/**
- * Generate dynamic metadata from database site settings
- */
 const DEFAULT_SITE_SETTINGS = {
 	seo: {
 		siteName: "Synos Medical",
@@ -57,6 +52,26 @@ const DEFAULT_SITE_SETTINGS = {
 	},
 	companyName: "Synos Medical AB",
 };
+
+// Resolve tracking IDs: DB is authoritative once the tracking field has ever
+// been saved. Before that (field is undefined), fall back to env vars so the
+// live site keeps working during the migration period.
+function resolveTrackingIds(settings: Awaited<ReturnType<typeof getSiteSettings>> | null) {
+	const hasDbTracking = settings?.tracking !== undefined;
+	return {
+		cookiebotId: hasDbTracking
+			? (settings?.tracking?.cookiebotId ?? "")
+			: (process.env.NEXT_PUBLIC_COOKIEBOT_ID ?? ""),
+		gtmId: hasDbTracking
+			? (settings?.tracking?.gtmId ?? "")
+			: (process.env.NEXT_PUBLIC_GTM_ID ?? ""),
+		fbPixelId: hasDbTracking
+			? (settings?.tracking?.facebookPixelId ?? "")
+			: (process.env.NEXT_PUBLIC_FB_PIXEL_ID ?? ""),
+		ga4Id: settings?.tracking?.ga4Id ?? "",
+		googleAdsId: settings?.tracking?.googleAdsId ?? "",
+	};
+}
 
 export async function generateMetadata(): Promise<Metadata> {
 	const settings = await getSiteSettings().catch(() => DEFAULT_SITE_SETTINGS);
@@ -95,14 +110,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			description: siteDescription,
 			siteName: siteName,
 			images: ogImage
-				? [
-						{
-							url: ogImage,
-							width: 1200,
-							height: 630,
-							alt: siteName,
-						},
-				  ]
+				? [{ url: ogImage, width: 1200, height: 630, alt: siteName }]
 				: [],
 		},
 		twitter: {
@@ -126,80 +134,49 @@ export async function generateMetadata(): Promise<Metadata> {
 	};
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const settings = await getSiteSettings().catch(() => null);
+	const { cookiebotId, gtmId, fbPixelId, ga4Id, googleAdsId } =
+		resolveTrackingIds(settings);
+
 	return (
 		<html lang="sv" className="scroll-smooth">
-			<head>
-				{/* Google Tag Manager - only loads when GTM_ID is configured */}
-				{GTM_ID && (
-					<Script
-						id="gtm-script"
-						strategy="afterInteractive"
-						dangerouslySetInnerHTML={{
-							__html: `
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','${GTM_ID}');
-            `,
-						}}
-					/>
-				)}
-				{/* Facebook Pixel - only loads when FB_PIXEL_ID is configured */}
-				{FB_PIXEL_ID && (
-					<>
-						<Script
-							id="fb-pixel"
-							strategy="afterInteractive"
-							dangerouslySetInnerHTML={{
-								__html: `
-              !function(f,b,e,v,n,t,s)
-              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-              n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t,s)}(window, document,'script',
-              'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${FB_PIXEL_ID}');
-              fbq('track', 'PageView');
-            `,
-							}}
-						/>
-						<noscript>
-							<img
-								height="1"
-								width="1"
-								style={{ display: "none" }}
-								src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
-								alt=""
-							/>
-						</noscript>
-					</>
-				)}
-			</head>
+			{/* beforeInteractive scripts must be a direct child of <html>, NOT wrapped
+			    in a manual <head> element — a manual <head> creates whitespace text
+			    nodes that cause React hydration errors in Next.js App Router. */}
+			{cookiebotId && (
+				<Script
+					id="cookiebot"
+					src="https://consent.cookiebot.com/uc.js"
+					data-cbid={cookiebotId}
+					data-blockingmode="auto"
+					strategy="beforeInteractive"
+				/>
+			)}
 			<body
 				className={`${geistSans.className} ${geistMono.variable} ${gelasio.variable} ${roboto.variable} antialiased bg-slate-100`}
 			>
-				{/* Google Tag Manager (noscript) - only loads when GTM_ID is configured */}
-				{GTM_ID && (
-					<noscript>
-						<iframe
-							src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-							height="0"
-							width="0"
-							style={{ display: "none", visibility: "hidden" }}
-						/>
-					</noscript>
-				)}
-
 				<NuqsAdapter>{children}</NuqsAdapter>
 				<ToasterProvider />
+
+				{/*
+				  TrackingScripts is a client component that:
+				  - Waits for Cookiebot marketing consent before loading any scripts
+				  - Loads GTM OR (GA4 + Pixel) — never both GTM and Pixel to avoid
+				    double-firing PageView
+				  - Pushes pageview events to dataLayer on every SPA route change
+				*/}
+				<TrackingScripts
+					cookiebotId={cookiebotId}
+					gtmId={gtmId}
+					fbPixelId={fbPixelId}
+					ga4Id={ga4Id}
+					googleAdsId={googleAdsId}
+				/>
 			</body>
 		</html>
 	);

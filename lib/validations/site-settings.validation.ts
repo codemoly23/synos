@@ -161,6 +161,45 @@ export const smtpSettingsSchema = z.object({
 });
 
 /**
+ * Tracking / analytics settings schema
+ */
+export const trackingSettingsSchema = z.object({
+	gtmId: z
+		.string()
+		.max(30)
+		.regex(/^(GTM-[A-Z0-9]+)?$/, "Must be a valid GTM container ID (e.g. GTM-PQ42DDZ)")
+		.optional()
+		.or(z.literal("")),
+	ga4Id: z
+		.string()
+		.max(30)
+		.regex(/^(G-[A-Z0-9]+)?$/, "Must be a valid GA4 measurement ID (e.g. G-XXXXXXXXXX)")
+		.optional()
+		.or(z.literal("")),
+	googleAdsId: z
+		.string()
+		.max(30)
+		.regex(/^(AW-[0-9]+)?$/, "Must be a valid Google Ads ID (e.g. AW-123456789)")
+		.optional()
+		.or(z.literal("")),
+	facebookPixelId: z
+		.string()
+		.max(30)
+		.regex(/^[0-9]*$/, "Must be a numeric Facebook Pixel ID")
+		.optional()
+		.or(z.literal("")),
+	cookiebotId: z
+		.string()
+		.max(40)
+		.regex(
+			/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/i,
+			"Must be a valid Cookiebot ID (UUID format)"
+		)
+		.optional()
+		.or(z.literal("")),
+});
+
+/**
  * Reviews settings schema
  */
 export const reviewsSettingsSchema = z.object({
@@ -237,6 +276,9 @@ export const updateSiteSettingsSchema = z.object({
 
 	// SMTP email settings
 	smtp: smtpSettingsSchema.partial().optional(),
+
+	// Tracking / analytics
+	tracking: trackingSettingsSchema.partial().optional(),
 });
 
 // Type exports
@@ -249,4 +291,5 @@ export type FooterSettingsInput = z.infer<typeof footerSettingsSchema>;
 export type ReviewsSettingsInput = z.infer<typeof reviewsSettingsSchema>;
 export type BrightcallSettingsInput = z.infer<typeof brightcallSettingsSchema>;
 export type SmtpSettingsInput = z.infer<typeof smtpSettingsSchema>;
+export type TrackingSettingsInput = z.infer<typeof trackingSettingsSchema>;
 export type UpdateSiteSettingsInput = z.infer<typeof updateSiteSettingsSchema>;

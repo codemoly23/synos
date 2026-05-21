@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { pushEvent } from "@/lib/analytics/gtm";
+import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -100,6 +102,8 @@ export function ContactFormSection() {
 					"Tack för din förfrågan! Vi återkommer inom 24 timmar."
 				);
 				setTimeout(() => setIsSuccess(false), 10000);
+				pushEvent("generate_lead", { form_type: "starta_eget" });
+				trackLead({ form_type: "starta_eget" });
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors

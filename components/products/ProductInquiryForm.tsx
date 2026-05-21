@@ -21,6 +21,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
 import { ImageComponent } from "@/components/common/image-component";
+import { pushEvent } from "@/lib/analytics/gtm";
+import { trackLead, trackContact } from "@/lib/analytics/facebook-pixel";
 
 interface ProductInquiryFormProps {
 	productName?: string;
@@ -182,6 +184,16 @@ function DesktopInquiryForm({
 				setGdprChecked(false);
 				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
 				setTimeout(() => setIsSuccess(false), 10000);
+
+				// Analytics conversion events
+				const eventData = {
+					form_type: isGeneric ? "contact" : "product_inquiry",
+					...(productName && { product_name: productName }),
+					...(categoryName && { category: categoryName }),
+				};
+				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				if (isGeneric) trackContact(eventData);
+				else trackLead(eventData);
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const msg = result.errors
@@ -382,6 +394,16 @@ function MobileInquiryForm({
 				setGdprChecked(false);
 				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
 				setTimeout(() => setIsSuccess(false), 10000);
+
+				// Analytics conversion events
+				const eventData = {
+					form_type: isGeneric ? "contact" : "product_inquiry",
+					...(productName && { product_name: productName }),
+					...(categoryName && { category: categoryName }),
+				};
+				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				if (isGeneric) trackContact(eventData);
+				else trackLead(eventData);
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
