@@ -13,6 +13,7 @@ import {
 	type IReviewsSettings,
 	type IBrightcallSettings,
 	type ISmtpSettings,
+	type ITrackingSettings,
 } from "@/models/site-settings.model";
 
 /**
@@ -33,6 +34,7 @@ export interface UpdateSiteSettingsInput {
 	reviews?: Partial<IReviewsSettings>;
 	brightcall?: Partial<IBrightcallSettings>;
 	smtp?: Partial<ISmtpSettings>;
+	tracking?: Partial<ITrackingSettings>;
 }
 
 /**
@@ -160,6 +162,14 @@ class SiteSettingsRepository {
 				updateData.smtp = {
 					...existing.smtp,
 					...data.smtp,
+				};
+			}
+
+			if (data.tracking !== undefined) {
+				const existing = await this.get();
+				updateData.tracking = {
+					...existing.tracking,
+					...data.tracking,
 				};
 			}
 

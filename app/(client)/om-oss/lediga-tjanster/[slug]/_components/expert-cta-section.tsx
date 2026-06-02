@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { pushEvent } from "@/lib/analytics/gtm";
+import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -97,6 +99,8 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 				reset();
 				toast.success("Your message has been sent! We'll be in touch soon.");
 				setTimeout(() => setIsSuccess(false), 8000);
+				pushEvent("generate_lead", { form_type: "career_application" });
+				trackLead({ form_type: "career_application" });
 			} else {
 				toast.error(result.message || "Something went wrong. Please try again.");
 			}
