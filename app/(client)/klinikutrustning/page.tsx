@@ -351,7 +351,7 @@ export default async function KategoriPage() {
 	const heroBullets = heroSection?.bulletPoints?.length
 		? heroSection.bulletPoints
 		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
-	const heroBgMobile = heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const heroBgMobile = heroSection?.bgMobile || "/Mobile_bilder/Motus_pro.webp";
 	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then filter to only visible items; normalize _id to string.
@@ -407,13 +407,13 @@ export default async function KategoriPage() {
 						alt=""
 						fill
 						priority
-						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+						className="object-cover object-top"
 						sizes="100vw"
 					/>
 					</div>
 
 				{/* Mobile text — below background */}
-				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
+				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
 					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>

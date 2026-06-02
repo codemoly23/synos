@@ -47,6 +47,22 @@ export function ProductContent({
 	hardcodedHero = false,
 }: ProductContentProps) {
 	const primaryImage = product.overviewImage;
+	const mobileBgMap: Record<string, string> = {
+		"helix": "/Mobile_bilder/Helix.webp",
+		"motus-pro": "/Mobile_bilder/Motus_pro.webp",
+		"again-pro": "/Mobile_bilder/Again_pro.webp",
+		"duoglide": "/Mobile_bilder/DuGlide.webp",
+		"ny-smartxide-punto": "/Mobile_bilder/SmartXd.webp",
+		"tetra-pro": "/Mobile_bilder/TertaPro.webp",
+		"hifu-ultraskin-s": "/Mobile_bilder/Hifu.webp",
+		"jovena": "/Mobile_bilder/Jovena.webp",
+		"harborttagningslaser-kopa-motus-ax": "/Mobile_bilder/Motus_ax.webp",
+		"prisma": "/Mobile_bilder/Priema.webp",
+		"toro": "/Mobile_bilder/Toro.webp",
+		"vivace-rf-microneedling": "/Mobile_bilder/Vivace.webp",
+		"redium": "/Mobile_bilder/Redtouch.webp",
+	};
+	const mobileBg = product.heroBackgroundMobile || mobileBgMap[product.slug] || "/Mobile_bilder/Motus_Ay.webp";
 	const customSections = getProductCustomSections(
 		product.slug,
 		product.title,
@@ -62,11 +78,11 @@ export function ProductContent({
 					{/* ── MOBILE LAYOUT ── */}
 					<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 						<ImageComponent
-							src={product.heroBackgroundMobile || "/images/Background Mobile.jpeg"}
+							src={mobileBg}
 							alt=""
 							fill
 							priority
-							className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+							className="object-cover object-top"
 							sizes="100vw"
 						/>
 						{/* <div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
@@ -83,7 +99,7 @@ export function ProductContent({
 						</div> */}
 					</div>
 					{/* Mobile text */}
-					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
+					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
 						<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
 							{product.title}
 						</h1>

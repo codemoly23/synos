@@ -531,7 +531,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						</div>
 
 						{/* Mobile text */}
-						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
+						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
 							<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
 								{resolvedHeroTitle}
 							</h1>
