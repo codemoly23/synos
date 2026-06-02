@@ -9,7 +9,8 @@ import { ProcessSteps } from "@/components/home/ProcessSteps";
 import { Testimonials } from "@/components/home/Testimonials";
 import { RecoReviews } from "@/components/widgets/RecoReviews";
 import AboutSection from "@/components/home/AboutSection";
-import CtaSection from "@/components/home/CtaSection";
+import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import YearBadgeSection from "@/components/home/YearBadgeSection";
 import { getHomePage, getHomePageSeo } from "@/lib/services/home-page.service";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { searchService } from "@/lib/services/search.service";
@@ -124,6 +125,9 @@ export default async function Home({ searchParams }: HomeProps) {
 			{/* Hero Section */}
 			{visibility.hero && homePage.hero && <Hero data={homePage.hero} />}
 
+			{/* Year Badge Section */}
+			<YearBadgeSection />
+
 			{/* Search Section - Hidden */}
 			{/* <SearchSection /> */}
 
@@ -166,14 +170,14 @@ export default async function Home({ searchParams }: HomeProps) {
 					)
 				))}
 
-			{/* CTA Section */}
-			{visibility.cta && homePage.ctaSection && (
-				<CtaSection
-					data={homePage.ctaSection}
-					phone={siteSettings.phone}
-					email={siteSettings.email}
-				/>
-			)}
+			{/* Contact Form */}
+			<ProductInquiryForm
+				pillLabel="SYNOS MEDICAL"
+				purchaseTitle="Kontakta oss"
+				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
+				contactPhone={siteSettings.phone}
+				contactEmail={siteSettings.email}
+			/>
 
 			{/* Floating Contact Button - Always visible */}
 			{/* <FloatingContactButton /> */}

@@ -391,7 +391,10 @@ export default async function ProductsPage({
 	const heroBullets = (selectedGroup?.heroBulletPoints?.length ? selectedGroup.heroBulletPoints : null)
 		?? (heroSection?.bulletPoints?.length ? heroSection.bulletPoints : null)
 		?? defaultBullets;
-	const heroBgMobile = selectedGroup?.heroBgMobile || heroSection?.bgMobile || "/images/Background Mobile.jpeg";
+	const techMobileBgMap: Record<string, string> = {
+		"Plasma": "/Mobile_bilder/Plasma.webp",
+	};
+	const heroBgMobile = selectedGroup?.heroBgMobile || heroSection?.bgMobile || (selectedTech ? techMobileBgMap[selectedTech] : undefined) || "/Mobile_bilder/Again_pro.webp";
 	const heroBgDesktop = selectedGroup?.heroBgDesktop || heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
 	// Sort by `order` then normalize _id to string for ProductFAQ.
@@ -485,13 +488,13 @@ export default async function ProductsPage({
 						alt=""
 						fill
 						priority
-						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+						className="object-cover object-top"
 						sizes="100vw"
 					/>
 				</div>
 
 				{/* Mobile text — below background */}
-				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[38vh]">
+				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
 					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>
