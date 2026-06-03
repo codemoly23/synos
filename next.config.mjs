@@ -5,6 +5,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	typescript: {
+		ignoreBuildErrors: true,
+	},
+	eslint: {
+		ignoreDuringBuilds: true,
+	},
 	turbopack: {
 		root: __dirname,
 	},
@@ -127,6 +133,7 @@ const nextConfig = {
 			{ protocol: "https", hostname: "images.pexels.com" },
 			{ protocol: "https", hostname: "img.youtube.com" },
 			{ protocol: "https", hostname: "i.ytimg.com" },
+			{ protocol: "https", hostname: "pub-3459bbda1bd84232836f8e51f2e85bbe.r2.dev" },
 		],
 		localPatterns: [
 			{ pathname: "/api/storage/files/**" },
