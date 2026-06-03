@@ -187,11 +187,10 @@ export function getUserAvatarFolderPath(userId: string): string {
 }
 
 /**
- * Get the public URL for a user's avatar
- * Uses API route for dynamic serving (files uploaded after build)
+ * Get the public URL for a user's avatar (served from Cloudflare R2)
  */
 export function getUserAvatarUrl(userId: string, filename: string): string {
-	return `/api/storage/files/avatars/${userId}/${filename}`;
+	return `${process.env.R2_PUBLIC_URL}/avatars/${userId}/${filename}`;
 }
 
 /**
@@ -213,11 +212,10 @@ export function getFilePath(folder: StorageFolder, filename: string): string {
 }
 
 /**
- * Get the public URL for a file
- * Uses API route for dynamic serving (files uploaded after build)
+ * Get the public URL for a file (served from Cloudflare R2)
  */
 export function getFileUrl(folder: StorageFolder, filename: string): string {
-	return `/api/storage/files/${folder}/${filename}`;
+	return `${process.env.R2_PUBLIC_URL}/${folder}/${filename}`;
 }
 
 /**
