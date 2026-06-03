@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -21,7 +21,7 @@ interface NyheterCardProps {
 export function NyheterCard({
 	article,
 	index = 0,
-	basePath = "/nyheter",
+	basePath = "/blogg",
 }: NyheterCardProps) {
 	const publishedDate = new Date(article.publishedAt).toLocaleDateString(
 		"sv-SE",

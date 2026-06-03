@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { Article } from "@/types/article";
-import { NyheterHero } from "./nyheter-hero";
-import { NyheterCard } from "./nyheter-card";
-import { NyheterSidebar } from "./nyheter-sidebar";
+import { NyheterHero } from "./blogg-hero";
+import { NyheterCard } from "./blogg-card";
+import { NyheterSidebar } from "./blogg-sidebar";
 import { staggerContainer } from "@/lib/animations";
 
 const ARTICLES_PER_PAGE = 9;
@@ -29,7 +29,7 @@ export function NyheterListing({
 	articles,
 	categories,
 	recentArticles,
-	basePath = "/nyheter",
+	basePath = "/blogg",
 	pageTitle = "Nyheter",
 }: NyheterListingProps) {
 	const [searchQuery, setSearchQuery] = useState("");

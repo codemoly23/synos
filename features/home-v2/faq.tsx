@@ -77,7 +77,7 @@ const FAQItem = ({ faq, index }: { faq: (typeof faqs)[0]; index: number }) => {
 				transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
 				className="overflow-hidden"
 			>
-				<p className="pb-6 text-muted-foreground leading-relaxed">
+				<p className="pb-6 text-muted-foreground leading-relaxed text-lg">
 					{faq.answer}
 				</p>
 			</motion.div>

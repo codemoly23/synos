@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Article } from "@/types/article";
-import { NyheterCard } from "./nyheter-card";
+import { NyheterCard } from "./blogg-card";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -22,7 +22,7 @@ interface NyheterRelatedProps {
 export function NyheterRelated({
 	articles,
 	currentArticleId,
-	basePath = "/nyheter",
+	basePath = "/blogg",
 }: NyheterRelatedProps) {
 	const relatedArticles = articles
 		.filter((article) => article.id !== currentArticleId)

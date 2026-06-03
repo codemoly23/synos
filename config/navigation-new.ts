@@ -25,7 +25,7 @@ export const mainNavNew: NavItem[] = [
 	// NYHETER - News/Blog section
 	{
 		title: "NYHETER",
-		href: "/nyheter",
+		href: "/blogg",
 	},
 
 	// UTRUSTNING (formerly Produkter) - Equipment/Products

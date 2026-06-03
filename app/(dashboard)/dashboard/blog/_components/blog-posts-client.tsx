@@ -484,7 +484,7 @@ export function BlogPostsClient({
 														Edit
 													</button>
 													<Link
-														href={`/nyheter/${post.slug}`}
+														href={`/blogg/${post.slug}`}
 														target="_blank"
 														// onClick={() =>
 														// 	window.open(`/nyheter/${post.slug}`, "_blank")

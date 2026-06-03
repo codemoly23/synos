@@ -26,7 +26,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 		{ label: "Produkter", href: "/produkter" },
 		{ label: "Tjänster", href: "/service" },
 		{ label: "Utbildningar", href: "/utbildningar" },
-		{ label: "Nyheter", href: "/nyheter" },
+		{ label: "Nyheter", href: "/blogg" },
 		{ label: "Kontakt", href: "/kontakt" },
 	],
 	newsletterDescription:

@@ -33,28 +33,28 @@ const nextConfig = {
 				permanent: true,
 			},
 			{
-				source: "/blogg",
-				destination: "/nyheter",
+				source: "/nyheter",
+				destination: "/blogg",
 				permanent: true,
 			},
 			{
-				source: "/blogg/:slug",
-				destination: "/nyheter/:slug",
+				source: "/nyheter/:slug",
+				destination: "/blogg/:slug",
 				permanent: true,
 			},
 			{
-				source: "/blogg/category/:slug",
-				destination: "/nyheter/category/:slug",
+				source: "/nyheter/category/:slug",
+				destination: "/blogg/category/:slug",
 				permanent: true,
 			},
 			{
-				source: "/blogg/tag/:slug",
-				destination: "/nyheter/tag/:slug",
+				source: "/nyheter/tag/:slug",
+				destination: "/blogg/tag/:slug",
 				permanent: true,
 			},
 			{
-				source: "/blogg/author/:slug",
-				destination: "/nyheter/author/:slug",
+				source: "/nyheter/author/:slug",
+				destination: "/blogg/author/:slug",
 				permanent: true,
 			},
 			{
@@ -88,8 +88,8 @@ const nextConfig = {
 				permanent: false,
 			},
 			{
-				source: "/blogg/",
-				destination: "/nyheter",
+				source: "/nyheter/",
+				destination: "/blogg",
 				permanent: true,
 			},
 			{

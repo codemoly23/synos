@@ -133,7 +133,7 @@ export function FAQAccordionClient({
 										>
 											<div className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
 												<div className="border-t border-white/20 pt-3 sm:pt-4">
-													<p className="text-white/90 leading-relaxed">
+													<p className="text-white/90 leading-relaxed text-base sm:text-lg">
 														{faq.answer}
 													</p>
 												</div>

@@ -322,7 +322,7 @@ export function CommentsList({
 										Blog Post
 									</p>
 									<Link
-										href={`/nyheter/${selectedComment.postSlug}`}
+										href={`/blogg/${selectedComment.postSlug}`}
 										target="_blank"
 										className="font-medium text-primary hover:underline flex items-center gap-1"
 									>
@@ -606,7 +606,7 @@ export function CommentsList({
 
 												{/* Post Reference */}
 												<Link
-													href={`/nyheter/${comment.postSlug}`}
+													href={`/blogg/${comment.postSlug}`}
 													target="_blank"
 													className="text-sm text-primary hover:underline flex items-center gap-1 mb-2"
 												>

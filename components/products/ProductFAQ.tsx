@@ -99,7 +99,7 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 										className="overflow-hidden"
 									>
 										<div className="px-6 pb-5 pt-0">
-											<div className="font-medium text-foreground text-lg leading-relaxed border-t border-slate-300 pt-4 [&_.sun-editor-editable]:text-[15px]!">
+											<div className="font-medium text-foreground text-lg leading-relaxed border-t border-slate-300 pt-4 [&_.sun-editor-editable]:text-[18px]!">
 												<PreviewEditor>{faq.answer}</PreviewEditor>
 											</div>
 										</div>

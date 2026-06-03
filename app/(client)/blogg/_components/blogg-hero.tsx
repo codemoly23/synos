@@ -20,7 +20,7 @@ export function NyheterHero({ pageTitle = "Nyheter" }: NyheterHeroProps) {
 	useSetNavbarVariant("dark-hero");
 
 	return (
-		<section className="relative overflow-hidden bg-secondary pt-32 pb-28 md:pt-36 md:pb-40 lg:pb-48 w-full max-w-full">
+		<section className="relative overflow-hidden bg-secondary pt-32 pb-20 md:pt-36 md:pb-24 w-full max-w-full">
 			{/* Abstract Image Overlay */}
 			<div className="absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
 
@@ -70,21 +70,6 @@ export function NyheterHero({ pageTitle = "Nyheter" }: NyheterHeroProps) {
 				</motion.div>
 			</div>
 
-			{/* Bottom curve/wave transition */}
-			<div className="absolute bottom-0 left-0 right-0">
-				<svg
-					viewBox="0 0 1440 80"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					className="w-full h-auto"
-					preserveAspectRatio="none"
-				>
-					<path
-						d="M0 80L1440 80L1440 40C1440 40 1320 0 1080 20C840 40 720 60 480 40C240 20 120 0 0 40L0 80Z"
-						fill="rgb(248 250 252)"
-					/>
-				</svg>
-			</div>
 		</section>
 	);
 }

@@ -124,7 +124,7 @@
 
   /* Fonts */
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-heading: var(--font-plus-jakarta-loaded), "Plus Jakarta Sans", system-ui, sans-serif;
   --font-gelasio: var(--font-gelasio-loaded), "Gelasio", serif;
 
   /* Radius */
