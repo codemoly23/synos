@@ -5,10 +5,10 @@
  * Defines URL patterns matching the site structure.
  *
  * URL Structure:
- * - News/Blog posts: /nyheter/[slug]/
- * - News categories: /nyheter/category/[slug]/
- * - News tags: /nyheter/tag/[slug]/
- * - News authors: /nyheter/author/[slug]/
+ * - News/Blog posts: /blogg/[slug]/
+ * - News categories: /blogg/category/[slug]/
+ * - News tags: /blogg/tag/[slug]/
+ * - News authors: /blogg/author/[slug]/
  * - Products: /klinikutrustning/[category]/[slug]/
  * - Product categories: /klinikutrustning/[slug]/
  */
@@ -61,34 +61,34 @@ export const SITEMAP_CONFIG = {
 
 /**
  * Build blog/news post URL
- * Pattern: /nyheter/[slug]/
+ * Pattern: /blogg/[slug]/
  */
 export function buildBlogPostUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/nyheter/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/${slug}`;
 }
 
 /**
  * Build blog/news category URL
- * Pattern: /nyheter/category/[slug]/
+ * Pattern: /blogg/category/[slug]/
  */
 export function buildBlogCategoryUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/nyheter/category/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/category/${slug}`;
 }
 
 /**
  * Build blog/news tag URL
- * Pattern: /nyheter/tag/[slug]/
+ * Pattern: /blogg/tag/[slug]/
  */
 export function buildBlogTagUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/nyheter/tag/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/tag/${slug}`;
 }
 
 /**
  * Build author URL
- * Pattern: /nyheter/author/[slug]/
+ * Pattern: /blogg/author/[slug]/
  */
 export function buildAuthorUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/nyheter/author/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/author/${slug}`;
 }
 
 /**

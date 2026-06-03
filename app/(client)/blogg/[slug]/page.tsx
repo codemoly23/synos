@@ -2,22 +2,21 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
 	getArticleBySlug,
-	getRelatedArticles,
 	getAllArticles,
+	getRelatedArticles,
 } from "@/lib/data/blog";
 import { blogPostService } from "@/lib/services/blog-post.service";
 import { getSiteConfig } from "@/config/site";
-import { BlogDetailHero } from "../_components/blog-detail-hero";
-import { BlogContent } from "../_components/blog-content";
-import { BlogAuthor } from "../_components/blog-author";
-import { RelatedPosts } from "../_components/related-posts";
-import { BlogComments } from "../_components/blog-comments";
+import { NyheterDetailHero } from "../_components/blogg-detail-hero";
+import { NyheterContent } from "../_components/blogg-content";
+import { NyheterRelated } from "../_components/blogg-related";
+import { BlogComments } from "../../blogg/_components/blog-comments";
 // import { TrustindexReviews } from "@/components/widgets/TrustindexReviews";
 
 /**
- * Blog Detail Page
+ * Nyheter Detail Page
  *
- * Dynamic route for individual blog posts.
+ * Dynamic route for individual news/blog posts under /blogg.
  * Uses ISR for optimal performance with fresh content.
  */
 
@@ -28,7 +27,7 @@ export const revalidate = 60;
 export const dynamicParams = true;
 
 /**
- * Generate static params for all published blog posts at build time
+ * Generate static params for all published posts at build time
  */
 export async function generateStaticParams() {
 	try {
@@ -38,12 +37,12 @@ export async function generateStaticParams() {
 		});
 		return result.data.map((post) => ({ slug: post.slug }));
 	} catch (error) {
-		console.error("Error generating static params for blog posts:", error);
+		console.error("Error generating static params for news posts:", error);
 		return [];
 	}
 }
 
-interface BlogDetailPageProps {
+interface NyheterDetailPageProps {
 	params: Promise<{
 		slug: string;
 	}>;
@@ -52,7 +51,7 @@ interface BlogDetailPageProps {
 // Generate metadata for SEO
 export async function generateMetadata({
 	params,
-}: BlogDetailPageProps): Promise<Metadata> {
+}: NyheterDetailPageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const [article, siteConfig] = await Promise.all([
 		getArticleBySlug(slug),
@@ -61,14 +60,14 @@ export async function generateMetadata({
 
 	if (!article) {
 		return {
-			title: `Artikel hittades inte | ${siteConfig.name}`,
+			title: "Artikel hittades inte | Synos Medical",
 		};
 	}
 
 	const ogImage = article.seo?.ogImage || article.featuredImage?.url;
 
 	return {
-		title: article.seo?.title || `${article.title} | ${siteConfig.name}`,
+		title: article.seo?.title || `${article.title} | Synos Medical`,
 		description: article.seo?.description || article.excerpt,
 		keywords: article.seo?.keywords || article.tags,
 		openGraph: {
@@ -113,7 +112,9 @@ export async function generateMetadata({
 	};
 }
 
-export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
+export default async function NyheterDetailPage({
+	params,
+}: NyheterDetailPageProps) {
 	const { slug } = await params;
 	const [article, siteConfig] = await Promise.all([
 		getArticleBySlug(slug),
@@ -124,11 +125,16 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 		notFound();
 	}
 
-	// Get related articles (same category, excluding current)
-	const relatedArticles = await getRelatedArticles(article.id, 4);
-	// Fallback to all articles if no related found
-	const displayRelated =
-		relatedArticles.length > 0 ? relatedArticles : await getAllArticles();
+	// Get related articles based on current article
+	let relatedArticles;
+	if (article.id) {
+		relatedArticles = await getRelatedArticles(article.id, 6);
+	}
+
+	// Fallback to all articles if no related articles found
+	if (!relatedArticles || relatedArticles.length === 0) {
+		relatedArticles = await getAllArticles();
+	}
 
 	return (
 		<>
@@ -169,25 +175,18 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 				}}
 			/>
 
-			<BlogDetailHero article={article} />
+			<NyheterDetailHero article={article} basePath="/blogg" />
 
-			<section className="py-16 _container">
-				<BlogContent article={article} />
-			</section>
-
-			<section className="py-16">
-				<div className="_container">
-					<BlogAuthor author={article.author} />
-				</div>
-			</section>
+			<NyheterContent article={article} basePath="/blogg" />
 
 			{/* Customer Reviews - Temporarily disabled */}
 
 			<BlogComments postId={article.id} />
 
-			<RelatedPosts
-				articles={displayRelated}
+			<NyheterRelated
+				articles={relatedArticles}
 				currentArticleId={article.id}
+				basePath="/blogg"
 			/>
 		</>
 	);

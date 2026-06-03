@@ -54,7 +54,7 @@ export function AnimatedFAQ({ data }: AnimatedFAQProps) {
 								</div>
 								<h3 className="font-bold text-secondary">{faq.question}</h3>
 							</div>
-							<p className="pl-11 text-sm text-slate-600">{faq.answer}</p>
+							<p className="pl-11 text-base text-slate-600">{faq.answer}</p>
 						</motion.div>
 					))}
 				</div>

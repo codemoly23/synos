@@ -4,11 +4,11 @@ import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
 import { getArticlesByCategory } from "@/lib/data/blog";
 import { blogCategoryService } from "@/lib/services/blog-category.service";
-import { BlogCard } from "../../_components/blog-card";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import { NyheterCard } from "../../_components/blogg-card";
+import { NyheterHero } from "../../_components/blogg-hero";
 
 /**
- * Blog Category Archive Page
+ * Nyheter Category Archive Page
  *
  * URL: /blogg/category/[slug]/
  * Shows all blog posts in a specific category
@@ -29,7 +29,7 @@ export async function generateStaticParams() {
 		const categories = await blogCategoryService.getActiveCategories();
 		return categories.map((cat) => ({ slug: cat.slug }));
 	} catch (error) {
-		console.error("Error generating static params for blog categories:", error);
+		console.error("Error generating static params for nyheter categories:", error);
 		return [];
 	}
 }
@@ -65,10 +65,10 @@ export async function generateMetadata({
 	}
 
 	return {
-		title: `${category.name} | Blogg | ${siteConfig.name}`,
+		title: `${category.name} | Nyheter | ${siteConfig.name}`,
 		description: `Läs våra artiklar om ${category.name.toLowerCase()}. Tips, guider och nyheter från Synos Medical.`,
 		openGraph: {
-			title: `${category.name} | Blogg | ${siteConfig.name}`,
+			title: `${category.name} | Nyheter | ${siteConfig.name}`,
 			description: `Läs våra artiklar om ${category.name.toLowerCase()}.`,
 			url: `${siteConfig.url}/blogg/category/${slug}`,
 			siteName: siteConfig.name,
@@ -81,7 +81,9 @@ export async function generateMetadata({
 	};
 }
 
-export default async function BlogCategoryPage({ params }: CategoryPageProps) {
+export default async function NyheterCategoryPage({
+	params,
+}: CategoryPageProps) {
 	const { slug } = await params;
 	const [category, articles] = await Promise.all([
 		getCategoryBySlug(slug),
@@ -93,46 +95,45 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-			<div className="_container mx-auto px-4 py-8 padding-top">
-				<Breadcrumb
-					items={[
-						{ label: "Blogg", href: "/blogg" },
-						{ label: category.name },
-					]}
-				/>
+		<>
+			<NyheterHero pageTitle={category.name} />
 
-				{/* Page Header */}
-				<div className="mb-12">
-					<p className="mb-2 text-sm font-medium uppercase tracking-wider text-primary">
-						Kategori
-					</p>
-					<h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-						{category.name}
-					</h1>
-					<p className="text-lg text-muted-foreground">
-						{articles.length} artikel{articles.length !== 1 ? "ar" : ""} i
-						denna kategori
-					</p>
-				</div>
+			<section className="py-12 md:py-16 lg:py-20 bg-slate-50/50">
+				<div className="_container">
+					{/* Page Header */}
+					<div className="mb-8">
+						<p className="mb-2 text-sm font-medium uppercase tracking-wider text-primary">
+							Kategori
+						</p>
+						<p className="text-muted-foreground">
+							{articles.length} artikel{articles.length !== 1 ? "ar" : ""} i
+							denna kategori
+						</p>
+					</div>
 
-				{/* Articles Grid */}
-				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-					{articles.map((article) => (
-						<BlogCard key={article.id} article={article} />
-					))}
-				</div>
+					{/* Articles Grid */}
+					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{articles.map((article, index) => (
+							<NyheterCard
+								key={article.id}
+								article={article}
+								index={index}
+								basePath="/blogg"
+							/>
+						))}
+					</div>
 
-				{/* Back Link */}
-				<div className="mt-12 text-center">
-					<Link
-						href="/blogg"
-						className="text-primary hover:underline"
-					>
-						← Tillbaka till bloggen
-					</Link>
+					{/* Back Link */}
+					<div className="mt-12 text-center">
+						<Link
+							href="/blogg"
+							className="text-primary hover:underline"
+						>
+							← Tillbaka till nyheter
+						</Link>
+					</div>
 				</div>
-			</div>
-		</div>
+			</section>
+		</>
 	);
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -31,7 +31,7 @@ export function NyheterSidebar({
 	onSearch,
 	onCategoryFilter,
 	selectedCategory,
-	basePath = "/nyheter",
+	basePath = "/blogg",
 }: NyheterSidebarProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 

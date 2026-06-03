@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Gelasio, Roboto } from "next/font/google";
+import { Geist, Geist_Mono, Gelasio, Roboto, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -27,6 +27,12 @@ const roboto = Roboto({
 	variable: "--font-roboto",
 	subsets: ["latin"],
 	weight: ["100", "300", "400"],
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+	variable: "--font-plus-jakarta-loaded",
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
 });
 
 const DEFAULT_KEYWORDS = [
@@ -145,21 +151,18 @@ export default async function RootLayout({
 
 	return (
 		<html lang="sv" className="scroll-smooth">
-			{/* beforeInteractive scripts must be a direct child of <html>, NOT wrapped
-			    in a manual <head> element — a manual <head> creates whitespace text
-			    nodes that cause React hydration errors in Next.js App Router. */}
-			{cookiebotId && (
-				<Script
-					id="cookiebot"
-					src="https://consent.cookiebot.com/uc.js"
-					data-cbid={cookiebotId}
-					data-blockingmode="auto"
-					strategy="beforeInteractive"
-				/>
-			)}
 			<body
-				className={`${geistSans.className} ${geistMono.variable} ${gelasio.variable} ${roboto.variable} antialiased bg-slate-100`}
+				className={`${geistSans.className} ${geistMono.variable} ${gelasio.variable} ${roboto.variable} ${plusJakartaSans.variable} antialiased bg-slate-100`}
 			>
+				{cookiebotId && (
+					<Script
+						id="cookiebot"
+						src="https://consent.cookiebot.com/uc.js"
+						data-cbid={cookiebotId}
+						data-blockingmode="auto"
+						strategy="afterInteractive"
+					/>
+				)}
 				<NuqsAdapter>{children}</NuqsAdapter>
 				<ToasterProvider />
 

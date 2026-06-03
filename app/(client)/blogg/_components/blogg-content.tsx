@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Article } from "@/types/article";
@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { sanitizeHtmlContent } from "@/lib/sanitize-html";
-import { NyheterAuthorCard } from "./nyheter-author-card";
+import { NyheterAuthorCard } from "./blogg-author-card";
 import Link from "next/link";
 
 interface NyheterContentProps {
@@ -30,7 +30,7 @@ interface NyheterContentProps {
  * Tags and categories displayed at the bottom with eye-catching UI.
  * Author card displayed at the bottom.
  */
-export function NyheterContent({ article, basePath = "/nyheter" }: NyheterContentProps) {
+export function NyheterContent({ article, basePath = "/blogg" }: NyheterContentProps) {
 	const [copied, setCopied] = useState(false);
 
 	const sanitizedContent = useMemo(

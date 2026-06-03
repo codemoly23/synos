@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Home, ChevronRight } from "lucide-react";
@@ -22,7 +22,7 @@ interface NyheterDetailHeroProps {
  */
 export function NyheterDetailHero({
 	article,
-	basePath = "/nyheter",
+	basePath = "/blogg",
 }: NyheterDetailHeroProps) {
 	// Set navbar to dark-hero variant for this page
 	useSetNavbarVariant("dark-hero");
@@ -79,21 +79,6 @@ export function NyheterDetailHero({
 					</motion.div>
 				</div>
 
-				{/* Bottom curve transition */}
-				<div className="absolute bottom-0 left-0 right-0">
-					<svg
-						viewBox="0 0 1440 100"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-						className="w-full h-auto"
-						preserveAspectRatio="none"
-					>
-						<path
-							d="M0 100L1440 100L1440 50C1440 50 1320 0 1080 25C840 50 720 75 480 50C240 25 120 0 0 50L0 100Z"
-							fill="white"
-						/>
-					</svg>
-				</div>
 			</section>
 
 			{/* Featured Image - Overlapping the hero */}
