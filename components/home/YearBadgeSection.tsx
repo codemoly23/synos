@@ -7,15 +7,15 @@ import Script from "next/script";
 const YEARS = [2021, 2022, 2023, 2024, 2025];
 const BADGE_W = 110;
 const BADGE_H = 103;
-const GAP = 20;
+const GAP = 5;
 const STEP = BADGE_W + GAP;
 const TOTAL_WIDTH = 6 * BADGE_W + 5 * GAP;
 const CENTER_X = TOTAL_WIDTH / 2 - BADGE_W / 2;
 
 type Phase = "idle" | "open" | "main-closing" | "badges-closing";
 
-const MAIN_SETTLE_MS = 850;
-const BADGES_CLOSE_MS = (YEARS.length - 1) * 120 + 300 + 80;
+const MAIN_SETTLE_MS = 480;
+const BADGES_CLOSE_MS = (YEARS.length - 1) * 180 + 500 + 80;
 
 export default function YearBadgeSection() {
 	const [phase, setPhase] = useState<Phase>("idle");
@@ -66,23 +66,28 @@ export default function YearBadgeSection() {
 					{YEARS.map((year, index) => {
 						let opacityTarget: number;
 						let yTarget: number;
+						let xTarget: number;
 						let delay: number;
 
 						if (phase === "open") {
 							opacityTarget = 1;
 							yTarget = 0;
+							xTarget = 0;
 							delay = index * 0.12 + 0.05;
 						} else if (phase === "main-closing") {
 							opacityTarget = 1;
 							yTarget = 0;
+							xTarget = CENTER_X + STEP;
 							delay = 0;
 						} else if (phase === "badges-closing") {
 							opacityTarget = 0;
 							yTarget = 8;
-							delay = (YEARS.length - 1 - index) * 0.12;
+							xTarget = CENTER_X + STEP;
+							delay = (YEARS.length - 1 - index) * 0.18;
 						} else {
 							opacityTarget = 0;
 							yTarget = 8;
+							xTarget = 0;
 							delay = 0;
 						}
 
@@ -92,11 +97,11 @@ export default function YearBadgeSection() {
 								className="absolute top-0"
 								style={{ width: BADGE_W, height: BADGE_H, left: index * STEP }}
 								initial={{ opacity: 0, y: 8 }}
-								animate={{ opacity: opacityTarget, y: yTarget }}
+								animate={{ opacity: opacityTarget, y: yTarget, x: xTarget }}
 								transition={{
-									duration: 0.35,
-									delay,
-									ease: [0.25, 0.46, 0.45, 0.94],
+									opacity: { duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+									y: { duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+									x: { type: "spring", stiffness: 55, damping: 18 },
 								}}
 							>
 								<div id={`reco--badge-${year}`} />
@@ -130,7 +135,7 @@ export default function YearBadgeSection() {
 								border: "1px solid rgba(180, 180, 210, 0.35)",
 								zIndex: -1,
 							}}
-							animate={{ scale: [1, 1.18, 1] }}
+							animate={{ scale: [1, 1.18, 1], opacity: phase === "open" ? 0 : 1 }}
 							transition={{
 								duration: 0.45,
 								repeat: Infinity,
