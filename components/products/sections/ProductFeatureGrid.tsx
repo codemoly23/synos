@@ -53,7 +53,7 @@ export function ProductFeatureGrid({
 	return (
 		<section>
 			<div className="_container">
-				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16 font-gelasio`}>
+				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16`}>
 					{/* Top block */}
 					<motion.div
 						initial={{ opacity: 0, y: 24 }}
@@ -83,7 +83,7 @@ export function ProductFeatureGrid({
 
 						<div>
 							{eyebrow && <EyebrowTag className="mb-5">{eyebrow}</EyebrowTag>}
-							<h2 className="font-gelasio text-2xl sm:text-3xl lg:text-[2.25rem] font-bold tracking-tight text-secondary leading-[1.15] mb-4">
+							<h2 className="text-2xl sm:text-3xl lg:text-[2.25rem] font-semibold tracking-tight text-secondary leading-[1.15] mb-4">
 								{heading}
 							</h2>
 							{description && (
@@ -107,7 +107,7 @@ export function ProductFeatureGrid({
 												/>
 											</div>
 											<div className="min-w-0 overflow-hidden">
-												<h3 className="font-gelasio text-xs sm:text-[15px] font-semibold text-secondary mb-1 leading-snug break-words">
+												<h3 className="text-xs sm:text-[15px] font-semibold text-secondary mb-1 leading-snug break-words">
 													{feature.title}
 												</h3>
 												<p className="text-[10px] sm:text-[12.5px] leading-relaxed text-slate-600 break-words">
@@ -138,7 +138,7 @@ export function ProductFeatureGrid({
 										className="shrink-0 -mt-2"
 									/>
 									<div className="flex-1 min-w-0 pt-1">
-										<h3 className="font-gelasio text-xl sm:text-2xl lg:text-[1.65rem] font-bold tracking-tight text-secondary leading-[1.2] mb-3">
+										<h3 className="text-xl sm:text-2xl lg:text-[1.65rem] font-semibold tracking-tight text-secondary leading-[1.2] mb-3">
 											{bottomBlock.title}
 										</h3>
 										{bottomBlock.description && (
@@ -158,7 +158,7 @@ export function ProductFeatureGrid({
 													strokeWidth={1.5}
 													className="h-7 w-7 text-slate-700 mb-3.5"
 												/>
-												<h4 className="font-gelasio text-base font-semibold text-secondary mb-1.5 leading-snug">
+												<h4 className="text-base font-semibold text-secondary mb-1.5 leading-snug">
 													{item.title}
 												</h4>
 												<p className="text-[13px] leading-relaxed text-slate-600">

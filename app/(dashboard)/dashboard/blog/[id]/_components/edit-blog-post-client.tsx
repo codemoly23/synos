@@ -156,7 +156,7 @@ export function EditBlogPostClient({
 				<div className="flex items-center gap-2">
 					{post.publishType === "publish" && (
 						<Link
-							href={`/nyheter/${post.slug}`}
+							href={`/blogg/${post.slug}`}
 							target="_blank"
 							rel="noopener noreferrer"
 						>

@@ -54,7 +54,7 @@ export function ProductFeatureSplit({
 	return (
 		<section>
 			<div className="_container">
-				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16 font-gelasio`}>
+				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16`}>
 					{/* Top split */}
 					<motion.div
 						initial={{ opacity: 0, y: 24 }}
@@ -65,7 +65,7 @@ export function ProductFeatureSplit({
 					>
 						<div>
 							{eyebrow && <EyebrowTag className="mb-6">{eyebrow}</EyebrowTag>}
-							<h2 className="font-gelasio text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-secondary leading-[1.15] mb-6">
+							<h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-secondary leading-[1.15] mb-6">
 								{heading}
 							</h2>
 							<div className="space-y-4 text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[520px]">
@@ -132,7 +132,7 @@ export function ProductFeatureSplit({
 												className="h-7 w-7 text-slate-700"
 											/>
 										</div>
-										<h3 className="font-gelasio text-lg sm:text-xl font-semibold text-secondary mb-2.5 leading-snug">
+										<h3 className="text-lg sm:text-xl font-semibold text-secondary mb-2.5 leading-snug">
 											{feature.title}
 										</h3>
 										<p className="text-sm leading-relaxed text-slate-600">
@@ -168,7 +168,7 @@ export function ProductFeatureSplit({
 												/>
 											</div>
 											<div className="min-w-0 overflow-hidden">
-												<h4 className="font-gelasio text-xs sm:text-sm font-semibold text-secondary leading-snug break-words">
+												<h4 className="text-xs sm:text-sm font-semibold text-secondary leading-snug break-words">
 													{b.title}
 												</h4>
 												{b.description && (

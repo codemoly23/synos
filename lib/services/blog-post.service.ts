@@ -221,7 +221,15 @@ class BlogPostService {
 	 * Get public blog post by slug (for frontend)
 	 */
 	async getPublicPostBySlug(slug: string): Promise<IBlogPost> {
-		const post = await blogPostRepository.findPublicBySlug(slug);
+		// Try exact slug first (covers posts imported with raw Unicode like ₂).
+		// If that misses, fall back to the normalized form to handle mis-encoded
+		// incoming URLs — but skip the second query when both slugs are identical.
+		const normalized = normalizeSlug(slug);
+		const post =
+			(await blogPostRepository.findPublicBySlug(slug)) ??
+			(normalized !== slug
+				? await blogPostRepository.findPublicBySlug(normalized)
+				: null);
 
 		if (!post) {
 			throw new NotFoundError("Blog post not found");

@@ -134,7 +134,7 @@ export function NyheterContent({ article, basePath = "/blogg" }: NyheterContentP
 							initial="initial"
 							animate="animate"
 							variants={fadeUp}
-							className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-secondary prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-2xl md:prose-h2:text-3xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl md:prose-h3:text-2xl prose-p:mb-5 prose-p:leading-relaxed prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:my-4 prose-li:my-2 prose-img:rounded-xl prose-img:shadow-md"
+							className="blog-article-prose prose prose-lg max-w-none prose-headings:font-semibold prose-headings:text-secondary prose-h1:text-3xl prose-h1:mt-0 prose-h1:mb-6 prose-h2:text-2xl md:prose-h2:text-3xl prose-h3:text-xl md:prose-h3:text-2xl prose-h4:text-lg prose-p:mb-5 prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:my-4 prose-ol:my-4 prose-li:my-2 prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-muted prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto prose-figure:mx-auto prose-figcaption:text-center prose-figcaption:text-sm prose-figcaption:text-muted-foreground prose-figcaption:mt-2 prose-table:text-sm prose-th:text-secondary prose-td:text-muted-foreground prose-hr:border-border"
 							dangerouslySetInnerHTML={{ __html: sanitizedContent }}
 						/>
 

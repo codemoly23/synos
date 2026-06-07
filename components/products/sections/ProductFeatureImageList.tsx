@@ -61,7 +61,7 @@ export function ProductFeatureImageList({
 	return (
 		<section>
 			<div className="_container">
-				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16 font-gelasio`}>
+				<div className={`${cornerClassMap[corners]} py-6 sm:py-10 lg:py-16`}>
 					{/* Header — centered */}
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
@@ -71,7 +71,7 @@ export function ProductFeatureImageList({
 						className="text-center max-w-3xl mx-auto mb-12 lg:mb-16"
 					>
 						{eyebrow && <EyebrowTag className="mb-6">{eyebrow}</EyebrowTag>}
-						<h2 className="font-gelasio text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-secondary leading-[1.15] mb-5">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-secondary leading-[1.15] mb-5">
 							{heading}
 						</h2>
 						{description && (
@@ -123,7 +123,7 @@ export function ProductFeatureImageList({
 											</div>
 										)}
 										<div className="min-w-0 flex-1">
-											<h3 className="font-gelasio text-base sm:text-lg font-semibold text-secondary leading-snug mb-2">
+											<h3 className="text-base sm:text-lg font-semibold text-secondary leading-snug mb-2">
 												{item.title}
 											</h3>
 											<p className="text-sm leading-relaxed text-slate-600">
@@ -152,7 +152,7 @@ export function ProductFeatureImageList({
 									className="shrink-0"
 								/>
 								<div className="flex-1 min-w-0">
-									<h3 className="font-gelasio text-2xl sm:text-3xl lg:text-[2rem] font-bold tracking-tight text-secondary leading-[1.15] mb-3">
+									<h3 className="text-2xl sm:text-3xl lg:text-[2rem] font-semibold tracking-tight text-secondary leading-[1.15] mb-3">
 										{bottomBlock.title}
 									</h3>
 									{bottomBlock.description && (
@@ -171,7 +171,7 @@ export function ProductFeatureImageList({
 												<Icon strokeWidth={1.5} className="h-[18px] w-[18px]" />
 											</div>
 											<div className="min-w-0">
-												<h4 className="font-gelasio text-base font-semibold text-secondary leading-snug mb-1.5">
+												<h4 className="text-base font-semibold text-secondary leading-snug mb-1.5">
 													{item.title}
 												</h4>
 												<p className="text-sm leading-relaxed text-slate-600">
