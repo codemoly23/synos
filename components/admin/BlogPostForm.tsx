@@ -27,7 +27,7 @@ import {
 	type CreateBlogPostInput,
 	type UpdateBlogPostInput,
 } from "@/lib/validations/blog-post.validation";
-import { generateSlug } from "@/lib/utils/product-helpers";
+import { generateSlug, normalizeSlug } from "@/lib/utils/product-helpers";
 import type { IBlogPost } from "@/models/blog-post.model";
 import type { IBlogCategoryTreeNode } from "@/models/blog-category.model";
 import TextEditor from "../common/TextEditor";
@@ -195,7 +195,7 @@ export function BlogPostForm({
 		) as never,
 		defaultValues: {
 			title: post?.title || "",
-			slug: post?.slug || "",
+			slug: post?.slug ? normalizeSlug(post.slug) : "",
 			excerpt: post?.excerpt || "",
 			content: post?.content || "",
 			featuredImage: post?.featuredImage
@@ -395,6 +395,10 @@ export function BlogPostForm({
 									<Input
 										id="slug"
 										{...register("slug")}
+										onBlur={(e) => {
+											const val = e.target.value;
+											if (val) setValue("slug", normalizeSlug(val), { shouldDirty: true });
+										}}
 										placeholder="blog-post-slug"
 										disabled={isLoading}
 										className={errors.slug ? "border-red-500" : ""}
