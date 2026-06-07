@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -67,7 +67,7 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 								aria-expanded={openIndex === index}
 								aria-controls={`faq-answer-${faq._id}`}
 							>
-								<span className="font-medium text-foreground text-lg flex-1 cursor-pointer">
+								<span className="font-semibold text-secondary text-lg flex-1 cursor-pointer">
 									{faq.question}
 								</span>
 								<motion.div
@@ -98,8 +98,8 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 										transition={{ duration: 0.3 }}
 										className="overflow-hidden"
 									>
-										<div className="px-6 pb-5 pt-0">
-											<div className="font-medium text-foreground text-lg leading-relaxed border-t border-slate-300 pt-4 [&_.sun-editor-editable]:text-[18px]!">
+										<div className="px-6 pb-4 pt-0">
+											<div className="font-medium text-lg leading-relaxed border-t border-slate-300 pt-3 [&_.sun-editor-editable_*]:!text-[18px] [&_.sun-editor-editable]:![color:rgba(44,45,56,0.5)] [&_.sun-editor-editable]:!p-0 [&_.sun-editor-editable_p:last-child]:!mb-0">
 												<PreviewEditor>{faq.answer}</PreviewEditor>
 											</div>
 										</div>
@@ -112,3 +112,7 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 		</div>
 	);
 }
+
+
+
+
