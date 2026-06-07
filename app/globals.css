@@ -123,9 +123,8 @@
   --color-tertiary: var(--color-tertiary);
 
   /* Fonts */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: var(--font-plus-jakarta-loaded), "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-gelasio: var(--font-gelasio-loaded), "Gelasio", serif;
+  --font-sans: var(--font-montserrat), "Montserrat", "Malgun Gothic", system-ui, sans-serif;
+  --font-heading: var(--font-montserrat), "Montserrat", "Malgun Gothic", system-ui, sans-serif;
 
   /* Radius */
   --radius-sm: var(--radius-sm);
@@ -216,11 +215,14 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans font-light antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  h1,
+  h1 {
+    @apply font-heading font-light tracking-tight uppercase;
+  }
+
   h2,
   h3,
   h4,
@@ -474,11 +476,11 @@
 
   /* suneditor contents */
   .sun-editor-editable {
-    font-family: Helvetica Neue;
-    font-size: 13px;
-    color: #333;
-    background-color: #fff;
-    line-height: 1.5;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--foreground);
+    background-color: var(--background);
+    line-height: 1.7;
     word-break: normal;
     word-wrap: break-word;
     padding: 16px;
@@ -1181,7 +1183,7 @@
     width: auto;
     height: auto;
     box-sizing: border-box;
-    font-family: Helvetica Neue;
+    font-family: var(--font-sans);
     border: 1px solid #dadada;
     background-color: #FFF;
     color: #000;
@@ -3754,4 +3756,99 @@ html.translated-rtl .lang-sv {
 html.translated-ltr .lang-en,
 html.translated-rtl .lang-en {
   display: inline;
+}
+
+/* ============================================
+   BLOG ARTICLE PROSE — scoped overrides
+   Applies ONLY inside .blog-article-prose wrapper.
+   Resets brand-guide heading transforms (uppercase, tracking)
+   that are correct for site UI but wrong for article body text.
+   Does NOT affect any other page or component.
+   ============================================ */
+.blog-article-prose h1,
+.blog-article-prose h2,
+.blog-article-prose h3,
+.blog-article-prose h4,
+.blog-article-prose h5,
+.blog-article-prose h6 {
+  text-transform: none;
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+}
+
+.blog-article-prose h1 {
+  font-weight: 600;
+}
+
+.blog-article-prose h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .blog-article-prose h2 {
+    font-size: 2.25rem;
+  }
+}
+
+.blog-article-prose h3 {
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.blog-article-prose h4,
+.blog-article-prose h5,
+.blog-article-prose h6 {
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-article-prose p {
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+  color: var(--color-foreground);
+}
+
+.blog-article-prose li {
+  line-height: 1.75;
+  margin-bottom: 0.4rem;
+  color: var(--color-foreground);
+}
+
+.blog-article-prose strong {
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.blog-article-prose img {
+  border-radius: 0.75rem;
+  max-width: 100%;
+  height: auto;
+}
+
+.blog-article-prose a,
+.blog-article-prose h1 a,
+.blog-article-prose h2 a,
+.blog-article-prose h3 a,
+.blog-article-prose h4 a,
+.blog-article-prose h5 a,
+.blog-article-prose h6 a {
+  color: #39898F;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.blog-article-prose a:hover,
+.blog-article-prose h1 a:hover,
+.blog-article-prose h2 a:hover,
+.blog-article-prose h3 a:hover,
+.blog-article-prose h4 a:hover,
+.blog-article-prose h5 a:hover,
+.blog-article-prose h6 a:hover {
+  opacity: 0.75;
 }

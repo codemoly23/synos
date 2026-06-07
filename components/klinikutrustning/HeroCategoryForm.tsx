@@ -108,7 +108,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				<div className="h-14 w-14 rounded-full bg-primary/20 border border-primary flex items-center justify-center">
 					<CheckCircle2 className="h-7 w-7 text-primary" />
 				</div>
-				<h3 className="text-2xl font-serif font-light text-white">
+				<h3 className="text-2xl font-sans font-light text-white">
 					Tack för din förfrågan!
 				</h3>
 				<p className="text-white/60 text-sm max-w-xs leading-relaxed">

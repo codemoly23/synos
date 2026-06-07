@@ -30,7 +30,7 @@ export function NumberMark({
 					"text-7xl sm:text-8xl md:text-[7rem] lg:text-[8rem]",
 					className
 				)}
-				style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
+				style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
 			>
 				{number}
 			</span>
@@ -45,7 +45,7 @@ export function NumberMark({
 					"text-xl sm:text-2xl",
 					className
 				)}
-				style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
+				style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
 			>
 				{number}
 			</span>
@@ -59,7 +59,7 @@ export function NumberMark({
 				"text-3xl sm:text-4xl",
 				className
 			)}
-			style={{ fontFamily: "var(--font-roboto)", fontWeight: 300 }}
+			style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
 		>
 			{number}
 		</span>

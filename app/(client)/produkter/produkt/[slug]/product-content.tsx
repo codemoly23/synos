@@ -100,7 +100,7 @@ export function ProductContent({
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-						<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
+						<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
 							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -201,7 +201,7 @@ export function ProductContent({
 								</div>
 								{/* Right — Form */}
 								<div className="flex flex-col justify-center py-10 pl-10 pr-8">
-									<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
+									<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
 										{product.title}
 									</h2>
 									{(product as unknown as { heroSubtitle?: string }).heroSubtitle && (
@@ -231,7 +231,7 @@ export function ProductContent({
 							<div />
 							{/* Right – text */}
 							<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
-								<h1 className="text-6xl lg:text-8xl font-serif font-light text-white mb-3 leading-tight">
+								<h1 className="text-6xl lg:text-8xl font-sans font-light text-white mb-3 leading-tight">
 									{product.title}
 								</h1>
 								<div className="w-14 h-[2px] bg-primary mb-5" />

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Gelasio, Roboto, Plus_Jakarta_Sans } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -7,32 +7,10 @@ import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { TrackingScripts } from "@/components/analytics/tracking-scripts";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const montserrat = Montserrat({
+	variable: "--font-montserrat",
 	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-const gelasio = Gelasio({
-	variable: "--font-gelasio-loaded",
-	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
-});
-
-const roboto = Roboto({
-	variable: "--font-roboto",
-	subsets: ["latin"],
-	weight: ["100", "300", "400"],
-});
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-	variable: "--font-plus-jakarta-loaded",
-	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
+	weight: ["300", "600"],
 });
 
 const DEFAULT_KEYWORDS = [
@@ -152,7 +130,7 @@ export default async function RootLayout({
 	return (
 		<html lang="sv" className="scroll-smooth">
 			<body
-				className={`${geistSans.className} ${geistMono.variable} ${gelasio.variable} ${roboto.variable} ${plusJakartaSans.variable} antialiased bg-slate-100`}
+				className={`${montserrat.variable} antialiased bg-slate-100`}
 			>
 				{cookiebotId && (
 					<Script

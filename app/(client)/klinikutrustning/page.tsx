@@ -414,7 +414,7 @@ export default async function KategoriPage() {
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-serif font-light text-white mb-3 leading-tight">
+					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -452,7 +452,7 @@ export default async function KategoriPage() {
 							<div />
 							{/* Right — Form */}
 							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
-								<h2 className="text-5xl font-serif font-light text-white mb-2 leading-tight">
+								<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
 									{heroTitle}
 								</h2>
 								<p className="text-white/60 text-base mb-8 leading-relaxed">

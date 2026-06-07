@@ -156,7 +156,7 @@ export async function getRecentArticles(limit: number = 5): Promise<Article[]> {
 export async function getAllCategories(): Promise<string[]> {
 	try {
 		const categories = await blogCategoryService.getActiveCategories();
-		return categories.map((cat) => cat.name);
+		return [...new Set(categories.map((cat) => cat.name))];
 	} catch (error) {
 		console.error("Failed to fetch categories:", error);
 		return [];

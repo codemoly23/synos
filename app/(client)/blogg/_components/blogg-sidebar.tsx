@@ -96,7 +96,7 @@ export function NyheterSidebar({
 					>
 						Alla artiklar
 					</button>
-					{categories.map((category) => (
+					{[...new Set(categories)].map((category) => (
 						<button
 							key={category}
 							onClick={() => onCategoryFilter?.(category)}
