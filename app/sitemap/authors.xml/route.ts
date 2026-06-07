@@ -6,7 +6,6 @@
  */
 
 import { NextResponse } from "next/server";
-import { blogArticles } from "@/data/blog/blog-data";
 import {
 	generateSitemapXml,
 	buildAuthorUrl,
@@ -51,16 +50,6 @@ export async function GET(): Promise<NextResponse> {
 		// Add predefined authors
 		AUTHORS.forEach((author) => {
 			authorMap.set(author.slug, author.name);
-		});
-
-		// Also extract authors from actual blog articles
-		blogArticles.forEach((article) => {
-			if (article.author?.name) {
-				const slug = createAuthorSlug(article.author.name);
-				if (slug && !authorMap.has(slug)) {
-					authorMap.set(slug, article.author.name);
-				}
-			}
 		});
 
 		// Build author URL list

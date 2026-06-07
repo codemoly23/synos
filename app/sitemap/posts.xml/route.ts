@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { blogArticles } from "@/data/blog/blog-data";
+import { getAllArticles } from "@/lib/data/blog";
 import {
 	generateSitemapXml,
 	buildBlogPostUrl,
@@ -20,7 +20,9 @@ export const revalidate = 3600;
 
 export async function GET(): Promise<NextResponse> {
 	try {
-		const urls: SitemapUrl[] = blogArticles.map((article) => ({
+		const articles = await getAllArticles();
+
+		const urls: SitemapUrl[] = articles.map((article) => ({
 			loc: buildBlogPostUrl(article.slug),
 			lastmod: formatSitemapDate(article.updatedAt || article.publishedAt),
 			changefreq: SITEMAP_CONFIG.changeFreq.blogPost,

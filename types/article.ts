@@ -8,6 +8,12 @@ export interface ArticleImage {
   isPrimary?: boolean;
 }
 
+export interface ArticleHeaderImage {
+  url: string;
+  alt: string;
+  showTitleOverlay?: boolean;
+}
+
 export interface Article {
   id: string;
   slug: string;
@@ -18,6 +24,7 @@ export interface Article {
   publishedAt: string;
   updatedAt: string;
   featuredImage?: ArticleImage;
+  headerImage?: ArticleHeaderImage;
   categories: string[];
   tags: string[];
   seo: SEOMetadata;

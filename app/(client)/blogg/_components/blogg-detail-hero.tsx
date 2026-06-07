@@ -30,15 +30,27 @@ export function NyheterDetailHero({
 	return (
 		<>
 			{/* Dark Hero Section */}
-			<section className="relative overflow-hidden bg-secondary pt-32 pb-44 md:pt-36 md:pb-56 lg:pb-64">
-				{/* Abstract Image Overlay */}
-				<div className="absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+			<section className="relative overflow-hidden bg-secondary min-h-[320px] md:min-h-[400px] flex items-center pt-24 pb-12 md:pt-28 md:pb-14">
+				{/* Background Image */}
+				{article.headerImage ? (
+					<div
+						className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+						style={{ backgroundImage: `url('${article.headerImage.url}')` }}
+					/>
+				) : (
+					<div className="absolute inset-0 bg-[url('/image.png')] opacity-5 bg-no-repeat bg-cover bg-center" />
+				)}
+
+				{/* Dark overlay for text readability */}
+				{article.headerImage && (
+					<div className="absolute inset-0 bg-secondary/60" />
+				)}
 
 				{/* Gradient overlays for depth */}
 				<div className="absolute inset-0 bg-linear-to-b from-secondary/30 via-transparent to-secondary/60" />
 				<div className="absolute inset-0 bg-linear-to-r from-secondary/20 via-transparent to-secondary/20" />
 
-				<div className="_container relative z-10">
+				<div className="_container relative z-10 w-full">
 					<motion.div
 						initial="initial"
 						animate="animate"
@@ -83,7 +95,7 @@ export function NyheterDetailHero({
 
 			{/* Featured Image - Overlapping the hero */}
 			{article.featuredImage && (
-				<section className="_container relative z-10 -mt-28 md:-mt-40 lg:-mt-48 mb-10 md:mb-14">
+				<section className="_container relative z-10 -mt-10 md:-mt-12 mb-10 md:mb-14">
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}

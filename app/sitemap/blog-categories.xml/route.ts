@@ -6,12 +6,10 @@
  */
 
 import { NextResponse } from "next/server";
-import { blogArticles } from "@/data/blog/blog-data";
 import {
 	generateSitemapXml,
 	buildBlogCategoryUrl,
 	formatSitemapDate,
-	createSlug,
 	SITEMAP_CONFIG,
 	type SitemapUrl,
 } from "../sitemap.config";
@@ -42,16 +40,7 @@ const BLOG_CATEGORIES = [
 
 export async function GET(): Promise<NextResponse> {
 	try {
-		// Use predefined categories + extract any additional from blog data
 		const categorySet = new Set<string>(BLOG_CATEGORIES.map((c) => c.slug));
-
-		// Also extract categories from actual blog articles
-		blogArticles.forEach((article) => {
-			article.categories.forEach((cat) => {
-				const slug = createSlug(cat);
-				categorySet.add(slug);
-			});
-		});
 
 		// Build category URL list
 		const urls: SitemapUrl[] = Array.from(categorySet).map((slug) => ({

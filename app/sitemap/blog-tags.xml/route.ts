@@ -6,12 +6,10 @@
  */
 
 import { NextResponse } from "next/server";
-import { blogArticles } from "@/data/blog/blog-data";
 import {
 	generateSitemapXml,
 	buildBlogTagUrl,
 	formatSitemapDate,
-	createSlug,
 	SITEMAP_CONFIG,
 	type SitemapUrl,
 } from "../sitemap.config";
@@ -60,18 +58,7 @@ const BLOG_TAGS = [
 
 export async function GET(): Promise<NextResponse> {
 	try {
-		// Use predefined tags + extract any additional from blog data
 		const tagSet = new Set<string>(BLOG_TAGS.map((t) => t.slug));
-
-		// Also extract tags from actual blog articles
-		blogArticles.forEach((article) => {
-			article.tags.forEach((tag) => {
-				const slug = createSlug(tag);
-				if (slug) {
-					tagSet.add(slug);
-				}
-			});
-		});
 
 		// Build tag URL list
 		const urls: SitemapUrl[] = Array.from(tagSet).map((slug) => ({
