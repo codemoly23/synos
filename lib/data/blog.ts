@@ -50,6 +50,13 @@ function convertToArticle(post: IBlogPost): Article {
 					alt: post.featuredImage.alt || post.title,
 			  }
 			: undefined,
+		headerImage: post.headerImage
+			? {
+					url: post.headerImage.url,
+					alt: post.headerImage.alt || post.title,
+					showTitleOverlay: post.headerImage.showTitleOverlay ?? false,
+			  }
+			: undefined,
 		categories: categoryNames,
 		tags: post.tags || [],
 		seo: {
