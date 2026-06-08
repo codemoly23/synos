@@ -123,8 +123,8 @@
   --color-tertiary: var(--color-tertiary);
 
   /* Fonts */
-  --font-sans: var(--font-montserrat), "Montserrat", "Malgun Gothic", system-ui, sans-serif;
-  --font-heading: var(--font-montserrat), "Montserrat", "Malgun Gothic", system-ui, sans-serif;
+  --font-sans: var(--font-montserrat), "Montserrat", var(--font-noto-sans), "Noto Sans", "Malgun Gothic", system-ui, sans-serif;
+  --font-heading: var(--font-montserrat), "Montserrat", var(--font-noto-sans), "Noto Sans", "Malgun Gothic", system-ui, sans-serif;
 
   /* Radius */
   --radius-sm: var(--radius-sm);
@@ -422,6 +422,12 @@
   }
 
   /* editor CSS */
+  .sun-editor-preview,
+  .sun-editor-preview * {
+    font-family: var(--font-sans) !important;
+    color: rgb(44, 45, 56) !important;
+  }
+
   .sun-editor-preview table {
     border-collapse: collapse;
     width: 100%;
@@ -3777,7 +3783,7 @@ html.translated-rtl .lang-en {
 }
 
 .blog-article-prose h1 {
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .blog-article-prose h2 {
