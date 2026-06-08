@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Montserrat, Noto_Sans } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -10,7 +10,15 @@ import { TrackingScripts } from "@/components/analytics/tracking-scripts";
 const montserrat = Montserrat({
 	variable: "--font-montserrat",
 	subsets: ["latin"],
-	weight: ["300", "600"],
+	weight: ["300", "400", "500", "600", "700"],
+	style: ["normal", "italic"],
+});
+
+const notoSans = Noto_Sans({
+	variable: "--font-noto-sans",
+	subsets: ["latin"],
+	weight: ["300", "400", "500", "600", "700"],
+	style: ["normal", "italic"],
 });
 
 const DEFAULT_KEYWORDS = [
@@ -130,7 +138,7 @@ export default async function RootLayout({
 	return (
 		<html lang="sv" className="scroll-smooth">
 			<body
-				className={`${montserrat.variable} antialiased bg-slate-100`}
+				className={`${montserrat.variable} ${notoSans.variable} antialiased bg-slate-100`}
 			>
 				{cookiebotId && (
 					<Script

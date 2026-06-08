@@ -324,15 +324,8 @@ const TextEditor: React.FC<TextEditorProps> = ({
 					buttonList: buttonListVariants[variant],
 					templates: templatesList,
 					font: [
-						"Arial",
-						"Georgia",
-						"Tahoma",
-						"Trebuchet MS",
-						"Verdana",
-						"Poppins",
-						"Roboto",
-						"Open Sans",
-						"Lato",
+						"Montserrat",
+						"Malgun Gothic",
 					],
 					addTagsWhitelist: "math",
 				}}
