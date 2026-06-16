@@ -496,6 +496,10 @@ const TAB_CONFIG: Record<TabId, { label: string; fields: string[] }> = {
 			"heroBackgroundDesktop",
 			"inquiryBgMobile",
 			"inquiryBgDesktop",
+			"section1Image",
+			"section2TopImage",
+			"section2BottomImage",
+			"section3Image",
 			"beforeAfterImages",
 			"youtubeUrl",
 			"videoThumbnail",
@@ -539,6 +543,10 @@ const FIELD_LABELS: Record<string, string> = {
 	rubric: "Rubric Notes",
 	productImages: "Product Images",
 	overviewImage: "Overview Image",
+	section1Image: "Section 1 Image",
+	section2TopImage: "Section 2 Top Image",
+	section2BottomImage: "Section 2 Bottom Image",
+	section3Image: "Section 3 Image",
 	beforeAfterImages: "Before/After Images",
 	youtubeUrl: "YouTube URL",
 	techSpecifications: "Tech Specifications",
@@ -903,6 +911,10 @@ export function ProductForm({
 			inquiryBgDesktop: (product as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
 			youtubeUrl: product?.youtubeUrl || "",
 			videoThumbnail: product?.videoThumbnail || "",
+			section1Image: (product as unknown as { section1Image?: string })?.section1Image || "",
+			section2TopImage: (product as unknown as { section2TopImage?: string })?.section2TopImage || "",
+			section2BottomImage: (product as unknown as { section2BottomImage?: string })?.section2BottomImage || "",
+			section3Image: (product as unknown as { section3Image?: string })?.section3Image || "",
 			rubric: product?.rubric || "",
 			technologyGroups: (product as unknown as { technologyGroups?: string[] })?.technologyGroups || [],
 			featureSections: {
@@ -2157,6 +2169,96 @@ export function ProductForm({
 										disabled={isLoading}
 										galleryTitle="Select Desktop Contact Background"
 									/>
+								</div>
+
+								<Separator />
+
+								{/* Feature Section Images */}
+								<Separator />
+
+								<div className="space-y-4">
+									<div>
+										<Label className="text-base font-medium">Feature Section Images</Label>
+										<p className="text-xs text-muted-foreground mt-1">
+											Images shown in the 3 feature sections below the hero. If not set, falls back to the Overview Image.
+										</p>
+									</div>
+
+									<div className="space-y-2">
+										<Label>Section 1 Image</Label>
+										<p className="text-xs text-muted-foreground">
+											Left-side image in the first feature section ("Byggd för moderna kliniker").
+										</p>
+										<MediaPicker
+											type="image"
+											value={watch("section1Image") || null}
+											onChange={(url) =>
+												setValue("section1Image", url || "", {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Select section 1 image"
+											disabled={isLoading}
+											galleryTitle="Select Section 1 Image"
+										/>
+									</div>
+
+									<div className="space-y-2">
+										<Label>Section 2 — Top Image</Label>
+										<p className="text-xs text-muted-foreground">
+											Left-side image in the upper block of section 2 ("Utvecklad för precision och komfort").
+										</p>
+										<MediaPicker
+											type="image"
+											value={watch("section2TopImage") || null}
+											onChange={(url) =>
+												setValue("section2TopImage", url || "", {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Select section 2 top image"
+											disabled={isLoading}
+											galleryTitle="Select Section 2 Top Image"
+										/>
+									</div>
+
+									<div className="space-y-2">
+										<Label>Section 2 — Bottom Image</Label>
+										<p className="text-xs text-muted-foreground">
+											Right-side image in the lower block of section 2.
+										</p>
+										<MediaPicker
+											type="image"
+											value={watch("section2BottomImage") || null}
+											onChange={(url) =>
+												setValue("section2BottomImage", url || "", {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Select section 2 bottom image"
+											disabled={isLoading}
+											galleryTitle="Select Section 2 Bottom Image"
+										/>
+									</div>
+
+									<div className="space-y-2">
+										<Label>Section 3 Image</Label>
+										<p className="text-xs text-muted-foreground">
+											Left-side image in section 3 ("Tekniska fördelar som märks i vardagen").
+										</p>
+										<MediaPicker
+											type="image"
+											value={watch("section3Image") || null}
+											onChange={(url) =>
+												setValue("section3Image", url || "", {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Select section 3 image"
+											disabled={isLoading}
+											galleryTitle="Select Section 3 Image"
+										/>
+									</div>
 								</div>
 
 								<Separator />

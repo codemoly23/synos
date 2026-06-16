@@ -502,7 +502,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 	};
 
 	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title;
-	const resolvedHeroSubtitle = catExtra.heroSubtitle || heroConfig?.subtitle;
+	const resolvedHeroSubtitle = heroSubtitle || catExtra.heroSubtitle || heroConfig?.subtitle;
 	const resolvedBulletPoints =
 		catExtra.heroBulletPoints?.filter(Boolean).length
 			? catExtra.heroBulletPoints

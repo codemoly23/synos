@@ -68,16 +68,13 @@ export interface ProductCustomSections {
 	section3: ProductFeatureGridProps;
 }
 
-/**
- * Build Motus AY content. Pass the product's main image so it shows in section 1.
- * Lifestyle / UI close-up images fall back to /placeholder.avif (replace with real
- * uploads when available).
- */
-function buildMotusAyContent(productImage: string): ProductCustomSections {
-	// TODO: replace with real lifestyle/treatment photos when available.
-	// For now we reuse the product image so the layout doesn't show broken placeholders.
-	const lifestyleImage = productImage || "/placeholder.avif";
-	const touchscreenImage = productImage || "/placeholder.avif";
+function buildMotusAyContent(
+	section1Image: string,
+	section2TopImage: string,
+	section2BottomImage: string,
+	section3Image: string
+): ProductCustomSections {
+	const touchscreenImage = section2TopImage || "/placeholder.avif";
 
 	return {
 		section1: {
@@ -87,7 +84,7 @@ function buildMotusAyContent(productImage: string): ProductCustomSections {
 				"Motus AY är utvecklad för kliniker som kräver driftsäkerhet, användarvänlighet och konsekvent höga behandlingsresultat. Varje detalj — från intuitiv styrning till komponenternas kvalitet — är designad för att förenkla arbetet, minska oönskad väntetid och ge optimala resultat, varje dag.",
 				"Den modulära plattformen gör det enkelt att integrera Motus AY i din klinikmiljö och anpassa systemet efter dina behov, idag och i framtiden.",
 			],
-			image: productImage,
+			image: section1Image,
 			imageAlt: "Motus AY laser",
 			numberedFeatures: [
 				{
@@ -203,7 +200,7 @@ function buildMotusAyContent(productImage: string): ProductCustomSections {
 							"Varje puls är noggrant kalibrerad för konsekvent behandling över tid — mätbara resultat i färre behandlingstillfällen.",
 					},
 				],
-				image: lifestyleImage,
+				image: section2BottomImage,
 				imageAlt: "Laserbehandling av patient",
 			},
 		},
@@ -213,7 +210,7 @@ function buildMotusAyContent(productImage: string): ProductCustomSections {
 			heading: "Tekniska fördelar som märks i vardagen",
 			description:
 				"Motus AY är utvecklad för att ge dig full kontroll, hög patientsäkerhet och förutsägbara resultat — varje behandling, varje gång.",
-			image: lifestyleImage,
+			image: section3Image,
 			imageAlt: "Klinisk laserbehandling med Motus AY",
 			features: [
 				{
@@ -280,10 +277,12 @@ function buildMotusAyContent(productImage: string): ProductCustomSections {
  */
 function buildGenericContent(
 	productName: string,
-	productImage: string
+	section1Image: string,
+	section2TopImage: string,
+	section2BottomImage: string,
+	section3Image: string
 ): ProductCustomSections {
-	const lifestyleImage = productImage || "/placeholder.avif";
-	const touchscreenImage = productImage || "/placeholder.avif";
+	const touchscreenImage = section2TopImage || "/placeholder.avif";
 	const upperName = (productName || "Produkten").toUpperCase();
 	const safeName = productName || "Denna produkt";
 
@@ -295,7 +294,7 @@ function buildGenericContent(
 				`${safeName} är utvecklad för kliniker som kräver driftsäkerhet, användarvänlighet och konsekvent höga behandlingsresultat. Varje detalj — från intuitiv styrning till komponenternas kvalitet — är designad för att förenkla arbetet och ge optimala resultat, varje dag.`,
 				`Den modulära plattformen gör det enkelt att integrera ${safeName} i din klinikmiljö och anpassa systemet efter dina behov, idag och i framtiden.`,
 			],
-			image: productImage,
+			image: section1Image,
 			imageAlt: safeName,
 			numberedFeatures: [
 				{
@@ -408,7 +407,7 @@ function buildGenericContent(
 							"Varje behandling är noggrant kalibrerad för konsekvent resultat över tid — mätbart i färre behandlingstillfällen.",
 					},
 				],
-				image: lifestyleImage,
+				image: section2BottomImage,
 				imageAlt: "Klinisk behandling",
 			},
 		},
@@ -417,7 +416,7 @@ function buildGenericContent(
 			eyebrow: `VARFÖR ${upperName}`,
 			heading: "Tekniska fördelar som märks i vardagen",
 			description: `${safeName} är utvecklad för att ge dig full kontroll, hög patientsäkerhet och förutsägbara resultat — varje behandling, varje gång.`,
-			image: lifestyleImage,
+			image: section3Image,
 			imageAlt: `${safeName} i klinisk användning`,
 			features: [
 				{
@@ -483,7 +482,7 @@ function buildFromCmsData(
 	productName: string,
 	productImage: string
 ): ProductCustomSections {
-	const generic = buildGenericContent(productName, productImage);
+	const generic = buildGenericContent(productName, productImage, productImage, productImage, productImage);
 	const s1 = cmsData.section1;
 	const s2 = cmsData.section2;
 	const s3 = cmsData.section3;
@@ -565,6 +564,13 @@ function buildFromCmsData(
 	return { section1, section2, section3 };
 }
 
+export interface SectionImages {
+	section1Image?: string;
+	section2TopImage?: string;
+	section2BottomImage?: string;
+	section3Image?: string;
+}
+
 /**
  * Returns custom section content for a given product.
  *
@@ -572,23 +578,37 @@ function buildFromCmsData(
  * 1. CMS data from featureSections (if any section heading is set)
  * 2. Hardcoded per-product builder (e.g. motus-ay)
  * 3. Generic fallback builder
+ *
+ * sectionImages: per-section images set in the Media tab of the dashboard.
+ * Each falls back to productImage (overviewImage) if not set.
  */
 export function getProductCustomSections(
 	slug: string,
 	productName: string,
 	productImage: string,
-	cmsData?: FeatureSections
+	cmsData?: FeatureSections,
+	sectionImages?: SectionImages
 ): ProductCustomSections | null {
+	const s1img = sectionImages?.section1Image || productImage;
+	const s2topImg = sectionImages?.section2TopImage || productImage;
+	const s2botImg = sectionImages?.section2BottomImage || productImage;
+	const s3img = sectionImages?.section3Image || productImage;
+
 	// If CMS data has at least one section with a heading, use CMS data
 	if (cmsData && (cmsData.section1?.heading || cmsData.section2?.heading || cmsData.section3?.heading)) {
-		return buildFromCmsData(cmsData, productName, productImage);
+		const result = buildFromCmsData(cmsData, productName, productImage);
+		result.section1.image = s1img;
+		result.section2.topBlock.image = s2topImg;
+		result.section2.bottomBlock.image = s2botImg;
+		result.section3.image = s3img;
+		return result;
 	}
 
 	// Fall back to hardcoded or generic content
 	switch (slug) {
 		case "motus-ay":
-			return buildMotusAyContent(productImage);
+			return buildMotusAyContent(s1img, s2topImg, s2botImg, s3img);
 		default:
-			return buildGenericContent(productName, productImage);
+			return buildGenericContent(productName, s1img, s2topImg, s2botImg, s3img);
 	}
 }

@@ -132,6 +132,10 @@ export interface IProduct extends Document {
 	inquiryBgDesktop?: string;
 	youtubeUrl?: string;
 	videoThumbnail?: string;
+	section1Image?: string;
+	section2TopImage?: string;
+	section2BottomImage?: string;
+	section3Image?: string;
 	rubric?: string;
 	technologyGroups?: string[];
 	featureSections?: IFeatureSections;
@@ -479,6 +483,22 @@ const ProductSchema = new Schema<IProduct>(
 			default: "",
 		},
 		videoThumbnail: {
+			type: String,
+			default: "",
+		},
+		section1Image: {
+			type: String,
+			default: "",
+		},
+		section2TopImage: {
+			type: String,
+			default: "",
+		},
+		section2BottomImage: {
+			type: String,
+			default: "",
+		},
+		section3Image: {
 			type: String,
 			default: "",
 		},

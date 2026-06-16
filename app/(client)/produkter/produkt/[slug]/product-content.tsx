@@ -67,7 +67,13 @@ export function ProductContent({
 		product.slug,
 		product.title,
 		primaryImage,
-		product.featureSections
+		product.featureSections,
+		{
+			section1Image: product.section1Image,
+			section2TopImage: product.section2TopImage,
+			section2BottomImage: product.section2BottomImage,
+			section3Image: product.section3Image,
+		}
 	);
 
 	return (
@@ -262,6 +268,22 @@ export function ProductContent({
 					<div className="w-full">
 						{/* Main Content */}
 						<article className="min-w-0">
+							{/* Main Description */}
+							{product.description?.trim() && (
+								<div
+									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+									dangerouslySetInnerHTML={{ __html: product.description }}
+								/>
+							)}
+
+							{/* Extended Description */}
+							{product.productDescription?.trim() && (
+								<div
+									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+									dangerouslySetInnerHTML={{ __html: product.productDescription }}
+								/>
+							)}
+
 							{/* Before & After Section */}
 							{product.beforeAfterImages &&
 								product.beforeAfterImages.length > 0 && (
@@ -270,6 +292,21 @@ export function ProductContent({
 										productName={product.title}
 									/>
 								)}
+
+							{/* Additional Description (above FAQ) */}
+							{product.additionalDescription?.trim() && (
+								<div className="mb-12">
+									{product.additionalDescriptionTitle?.trim() && (
+										<h2 className="text-2xl font-light text-secondary mb-4">
+											{product.additionalDescriptionTitle}
+										</h2>
+									)}
+									<div
+										className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+										dangerouslySetInnerHTML={{ __html: product.additionalDescription }}
+									/>
+								</div>
+							)}
 
 							{/* FAQ Section */}
 							{product.qa && product.qa.length > 0 && (
