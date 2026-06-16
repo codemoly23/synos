@@ -143,6 +143,10 @@ export type ProductType = {
 	inquiryBgDesktop?: string;
 	youtubeUrl: string;
 	videoThumbnail?: string;
+	section1Image?: string;
+	section2TopImage?: string;
+	section2BottomImage?: string;
+	section3Image?: string;
 	rubric: string;
 	featureSections?: FeatureSections;
 	publishType: string;
