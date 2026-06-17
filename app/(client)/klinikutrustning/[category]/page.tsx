@@ -487,10 +487,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
 	]);
 
-	const heroSubtitle = category.description
-		? stripHtml(category.description).slice(0, 300)
-		: undefined;
-
 	const heroConfig = categoryHeroConfig[categorySlug];
 
 	const catExtra = category as unknown as {
@@ -502,7 +498,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 	};
 
 	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title;
-	const resolvedHeroSubtitle = heroSubtitle || catExtra.heroSubtitle || heroConfig?.subtitle;
+	const resolvedHeroSubtitle = catExtra.heroSubtitle || heroConfig?.subtitle;
 	const resolvedBulletPoints =
 		catExtra.heroBulletPoints?.filter(Boolean).length
 			? catExtra.heroBulletPoints

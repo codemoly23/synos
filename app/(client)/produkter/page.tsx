@@ -440,10 +440,7 @@ export default async function ProductsPage({
 
 	// Hero content: technology-specific fields take priority, then global DB hero, then hardcoded defaults
 	const heroTitle = selectedGroup?.heroTitle?.trim() || selectedGroup?.name || heroSection?.title || "Våra Produkter";
-	const heroDescription = selectedGroup?.description
-		? selectedGroup.description.replace(/<[^>]*>/g, "").trim().slice(0, 300)
-		: null;
-	const heroSubtitle = selectedGroup?.heroSubtitle?.trim() || heroDescription || heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
+	const heroSubtitle = selectedGroup?.heroSubtitle?.trim() || heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
 	const heroImage = selectedGroup?.image || "/storage/images/motus-ax-3-600x500.webp";
 	// Create a map of category ID to slug for product cards
 	const categorySlugMap = new Map<string, string>();
