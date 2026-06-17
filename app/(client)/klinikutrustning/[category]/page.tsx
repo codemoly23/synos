@@ -596,9 +596,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
 										{category.name}
 									</h1>
-									{heroSubtitle && (
+									{resolvedHeroSubtitle && (
 										<p className="text-white/60 text-base max-w-lg leading-relaxed">
-											{heroSubtitle}
+											{resolvedHeroSubtitle}
 										</p>
 									)}
 								</div>
