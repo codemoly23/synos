@@ -31,7 +31,7 @@ export const mainNavNew: NavItem[] = [
 	// UTRUSTNING (formerly Produkter) - Equipment/Products
 	{
 		title: "UTRUSTNING",
-		href: "/produkter",
+		href: "/klinikutrustning",
 		isDynamic: true, // This item loads categories/products from database
 		isTechnologyMenu: true, // Renders static technology-map groups (not DB categories)
 	},

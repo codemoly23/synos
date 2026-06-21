@@ -9,12 +9,16 @@ export type BlogPublishType = "publish" | "draft" | "private";
 export interface IBlogImage {
 	url: string;
 	alt: string;
+	width?: number;
+	height?: number;
 }
 
 export interface IBlogHeaderImage {
 	url: string;
 	alt: string;
 	showTitleOverlay: boolean;
+	width?: number;
+	height?: number;
 }
 
 export interface IBlogSeo {
@@ -62,6 +66,8 @@ const BlogImageSchema = new Schema<IBlogImage>(
 			default: "",
 			trim: true,
 		},
+		width: { type: Number },
+		height: { type: Number },
 	},
 	{ _id: false }
 );
@@ -82,6 +88,8 @@ const BlogHeaderImageSchema = new Schema<IBlogHeaderImage>(
 			type: Boolean,
 			default: false,
 		},
+		width: { type: Number },
+		height: { type: Number },
 	},
 	{ _id: false }
 );

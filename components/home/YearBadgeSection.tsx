@@ -17,7 +17,7 @@ type Phase = "idle" | "open" | "main-closing" | "badges-closing";
 const MAIN_SETTLE_MS = 480;
 const BADGES_CLOSE_MS = (YEARS.length - 1) * 180 + 500 + 80;
 
-export default function YearBadgeSection() {
+export function YearBadgeContent() {
 	const [phase, setPhase] = useState<Phase>("idle");
 	const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -51,9 +51,8 @@ export default function YearBadgeSection() {
 	useEffect(() => () => clearTimers(), [clearTimers]);
 
 	return (
-		<section
-			className="w-full py-14 md:py-20 overflow-x-auto"
-			style={{ backgroundColor: "#222222" }}
+		<div
+			className="w-full pt-14 md:pt-20"
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
@@ -152,13 +151,24 @@ export default function YearBadgeSection() {
 				<Script
 					key={year}
 					src={`https://widget.reco.se/badge/${year}/4026137.js`}
-					strategy="lazyOnload"
+					strategy="afterInteractive"
 				/>
 			))}
 			<Script
 				src="https://widget.reco.se/yearsInRowBadge/4026137.js"
-				strategy="lazyOnload"
+				strategy="afterInteractive"
 			/>
+		</div>
+	);
+}
+
+export default function YearBadgeSection() {
+	return (
+		<section
+			className="w-full overflow-x-auto"
+			style={{ backgroundColor: "#222222" }}
+		>
+			<YearBadgeContent />
 		</section>
 	);
 }

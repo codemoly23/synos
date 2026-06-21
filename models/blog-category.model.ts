@@ -13,6 +13,8 @@ export interface IBlogCategory extends Document {
 	description?: string;
 	parent: mongoose.Types.ObjectId | null;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	order: number;
 	isActive: boolean;
 	createdAt: Date;
@@ -69,6 +71,8 @@ const BlogCategorySchema = new Schema<IBlogCategory>(
 			type: String,
 			default: null,
 		},
+		imageWidth: { type: Number },
+		imageHeight: { type: Number },
 		order: {
 			type: Number,
 			default: 0,

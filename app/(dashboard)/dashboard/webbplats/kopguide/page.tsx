@@ -889,6 +889,9 @@ export default function KopguidePageAdmin() {
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>OG Image</FormLabel>
+														<p className="text-xs text-blue-600 dark:text-blue-400">
+															Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP
+														</p>
 														<FormControl>
 															<MediaPicker
 																type="image"

@@ -14,6 +14,7 @@ export const formSubmissionTypes = [
 	"tour_request",
 	"job_application",
 	"hero_inquiry",
+	"brochure_request",
 ] as const;
 
 /**
@@ -171,6 +172,7 @@ export const productInquirySchema = z
 		productId: z.string().min(1, "Produkt-ID krävs"),
 		productName: z.string().min(1, "Produktnamn krävs"),
 		productSlug: z.string().min(1, "Produkt-slug krävs"),
+		productCategorySlug: z.string().max(200).trim().optional().or(z.literal("")),
 	})
 	.refine(
 		(data) => {
@@ -558,6 +560,40 @@ export const heroInquirySchema = z.object({
 		.or(z.literal("")),
 });
 
+/**
+ * Brochure Request Form Schema
+ */
+export const brochureRequestSchema = z.object({
+	companyName: z
+		.string()
+		.min(1, "Företagsnamn krävs")
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim(),
+
+	firstName: z
+		.string()
+		.min(1, "Förnamn krävs")
+		.max(100, "Förnamnet får inte överstiga 100 tecken")
+		.trim(),
+
+	lastName: z
+		.string()
+		.min(1, "Efternamn krävs")
+		.max(100, "Efternamnet får inte överstiga 100 tecken")
+		.trim(),
+
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+
+	productName: z.string().max(200).trim().optional().or(z.literal("")),
+	productSlug: z.string().max(200).trim().optional().or(z.literal("")),
+	documentTitle: z.string().max(200).trim().optional().or(z.literal("")),
+});
+
 // Type exports
 export type ProductInquiryInput = z.infer<typeof productInquirySchema>;
 export type TrainingInquiryInput = z.infer<typeof trainingInquirySchema>;
@@ -572,3 +608,4 @@ export type FormSubmissionListQuery = z.infer<
 export type UpdateStatusInput = z.infer<typeof updateStatusSchema>;
 export type BulkExportInput = z.infer<typeof bulkExportSchema>;
 export type HeroInquiryInput = z.infer<typeof heroInquirySchema>;
+export type BrochureRequestInput = z.infer<typeof brochureRequestSchema>;

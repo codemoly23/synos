@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
-import { ProductContent } from "@/app/(client)/produkter/produkt/[slug]/product-content";
+import { ProductContent } from "@/components/product/ProductContent";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { getContactInfo } from "@/lib/services/site-settings.service";
@@ -228,6 +228,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				]}
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
+				productCategorySlug={category.slug}
 			/>
 		</>
 	);

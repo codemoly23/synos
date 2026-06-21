@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MediaPicker } from "@/components/storage";
+import { ImagePickerWithDimensions } from "./ImagePickerWithDimensions";
 import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import TextEditor from "@/components/common/TextEditor";
 import { generateSlug } from "@/lib/utils/product-helpers";
@@ -25,13 +26,23 @@ export interface TechnologyGroupFormData {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: string[];
 	heroBgMobile?: string | null;
 	heroBgDesktop?: string | null;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	inquiryBgMobile?: string | null;
 	inquiryBgDesktop?: string | null;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	order?: number;
 	isActive?: boolean;
 	faqTitle?: string;
@@ -54,13 +65,23 @@ interface TechnologyGroupFormInternal {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: Array<{ value: string }>;
 	heroBgMobile?: string | null;
 	heroBgDesktop?: string | null;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	inquiryBgMobile?: string | null;
 	inquiryBgDesktop?: string | null;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	order?: number;
 	isActive?: boolean;
 	faqTitle?: string;
@@ -84,13 +105,23 @@ export interface ITechnologyGroupInput {
 	slug?: string;
 	description?: string;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: string[];
 	heroBgMobile?: string | null;
 	heroBgDesktop?: string | null;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	inquiryBgMobile?: string | null;
 	inquiryBgDesktop?: string | null;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	order?: number;
 	isActive?: boolean;
 	faqTitle?: string;
@@ -143,8 +174,18 @@ export function TechnologyGroupForm({
 			heroBulletPoints: (group?.heroBulletPoints || []).map((v) => ({ value: v })),
 			heroBgMobile: group?.heroBgMobile || "",
 			heroBgDesktop: group?.heroBgDesktop || "",
+			heroBgMobileWidth: group?.heroBgMobileWidth,
+			heroBgMobileHeight: group?.heroBgMobileHeight,
+			heroBgDesktopWidth: group?.heroBgDesktopWidth,
+			heroBgDesktopHeight: group?.heroBgDesktopHeight,
 			inquiryBgMobile: group?.inquiryBgMobile || "",
 			inquiryBgDesktop: group?.inquiryBgDesktop || "",
+			inquiryBgMobileWidth: group?.inquiryBgMobileWidth,
+			inquiryBgMobileHeight: group?.inquiryBgMobileHeight,
+			inquiryBgDesktopWidth: group?.inquiryBgDesktopWidth,
+			inquiryBgDesktopHeight: group?.inquiryBgDesktopHeight,
+			imageWidth: group?.imageWidth,
+			imageHeight: group?.imageHeight,
 			order: group?.order ?? 0,
 			isActive: group?.isActive ?? true,
 			faqTitle: group?.faqTitle || "",
@@ -300,22 +341,17 @@ export function TechnologyGroupForm({
 			</div>
 
 			{/* Image */}
-			<div className="space-y-2">
-				<Label>Group Image</Label>
-				<p className="text-xs text-slate-500">
-					Shown in the hero area on /produkter when this technology is selected.
-				</p>
-				<MediaPicker
-					type="image"
-					value={watch("image") || null}
-					onChange={(url) =>
-						setValue("image", url || "", { shouldDirty: true })
-					}
-					placeholder="Select group image"
-					disabled={isLoading}
-					galleryTitle="Select Technology Group Image"
-				/>
-			</div>
+			<ImagePickerWithDimensions
+				label="Group Image"
+				hint="Recommended: 800×800px • Ratio: 1:1 • Max: 5MB • Format: JPG, PNG, WebP"
+				value={watch("image") || null}
+				onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
+				placeholder="Select group image"
+				galleryTitle="Select Technology Group Image"
+				disabled={isLoading}
+				widthInputProps={register("imageWidth", { valueAsNumber: true })}
+				heightInputProps={register("imageHeight", { valueAsNumber: true })}
+			/>
 
 			<Separator className="my-8" />
 
@@ -395,34 +431,30 @@ export function TechnologyGroupForm({
 				</div>
 
 				{/* Hero Background Mobile */}
-				<div className="space-y-2">
-					<Label>Hero Background — Mobile</Label>
-					<MediaPicker
-						type="image"
-						value={watch("heroBgMobile") || null}
-						onChange={(url) =>
-							setValue("heroBgMobile", url || "", { shouldDirty: true })
-						}
-						placeholder="Select mobile background"
-						disabled={isLoading}
-						galleryTitle="Select Mobile Hero Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Hero Background — Mobile"
+					hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("heroBgMobile") || null}
+					onChange={(url) => setValue("heroBgMobile", url || "", { shouldDirty: true })}
+					placeholder="Select mobile background"
+					galleryTitle="Select Mobile Hero Background"
+					disabled={isLoading}
+					widthInputProps={register("heroBgMobileWidth", { valueAsNumber: true })}
+					heightInputProps={register("heroBgMobileHeight", { valueAsNumber: true })}
+				/>
 
 				{/* Hero Background Desktop */}
-				<div className="space-y-2">
-					<Label>Hero Background — Desktop</Label>
-					<MediaPicker
-						type="image"
-						value={watch("heroBgDesktop") || null}
-						onChange={(url) =>
-							setValue("heroBgDesktop", url || "", { shouldDirty: true })
-						}
-						placeholder="Select desktop background"
-						disabled={isLoading}
-						galleryTitle="Select Desktop Hero Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Hero Background — Desktop"
+					hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("heroBgDesktop") || null}
+					onChange={(url) => setValue("heroBgDesktop", url || "", { shouldDirty: true })}
+					placeholder="Select desktop background"
+					galleryTitle="Select Desktop Hero Background"
+					disabled={isLoading}
+					widthInputProps={register("heroBgDesktopWidth", { valueAsNumber: true })}
+					heightInputProps={register("heroBgDesktopHeight", { valueAsNumber: true })}
+				/>
 			</div>
 
 			<Separator className="my-8" />
@@ -436,33 +468,29 @@ export function TechnologyGroupForm({
 					</p>
 				</div>
 
-				<div className="space-y-2">
-					<Label>Inquiry Background — Mobile</Label>
-					<MediaPicker
-						type="image"
-						value={watch("inquiryBgMobile") || null}
-						onChange={(url) =>
-							setValue("inquiryBgMobile", url || "", { shouldDirty: true })
-						}
-						placeholder="Select mobile inquiry background"
-						disabled={isLoading}
-						galleryTitle="Select Mobile Inquiry Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Inquiry Background — Mobile"
+					hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("inquiryBgMobile") || null}
+					onChange={(url) => setValue("inquiryBgMobile", url || "", { shouldDirty: true })}
+					placeholder="Select mobile inquiry background"
+					galleryTitle="Select Mobile Inquiry Background"
+					disabled={isLoading}
+					widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
+					heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+				/>
 
-				<div className="space-y-2">
-					<Label>Inquiry Background — Desktop</Label>
-					<MediaPicker
-						type="image"
-						value={watch("inquiryBgDesktop") || null}
-						onChange={(url) =>
-							setValue("inquiryBgDesktop", url || "", { shouldDirty: true })
-						}
-						placeholder="Select desktop inquiry background"
-						disabled={isLoading}
-						galleryTitle="Select Desktop Inquiry Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Inquiry Background — Desktop"
+					hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("inquiryBgDesktop") || null}
+					onChange={(url) => setValue("inquiryBgDesktop", url || "", { shouldDirty: true })}
+					placeholder="Select desktop inquiry background"
+					galleryTitle="Select Desktop Inquiry Background"
+					disabled={isLoading}
+					widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
+					heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+				/>
 			</div>
 
 			<Separator className="my-8" />

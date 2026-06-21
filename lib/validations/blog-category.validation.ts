@@ -73,6 +73,8 @@ export const createBlogCategorySchema = z.object({
 		.default(""),
 	parent: z.string().nullable().optional().default(null),
 	image: optionalUrlSchema,
+	imageWidth: z.number().optional(),
+	imageHeight: z.number().optional(),
 	order: z.number().int().default(0),
 	isActive: z.boolean().default(true),
 });
@@ -96,6 +98,8 @@ export const updateBlogCategorySchema = z.object({
 		.optional(),
 	parent: z.string().nullable().optional(),
 	image: optionalUrlSchema,
+	imageWidth: z.number().optional(),
+	imageHeight: z.number().optional(),
 	order: z.number().int().optional(),
 	isActive: z.boolean().optional(),
 });

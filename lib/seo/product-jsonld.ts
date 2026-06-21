@@ -8,7 +8,10 @@ import { getSiteConfig, getSiteUrl, type SiteConfigType } from "@/config/site";
 export async function generateProductJsonLd(product: ProductType) {
 	const siteConfig = await getSiteConfig();
 	const baseUrl = siteConfig.url;
-	const productUrl = `${baseUrl}/produkter/produkt/${product.slug}`;
+	const categorySlug = product.primaryCategory?.slug || product.categories?.[0]?.slug;
+	const productUrl = categorySlug
+		? `${baseUrl}/klinikutrustning/${categorySlug}/${product.slug}`
+		: `${baseUrl}/klinikutrustning/${product.slug}`;
 	const images = product.productImages?.length
 		? product.productImages.map((img) =>
 				img.startsWith("http") ? img : `${baseUrl}${img}`
@@ -56,6 +59,7 @@ export async function generateBreadcrumbJsonLd(
 	categoryName?: string
 ) {
 	const baseUrl = getSiteUrl();
+	const catSlug = product.primaryCategory?.slug || product.categories?.[0]?.slug;
 	const items = [
 		{
 			"@type": "ListItem" as const,
@@ -66,31 +70,33 @@ export async function generateBreadcrumbJsonLd(
 		{
 			"@type": "ListItem" as const,
 			position: 2,
-			name: "Produkter",
-			item: `${baseUrl}/produkter`,
+			name: "Klinikutrustning",
+			item: `${baseUrl}/klinikutrustning`,
 		},
 	];
 
 	// Add category if available
-	if (categoryName && product.categories?.[0]) {
+	if (categoryName && catSlug) {
 		items.push({
 			"@type": "ListItem" as const,
 			position: 3,
 			name: categoryName,
-			item: `${baseUrl}/produkter/klinikutrustning/${product.categories[0].slug}`,
+			item: `${baseUrl}/klinikutrustning/${catSlug}`,
 		});
 		items.push({
 			"@type": "ListItem" as const,
 			position: 4,
 			name: product.title,
-			item: `${baseUrl}/produkter/produkt/${product.slug}`,
+			item: `${baseUrl}/klinikutrustning/${catSlug}/${product.slug}`,
 		});
 	} else {
 		items.push({
 			"@type": "ListItem" as const,
 			position: 3,
 			name: product.title,
-			item: `${baseUrl}/produkter/produkt/${product.slug}`,
+			item: catSlug
+				? `${baseUrl}/klinikutrustning/${catSlug}/${product.slug}`
+				: `${baseUrl}/klinikutrustning/${product.slug}`,
 		});
 	}
 

@@ -1,4 +1,5 @@
 import type { IReviewsSettings } from "@/models/site-settings.model";
+import { YearBadgeContent } from "@/components/home/YearBadgeSection";
 
 interface RecoReviewsProps {
 	data: IReviewsSettings;
@@ -35,6 +36,8 @@ export function RecoReviews({ data }: RecoReviewsProps) {
 						overflow: "hidden",
 					}}
 				/>
+
+				<YearBadgeContent />
 			</div>
 		</section>
 	);

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -443,6 +443,7 @@ export default function CareersPageAdmin() {
 										render={({ field }) => (
 											<FormItem className="mb-6">
 												<FormLabel>Featured Image</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1920×1080px • Ratio: 16:9 • Max: 10MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -707,6 +708,7 @@ export default function CareersPageAdmin() {
 															render={({ field }) => (
 																<FormItem>
 																	<FormLabel>Featured Image</FormLabel>
+																	<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1200×675px • Ratio: 16:9 • Max: 5MB • Format: JPG, PNG, WebP</p>
 																	<FormControl>
 																		<MediaPicker
 																			type="image"
@@ -1639,6 +1641,7 @@ export default function CareersPageAdmin() {
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>OG Image</FormLabel>
+														<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP</p>
 														<FormControl>
 															<MediaPicker
 																type="image"

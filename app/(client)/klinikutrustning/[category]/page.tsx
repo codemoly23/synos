@@ -28,6 +28,7 @@ import { getContactInfo } from "@/lib/services/site-settings.service";
 import { technologyMap } from "@/config/technology-map";
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
+import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -88,7 +89,7 @@ interface CategoryPageProps {
 	}>;
 }
 
-// ISR: Revalidate every 24 hours
+// ISR: Revalidate every 60 seconds
 export const revalidate = 60;
 
 // Allow new categories to be generated on-demand
@@ -563,8 +564,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									alt=""
 									fill
 									priority
-									className="object-cover object-[30%_top]"
-									sizes="100vw"
+									className="object-cover object-center"
+									sizes="(max-width: 2560px) 100vw, 2560px"
 								/>
 								<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
 									<div />
@@ -680,6 +681,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									← Tillbaka till alla kategorier
 								</Link>
 							</div>
+						)}
+
+						{/* Category Description — shown below products, expandable */}
+						{(category as unknown as { description?: string }).description && (
+							<CategoryDescriptionExpander
+								html={(category as unknown as { description?: string }).description!}
+							/>
 						)}
 					</div>
 				</div>

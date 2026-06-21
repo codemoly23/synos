@@ -1007,6 +1007,9 @@ export default function KontaktPage() {
 
 											<div className="space-y-2">
 												<Label>Open Graph Image</Label>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP
+												</p>
 												<MediaPicker
 													type="image"
 													value={form.watch("seo.ogImage") || null}

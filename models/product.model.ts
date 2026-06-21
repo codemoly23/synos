@@ -116,6 +116,26 @@ export interface IProduct extends Document {
 	treatments: string[]; // Tags
 	productImages: string[]; // URLs
 	overviewImage?: string; // URL
+	imageWidth?: number;
+	imageHeight?: number;
+	heroBackgroundMobileWidth?: number;
+	heroBackgroundMobileHeight?: number;
+	heroBackgroundDesktopWidth?: number;
+	heroBackgroundDesktopHeight?: number;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
+	videoThumbnailWidth?: number;
+	videoThumbnailHeight?: number;
+	section1ImageWidth?: number;
+	section1ImageHeight?: number;
+	section2TopImageWidth?: number;
+	section2TopImageHeight?: number;
+	section2BottomImageWidth?: number;
+	section2BottomImageHeight?: number;
+	section3ImageWidth?: number;
+	section3ImageHeight?: number;
 	beforeAfterImages: IBeforeAfterImage[]; // Before/after image pairs
 	techSpecifications: ITechSpec[];
 	documentation: IDocumentEntry[];
@@ -430,6 +450,30 @@ const ProductSchema = new Schema<IProduct>(
 			type: String,
 			default: "",
 		},
+		imageWidth: {
+			type: Number,
+		},
+		imageHeight: {
+			type: Number,
+		},
+		heroBackgroundMobileWidth: { type: Number },
+		heroBackgroundMobileHeight: { type: Number },
+		heroBackgroundDesktopWidth: { type: Number },
+		heroBackgroundDesktopHeight: { type: Number },
+		inquiryBgMobileWidth: { type: Number },
+		inquiryBgMobileHeight: { type: Number },
+		inquiryBgDesktopWidth: { type: Number },
+		inquiryBgDesktopHeight: { type: Number },
+		videoThumbnailWidth: { type: Number },
+		videoThumbnailHeight: { type: Number },
+		section1ImageWidth: { type: Number },
+		section1ImageHeight: { type: Number },
+		section2TopImageWidth: { type: Number },
+		section2TopImageHeight: { type: Number },
+		section2BottomImageWidth: { type: Number },
+		section2BottomImageHeight: { type: Number },
+		section3ImageWidth: { type: Number },
+		section3ImageHeight: { type: Number },
 		beforeAfterImages: {
 			type: [BeforeAfterImageSchema],
 			default: [],

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker } from "@/components/storage";
+import { ImagePickerWithDimensions } from "./ImagePickerWithDimensions";
 import {
 	createBlogCategorySchema,
 	updateBlogCategorySchema,
@@ -31,6 +32,8 @@ type BlogCategoryFormData = {
 	description?: string;
 	parent?: string | null;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	order?: number;
 	isActive?: boolean;
 };
@@ -74,6 +77,8 @@ export function BlogCategoryForm({
 			description: category?.description || "",
 			parent: category?.parent?.toString() || null,
 			image: category?.image || "",
+			imageWidth: (category as any)?.imageWidth || undefined,
+			imageHeight: (category as any)?.imageHeight || undefined,
 			order: category?.order || 0,
 			isActive: category?.isActive ?? true,
 		},
@@ -180,25 +185,22 @@ export function BlogCategoryForm({
 			</div>
 
 			{/* Category Image */}
-			<div className="space-y-2">
-				<Label>Category Image</Label>
-				<p className="text-xs text-slate-500">
-					Select an image from the media library or upload a new one.
-				</p>
-				<MediaPicker
-					type="image"
-					value={watch("image") || null}
-					onChange={(url) =>
-						setValue("image", url || "", { shouldDirty: true })
-					}
-					placeholder="Select category image"
-					disabled={isLoading}
-					galleryTitle="Select Category Image"
-				/>
-				{errors.image && (
-					<p className="text-sm text-red-500">{errors.image.message}</p>
-				)}
-			</div>
+			<ImagePickerWithDimensions
+				label="Category Image"
+				hint="Recommended: 800×600px • Ratio: 4:3 • Max: 5MB • Format: JPG, PNG, WebP"
+				value={watch("image") || null}
+				onChange={(url) =>
+					setValue("image", url || "", { shouldDirty: true })
+				}
+				placeholder="Select category image"
+				disabled={isLoading}
+				galleryTitle="Select Category Image"
+				widthInputProps={register("imageWidth" as any, { valueAsNumber: true })}
+				heightInputProps={register("imageHeight" as any, { valueAsNumber: true })}
+			/>
+			{errors.image && (
+				<p className="text-sm text-red-500">{errors.image.message}</p>
+			)}
 
 			{/* Order */}
 			<div className="space-y-2">

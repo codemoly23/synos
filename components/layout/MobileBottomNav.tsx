@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
 	},
 	{
 		label: "Utrustning",
-		href: "/utrustning",
+		href: "/klinikutrustning",
 		icon: Package,
 	},
 	{

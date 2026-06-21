@@ -10,7 +10,6 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { RecoReviews } from "@/components/widgets/RecoReviews";
 import AboutSection from "@/components/home/AboutSection";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import YearBadgeSection from "@/components/home/YearBadgeSection";
 import { getHomePage, getHomePageSeo } from "@/lib/services/home-page.service";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { searchService } from "@/lib/services/search.service";
@@ -124,9 +123,6 @@ export default async function Home({ searchParams }: HomeProps) {
 		<div className="flex flex-col min-h-screen">
 			{/* Hero Section */}
 			{visibility.hero && homePage.hero && <Hero data={homePage.hero} />}
-
-			{/* Year Badge Section */}
-			<YearBadgeSection />
 
 			{/* Search Section - Hidden */}
 			{/* <SearchSection /> */}
