@@ -28,12 +28,15 @@ interface ProductInquiryFormProps {
 	productName?: string;
 	productId?: string;
 	productSlug?: string;
+	productCategorySlug?: string;
 	categoryName?: string;
 	purchaseTitle?: string;
 	purchaseDescription?: string;
 	formSubtitle?: string;
 	buttonText?: string;
 	productImage?: string;
+	imageWidth?: number;
+	imageHeight?: number;
 	contactPhone?: string;
 	contactEmail?: string;
 	pillLabel?: string;
@@ -52,6 +55,7 @@ const desktopSchema = z.object({
 	productId: z.string().optional(),
 	productName: z.string().optional(),
 	productSlug: z.string().optional(),
+	productCategorySlug: z.string().optional(),
 });
 
 const mobileSchema = z.object({
@@ -64,6 +68,7 @@ const mobileSchema = z.object({
 	productId: z.string().optional(),
 	productName: z.string().optional(),
 	productSlug: z.string().optional(),
+	productCategorySlug: z.string().optional(),
 });
 
 type DesktopData = z.infer<typeof desktopSchema>;
@@ -133,6 +138,7 @@ function DesktopInquiryForm({
 	productName,
 	productId,
 	productSlug,
+	productCategorySlug,
 	categoryName,
 	pillLabel,
 	formSubtitle,
@@ -143,6 +149,7 @@ function DesktopInquiryForm({
 	productName?: string;
 	productId?: string;
 	productSlug?: string;
+	productCategorySlug?: string;
 	categoryName?: string;
 	pillLabel: string;
 	formSubtitle?: string;
@@ -166,6 +173,7 @@ function DesktopInquiryForm({
 				productId: productId ?? "",
 				productName: productName ?? "",
 				productSlug: productSlug ?? "",
+				productCategorySlug: productCategorySlug ?? "",
 			},
 		});
 
@@ -353,6 +361,7 @@ function MobileInquiryForm({
 	productName,
 	productId,
 	productSlug,
+	productCategorySlug,
 	categoryName,
 	purchaseTitle,
 	purchaseDescription,
@@ -365,6 +374,7 @@ function MobileInquiryForm({
 	productName?: string;
 	productId?: string;
 	productSlug?: string;
+	productCategorySlug?: string;
 	categoryName?: string;
 	purchaseTitle?: string;
 	purchaseDescription?: string;
@@ -388,6 +398,7 @@ function MobileInquiryForm({
 				productId: productId ?? "",
 				productName: productName ?? "",
 				productSlug: productSlug ?? "",
+				productCategorySlug: productCategorySlug ?? "",
 			},
 		});
 
@@ -557,12 +568,15 @@ export function ProductInquiryForm({
 	productName,
 	productId,
 	productSlug,
+	productCategorySlug,
 	categoryName,
 	purchaseTitle,
 	purchaseDescription,
 	formSubtitle,
 	buttonText,
 	productImage,
+	imageWidth,
+	imageHeight,
 	contactPhone,
 	contactEmail,
 	pillLabel,
@@ -606,6 +620,7 @@ export function ProductInquiryForm({
 						productName={productName}
 						productId={productId}
 						productSlug={productSlug}
+						productCategorySlug={productCategorySlug}
 						categoryName={categoryName}
 						purchaseTitle={purchaseTitle}
 						purchaseDescription={purchaseDescription}
@@ -665,6 +680,23 @@ export function ProductInquiryForm({
 								</a>
 							)}
 						</div>
+
+						{productImage && (
+							<div
+								className="relative mx-auto"
+								style={imageWidth && imageHeight
+									? { width: imageWidth, height: imageHeight, maxWidth: "100%" }
+									: { height: 320 }}
+							>
+								<ImageComponent
+									src={productImage}
+									alt={productName ?? "Product"}
+									fill
+									className="object-contain drop-shadow-2xl"
+									sizes="(max-width: 1280px) 50vw, 600px"
+								/>
+							</div>
+						)}
 					</div>
 
 					{/* Right — Desktop Form Card */}
@@ -672,6 +704,7 @@ export function ProductInquiryForm({
 						productName={productName}
 						productId={productId}
 						productSlug={productSlug}
+						productCategorySlug={productCategorySlug}
 						categoryName={categoryName}
 						pillLabel={resolvedPillLabel}
 						formSubtitle={formSubtitle}

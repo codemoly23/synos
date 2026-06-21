@@ -32,6 +32,8 @@ export interface ICategory extends Document {
 	description?: string; // Rich HTML content from TextEditor
 	parent: mongoose.Types.ObjectId | null;
 	image?: string | null; // URL
+	imageWidth?: number;
+	imageHeight?: number;
 	order: number; // For sorting siblings
 	isActive: boolean;
 	faqTitle?: string;
@@ -39,11 +41,19 @@ export interface ICategory extends Document {
 	seo?: ICategorySeo;
 	inquiryBgMobile?: string;
 	inquiryBgDesktop?: string;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: string[];
 	heroBgMobile?: string;
 	heroBgDesktop?: string;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -120,6 +130,8 @@ const CategorySchema = new Schema<ICategory>(
 			type: String,
 			default: null,
 		},
+		imageWidth: { type: Number },
+		imageHeight: { type: Number },
 		order: {
 			type: Number,
 			default: 0,
@@ -145,6 +157,10 @@ const CategorySchema = new Schema<ICategory>(
 			type: String,
 			default: "",
 		},
+		inquiryBgMobileWidth: { type: Number },
+		inquiryBgMobileHeight: { type: Number },
+		inquiryBgDesktopWidth: { type: Number },
+		inquiryBgDesktopHeight: { type: Number },
 		heroTitle: {
 			type: String,
 			default: "",
@@ -167,6 +183,10 @@ const CategorySchema = new Schema<ICategory>(
 			type: String,
 			default: "",
 		},
+		heroBgMobileWidth: { type: Number },
+		heroBgMobileHeight: { type: Number },
+		heroBgDesktopWidth: { type: Number },
+		heroBgDesktopHeight: { type: Number },
 		seo: {
 			title: {
 				type: String,

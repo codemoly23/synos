@@ -70,6 +70,7 @@ export default async function InquiryDetailPage({ params }: PageProps) {
 				countryCode: submission.countryCode || "",
 				countryName: submission.countryName || "",
 				corporationNumber: submission.corporationNumber || null,
+				companyName: submission.companyName || null,
 				message: submission.message || null,
 				gdprConsent: submission.gdprConsent,
 				gdprConsentTimestamp: submission.gdprConsentTimestamp.toISOString(),

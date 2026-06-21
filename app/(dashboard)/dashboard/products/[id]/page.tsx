@@ -346,6 +346,10 @@ export default function EditProductPage() {
 		return null;
 	}
 
+	const liveCategorySlug =
+		(product.primaryCategory as unknown as { slug?: string } | null)?.slug ||
+		(product.categories as unknown as Array<{ slug?: string }>)?.[0]?.slug;
+
 	return (
 		<div className="_container py-8">
 			<div className="space-y-6">
@@ -378,7 +382,11 @@ export default function EditProductPage() {
 						{product.visibility == "public" &&
 							product.publishType == "publish" && (
 								<Link
-									href={`/produkter/produkt/${product.slug}`}
+									href={
+										liveCategorySlug
+											? `/klinikutrustning/${liveCategorySlug}/${product.slug}`
+											: `/klinikutrustning/${product.slug}`
+									}
 									target="_blank"
 								>
 									<Button variant="outline" size="sm">

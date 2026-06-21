@@ -33,7 +33,11 @@ const [open, setOpen] = useState(false);
 	const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 	const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 	const [expandedDynamic, setExpandedDynamic] = useState<string | null>(null);
+	const [expandedTech, setExpandedTech] = useState<string | null>(null);
 
+	const toggleTech = (techName: string) => {
+		setExpandedTech(expandedTech === techName ? null : techName);
+	};
 	const toggleDynamic = (title: string) => {
 		setExpandedDynamic(expandedDynamic === title ? null : title);
 	};
@@ -111,35 +115,56 @@ const toggleCategory = (categoryId: string) => {
 												{expandedDynamic === item.title && (
 													<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5 pb-1 pt-0.5">
 														{item.isTechnologyMenu ? (
-															<>
-																{(navigationData?.technologyGroups || []).map((tech) => (
-																	<div key={tech.name}>
-																		<Link
-																			href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
-																			className="block px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide hover:text-secondary transition-colors"
-																			onClick={() => setOpen(false)}
-																		>
-																			{tech.name}
-																		</Link>
-																		<div className="space-y-0.5">
-																			{tech.products.map((product) => (
-																				<Link
-																					key={`${tech.name}:${product.slug}`}
-																					href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																					className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
-																					onClick={() => setOpen(false)}
-																				>
-																					{product.title}
-																				</Link>
-																			))}
-																		</div>
-																	</div>
-																))}
-																{isLoading && (
-																	<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
+										<>
+											{(navigationData?.technologyGroups || []).map((tech) => (
+												<div key={tech.name}>
+													<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
+														<span
+														className="flex-1 px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide cursor-pointer"
+														onClick={() => toggleTech(tech.name)}
+													>
+															{tech.name}
+														</span>
+														<button
+															onClick={() => toggleTech(tech.name)}
+															className="px-2 py-2 text-muted-foreground hover:text-secondary transition-colors"
+														>
+															<ChevronDown
+																className={cn(
+																	"h-4 w-4 transition-transform duration-200",
+																	expandedTech === tech.name && "rotate-180"
 																)}
-															</>
-														) : item.isCategoryMenu ? (
+															/>
+														</button>
+													</div>
+													{expandedTech === tech.name && (
+														<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
+															{tech.products.map((product) => (
+																<Link
+																	key={`${tech.name}:${product.slug}`}
+																	href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
+																	className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																	onClick={() => setOpen(false)}
+																>
+																	{product.title}
+																</Link>
+															))}
+															<Link
+																href="/klinikutrustning"
+																className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																onClick={() => setOpen(false)}
+															>
+																Visa alla →
+															</Link>
+														</div>
+													)}
+												</div>
+											))}
+											{isLoading && (
+												<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
+											)}
+										</>
+									) : item.isCategoryMenu ? (
 															<>
 																{isLoading && (
 																	<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
@@ -149,13 +174,9 @@ const toggleCategory = (categoryId: string) => {
 																		{category.products.length > 0 ? (
 																			<>
 																				<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-																					<Link
-																						href={`/klinikutrustning/${category.slug}`}
-																						className="flex-1 px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-																						onClick={() => setOpen(false)}
-																					>
+																					<span className="flex-1 px-3 py-2 text-sm font-medium text-primary">
 																						{category.name}
-																					</Link>
+																					</span>
 																					<button
 																						onClick={() => toggleCategory(category._id)}
 																						className="px-2 py-2 text-muted-foreground hover:text-secondary transition-colors"
@@ -191,13 +212,9 @@ const toggleCategory = (categoryId: string) => {
 																				)}
 																			</>
 																		) : (
-																			<Link
-																				href={`/klinikutrustning/${category.slug}`}
-																				className="flex items-center px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-secondary/5 rounded-lg transition-all"
-																				onClick={() => setOpen(false)}
-																			>
+																			<span className="flex items-center px-3 py-2 text-sm font-medium text-primary">
 																				{category.name}
-																			</Link>
+																			</span>
 																		)}
 																	</div>
 																))}

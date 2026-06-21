@@ -22,13 +22,23 @@ export interface ITechnologyGroup extends Document {
 	slug: string;
 	description?: string;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: string[];
 	heroBgMobile?: string | null;
 	heroBgDesktop?: string | null;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	inquiryBgMobile?: string | null;
 	inquiryBgDesktop?: string | null;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	isActive: boolean;
 	order: number;
 	faqTitle?: string;
@@ -80,6 +90,8 @@ const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 			type: String,
 			default: null,
 		},
+		imageWidth: { type: Number },
+		imageHeight: { type: Number },
 		heroTitle: {
 			type: String,
 			default: "",
@@ -100,6 +112,10 @@ const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 			type: String,
 			default: null,
 		},
+		heroBgMobileWidth: { type: Number },
+		heroBgMobileHeight: { type: Number },
+		heroBgDesktopWidth: { type: Number },
+		heroBgDesktopHeight: { type: Number },
 		inquiryBgMobile: {
 			type: String,
 			default: null,
@@ -108,6 +124,10 @@ const TechnologyGroupSchema = new Schema<ITechnologyGroup>(
 			type: String,
 			default: null,
 		},
+		inquiryBgMobileWidth: { type: Number },
+		inquiryBgMobileHeight: { type: Number },
+		inquiryBgDesktopWidth: { type: Number },
+		inquiryBgDesktopHeight: { type: Number },
 		isActive: {
 			type: Boolean,
 			default: true,
@@ -179,7 +199,8 @@ function resolveTechnologyGroupModel(): Model<ITechnologyGroup> {
 		const hasHeroTitle = !!cached.schema.path("heroTitle");
 		const hasHeroBgDesktop = !!cached.schema.path("heroBgDesktop");
 		const hasInquiryBgDesktop = !!cached.schema.path("inquiryBgDesktop");
-		if (hasDescription && hasImage && hasSeo && hasFaqs && hasFaqTitle && hasHeroTitle && hasHeroBgDesktop && hasInquiryBgDesktop) {
+		const hasImageWidth = !!cached.schema.path("imageWidth");
+		if (hasDescription && hasImage && hasSeo && hasFaqs && hasFaqTitle && hasHeroTitle && hasHeroBgDesktop && hasInquiryBgDesktop && hasImageWidth) {
 			return cached;
 		}
 		// Stale cache — drop and re-register

@@ -32,10 +32,10 @@ export function Hero({ data }: HeroProps) {
 		}
 	}, [slides.length]);
 
-	// Auto-slide every 5 seconds
+	// Auto-slide every 7 seconds
 	useEffect(() => {
 		if (slides.length <= 1) return;
-		const interval = setInterval(nextSlide, 5000);
+		const interval = setInterval(nextSlide, 7000);
 		return () => clearInterval(interval);
 	}, [nextSlide, slides.length]);
 
@@ -71,7 +71,7 @@ export function Hero({ data }: HeroProps) {
 		}`}>
 			{/* Background Image Carousel */}
 			{hasBackgroundImage && (
-				<div className="absolute inset-0 z-0">
+				<div className="absolute inset-0 z-0 overflow-hidden">
 					<AnimatePresence mode="popLayout">
 						{slides.map((s, index) =>
 							index === currentSlide && s.backgroundImage ? (
@@ -81,16 +81,15 @@ export function Hero({ data }: HeroProps) {
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 									transition={{ duration: 1, ease: "easeInOut" }}
-									className="absolute inset-0"
+									className="absolute inset-0 max-w-[2560px] mx-auto"
 								>
 									<ImageComponent
 										src={s.backgroundImage}
 										alt={`Hero slide ${index + 1}`}
-										height={0}
-										width={0}
-										sizes="100vw"
+										fill
+										sizes="(max-width: 2560px) 100vw, 2560px"
 										wrapperClasses="w-full h-full"
-										className="object-cover w-full h-full opacity-40"
+										className="object-cover object-center opacity-40"
 									/>
 								</motion.div>
 							) : null
@@ -270,11 +269,10 @@ export function Hero({ data }: HeroProps) {
 									<ImageComponent
 										src={slide!.mainImage!}
 										alt="Hero Image"
-										height={0}
-										width={0}
-										sizes="100vw"
+										fill
+										sizes="(max-width: 1280px) 50vw, 40vw"
 										wrapperClasses="w-full h-full"
-										className="object-cover w-full h-full"
+										className="object-contain w-full h-full"
 									/>
 									<div className="absolute inset-0 bg-linear-to-t from-secondary/40 to-transparent pointer-events-none" />
 								</div>

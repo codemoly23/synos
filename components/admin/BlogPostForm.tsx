@@ -199,13 +199,15 @@ export function BlogPostForm({
 			excerpt: post?.excerpt || "",
 			content: post?.content || "",
 			featuredImage: post?.featuredImage
-				? { url: post.featuredImage.url, alt: post.featuredImage.alt }
+				? { url: post.featuredImage.url, alt: post.featuredImage.alt, width: post.featuredImage.width, height: post.featuredImage.height }
 				: null,
 			headerImage: post?.headerImage
 				? {
 						url: post.headerImage.url,
 						alt: post.headerImage.alt,
 						showTitleOverlay: post.headerImage.showTitleOverlay,
+						width: post.headerImage.width,
+						height: post.headerImage.height,
 				  }
 				: null,
 			categories: normalizeCategories(
@@ -481,8 +483,10 @@ export function BlogPostForm({
 								<div className="space-y-3">
 									<Label>Featured Image</Label>
 									<p className="text-sm text-muted-foreground">
-										Main image shown in blog listings and social
-										media previews.
+										Main image shown in blog listings and social media previews.
+									</p>
+									<p className="text-xs text-blue-600 dark:text-blue-400">
+										Recommended: 1200×628px • Ratio: ~1.91:1 • Max: 5MB • Format: JPG, PNG, WebP
 									</p>
 									<MediaPicker
 										type="image"
@@ -493,9 +497,9 @@ export function BlogPostForm({
 												url
 													? {
 															url,
-															alt:
-																watch("featuredImage")
-																	?.alt || "",
+															alt: watch("featuredImage")?.alt || "",
+															width: watch("featuredImage")?.width,
+															height: watch("featuredImage")?.height,
 													  }
 													: null,
 												{ shouldDirty: true }
@@ -506,23 +510,69 @@ export function BlogPostForm({
 										galleryTitle="Select Featured Image"
 									/>
 									{watch("featuredImage")?.url && (
-										<Input
-											placeholder="Alt text for featured image"
-											value={watch("featuredImage")?.alt || ""}
-											onChange={(e) =>
-												setValue(
-													"featuredImage",
-													{
-														url:
-															watch("featuredImage")
-																?.url || "",
-														alt: e.target.value,
-													},
-													{ shouldDirty: true }
-												)
-											}
-											disabled={isLoading}
-										/>
+										<>
+											<Input
+												placeholder="Alt text for featured image"
+												value={watch("featuredImage")?.alt || ""}
+												onChange={(e) =>
+													setValue(
+														"featuredImage",
+														{
+															url: watch("featuredImage")?.url || "",
+															alt: e.target.value,
+															width: watch("featuredImage")?.width,
+															height: watch("featuredImage")?.height,
+														},
+														{ shouldDirty: true }
+													)
+												}
+												disabled={isLoading}
+											/>
+											<div className="grid grid-cols-2 gap-3">
+												<div className="space-y-1.5">
+													<Label className="text-xs text-muted-foreground">Width (px)</Label>
+													<Input
+														type="number"
+														placeholder="e.g. 1200"
+														value={watch("featuredImage")?.width ?? ""}
+														onChange={(e) =>
+															setValue(
+																"featuredImage",
+																{
+																	url: watch("featuredImage")?.url || "",
+																	alt: watch("featuredImage")?.alt || "",
+																	width: e.target.value ? Number(e.target.value) : undefined,
+																	height: watch("featuredImage")?.height,
+																},
+																{ shouldDirty: true }
+															)
+														}
+														disabled={isLoading}
+													/>
+												</div>
+												<div className="space-y-1.5">
+													<Label className="text-xs text-muted-foreground">Height (px)</Label>
+													<Input
+														type="number"
+														placeholder="e.g. 628"
+														value={watch("featuredImage")?.height ?? ""}
+														onChange={(e) =>
+															setValue(
+																"featuredImage",
+																{
+																	url: watch("featuredImage")?.url || "",
+																	alt: watch("featuredImage")?.alt || "",
+																	width: watch("featuredImage")?.width,
+																	height: e.target.value ? Number(e.target.value) : undefined,
+																},
+																{ shouldDirty: true }
+															)
+														}
+														disabled={isLoading}
+													/>
+												</div>
+											</div>
+										</>
 									)}
 								</div>
 
@@ -530,8 +580,10 @@ export function BlogPostForm({
 								<div className="space-y-3">
 									<Label>Header Image</Label>
 									<p className="text-sm text-muted-foreground">
-										Full-width banner image displayed at the top of
-										the blog post.
+										Full-width banner image displayed at the top of the blog post.
+									</p>
+									<p className="text-xs text-blue-600 dark:text-blue-400">
+										Recommended: 1920×600px • Ratio: ~16:5 • Max: 5MB • Format: JPG, PNG, WebP
 									</p>
 									<MediaPicker
 										type="image"
@@ -542,13 +594,10 @@ export function BlogPostForm({
 												url
 													? {
 															url,
-															alt:
-																watch("headerImage")
-																	?.alt || "",
-															showTitleOverlay:
-																watch("headerImage")
-																	?.showTitleOverlay ||
-																false,
+															alt: watch("headerImage")?.alt || "",
+															showTitleOverlay: watch("headerImage")?.showTitleOverlay || false,
+															width: watch("headerImage")?.width,
+															height: watch("headerImage")?.height,
 													  }
 													: null,
 												{ shouldDirty: true }
@@ -567,14 +616,11 @@ export function BlogPostForm({
 													setValue(
 														"headerImage",
 														{
-															url:
-																watch("headerImage")
-																	?.url || "",
+															url: watch("headerImage")?.url || "",
 															alt: e.target.value,
-															showTitleOverlay:
-																watch("headerImage")
-																	?.showTitleOverlay ||
-																false,
+															showTitleOverlay: watch("headerImage")?.showTitleOverlay || false,
+															width: watch("headerImage")?.width,
+															height: watch("headerImage")?.height,
 														},
 														{ shouldDirty: true }
 													)
@@ -585,22 +631,16 @@ export function BlogPostForm({
 												<input
 													type="checkbox"
 													id="showTitleOverlay"
-													checked={
-														watch("headerImage")
-															?.showTitleOverlay || false
-													}
+													checked={watch("headerImage")?.showTitleOverlay || false}
 													onChange={(e) =>
 														setValue(
 															"headerImage",
 															{
-																url:
-																	watch("headerImage")
-																		?.url || "",
-																alt:
-																	watch("headerImage")
-																		?.alt || "",
-																showTitleOverlay:
-																	e.target.checked,
+																url: watch("headerImage")?.url || "",
+																alt: watch("headerImage")?.alt || "",
+																showTitleOverlay: e.target.checked,
+																width: watch("headerImage")?.width,
+																height: watch("headerImage")?.height,
 															},
 															{ shouldDirty: true }
 														)
@@ -608,12 +648,55 @@ export function BlogPostForm({
 													disabled={isLoading}
 													className="h-4 w-4"
 												/>
-												<Label
-													htmlFor="showTitleOverlay"
-													className="cursor-pointer"
-												>
+												<Label htmlFor="showTitleOverlay" className="cursor-pointer">
 													Show title overlay on image
 												</Label>
+											</div>
+											<div className="grid grid-cols-2 gap-3">
+												<div className="space-y-1.5">
+													<Label className="text-xs text-muted-foreground">Width (px)</Label>
+													<Input
+														type="number"
+														placeholder="e.g. 1920"
+														value={watch("headerImage")?.width ?? ""}
+														onChange={(e) =>
+															setValue(
+																"headerImage",
+																{
+																	url: watch("headerImage")?.url || "",
+																	alt: watch("headerImage")?.alt || "",
+																	showTitleOverlay: watch("headerImage")?.showTitleOverlay || false,
+																	width: e.target.value ? Number(e.target.value) : undefined,
+																	height: watch("headerImage")?.height,
+																},
+																{ shouldDirty: true }
+															)
+														}
+														disabled={isLoading}
+													/>
+												</div>
+												<div className="space-y-1.5">
+													<Label className="text-xs text-muted-foreground">Height (px)</Label>
+													<Input
+														type="number"
+														placeholder="e.g. 600"
+														value={watch("headerImage")?.height ?? ""}
+														onChange={(e) =>
+															setValue(
+																"headerImage",
+																{
+																	url: watch("headerImage")?.url || "",
+																	alt: watch("headerImage")?.alt || "",
+																	showTitleOverlay: watch("headerImage")?.showTitleOverlay || false,
+																	width: watch("headerImage")?.width,
+																	height: e.target.value ? Number(e.target.value) : undefined,
+																},
+																{ shouldDirty: true }
+															)
+														}
+														disabled={isLoading}
+													/>
+												</div>
 											</div>
 										</>
 									)}

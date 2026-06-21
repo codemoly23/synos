@@ -44,6 +44,7 @@ interface SubmissionDetail {
 	countryCode: string;
 	countryName: string;
 	corporationNumber: string | null;
+	companyName: string | null;
 	message: string | null;
 	gdprConsent: boolean;
 	gdprConsentTimestamp: string;
@@ -52,6 +53,7 @@ interface SubmissionDetail {
 	productId: string | null;
 	productName: string | null;
 	productSlug: string | null;
+	productCategorySlug: string | null;
 	helpType: HelpType | null;
 	trainingInterestType: TrainingInterestType | null;
 	subject: string | null;
@@ -321,7 +323,11 @@ export function InquiryDetail({ submission }: InquiryDetailProps) {
 											<p className="font-medium">{submission.productName}</p>
 											{submission.productSlug && (
 												<Link
-													href={`/produkter/produkt/${submission.productSlug}`}
+													href={
+														submission.productCategorySlug
+															? `/klinikutrustning/${submission.productCategorySlug}/${submission.productSlug}`
+															: `/klinikutrustning/${submission.productSlug}`
+													}
 													target="_blank"
 													className="text-primary hover:underline flex items-center gap-1 text-sm"
 												>
@@ -338,6 +344,37 @@ export function InquiryDetail({ submission }: InquiryDetailProps) {
 												<p className="text-sm">
 													{helpTypeLabels[submission.helpType]}
 												</p>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Brochure Request Details (if applicable) */}
+						{submission.type === "brochure_request" && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<FileText className="h-5 w-5" />
+										Brochure Request Details
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{submission.companyName && (
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Company</label>
+											<div className="flex items-center gap-2">
+												<Building className="h-4 w-4 text-slate-400" />
+												<p className="font-medium">{submission.companyName}</p>
+											</div>
+										</div>
+									)}
+									{submission.subject && (
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Requested Document</label>
+											<div className="bg-slate-50 p-3 rounded-lg">
+												<p className="text-sm font-medium">{submission.subject}</p>
 											</div>
 										</div>
 									)}

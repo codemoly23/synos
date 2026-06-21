@@ -1,10 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getSiteConfig } from "@/config/site";
 import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "./product-content";
 import { productRepository } from "@/lib/repositories/product.repository";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import type { ProductType } from "@/types";
 
 interface ProductPageProps {
@@ -73,7 +73,12 @@ export async function generateMetadata({
 		};
 	}
 
-	const productUrl = `${siteConfig.url}/produkter/produkt/${product.slug}`;
+	const metaCategorySlug =
+		(product.primaryCategory as unknown as { slug?: string } | null)?.slug ||
+		(product.categories as unknown as Array<{ slug?: string }>)?.[0]?.slug;
+	const productUrl = metaCategorySlug
+		? `${siteConfig.url}/klinikutrustning/${metaCategorySlug}/${product.slug}`
+		: `${siteConfig.url}/klinikutrustning/${product.slug}`;
 
 	// Determine the best image for OG
 	const ogImage =
@@ -154,14 +159,24 @@ export async function generateMetadata({
  */
 export default async function ProductPage({ params }: ProductPageProps) {
 	const { slug } = await params;
-	const [product, contactInfo] = await Promise.all([
+	const [product, contactInfo, branding] = await Promise.all([
 		getProduct(slug),
 		getContactInfo(),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	if (!product) {
 		notFound();
 	}
+
+	// Redirect to the new route permanently
+	const redirectCategorySlug =
+		(product.primaryCategory as unknown as { slug?: string } | null)?.slug ||
+		(product.categories as unknown as Array<{ slug?: string }>)?.[0]?.slug;
+	const newUrl = redirectCategorySlug
+		? `/klinikutrustning/${redirectCategorySlug}/${product.slug}`
+		: `/klinikutrustning`;
+	redirect(newUrl);
 
 	// Generate all JSON-LD schemas for this product
 	const jsonLdSchemas = await generateProductPageJsonLd(product);
@@ -182,6 +197,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				product={product}
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
+				defaultBackground={branding?.productDefaultBackground || undefined}
+				productCategorySlug={
+					(product.primaryCategory as unknown as { slug?: string } | null)?.slug ||
+					(product.categories as unknown as Array<{ slug?: string }>)?.[0]?.slug
+				}
 			/>
 		</>
 	);

@@ -12,6 +12,8 @@ const FORM_TYPE_LABELS: Record<string, string> = {
 	callback_request: "Callback Request",
 	tour_request: "Tour Request",
 	job_application: "Job Application",
+	hero_inquiry: "Hero Inquiry",
+	brochure_request: "Brochure Request",
 };
 
 const HELP_TYPE_LABELS: Record<string, string> = {

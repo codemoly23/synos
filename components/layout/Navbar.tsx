@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -138,13 +138,9 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{(navigationData?.technologyGroups || []).map((tech) => (
 																			<div key={tech.name} className="space-y-1">
-																				<Link
-																					href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
-																					className="text-sm font-bold text-primary hover:underline"
-																					onClick={() => setMenuValue("")}
-																				>
+																				<p className="text-sm font-bold text-primary">
 																					{tech.name}
-																				</Link>
+																				</p>
 																				<ul className="space-y-0">
 																					{tech.products.map((product) => (
 																						<li key={`${tech.name}:${product.slug}`}>
@@ -157,6 +153,17 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																							</Link>
 																						</li>
 																					))}
+																					{tech.products.length > 0 && (
+																						<li>
+																						<Link
+																							href="/klinikutrustning"
+																							className="block text-sm text-primary font-medium hover:underline mt-1"
+																							onClick={() => setMenuValue("")}
+																						>
+																							Visa alla →
+																						</Link>
+																						</li>
+																					)}
 																				</ul>
 																			</div>
 																		))}
@@ -172,13 +179,9 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{navigationData?.categories.map((category) => (
 																			<div key={category._id} className="space-y-1">
-																				<Link
-																					href={`/klinikutrustning/${category.slug}`}
-																					className="text-sm font-bold text-primary hover:underline"
-																					onClick={() => setMenuValue("")}
-																				>
+																				<p className="text-sm font-bold text-primary">
 																					{category.name}
-																				</Link>
+																				</p>
 																				{category.products.length > 0 && (
 																					<ul className="space-y-0">
 																						{category.products.map((product) => (
@@ -192,6 +195,15 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																								</Link>
 																							</li>
 																						))}
+																						<li>
+																							<Link
+																								href={`/klinikutrustning/${category.slug}`}
+																								className="block text-sm text-primary font-medium hover:underline mt-1"
+																								onClick={() => setMenuValue("")}
+																							>
+																								Visa alla →
+																							</Link>
+																						</li>
 																					</ul>
 																				)}
 																			</div>

@@ -15,6 +15,7 @@ import {
 	quoteRequestSchema,
 	jobApplicationSchema,
 	heroInquirySchema,
+	brochureRequestSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
@@ -23,6 +24,7 @@ import {
 	type QuoteRequestInput,
 	type JobApplicationInput,
 	type HeroInquiryInput,
+	type BrochureRequestInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -123,6 +125,7 @@ class FormSubmissionService {
 			productId: new mongoose.Types.ObjectId(validData.productId),
 			productName: this.sanitizeInput(validData.productName),
 			productSlug: validData.productSlug,
+			productCategorySlug: validData.productCategorySlug || null,
 			helpType: validData.helpType ?? null,
 			metadata: {
 				...metadata,
@@ -502,6 +505,50 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Hero inquiry created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a brochure request submission
+	 */
+	async createBrochureRequest(
+		data: BrochureRequestInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		const validationResult = brochureRequestSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError("Validation failed", validationResult.error.issues);
+		}
+
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError("För många förfrågningar. Försök igen om 15 minuter.");
+		}
+
+		const validData = validationResult.data;
+
+		const sanitizedData = {
+			type: "brochure_request" as FormSubmissionType,
+			fullName: `${this.sanitizeInput(validData.firstName)} ${this.sanitizeInput(validData.lastName)}`.trim(),
+			email: validData.email.toLowerCase().trim(),
+			companyName: this.sanitizeInput(validData.companyName) || null,
+			productName: this.sanitizeInput(validData.productName) || null,
+			productSlug: this.sanitizeInput(validData.productSlug) || null,
+			subject: this.sanitizeInput(validData.documentTitle) || null,
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Brochure request created: ${submission._id}`);
 
 		return submission;
 	}

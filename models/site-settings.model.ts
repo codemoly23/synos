@@ -44,6 +44,9 @@ export interface ISeoSettings {
 export interface IBrandingSettings {
 	logoUrl: string; // "/storage/synos-logo-beige-glow.svg"
 	faviconUrl?: string; // "/storage/favicon.ico"
+	productDefaultBackground?: string; // Global fallback background for all product pages
+	productDefaultBackgroundWidth?: number;
+	productDefaultBackgroundHeight?: number;
 }
 
 /**
@@ -260,6 +263,9 @@ const BrandingSettingsSchema = new Schema<IBrandingSettings>(
 			default: "/storage/synos-logo-beige-glow.svg",
 		},
 		faviconUrl: { type: String, trim: true },
+		productDefaultBackground: { type: String, trim: true },
+		productDefaultBackgroundWidth: { type: Number },
+		productDefaultBackgroundHeight: { type: Number },
 	},
 	{ _id: false }
 );

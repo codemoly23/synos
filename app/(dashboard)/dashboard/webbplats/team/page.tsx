@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -715,6 +715,7 @@ export default function TeamPageAdmin() {
 													render={({ field }) => (
 														<FormItem>
 															<FormLabel>Image</FormLabel>
+															<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 400×500px • Ratio: 4:5 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 															<FormControl>
 																<MediaPicker
 																	type="image"
@@ -1215,6 +1216,7 @@ export default function TeamPageAdmin() {
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>OG Image</FormLabel>
+														<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP</p>
 														<FormControl>
 															<MediaPicker
 																type="image"

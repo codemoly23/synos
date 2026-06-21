@@ -179,13 +179,6 @@ export function Footer({
 								</a>
 							</li>
 						</ul>
-						<div className="flex items-center mt-20" style={{ zoom: 0.4 }}>
-							<div id="reco--badge-yearsInRowBadge" />
-							<Script
-								src="https://widget.reco.se/yearsInRowBadge/4026137.js"
-								strategy="lazyOnload"
-							/>
-						</div>
 					</div>
 
 					{/* Newsletter */}

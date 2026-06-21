@@ -13,9 +13,13 @@ import { ImageComponent } from "../common/image-component";
 interface ProductCardProps {
 	product: Product;
 	variant?: "grid" | "list";
+	categorySlug?: string;
 }
 
-export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
+export function ProductCard({ product, variant = "grid", categorySlug }: ProductCardProps) {
+	const productHref = categorySlug
+		? `/klinikutrustning/${categorySlug}/${product.slug}`
+		: `/klinikutrustning/${product.slug}`;
 	const primaryImage =
 		product.images?.find((img) => img.isPrimary) ||
 		product.images?.[0] ||
@@ -103,7 +107,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 								asChild
 								className="bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
 							>
-								<Link href={`/produkter/produkt/${product.slug}`}>
+								<Link href={productHref}>
 									Läs mer & Specifikationer
 								</Link>
 							</Button>
@@ -116,7 +120,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
 	// Grid variant
 	return (
-		<Link href={`/produkter/produkt/${product.slug}`}>
+		<Link href={productHref}>
 			<Card className="group h-full overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 translate transition-all duration-300 p-0!">
 				{/* Image */}
 				<div className="relative h-56 overflow-hidden bg-primary/50">

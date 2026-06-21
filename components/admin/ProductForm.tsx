@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -43,6 +43,7 @@ import { TagInput } from "./TagInput";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker, MediaGallery } from "@/components/storage";
 import { BeforeAfterGallery, type BeforeAfterPair } from "./BeforeAfterGallery";
+import { ImagePickerWithDimensions } from "./ImagePickerWithDimensions";
 import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import type { FileMetadata } from "@/lib/storage/client";
 import {
@@ -859,6 +860,8 @@ export function ProductForm({
 			treatments: product?.treatments || [],
 			productImages: product?.productImages || [],
 			overviewImage: product?.overviewImage || "",
+			imageWidth: product?.imageWidth ?? undefined,
+			imageHeight: product?.imageHeight ?? undefined,
 			beforeAfterImages:
 				product?.beforeAfterImages?.map((ba) => ({
 					beforeImage: ba.beforeImage,
@@ -2042,8 +2045,10 @@ export function ProductForm({
 										<span className="text-red-500">*</span>
 									</Label>
 									<p className="text-xs text-muted-foreground">
-										Select multiple images from the media library or
-										upload new ones.
+										Select multiple images from the media library or upload new ones.
+									</p>
+									<p className="text-xs text-blue-600 dark:text-blue-400">
+										Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP
 									</p>
 									<ProductImageGallery
 										images={watch("productImages") || []}
@@ -2059,121 +2064,88 @@ export function ProductForm({
 								<Separator />
 
 								{/* Overview Image */}
-								<div className="space-y-2">
-									<Label>Overview Image</Label>
-									<p className="text-xs text-muted-foreground">
-										Main image shown in product listings and overview
-										sections.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("overviewImage") || null}
-										onChange={(url) =>
-											setValue("overviewImage", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select overview image"
-										disabled={isLoading}
-										galleryTitle="Select Overview Image"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Overview Image"
+									hint="Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("overviewImage") || null}
+									onChange={(url) =>
+										setValue("overviewImage", url || "", { shouldDirty: true })
+									}
+									placeholder="Select overview image"
+									galleryTitle="Select Overview Image"
+									disabled={isLoading}
+									widthInputProps={register("imageWidth", { valueAsNumber: true })}
+									heightInputProps={register("imageHeight", { valueAsNumber: true })}
+								/>
 
 								<Separator />
 
 								{/* Hero Background — Mobile */}
-								<div className="space-y-2">
-									<Label>Hero Background — Mobile</Label>
-									<p className="text-xs text-muted-foreground">
-										Background image shown in the hero section on mobile devices.
-										Falls back to the default dark background if not set.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("heroBackgroundMobile") || null}
-										onChange={(url) =>
-											setValue("heroBackgroundMobile", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select mobile hero background"
-										disabled={isLoading}
-										galleryTitle="Select Mobile Hero Background"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Hero Background — Mobile"
+									hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("heroBackgroundMobile") || null}
+									onChange={(url) =>
+										setValue("heroBackgroundMobile", url || "", { shouldDirty: true })
+									}
+									placeholder="Select mobile hero background"
+									galleryTitle="Select Mobile Hero Background"
+									disabled={isLoading}
+									widthInputProps={register("heroBackgroundMobileWidth", { valueAsNumber: true })}
+									heightInputProps={register("heroBackgroundMobileHeight", { valueAsNumber: true })}
+								/>
 
 								<Separator />
 
 								{/* Hero Background — Desktop */}
-								<div className="space-y-2">
-									<Label>Hero Background — Desktop</Label>
-									<p className="text-xs text-muted-foreground">
-										Background image shown in the hero section on desktop.
-										Falls back to the default dark background if not set.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("heroBackgroundDesktop") || null}
-										onChange={(url) =>
-											setValue("heroBackgroundDesktop", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select desktop hero background"
-										disabled={isLoading}
-										galleryTitle="Select Desktop Hero Background"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Hero Background — Desktop"
+									hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("heroBackgroundDesktop") || null}
+									onChange={(url) =>
+										setValue("heroBackgroundDesktop", url || "", { shouldDirty: true })
+									}
+									placeholder="Select desktop hero background"
+									galleryTitle="Select Desktop Hero Background"
+									disabled={isLoading}
+									widthInputProps={register("heroBackgroundDesktopWidth", { valueAsNumber: true })}
+									heightInputProps={register("heroBackgroundDesktopHeight", { valueAsNumber: true })}
+								/>
 
 								<Separator />
 
 								{/* Inquiry/Contact Background — Mobile */}
-								<div className="space-y-2">
-									<Label>Contact Section Background — Mobile</Label>
-									<p className="text-xs text-muted-foreground">
-										Background image shown in the contact/form section on mobile devices.
-										Falls back to the default dark background if not set.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("inquiryBgMobile") || null}
-										onChange={(url) =>
-											setValue("inquiryBgMobile", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select mobile contact background"
-										disabled={isLoading}
-										galleryTitle="Select Mobile Contact Background"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Contact Section Background — Mobile"
+									hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("inquiryBgMobile") || null}
+									onChange={(url) =>
+										setValue("inquiryBgMobile", url || "", { shouldDirty: true })
+									}
+									placeholder="Select mobile contact background"
+									galleryTitle="Select Mobile Contact Background"
+									disabled={isLoading}
+									widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
+									heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+								/>
 
 								<Separator />
 
 								{/* Inquiry/Contact Background — Desktop */}
-								<div className="space-y-2">
-									<Label>Contact Section Background — Desktop</Label>
-									<p className="text-xs text-muted-foreground">
-										Background image shown in the contact/form section on desktop.
-										Falls back to the default dark background if not set.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("inquiryBgDesktop") || null}
-										onChange={(url) =>
-											setValue("inquiryBgDesktop", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select desktop contact background"
-										disabled={isLoading}
-										galleryTitle="Select Desktop Contact Background"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Contact Section Background — Desktop"
+									hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("inquiryBgDesktop") || null}
+									onChange={(url) =>
+										setValue("inquiryBgDesktop", url || "", { shouldDirty: true })
+									}
+									placeholder="Select desktop contact background"
+									galleryTitle="Select Desktop Contact Background"
+									disabled={isLoading}
+									widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
+									heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+								/>
 
-								<Separator />
-
-								{/* Feature Section Images */}
 								<Separator />
 
 								<div className="space-y-4">
@@ -2184,81 +2156,61 @@ export function ProductForm({
 										</p>
 									</div>
 
-									<div className="space-y-2">
-										<Label>Section 1 Image</Label>
-										<p className="text-xs text-muted-foreground">
-											Left-side image in the first feature section ("Byggd för moderna kliniker").
-										</p>
-										<MediaPicker
-											type="image"
-											value={watch("section1Image") || null}
-											onChange={(url) =>
-												setValue("section1Image", url || "", {
-													shouldDirty: true,
-												})
-											}
-											placeholder="Select section 1 image"
-											disabled={isLoading}
-											galleryTitle="Select Section 1 Image"
-										/>
-									</div>
+									<ImagePickerWithDimensions
+										label="Section 1 Image"
+										hint="Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP"
+										value={watch("section1Image") || null}
+										onChange={(url) =>
+											setValue("section1Image", url || "", { shouldDirty: true })
+										}
+										placeholder="Select section 1 image"
+										galleryTitle="Select Section 1 Image"
+										disabled={isLoading}
+										widthInputProps={register("section1ImageWidth", { valueAsNumber: true })}
+										heightInputProps={register("section1ImageHeight", { valueAsNumber: true })}
+									/>
 
-									<div className="space-y-2">
-										<Label>Section 2 — Top Image</Label>
-										<p className="text-xs text-muted-foreground">
-											Left-side image in the upper block of section 2 ("Utvecklad för precision och komfort").
-										</p>
-										<MediaPicker
-											type="image"
-											value={watch("section2TopImage") || null}
-											onChange={(url) =>
-												setValue("section2TopImage", url || "", {
-													shouldDirty: true,
-												})
-											}
-											placeholder="Select section 2 top image"
-											disabled={isLoading}
-											galleryTitle="Select Section 2 Top Image"
-										/>
-									</div>
+									<ImagePickerWithDimensions
+										label="Section 2 — Top Image"
+										hint="Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP"
+										value={watch("section2TopImage") || null}
+										onChange={(url) =>
+											setValue("section2TopImage", url || "", { shouldDirty: true })
+										}
+										placeholder="Select section 2 top image"
+										galleryTitle="Select Section 2 Top Image"
+										disabled={isLoading}
+										widthInputProps={register("section2TopImageWidth", { valueAsNumber: true })}
+										heightInputProps={register("section2TopImageHeight", { valueAsNumber: true })}
+									/>
 
-									<div className="space-y-2">
-										<Label>Section 2 — Bottom Image</Label>
-										<p className="text-xs text-muted-foreground">
-											Right-side image in the lower block of section 2.
-										</p>
-										<MediaPicker
-											type="image"
-											value={watch("section2BottomImage") || null}
-											onChange={(url) =>
-												setValue("section2BottomImage", url || "", {
-													shouldDirty: true,
-												})
-											}
-											placeholder="Select section 2 bottom image"
-											disabled={isLoading}
-											galleryTitle="Select Section 2 Bottom Image"
-										/>
-									</div>
+									<ImagePickerWithDimensions
+										label="Section 2 — Bottom Image"
+										hint="Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP"
+										value={watch("section2BottomImage") || null}
+										onChange={(url) =>
+											setValue("section2BottomImage", url || "", { shouldDirty: true })
+										}
+										placeholder="Select section 2 bottom image"
+										galleryTitle="Select Section 2 Bottom Image"
+										disabled={isLoading}
+										widthInputProps={register("section2BottomImageWidth", { valueAsNumber: true })}
+										heightInputProps={register("section2BottomImageHeight", { valueAsNumber: true })}
+									/>
 
-									<div className="space-y-2">
-										<Label>Section 3 Image</Label>
-										<p className="text-xs text-muted-foreground">
-											Left-side image in section 3 ("Tekniska fördelar som märks i vardagen").
-										</p>
-										<MediaPicker
-											type="image"
-											value={watch("section3Image") || null}
-											onChange={(url) =>
-												setValue("section3Image", url || "", {
-													shouldDirty: true,
-												})
-											}
-											placeholder="Select section 3 image"
-											disabled={isLoading}
-											galleryTitle="Select Section 3 Image"
-										/>
-									</div>
+									<ImagePickerWithDimensions
+										label="Section 3 Image"
+										hint="Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP"
+										value={watch("section3Image") || null}
+										onChange={(url) =>
+											setValue("section3Image", url || "", { shouldDirty: true })
+										}
+										placeholder="Select section 3 image"
+										galleryTitle="Select Section 3 Image"
+										disabled={isLoading}
+										widthInputProps={register("section3ImageWidth", { valueAsNumber: true })}
+										heightInputProps={register("section3ImageHeight", { valueAsNumber: true })}
+									/>
 								</div>
 
 								<Separator />
@@ -2276,24 +2228,19 @@ export function ProductForm({
 								</div>
 
 								{/* Video Thumbnail */}
-								<div className="space-y-2">
-									<Label>Video Thumbnail</Label>
-									<p className="text-xs text-muted-foreground">
-										Upload a high-resolution thumbnail for the video. Overrides the auto-generated YouTube thumbnail.
-									</p>
-									<MediaPicker
-										type="image"
-										value={watch("videoThumbnail") || null}
-										onChange={(url) =>
-											setValue("videoThumbnail", url || "", {
-												shouldDirty: true,
-											})
-										}
-										placeholder="Select video thumbnail"
-										disabled={isLoading}
-										galleryTitle="Select Video Thumbnail"
-									/>
-								</div>
+								<ImagePickerWithDimensions
+									label="Video Thumbnail"
+									hint="Recommended: 1280×720px • Ratio: 16:9 • Max: 15MB • Format: JPG, PNG, WebP"
+									value={watch("videoThumbnail") || null}
+									onChange={(url) =>
+										setValue("videoThumbnail", url || "", { shouldDirty: true })
+									}
+									placeholder="Select video thumbnail"
+									galleryTitle="Select Video Thumbnail"
+									disabled={isLoading}
+									widthInputProps={register("videoThumbnailWidth", { valueAsNumber: true })}
+									heightInputProps={register("videoThumbnailHeight", { valueAsNumber: true })}
+								/>
 
 								<Separator />
 
@@ -2304,6 +2251,9 @@ export function ProductForm({
 										Add before and after image pairs to showcase
 										treatment results. These will be displayed in an
 										interactive comparison slider on the product page.
+									</p>
+									<p className="text-xs text-blue-600 dark:text-blue-400">
+										Recommended: 800×600px • Ratio: 4:3 • Max: 15MB • Format: JPG, PNG, WebP
 									</p>
 									<BeforeAfterGallery
 										pairs={beforeAfterFields.map((field) => ({
@@ -2654,6 +2604,18 @@ export function ProductForm({
 												siteUrl: "synos.se",
 												siteName: "Synos",
 												productTitle: watch("title") || "",
+												categorySlug: (() => {
+													const selectedId = watch("primaryCategory");
+													if (!selectedId) return undefined;
+													const find = (nodes: typeof categoryTree): string | undefined => {
+														for (const n of nodes) {
+															if (n._id === selectedId) return n.slug;
+															const found = find(n.children);
+															if (found) return found;
+														}
+													};
+													return find(categoryTree);
+												})(),
 											}}
 										/>
 									</CardContent>

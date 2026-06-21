@@ -483,6 +483,8 @@ export function InquiriesList({
 								<option value="demo_request">Demo Request</option>
 								<option value="quote_request">Quote Request</option>
 								<option value="callback_request">Callback Request</option>
+								<option value="hero_inquiry">Hero Inquiry</option>
+								<option value="brochure_request">Brochure Request</option>
 							</select>
 						</div>
 					</CardContent>

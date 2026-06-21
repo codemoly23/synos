@@ -105,6 +105,8 @@ export const createCategorySchema = z.object({
 		.default(""),
 	parent: z.string().nullable().optional().default(null), // ObjectId string or null
 	image: optionalUrlSchema,
+	imageWidth: z.number().optional(),
+	imageHeight: z.number().optional(),
 	order: z.coerce
 		.number()
 		.int()
@@ -119,11 +121,19 @@ export const createCategorySchema = z.object({
 	faqs: z.array(categoryFaqSchema).optional().default([]),
 	inquiryBgMobile: z.string().optional(),
 	inquiryBgDesktop: z.string().optional(),
+	inquiryBgMobileWidth: z.number().optional(),
+	inquiryBgMobileHeight: z.number().optional(),
+	inquiryBgDesktopWidth: z.number().optional(),
+	inquiryBgDesktopHeight: z.number().optional(),
 	heroTitle: z.string().max(200).optional(),
 	heroSubtitle: z.string().max(300).optional(),
 	heroBulletPoints: z.array(z.string().max(100)).max(6).optional().default([]),
 	heroBgMobile: z.string().optional(),
 	heroBgDesktop: z.string().optional(),
+	heroBgMobileWidth: z.number().optional(),
+	heroBgMobileHeight: z.number().optional(),
+	heroBgDesktopWidth: z.number().optional(),
+	heroBgDesktopHeight: z.number().optional(),
 	seo: categorySeoSchema.optional(),
 });
 
@@ -146,6 +156,8 @@ export const updateCategorySchema = z.object({
 		.optional(),
 	parent: z.string().nullable().optional(), // ObjectId string or null
 	image: optionalUrlSchema,
+	imageWidth: z.number().optional(),
+	imageHeight: z.number().optional(),
 	order: z.coerce.number().int().min(0, "Order must be 0 or greater").optional(),
 	isActive: z.boolean().optional(),
 	faqTitle: z
@@ -155,11 +167,19 @@ export const updateCategorySchema = z.object({
 	faqs: z.array(categoryFaqSchema).optional(),
 	inquiryBgMobile: z.string().optional(),
 	inquiryBgDesktop: z.string().optional(),
+	inquiryBgMobileWidth: z.number().optional(),
+	inquiryBgMobileHeight: z.number().optional(),
+	inquiryBgDesktopWidth: z.number().optional(),
+	inquiryBgDesktopHeight: z.number().optional(),
 	heroTitle: z.string().max(200).optional(),
 	heroSubtitle: z.string().max(300).optional(),
 	heroBulletPoints: z.array(z.string().max(100)).max(6).optional(),
 	heroBgMobile: z.string().optional(),
 	heroBgDesktop: z.string().optional(),
+	heroBgMobileWidth: z.number().optional(),
+	heroBgMobileHeight: z.number().optional(),
+	heroBgDesktopWidth: z.number().optional(),
+	heroBgDesktopHeight: z.number().optional(),
 	seo: categorySeoSchema.optional(),
 });
 

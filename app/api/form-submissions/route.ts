@@ -88,6 +88,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "brochure_request") {
+			submission = await formSubmissionService.createBrochureRequest(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

@@ -8,10 +8,7 @@ const nextConfig = {
 	typescript: {
 		ignoreBuildErrors: true,
 	},
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
-	turbopack: {
+turbopack: {
 		root: __dirname,
 	},
 	webpack: (config, { isServer }) => {
@@ -23,6 +20,21 @@ const nextConfig = {
 	},
 	async redirects() {
 		return [
+			{
+				source: "/produkter",
+				destination: "/klinikutrustning",
+				permanent: true,
+			},
+			{
+				source: "/utrustning",
+				destination: "/klinikutrustning",
+				permanent: true,
+			},
+			{
+				source: "/utrustning/:path*",
+				destination: "/klinikutrustning/:path*",
+				permanent: true,
+			},
 			{
 				source: "/kategori",
 				destination: "/klinikutrustning",

@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TreeSelect } from "./TreeSelect";
 import { MediaPicker } from "@/components/storage";
+import { ImagePickerWithDimensions } from "./ImagePickerWithDimensions";
 import { SeoPreview, SeoAnalysis, CharacterCount } from "./seo";
 import TextEditor from "@/components/common/TextEditor";
 import {
@@ -36,6 +37,8 @@ type CategoryFormData = {
 	description?: string;
 	parent?: string | null;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
 	order?: number;
 	faqTitle?: string;
 	faqs?: Array<{
@@ -46,11 +49,19 @@ type CategoryFormData = {
 	}>;
 	inquiryBgMobile?: string;
 	inquiryBgDesktop?: string;
+	inquiryBgMobileWidth?: number;
+	inquiryBgMobileHeight?: number;
+	inquiryBgDesktopWidth?: number;
+	inquiryBgDesktopHeight?: number;
 	heroTitle?: string;
 	heroSubtitle?: string;
 	heroBulletPoints?: string[];
 	heroBgMobile?: string;
 	heroBgDesktop?: string;
+	heroBgMobileWidth?: number;
+	heroBgMobileHeight?: number;
+	heroBgDesktopWidth?: number;
+	heroBgDesktopHeight?: number;
 	seo?: {
 		title?: string;
 		description?: string;
@@ -110,11 +121,21 @@ export function CategoryForm({
 				})) || [],
 			inquiryBgMobile: (category as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || "",
 			inquiryBgDesktop: (category as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || "",
+			inquiryBgMobileWidth: (category as unknown as { inquiryBgMobileWidth?: number })?.inquiryBgMobileWidth,
+			inquiryBgMobileHeight: (category as unknown as { inquiryBgMobileHeight?: number })?.inquiryBgMobileHeight,
+			inquiryBgDesktopWidth: (category as unknown as { inquiryBgDesktopWidth?: number })?.inquiryBgDesktopWidth,
+			inquiryBgDesktopHeight: (category as unknown as { inquiryBgDesktopHeight?: number })?.inquiryBgDesktopHeight,
 			heroTitle: (category as unknown as { heroTitle?: string })?.heroTitle || "",
 			heroSubtitle: (category as unknown as { heroSubtitle?: string })?.heroSubtitle || "",
 			heroBulletPoints: (category as unknown as { heroBulletPoints?: string[] })?.heroBulletPoints || [],
 			heroBgMobile: (category as unknown as { heroBgMobile?: string })?.heroBgMobile || "",
 			heroBgDesktop: (category as unknown as { heroBgDesktop?: string })?.heroBgDesktop || "",
+			heroBgMobileWidth: (category as unknown as { heroBgMobileWidth?: number })?.heroBgMobileWidth,
+			heroBgMobileHeight: (category as unknown as { heroBgMobileHeight?: number })?.heroBgMobileHeight,
+			heroBgDesktopWidth: (category as unknown as { heroBgDesktopWidth?: number })?.heroBgDesktopWidth,
+			heroBgDesktopHeight: (category as unknown as { heroBgDesktopHeight?: number })?.heroBgDesktopHeight,
+			imageWidth: (category as unknown as { imageWidth?: number })?.imageWidth,
+			imageHeight: (category as unknown as { imageHeight?: number })?.imageHeight,
 			seo: {
 				title: category?.seo?.title || "",
 				description: category?.seo?.description || "",
@@ -344,56 +365,49 @@ export function CategoryForm({
 				</div>
 
 				{/* Hero Background — Mobile */}
-				<div className="space-y-2">
-					<Label>Hero Background — Mobile</Label>
-					<p className="text-xs text-slate-500">Falls back to the default if not set.</p>
-					<MediaPicker
-						type="image"
-						value={watch("heroBgMobile") || null}
-						onChange={(url) => setValue("heroBgMobile", url || "", { shouldDirty: true })}
-						placeholder="Select mobile hero background"
-						disabled={isLoading}
-						galleryTitle="Select Mobile Hero Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Hero Background — Mobile"
+					hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("heroBgMobile") || null}
+					onChange={(url) => setValue("heroBgMobile", url || "", { shouldDirty: true })}
+					placeholder="Select mobile hero background"
+					galleryTitle="Select Mobile Hero Background"
+					disabled={isLoading}
+					widthInputProps={register("heroBgMobileWidth", { valueAsNumber: true })}
+					heightInputProps={register("heroBgMobileHeight", { valueAsNumber: true })}
+				/>
 
 				{/* Hero Background — Desktop */}
-				<div className="space-y-2">
-					<Label>Hero Background — Desktop</Label>
-					<p className="text-xs text-slate-500">Falls back to the default if not set.</p>
-					<MediaPicker
-						type="image"
-						value={watch("heroBgDesktop") || null}
-						onChange={(url) => setValue("heroBgDesktop", url || "", { shouldDirty: true })}
-						placeholder="Select desktop hero background"
-						disabled={isLoading}
-						galleryTitle="Select Desktop Hero Background"
-					/>
-				</div>
+				<ImagePickerWithDimensions
+					label="Hero Background — Desktop"
+					hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+					value={watch("heroBgDesktop") || null}
+					onChange={(url) => setValue("heroBgDesktop", url || "", { shouldDirty: true })}
+					placeholder="Select desktop hero background"
+					galleryTitle="Select Desktop Hero Background"
+					disabled={isLoading}
+					widthInputProps={register("heroBgDesktopWidth", { valueAsNumber: true })}
+					heightInputProps={register("heroBgDesktopHeight", { valueAsNumber: true })}
+				/>
 			</div>
 
 			<Separator className="my-8" />
 
 			{/* Category Image */}
-			<div className="space-y-2">
-				<Label>Category Image</Label>
-				<p className="text-xs text-slate-500">
-					Select an image from the media library or upload a new one.
-				</p>
-				<MediaPicker
-					type="image"
-					value={watch("image") || null}
-					onChange={(url) =>
-						setValue("image", url || "", { shouldDirty: true })
-					}
-					placeholder="Select category image"
-					disabled={isLoading}
-					galleryTitle="Select Category Image"
-				/>
-				{errors.image && (
-					<p className="text-sm text-red-500">{errors.image.message}</p>
-				)}
-			</div>
+			<ImagePickerWithDimensions
+				label="Category Image"
+				hint="Recommended: 800×800px • Ratio: 1:1 • Max: 5MB • Format: JPG, PNG, WebP"
+				value={watch("image") || null}
+				onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
+				placeholder="Select category image"
+				galleryTitle="Select Category Image"
+				disabled={isLoading}
+				widthInputProps={register("imageWidth", { valueAsNumber: true })}
+				heightInputProps={register("imageHeight", { valueAsNumber: true })}
+			/>
+			{errors.image && (
+				<p className="text-sm text-red-500">{errors.image.message}</p>
+			)}
 
 			<Separator className="my-8" />
 
@@ -518,44 +532,32 @@ export function CategoryForm({
 			<Separator className="my-8" />
 
 			{/* Contact Section Background — Mobile */}
-			<div className="space-y-2">
-				<Label>Contact Section Background — Mobile</Label>
-				<p className="text-xs text-slate-500">
-					Background image shown in the contact/form section on mobile devices.
-					Falls back to the default dark background if not set.
-				</p>
-				<MediaPicker
-					type="image"
-					value={watch("inquiryBgMobile") || null}
-					onChange={(url) =>
-						setValue("inquiryBgMobile", url || "", { shouldDirty: true })
-					}
-					placeholder="Select mobile contact background"
-					disabled={isLoading}
-					galleryTitle="Select Mobile Contact Background"
-				/>
-			</div>
+			<ImagePickerWithDimensions
+				label="Contact Section Background — Mobile"
+				hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+				value={watch("inquiryBgMobile") || null}
+				onChange={(url) => setValue("inquiryBgMobile", url || "", { shouldDirty: true })}
+				placeholder="Select mobile contact background"
+				galleryTitle="Select Mobile Contact Background"
+				disabled={isLoading}
+				widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
+				heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+			/>
 
 			<Separator className="my-8" />
 
 			{/* Contact Section Background — Desktop */}
-			<div className="space-y-2">
-				<Label>Contact Section Background — Desktop</Label>
-				<p className="text-xs text-slate-500">
-					Background image shown in the contact/form section on desktop.
-					Falls back to the default dark background if not set.
-				</p>
-				<MediaPicker
-					type="image"
-					value={watch("inquiryBgDesktop") || null}
-					onChange={(url) =>
-						setValue("inquiryBgDesktop", url || "", { shouldDirty: true })
-					}
-					placeholder="Select desktop contact background"
-					disabled={isLoading}
-					galleryTitle="Select Desktop Contact Background"
-				/>
-			</div>
+			<ImagePickerWithDimensions
+				label="Contact Section Background — Desktop"
+				hint="Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP"
+				value={watch("inquiryBgDesktop") || null}
+				onChange={(url) => setValue("inquiryBgDesktop", url || "", { shouldDirty: true })}
+				placeholder="Select desktop contact background"
+				galleryTitle="Select Desktop Contact Background"
+				disabled={isLoading}
+				widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
+				heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+			/>
 
 			<Separator className="my-8" />
 

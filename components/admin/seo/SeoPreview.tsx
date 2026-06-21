@@ -29,6 +29,7 @@ export interface SeoPreviewData {
 	siteUrl?: string;
 	siteName?: string;
 	productTitle?: string; // Fallback title from product
+	categorySlug?: string; // Used to build correct product URL
 }
 
 interface SeoPreviewProps {
@@ -50,9 +51,11 @@ function GoogleMobilePreview({
 	const displayDescription =
 		data.description ||
 		"Add a meta description to improve your search appearance.";
-	const displayUrl = `${data.siteUrl || defaultDomain} › produkter › ${
-		data.slug || "product-slug"
-	}`;
+	const displayUrl = data.categorySlug
+		? `${data.siteUrl || defaultDomain} › klinikutrustning › ${data.categorySlug} › ${data.slug || "product-slug"}`
+		: data.slug
+			? `${data.siteUrl || defaultDomain} › ${data.slug}`
+			: data.siteUrl || defaultDomain;
 
 	// Truncate title for mobile (typically ~60 chars visible)
 	const truncatedTitle =
@@ -121,9 +124,11 @@ function GoogleDesktopPreview({
 	const displayDescription =
 		data.description ||
 		"Add a meta description to improve your search appearance.";
-	const displayUrl = `https://${
-		data.siteUrl || defaultDomain
-	}/produkter/produkt/${data.slug || "product-slug"}`;
+	const displayUrl = data.categorySlug
+		? `https://${data.siteUrl || defaultDomain}/klinikutrustning/${data.categorySlug}/${data.slug || "product-slug"}`
+		: data.slug
+			? `https://${data.siteUrl || defaultDomain}/${data.slug}`
+			: `https://${data.siteUrl || defaultDomain}`;
 
 	// Desktop shows more characters
 	const truncatedTitle =

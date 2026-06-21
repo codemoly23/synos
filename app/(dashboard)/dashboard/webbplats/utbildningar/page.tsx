@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -363,6 +363,7 @@ export default function TrainingPageAdmin() {
 									<FormField control={form.control} name="featuredSection.image" render={({ field }) => (
 										<FormItem>
 											<FormLabel>Featured Image (Desktop)</FormLabel>
+											<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1920×1080px • Ratio: 16:9 • Max: 10MB • Format: JPG, PNG, WebP</p>
 											<FormControl>
 												<MediaPicker
 													type="image"
@@ -381,6 +382,7 @@ export default function TrainingPageAdmin() {
 									<FormField control={form.control} name="featuredSection.mobileImage" render={({ field }) => (
 										<FormItem>
 											<FormLabel>Featured Image (Mobile)</FormLabel>
+											<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 768×1024px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 											<FormControl>
 												<MediaPicker
 													type="image"
@@ -931,6 +933,7 @@ export default function TrainingPageAdmin() {
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>OG Image</FormLabel>
+														<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP</p>
 														<FormControl>
 															<MediaPicker
 																type="image"

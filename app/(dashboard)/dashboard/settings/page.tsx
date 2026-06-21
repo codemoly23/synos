@@ -112,6 +112,9 @@ const settingsFormSchema = z.object({
 	branding: z.object({
 		logoUrl: z.string().optional(),
 		faviconUrl: z.string().optional(),
+		productDefaultBackground: z.string().optional(),
+		productDefaultBackgroundWidth: z.number().optional(),
+		productDefaultBackgroundHeight: z.number().optional(),
 	}),
 
 	// Footer
@@ -226,6 +229,9 @@ export default function SettingsPage() {
 			branding: {
 				logoUrl: "",
 				faviconUrl: "",
+				productDefaultBackground: "",
+				productDefaultBackgroundWidth: undefined,
+				productDefaultBackgroundHeight: undefined,
 			},
 			footer: {
 				quickLinksTitle: "Snabblänkar",
@@ -333,6 +339,9 @@ export default function SettingsPage() {
 					branding: {
 						logoUrl: settings.branding?.logoUrl || "",
 						faviconUrl: settings.branding?.faviconUrl || "",
+						productDefaultBackground: settings.branding?.productDefaultBackground || "",
+						productDefaultBackgroundWidth: settings.branding?.productDefaultBackgroundWidth || undefined,
+						productDefaultBackgroundHeight: settings.branding?.productDefaultBackgroundHeight || undefined,
 					},
 					footer: {
 						quickLinksTitle: settings.footer?.quickLinksTitle || "Snabblänkar",
@@ -980,6 +989,9 @@ export default function SettingsPage() {
 											render={({ field }) => (
 												<FormItem>
 													<FormLabel>Default OG Image</FormLabel>
+													<p className="text-xs text-blue-600 dark:text-blue-400">
+														Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP
+													</p>
 													<FormControl>
 														<MediaPicker
 															type="image"
@@ -990,8 +1002,7 @@ export default function SettingsPage() {
 														/>
 													</FormControl>
 													<FormDescription>
-														Default social sharing image. Recommended size:
-														1200x630px (1.91:1 aspect ratio).
+														Default social sharing image used when no page-specific OG image is set.
 													</FormDescription>
 													<FormMessage />
 												</FormItem>
@@ -1088,6 +1099,9 @@ export default function SettingsPage() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Logo</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Recommended: SVG • Transparent background • Max: 1MB
+												</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -1098,8 +1112,7 @@ export default function SettingsPage() {
 													/>
 												</FormControl>
 												<FormDescription>
-													Recommended: SVG format for best quality at all sizes.
-													Used in navigation and footer.
+													SVG format for best quality at all sizes. Used in navigation and footer.
 												</FormDescription>
 												<FormMessage />
 											</FormItem>
@@ -1112,6 +1125,9 @@ export default function SettingsPage() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Favicon</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Recommended: 32×32px or 192×192px • Format: ICO, PNG
+												</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -1122,13 +1138,74 @@ export default function SettingsPage() {
 													/>
 												</FormControl>
 												<FormDescription>
-													Recommended: 32x32px ICO or PNG file. This is the
-													small icon shown in browser tabs.
+													Small icon shown in browser tabs. ICO or PNG format.
 												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}
 									/>
+
+									<FormField
+										control={form.control}
+										name="branding.productDefaultBackground"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Product Page Default Background</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Desktop: 1920×1080px • Ratio: 16:9 • Max: 15MB • Format: JPG, PNG, WebP
+												</p>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select default product background image"
+														galleryTitle="Select Product Background"
+													/>
+												</FormControl>
+												<FormDescription>
+													Global fallback background used on all product pages when no product-specific background is set.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div className="grid grid-cols-2 gap-4">
+										<FormField
+											control={form.control}
+											name="branding.productDefaultBackgroundWidth"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Width (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 1920"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="branding.productDefaultBackgroundHeight"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Height (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 1080"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+									</div>
 								</CardContent>
 							</Card>
 						</TabsContent>

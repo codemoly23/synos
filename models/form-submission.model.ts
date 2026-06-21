@@ -13,7 +13,8 @@ export type FormSubmissionType =
 	| "callback_request"
 	| "tour_request"
 	| "job_application"
-	| "hero_inquiry";
+	| "hero_inquiry"
+	| "brochure_request";
 
 /**
  * Form submission status
@@ -79,10 +80,14 @@ export interface IFormSubmission extends Document {
 	readAt?: Date;
 	readBy?: mongoose.Types.ObjectId;
 
+	// Brochure Request Specific
+	companyName?: string;
+
 	// Product Inquiry Specific
 	productId?: mongoose.Types.ObjectId;
 	productName?: string;
 	productSlug?: string;
+	productCategorySlug?: string;
 	helpType?: HelpType;
 
 	// Training Inquiry Specific
@@ -152,7 +157,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		// Form Type
 		type: {
 			type: String,
-			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application", "hero_inquiry"],
+			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application", "hero_inquiry", "brochure_request"],
 			required: [true, "Form type is required"],
 			index: true,
 		},
@@ -239,6 +244,14 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			default: null,
 		},
 
+		// Brochure / Quote / Hero Request Specific
+		companyName: {
+			type: String,
+			trim: true,
+			maxlength: [200, "Company name cannot exceed 200 characters"],
+			default: null,
+		},
+
 		// Product Inquiry Specific
 		productId: {
 			type: Schema.Types.ObjectId,
@@ -256,6 +269,12 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			type: String,
 			trim: true,
 			maxlength: [200, "Product slug cannot exceed 200 characters"],
+			default: null,
+		},
+		productCategorySlug: {
+			type: String,
+			trim: true,
+			maxlength: [200, "Product category slug cannot exceed 200 characters"],
 			default: null,
 		},
 		helpType: {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -694,6 +694,7 @@ export default function LegalPageAdmin() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Image (Desktop)</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1920×800px • Ratio: ~21:9 • Max: 15MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -715,6 +716,7 @@ export default function LegalPageAdmin() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Image (Mobile)</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 768×1024px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -769,6 +771,7 @@ export default function LegalPageAdmin() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Section Image (Desktop)</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1200×800px • Ratio: 3:2 • Max: 10MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -790,6 +793,7 @@ export default function LegalPageAdmin() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Section Image (Mobile)</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 768×1024px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -1199,6 +1203,7 @@ export default function LegalPageAdmin() {
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Video Thumbnail</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1280×720px • Ratio: 16:9 • Max: 5MB • Format: JPG, PNG, WebP</p>
 												<FormControl>
 													<MediaPicker
 														type="image"
@@ -2111,6 +2116,7 @@ export default function LegalPageAdmin() {
 												render={({ field }) => (
 													<FormItem>
 														<FormLabel>OG Image</FormLabel>
+														<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP</p>
 														<FormControl>
 															<MediaPicker
 																type="image"

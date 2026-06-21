@@ -230,6 +230,18 @@
   h6 {
     @apply font-heading font-semibold tracking-tight;
   }
+
+  p {
+    font-size: 1.125rem;
+  }
+
+  .sun-editor p,
+  .sun-editor-editable p,
+  [data-radix-popper-content-wrapper] p,
+  [role="menu"] p,
+  [role="dialog"] p {
+    font-size: inherit;
+  }
 }
 
 /* ============================================

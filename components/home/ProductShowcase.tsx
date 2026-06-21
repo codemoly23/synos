@@ -16,7 +16,6 @@ interface ProductShowcaseProps {
 }
 
 export function ProductShowcase({ data }: ProductShowcaseProps) {
-	// Filter out products without required data
 	const validProducts = (data?.products ?? []).filter(
 		(p) => p.name && p.image
 	);
@@ -52,12 +51,102 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 				</div>
 			</div>
 
-			{/* Product Carousel */}
-			<div className="max-w-[1920px] w-full mx-auto px-8 lg:px-16">
+			{/* ── MOBILE: Horizontal Swiper carousel ── */}
+			<div className="md:hidden">
+				<Swiper
+					modules={[Autoplay, FreeMode]}
+					spaceBetween={16}
+					slidesPerView={1.15}
+					freeMode={{
+						enabled: true,
+						momentumRatio: 0.5,
+					}}
+					autoplay={{
+						delay: 4000,
+						disableOnInteraction: true,
+						pauseOnMouseEnter: true,
+					}}
+					slidesOffsetBefore={16}
+					slidesOffsetAfter={16}
+					className="overflow-hidden"
+				>
+					{validProducts.map((product, index) => (
+						<SwiperSlide key={index}>
+							<Link
+								href={
+									product.href ||
+									`/produkter/${(product.name || "product")
+										.toLowerCase()
+										.replace(/\s+/g, "-")}`
+								}
+								className="block group"
+							>
+								<div className="rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100">
+									{/* Image with category badge overlay */}
+									<div className="relative w-full h-64 overflow-hidden bg-slate-100">
+										<ImageComponent
+											src={product.mobileImage || product.image}
+											alt={product.name || "Product"}
+											fill
+											className="object-cover group-hover:scale-105 transition-transform duration-500"
+											loading={index < 2 ? "eager" : "lazy"}
+											sizes="90vw"
+										/>
+										{product.category && (
+											<span className="absolute top-3 left-3 z-10 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+												{product.category}
+											</span>
+										)}
+									</div>
+
+									{/* Content */}
+									<div className="px-4 pt-4 pb-5">
+										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors mb-1">
+											{product.name}
+										</h3>
+										{product.description && (
+											<p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">
+												{product.description}
+											</p>
+										)}
+										{product.category && (
+											<div className="flex flex-wrap gap-2">
+												<span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
+													{product.category}
+												</span>
+											</div>
+										)}
+										<div className="flex items-center justify-between mt-3">
+											<span className="text-base text-slate-500">Läs mer</span>
+											<div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary transition-colors">
+												<ArrowRight className="h-4 w-4 text-white" />
+											</div>
+										</div>
+									</div>
+								</div>
+							</Link>
+						</SwiperSlide>
+					))}
+				</Swiper>
+
+				{/* Mobile View All Button */}
+				{data?.ctaText && data?.ctaHref && (
+					<div className="_container mt-4">
+						<Button variant="outline" className="w-full" asChild>
+							<Link href={data.ctaHref}>
+								{data.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
+							</Link>
+						</Button>
+					</div>
+				)}
+			</div>
+
+			{/* ── DESKTOP: Swiper carousel (unchanged) ── */}
+			<div className="hidden md:block max-w-[1920px] w-full mx-auto px-8 lg:px-16">
 				<Swiper
 					modules={[Autoplay, FreeMode]}
 					spaceBetween={20}
-					slidesPerView={1.2}
+					slidesPerView={1.8}
 					freeMode={{
 						enabled: true,
 						momentumRatio: 0.5,
@@ -68,7 +157,6 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 						pauseOnMouseEnter: true,
 					}}
 					breakpoints={{
-						480: { slidesPerView: 1.3, spaceBetween: 20 },
 						640: { slidesPerView: 1.8, spaceBetween: 24 },
 						1024: { slidesPerView: 2.5, spaceBetween: 28 },
 						1280: { slidesPerView: 3, spaceBetween: 28 },
@@ -86,7 +174,6 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 								}
 								className="block h-full group"
 							>
-								{/* Card */}
 								<div className="h-full flex flex-col bg-white rounded-2xl overflow-hidden">
 									{/* Image */}
 									<div className="relative aspect-4/3 overflow-hidden bg-slate-100 rounded-2xl">
@@ -99,21 +186,9 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 													loading={index < 2 ? "eager" : "lazy"}
 													height={0}
 													width={0}
-													sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 25vw"
-													wrapperClasses={`w-full h-full ${product.mobileImage ? "hidden md:block" : ""}`}
+													sizes="(max-width: 1024px) 45vw, 25vw"
+													wrapperClasses="w-full h-full"
 												/>
-												{product.mobileImage && (
-													<ImageComponent
-														src={product.mobileImage}
-														alt={product.name || "Product"}
-														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-														loading={index < 2 ? "eager" : "lazy"}
-														height={0}
-														width={0}
-														sizes="85vw"
-														wrapperClasses="w-full h-full md:hidden"
-													/>
-												)}
 											</>
 										)}
 									</div>
@@ -133,12 +208,8 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 												{product.description}
 											</p>
 										)}
-
-										{/* Read more + arrow */}
 										<div className="flex items-center justify-between mt-3">
-											<span className="text-base text-slate-500">
-												Läs mer
-											</span>
+											<span className="text-base text-slate-500">Läs mer</span>
 											<div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary transition-colors">
 												<ArrowRight className="h-4 w-4 text-white" />
 											</div>
@@ -149,18 +220,17 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 						</SwiperSlide>
 					))}
 				</Swiper>
-			</div>
 
-			{/* Mobile View All Button */}
-			{data?.ctaText && data?.ctaHref && (
-				<div className="_container px-8 mt-6 md:hidden">
-					<Button variant="outline" className="w-full" asChild>
-						<Link href={data.ctaHref}>
-							{data.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
-						</Link>
-					</Button>
-				</div>
-			)}
+				{data?.ctaText && data?.ctaHref && (
+					<div className="_container px-0 mt-6">
+						<Button variant="outline" className="w-full md:hidden" asChild>
+							<Link href={data.ctaHref}>
+								{data.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
+							</Link>
+						</Button>
+					</div>
+				)}
+			</div>
 		</section>
 	);
 }

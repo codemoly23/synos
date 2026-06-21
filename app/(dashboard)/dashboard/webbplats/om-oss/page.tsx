@@ -562,6 +562,7 @@ export default function AboutPageCMS() {
 
 							<div className="space-y-2">
 								<Label>Featured Image (Desktop)</Label>
+								<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1200×900px • Ratio: 4:3 • Max: 10MB • Format: JPG, PNG, WebP</p>
 								<MediaPicker
 									type="image"
 									value={form.watch("mission.image") || null}
@@ -576,6 +577,7 @@ export default function AboutPageCMS() {
 
 							<div className="space-y-2">
 								<Label>Featured Image (Mobile)</Label>
+								<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 768×1024px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 								<MediaPicker
 									type="image"
 									value={form.watch("mission.mobileImage") || null}
@@ -792,6 +794,7 @@ export default function AboutPageCMS() {
 											</div>
 											<div className="space-y-1">
 												<Label className="text-xs">Desktop Image</Label>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1200×800px • Ratio: 3:2 • Max: 10MB • Format: JPG, PNG, WebP</p>
 												<MediaPicker
 													type="image"
 													value={form.watch(`imageGallery.images.${index}.src`) || null}
@@ -804,6 +807,7 @@ export default function AboutPageCMS() {
 											</div>
 											<div className="space-y-1">
 												<Label className="text-xs">Mobile Image</Label>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 768×1024px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
 												<MediaPicker
 													type="image"
 													value={form.watch(`imageGallery.images.${index}.mobileSrc`) || null}
@@ -1041,6 +1045,7 @@ export default function AboutPageCMS() {
 
 										<div className="space-y-2">
 											<Label>Author Image (optional)</Label>
+											<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 200×200px • Ratio: 1:1 • Max: 2MB • Format: JPG, PNG, WebP</p>
 											<MediaPicker
 												type="image"
 												value={
@@ -1080,6 +1085,7 @@ export default function AboutPageCMS() {
 										</div>
 										<div className="space-y-2">
 											<Label>Background Image</Label>
+											<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 1920×600px • Ratio: ~16:5 • Max: 10MB • Format: JPG, PNG, WebP</p>
 											<MediaPicker
 												type="image"
 												value={form.watch("testimonials.groupCooperation.backgroundImage") || null}
@@ -1130,6 +1136,7 @@ export default function AboutPageCMS() {
 													</div>
 													<div className="space-y-2">
 														<Label>Avatar Image</Label>
+														<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 200×200px • Ratio: 1:1 • Max: 2MB • Format: JPG, PNG, WebP</p>
 														<MediaPicker
 															type="image"
 															value={form.watch(`testimonials.groupCooperation.teamMembers.${index}.image`) || null}
@@ -1223,6 +1230,7 @@ export default function AboutPageCMS() {
 											</div>
 											<div className="space-y-2">
 												<Label>Logo</Label>
+												<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 300×150px • Transparent PNG • Max: 1MB • Format: PNG, SVG, WebP</p>
 												<MediaPicker
 													type="image"
 													value={
@@ -1372,6 +1380,7 @@ export default function AboutPageCMS() {
 
 									<div className="space-y-2">
 										<Label>Open Graph Image</Label>
+										<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 1200×630px • Ratio: 1.91:1 • Max: 5MB • Format: JPG, PNG, WebP</p>
 										<MediaPicker
 											type="image"
 											value={form.watch("seo.ogImage") || null}
