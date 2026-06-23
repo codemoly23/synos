@@ -1,7 +1,7 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-	// baseURL: "/api/auth", // matches the mounted route
+	baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
 });
 
 // helper exports
