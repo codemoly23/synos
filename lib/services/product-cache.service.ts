@@ -242,6 +242,46 @@ export const getTechnologyGroupByName = unstable_cache(
 );
 
 /**
+ * Get a single technology group by slug (for /klinikutrustning/teknologi/[slug])
+ */
+export const getTechnologyGroupBySlug = unstable_cache(
+	async (slug: string): Promise<TechnologyGroupDetail | null> => {
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const group = await TechnologyGroup.findOne({ slug, isActive: true }).lean();
+		if (!group) return null;
+		const rawFaqs = Array.isArray(group.faqs) ? group.faqs : [];
+		return {
+			_id: group._id.toString(),
+			name: group.name,
+			slug: group.slug,
+			description: group.description || "",
+			image: group.image || null,
+			heroTitle: group.heroTitle || "",
+			heroSubtitle: group.heroSubtitle || "",
+			heroBulletPoints: Array.isArray(group.heroBulletPoints) ? group.heroBulletPoints : [],
+			heroBgMobile: group.heroBgMobile || null,
+			heroBgDesktop: group.heroBgDesktop || null,
+			inquiryBgMobile: group.inquiryBgMobile || null,
+			inquiryBgDesktop: group.inquiryBgDesktop || null,
+			order: group.order,
+			faqTitle: group.faqTitle || "",
+			faqs: rawFaqs.map((f, idx) => ({
+				_id: f._id?.toString() || `tech-faq-${idx}`,
+				question: f.question,
+				answer: f.answer,
+				visible: f.visible ?? true,
+			})),
+			seo: group.seo,
+		};
+	},
+	["technology-group-by-slug"],
+	{
+		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+/**
  * Get category by slug with ISR caching (24 hours)
  */
 export const getCategoryBySlug = unstable_cache(

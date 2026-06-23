@@ -176,7 +176,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																					{tech.products.length > 0 && (
 																						<li>
 																						<Link
-																							href="/klinikutrustning"
+																							href={`/klinikutrustning/teknologi/${tech.slug}`}
 																							className="block text-sm text-primary font-medium hover:underline mt-1"
 																							onClick={() => setMenuValue("")}
 																						>

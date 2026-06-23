@@ -150,7 +150,7 @@ const toggleCategory = (categoryId: string) => {
 																</Link>
 															))}
 															<Link
-																href="/klinikutrustning"
+																href={`/klinikutrustning/teknologi/${tech.slug}`}
 																className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
 																onClick={() => setOpen(false)}
 															>

@@ -25,7 +25,7 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { technologyMap } from "@/config/technology-map";
+import { getActiveTechnologyGroupNames } from "@/lib/services/product-cache.service";
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
@@ -294,12 +294,16 @@ function ProductCardDB({
 	);
 }
 
+type TechGroupItem = { _id: string; name: string; slug: string; order: number };
+
 // Sidebar Component
 function KategoriSidebar({
 	categories,
+	techGroups,
 	activeCategory,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	activeCategory?: string;
 }) {
 	return (
@@ -357,15 +361,18 @@ function KategoriSidebar({
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{technologyMap.map((tech) => (
+						{techGroups.map((tech) => (
 							<Link
-								key={tech.name}
-								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								key={tech._id}
+								href={`/klinikutrustning/teknologi/${tech.slug}`}
 								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
 								{tech.name}
 							</Link>
 						))}
+						{techGroups.length === 0 && (
+							<p className="px-3 py-2 text-sm text-muted-foreground">Inga teknologier</p>
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -444,9 +451,11 @@ function KategoriSidebar({
 // Mobile Drawer Component
 function MobileDrawer({
 	categories,
+	techGroups,
 	activeCategory,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	activeCategory: string;
 }) {
 	return (
@@ -461,7 +470,7 @@ function MobileDrawer({
 					<DrawerTitle className="sr-only">Filter</DrawerTitle>
 					<div className="max-h-[90vh] p-3 overflow-y-auto">
 						<KategoriSidebar
-							categories={categories}
+							categories={categories} techGroups={techGroups}
 							activeCategory={activeCategory}
 						/>
 					</div>
@@ -483,9 +492,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const [products, contactInfo] = await Promise.all([
+	const [products, contactInfo, techGroups] = await Promise.all([
 		getProductsByCategory(category._id.toString()),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
+		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
 	]);
 
 	const heroConfig = categoryHeroConfig[categorySlug];
@@ -632,12 +642,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					<div className="w-full lg:w-80 lg:shrink-0">
 						<div className="lg:sticky lg:top-28 hidden sm:block">
 							<KategoriSidebar
-								categories={categories}
+								categories={categories} techGroups={techGroups}
 								activeCategory={categorySlug}
 							/>
 						</div>
 						<MobileDrawer
-							categories={categories}
+							categories={categories} techGroups={techGroups}
 							activeCategory={categorySlug}
 						/>
 					</div>

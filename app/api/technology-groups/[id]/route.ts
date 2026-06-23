@@ -128,6 +128,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		revalidateTag("technology-groups", "default");
 		revalidateTag("products", "default");
 		revalidatePath("/produkter");
+			if (group.slug) revalidatePath(`/klinikutrustning/teknologi/${group.slug}`);
 
 		return successResponse(group, "Technology group updated successfully");
 	} catch (error: unknown) {
@@ -167,6 +168,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 		revalidateTag("technology-groups", "default");
 		revalidateTag("products", "default");
 		revalidatePath("/produkter");
+			if (group.slug) revalidatePath(`/klinikutrustning/teknologi/${group.slug}`);
 
 		return successResponse(null, "Technology group deleted successfully");
 	} catch {

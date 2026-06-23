@@ -1,16 +1,17 @@
-﻿import { Metadata } from "next";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSiteConfig } from "@/config/site";
 import {
-	getPublishedProducts,
+	getNewestProducts,
 	getActiveCategories,
 	getActiveTechnologyGroupNames,
+	getTechnologyGroupBySlug,
 } from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
@@ -26,104 +27,93 @@ import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
-import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
 /**
- * Fallback FAQ used if the database fetch fails. The DB is auto-seeded with
- * the same content on first read (see klinikutrustning-page model defaults),
- * so this fallback only kicks in on a hard error.
- */
-const FALLBACK_FAQ_TITLE = "Vanliga frågor om klinikutrustning";
-const FALLBACK_FAQS: Array<{
-	_id: string;
-	question: string;
-	answer: string;
-	visible: boolean;
-	order: number;
-}> = [
-	{
-		_id: "klinik-faq-1",
-		question: "Vilken laser passar bäst för min klinik?",
-		answer:
-			"<p>Valet av laser beror på vilka behandlingar du vill erbjuda och din målgrupp. För hårborttagning passar alexandrit- och Nd:YAG-lasrar bäst, medan tatueringsborttagning kräver Q-switched-teknik. Kontakta oss för en kostnadsfri behovsanalys där vi hjälper dig att hitta rätt utrustning.</p>",
-		visible: true,
-		order: 0,
-	},
-	{
-		_id: "klinik-faq-2",
-		question: "Är det säkert att använda laserutrustning på alla hudtyper?",
-		answer:
-			"<p>Ja, men det kräver rätt utrustning och rätt inställningar. Våra maskiner är utvecklade för att kunna anpassas till samtliga hudtyper enligt Fitzpatrick-skalan. Vid operatörsutbildningen får ni komplett kunskap om hur ni säkert behandlar olika hudtyper.</p>",
-		visible: true,
-		order: 1,
-	},
-	{
-		_id: "klinik-faq-3",
-		question: "Hur lång är leveranstiden på en ny maskin?",
-		answer:
-			"<p>Leveranstiden varierar mellan 2–6 veckor beroende på modell och tillgänglighet i lager. Vid akut behov kan vi i många fall ordna ersättningsmaskin under tiden. Kontakta oss för aktuella leveranstider.</p>",
-		visible: true,
-		order: 2,
-	},
-	{
-		_id: "klinik-faq-4",
-		question: "Erbjuder ni service och reparationer?",
-		answer:
-			"<p>Ja, vi har egen serviceavdelning med certifierade tekniker. Vi erbjuder både planerat underhåll och akuta reparationer, med en garanterad responstid på 48 arbetstimmar. Under serviceperioder kan ni få tillgång till en ersättningsmaskin.</p>",
-		visible: true,
-		order: 3,
-	},
-	{
-		_id: "klinik-faq-5",
-		question: "Kan jag se en maskin innan jag köper?",
-		answer:
-			"<p>Absolut. Vi erbjuder kostnadsfria demonstrationer både hos er klinik och på vårt huvudkontor. Vid demonstrationen får ni testa maskinen, ställa frågor till våra experter och få en personlig ROI-beräkning för din verksamhet.</p>",
-		visible: true,
-		order: 4,
-	},
-];
-
-/**
- * Kategori (Category) Main Listing Page
+ * Technology Group Landing Page
  *
- * URL: /klinikutrustning/
- * Shows all products with category sidebar filter
- * This is an alias for /klinikutrustning with "Kategori" branding
+ * URL: /klinikutrustning/teknologi/[slug]
+ * Mirrors the KATEGORI "Visa alla" pattern (path-based, under /klinikutrustning)
+ * for technology groups. Resolves the group by slug, lists products whose
+ * `technologyGroups` array contains the group name, and renders the group's
+ * own hero / FAQ / inquiry form. The existing /produkter?technology= page is
+ * left untouched.
  */
 
-// ISR: Revalidate every 24 hours
+// ISR: Revalidate every 60 seconds
 export const revalidate = 60;
 
-export async function generateMetadata(): Promise<Metadata> {
-	try {
-		const siteConfig = await getSiteConfig();
+// Allow new technology groups to be generated on-demand
+export const dynamicParams = true;
 
-		return {
-			title: `Kategori | ${siteConfig.name}`,
-			description:
-				"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer. MDR-certifierade lasermaskiner från DEKA.",
-			openGraph: {
-				title: `Kategori | ${siteConfig.name}`,
-				description:
-					"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-				url: `${siteConfig.url}/kategori`,
-				siteName: siteConfig.name,
-				locale: "sv_SE",
-				type: "website",
-			},
-			alternates: {
-				canonical: `${siteConfig.url}/kategori`,
-			},
-		};
-	} catch {
-		return { title: "Klinikutrustning | Synos Medical" };
+interface TeknologiPageProps {
+	params: Promise<{ slug: string }>;
+}
+
+type TechGroupItem = { _id: string; name: string; slug: string; order: number };
+
+/**
+ * Pre-render all active technology group slugs at build time.
+ */
+export async function generateStaticParams() {
+	try {
+		const groups = await getActiveTechnologyGroupNames();
+		return groups.filter((g) => g.slug).map((g) => ({ slug: g.slug }));
+	} catch (error) {
+		console.error("Error generating static params for technology groups:", error);
+		return [];
 	}
 }
 
-// Product Card Component for Database Products
+function stripHtml(html: string): string {
+	return html.replace(/<[^>]*>/g, "").trim();
+}
+
+export async function generateMetadata({
+	params,
+}: TeknologiPageProps): Promise<Metadata> {
+	const { slug } = await params;
+	const [group, siteConfig] = await Promise.all([
+		getTechnologyGroupBySlug(slug),
+		getSiteConfig(),
+	]);
+
+	if (!group) {
+		return {
+			title: `Teknologi hittades inte | ${siteConfig.name}`,
+			robots: { index: false, follow: false },
+		};
+	}
+
+	const seoTitle = group.seo?.title || `${group.name} | Teknologi | ${siteConfig.name}`;
+	const seoDescription =
+		group.seo?.description ||
+		(group.description
+			? stripHtml(group.description).slice(0, 160)
+			: `Utforska vårt sortiment inom ${group.name}. MDR-certifierad utrustning från DEKA.`);
+	const ogImage = group.seo?.ogImage || group.image || undefined;
+	const canonical = `${siteConfig.url}/klinikutrustning/teknologi/${group.slug}`;
+
+	return {
+		title: seoTitle,
+		description: seoDescription,
+		openGraph: {
+			title: group.seo?.title || `${group.name} | ${siteConfig.name}`,
+			description: seoDescription,
+			url: canonical,
+			siteName: siteConfig.name,
+			locale: "sv_SE",
+			type: "website",
+			...(ogImage ? { images: [{ url: ogImage.startsWith("http") ? ogImage : `${siteConfig.url}${ogImage}`, alt: group.name }] } : {}),
+		},
+		alternates: { canonical },
+		robots: group.seo?.noindex ? { index: false, follow: true } : undefined,
+	};
+}
+
+// Product Card Component
 function ProductCardDB({
 	product,
 	categorySlug,
@@ -132,12 +122,10 @@ function ProductCardDB({
 	categorySlug: string;
 }) {
 	const primaryImage = product.overviewImage || product.productImages?.[0];
-
 	return (
 		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`} className="h-full">
 			<Card className="group h-full flex flex-col overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
-				{/* Image */}
-				<div className="relative aspect-4/3 overflow-hidden bg-primary/50 shrink-0">
+				<div className="relative aspect-square overflow-hidden bg-white p-4 shrink-0">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
@@ -146,14 +134,14 @@ function ProductCardDB({
 						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 						showLoader
 						wrapperClasses="w-full h-full"
-						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
+						className="object-contain transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
 				<div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">
 					<h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary line-clamp-2">
 						{product.title}
 					</h3>
-					<p className="text-sm text-muted-foreground line-clamp-2">
+					<p className="text-base text-muted-foreground line-clamp-2">
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
@@ -166,46 +154,25 @@ function ProductCardDB({
 	);
 }
 
-const staticCategories = [
-	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning" },
-	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning" },
-	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser" },
-	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar" },
-	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom" },
-	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-];
-
-type TechGroupItem = { _id: string; name: string; slug: string; order: number };
-
 // Sidebar Component
-function KategoriSidebar({
+function TeknologiSidebar({
 	categories,
 	techGroups,
-	activeCategory,
-	selectedTech,
+	activeSlug,
 }: {
 	categories: ICategory[];
 	techGroups: TechGroupItem[];
-	activeCategory?: string;
-	selectedTech?: string;
+	activeSlug: string;
 }) {
 	return (
 		<aside className="space-y-4">
-			{/* Behandlingskategorier Card */}
+			{/* Behandlingskategorier Card — from DB */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
-					<CardTitle className="text-xl font-semibold">
-						Behandlingskategorier
-					</CardTitle>
+					<CardTitle className="text-xl font-semibold">Behandlingskategorier</CardTitle>
 					<Link
 						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 					>
 						Alla Produkter
 					</Link>
@@ -213,10 +180,10 @@ function KategoriSidebar({
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{staticCategories.map((cat) => (
+						{categories.map((cat) => (
 							<Link
-								key={cat.name}
-								href={cat.href}
+								key={cat._id.toString()}
+								href={`/klinikutrustning/${cat.slug}`}
 								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
 								{cat.name}
@@ -226,15 +193,13 @@ function KategoriSidebar({
 				</CardContent>
 			</Card>
 
-			{/* Technology Category Card */}
+			{/* Technology Category Card — from DB, links to this route */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm p-0!">
 				<CardHeader className="px-3 py-2">
-					<CardTitle className="text-xl font-semibold">
-						Technology Category
-					</CardTitle>
+					<CardTitle className="text-xl font-semibold">Teknologikategori</CardTitle>
 					<Link
-						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						href="/klinikutrustning"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 					>
 						Alla Teknologier
 					</Link>
@@ -246,7 +211,11 @@ function KategoriSidebar({
 							<Link
 								key={tech._id}
 								href={`/klinikutrustning/teknologi/${tech.slug}`}
-								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+									activeSlug === tech.slug
+										? "bg-primary text-primary-foreground"
+										: "text-foreground hover:bg-primary/20"
+								}`}
 							>
 								{tech.name}
 							</Link>
@@ -261,9 +230,7 @@ function KategoriSidebar({
 			{/* Quick Info Card */}
 			<Card className="border-primary/50 bg-linear-to-br from-primary/20 to-slate-100">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-base font-semibold text-foreground">
-						Behöver du hjälp?
-					</CardTitle>
+					<CardTitle className="text-base font-semibold text-foreground">Behöver du hjälp?</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<p className="text-sm text-foreground">
@@ -281,9 +248,7 @@ function KategoriSidebar({
 			{/* Features Card */}
 			<Card className="border-primary/50 bg-card/80 backdrop-blur-sm">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-base font-semibold text-foreground">
-						Varför välja Synos?
-					</CardTitle>
+					<CardTitle className="text-base font-semibold text-foreground">Varför välja Synos?</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<div className="flex items-start space-x-3">
@@ -320,7 +285,15 @@ function KategoriSidebar({
 }
 
 // Mobile Drawer Component
-function MobileDrawer({ categories, techGroups }: { categories: ICategory[]; techGroups: TechGroupItem[] }) {
+function MobileDrawer({
+	categories,
+	techGroups,
+	activeSlug,
+}: {
+	categories: ICategory[];
+	techGroups: TechGroupItem[];
+	activeSlug: string;
+}) {
 	return (
 		<div className="flex justify-end">
 			<Drawer>
@@ -332,7 +305,7 @@ function MobileDrawer({ categories, techGroups }: { categories: ICategory[]; tec
 				<DrawerContent className="p-0! rounded-t-sm">
 					<DrawerTitle className="sr-only">Filter</DrawerTitle>
 					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KategoriSidebar categories={categories} techGroups={techGroups} />
+						<TeknologiSidebar categories={categories} techGroups={techGroups} activeSlug={activeSlug} />
 					</div>
 				</DrawerContent>
 			</Drawer>
@@ -340,65 +313,70 @@ function MobileDrawer({ categories, techGroups }: { categories: ICategory[]; tec
 	);
 }
 
-export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups] = await Promise.all([
+export default async function TeknologiPage({ params }: TeknologiPageProps) {
+	const { slug } = await params;
+
+	const group = await getTechnologyGroupBySlug(slug);
+	if (!group) {
+		notFound();
+	}
+
+	const [products, categories, techGroups, contactInfo] = await Promise.all([
+		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
-		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
-		getContactInfo().catch(() => ({ phone: "", email: "" })),
-		getKlinikutrustningFaqSection().catch(() => ({
-			title: FALLBACK_FAQ_TITLE,
-			faqs: FALLBACK_FAQS,
-		})),
-		getKlinikutrustningHeroSection().catch(() => null),
-		getKlinikutrustningPage().catch(() => null),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		getContactInfo().catch(() => ({ phone: "", email: "" })),
 	]);
 
-	const heroTitle = heroSection?.title || "Motus Pro";
-	const heroSubtitle = heroSection?.subtitle || "Avancerad laserplattform för professionella behandlingar";
-	const heroBullets = heroSection?.bulletPoints?.length
-		? heroSection.bulletPoints
-		: ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
-	const heroBgMobile = heroSection?.bgMobile || "/Mobile_bilder/Motus_pro.webp";
-	const heroBgDesktop = heroSection?.bgDesktop || "/images/Product detail breadcrumbs background.jpeg";
+	// Filter products to this technology group (matched by name on the product).
+	const filteredProducts = products.filter((p) =>
+		((p as unknown as { technologyGroups?: string[] }).technologyGroups || []).includes(group.name)
+	);
 
-	// Sort by `order` then filter to only visible items; normalize _id to string.
-	const faqTitle = faqSection?.title || FALLBACK_FAQ_TITLE;
-	const rawFaqs = Array.isArray(faqSection?.faqs) ? faqSection.faqs : [];
-	const klinikFaqs =
-		rawFaqs.length > 0
-			? [...rawFaqs]
-					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-					.map((f, idx) => ({
-						_id: (f._id ?? `klinik-faq-${idx}`).toString(),
-						question: f.question,
-						answer: f.answer,
-						visible: f.visible ?? true,
-					}))
-			: FALLBACK_FAQS;
+	// Hero content: technology-specific fields take priority, then defaults.
+	const heroTitle = group.heroTitle?.trim() || group.name;
+	const heroSubtitle =
+		group.heroSubtitle?.trim() || "Avancerad laserplattform för professionella behandlingar";
+	const defaultBullets = [
+		"Snabb och effektiv behandling",
+		"Skonsam teknik med hög precision",
+		"Intuitiv touchskärm och smart arbetsflöde",
+		"Anpassad för professionella kliniker",
+	];
+	const heroBullets = group.heroBulletPoints?.length ? group.heroBulletPoints : defaultBullets;
+	const heroBgMobile = group.heroBgMobile || "/Mobile_bilder/Again_pro.webp";
+	const heroBgDesktop = group.heroBgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
-	// Create a map of category ID to slug for product cards
+	// FAQ: group's own admin-managed FAQs (visible only); section hidden if none.
+	const techFaqs = (group.faqs || [])
+		.filter((f) => f.visible)
+		.map((f) => ({ _id: f._id, question: f.question, answer: f.answer, visible: f.visible }));
+	const faqTitle =
+		group.faqTitle && group.faqTitle.trim().length > 0
+			? group.faqTitle
+			: `Vanliga frågor om ${group.name}`;
+
+	// Category slug resolution for product cards (mirrors /produkter logic).
 	const categorySlugMap = new Map<string, string>();
-	categories.forEach((cat) => {
-		categorySlugMap.set(cat._id.toString(), cat.slug);
-	});
-
-	// Get category slug for each product
+	categories.forEach((cat) => categorySlugMap.set(cat._id.toString(), cat.slug));
 	function getCategorySlugForProduct(product: IProduct): string {
+		const primaryCat = product.primaryCategory as unknown as {
+			_id?: { toString(): string };
+			slug?: string;
+		};
+		if (primaryCat?.slug) return primaryCat.slug;
+		if (primaryCat?._id) {
+			const s = categorySlugMap.get(primaryCat._id.toString());
+			if (s) return s;
+		}
 		if (product.categories && product.categories.length > 0) {
 			const firstCategory = product.categories[0] as unknown as {
 				_id?: { toString(): string };
 				slug?: string;
 			};
-			// If populated, use slug directly
-			if (firstCategory?.slug) {
-				return firstCategory.slug;
-			}
-			// Otherwise look up from map
+			if (firstCategory?.slug) return firstCategory.slug;
 			const catId = firstCategory?._id?.toString();
-			if (catId) {
-				return categorySlugMap.get(catId) || "uncategorized";
-			}
+			if (catId) return categorySlugMap.get(catId) || "uncategorized";
 		}
 		return "uncategorized";
 	}
@@ -407,7 +385,6 @@ export default async function KategoriPage() {
 		<div className="min-h-screen">
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
-
 				{/* ── MOBILE LAYOUT ── */}
 				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
 					<ImageComponent
@@ -418,17 +395,13 @@ export default async function KategoriPage() {
 						className="object-cover object-top"
 						sizes="100vw"
 					/>
-					</div>
+				</div>
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
-						{heroTitle}
-					</h1>
+					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">{heroTitle}</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
-					<p className="text-white/70 text-sm mb-8 leading-relaxed">
-						{heroSubtitle}
-					</p>
+					<p className="text-white/70 text-sm mb-8 leading-relaxed">{heroSubtitle}</p>
 					<ul className="space-y-4">
 						{heroBullets.map((item) => (
 							<li key={item} className="flex items-center gap-3">
@@ -460,18 +433,13 @@ export default async function KategoriPage() {
 							<div />
 							{/* Right — Form */}
 							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
-								<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
-									{heroTitle}
-								</h2>
-								<p className="text-white/60 text-base mb-8 leading-relaxed">
-									{heroSubtitle}
-								</p>
+								<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">{heroTitle}</h2>
+								<p className="text-white/60 text-base mb-8 leading-relaxed">{heroSubtitle}</p>
 								<HeroCategoryForm categoryName={heroTitle} />
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</section>
 
 			{/* Products Section */}
@@ -481,9 +449,9 @@ export default async function KategoriPage() {
 						{/* Sidebar */}
 						<div className="w-full lg:w-80 lg:shrink-0">
 							<div className="lg:sticky lg:top-28 hidden sm:block">
-								<KategoriSidebar categories={categories} techGroups={techGroups} />
+								<TeknologiSidebar categories={categories} techGroups={techGroups} activeSlug={slug} />
 							</div>
-							<MobileDrawer categories={categories} techGroups={techGroups} />
+							<MobileDrawer categories={categories} techGroups={techGroups} activeSlug={slug} />
 						</div>
 
 						{/* Main Content */}
@@ -491,16 +459,14 @@ export default async function KategoriPage() {
 							<div className="mb-6">
 								<p className="text-sm text-muted-foreground">
 									Visar{" "}
-									<span className="font-medium text-foreground">
-										{products.length}
-									</span>{" "}
-									produkter
+									<span className="font-medium text-foreground">{filteredProducts.length}</span>{" "}
+									produkter i {group.name}
 								</p>
 							</div>
 
 							{/* Products Grid */}
 							<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-								{products.map((product) => (
+								{filteredProducts.map((product) => (
 									<ProductCardDB
 										key={product._id.toString()}
 										product={product}
@@ -510,11 +476,14 @@ export default async function KategoriPage() {
 							</div>
 
 							{/* Empty State */}
-							{products.length === 0 && (
+							{filteredProducts.length === 0 && (
 								<div className="py-16 text-center">
 									<p className="text-lg text-muted-foreground">
-										Inga produkter tillgängliga för tillfället.
+										Inga produkter tillgängliga inom {group.name} för tillfället.
 									</p>
+									<Link href="/klinikutrustning" className="mt-4 inline-block text-primary hover:underline">
+										← Tillbaka till all klinikutrustning
+									</Link>
 								</div>
 							)}
 						</div>
@@ -522,23 +491,26 @@ export default async function KategoriPage() {
 				</div>
 			</div>
 
-			{/* FAQ Footer Section (managed via /dashboard/categories/settings) */}
-			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-				<div className="_container mx-auto px-4">
-					<ProductFAQ title={faqTitle} faqs={klinikFaqs} />
-				</div>
-			</section>
+			{/* FAQ Footer Section — only when the group has its own FAQs */}
+			{techFaqs.length > 0 && (
+				<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+					<div className="_container mx-auto px-4">
+						<ProductFAQ title={faqTitle} faqs={techFaqs} />
+					</div>
+				</section>
+			)}
 
-			{/* Contact form (dark, product-inquiry styling, generic mode) */}
+			{/* Contact form (dark, product-inquiry styling, technology context) */}
 			<div id="inquiry-form">
 				<ProductInquiryForm
-					pillLabel="SYNOS MEDICAL"
-					purchaseTitle="Kontakta oss"
-					purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
+					pillLabel={`${group.name.toUpperCase()} FÖRFRÅGAN`}
+					purchaseTitle={`Frågor om ${group.name}?`}
+					purchaseDescription={`<p>Behöver du hjälp att välja rätt maskin inom ${group.name}? Vårt team återkommer inom 24 timmar.</p>`}
+					categoryName={group.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
-					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+					bgMobile={group.inquiryBgMobile || undefined}
+					bgDesktop={group.inquiryBgDesktop || undefined}
 				/>
 			</div>
 		</div>
