@@ -16,7 +16,7 @@ import { BrochureRequestModal } from "@/components/product/BrochureRequestModal"
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, FileText } from "lucide-react";
+import { ArrowLeft, Check, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
@@ -366,24 +366,43 @@ export function ProductContent({
 								</div>
 							)}
 
-							{/* Documentation / Brochure Section */}
+							{/* Documentation / Brochure Section - CTA style */}
 							{product.documentation && product.documentation.length > 0 && (
 								<div className="mb-12">
-									<h2 className="text-xl font-semibold text-secondary mb-4">
-										Broschyrer & Dokumentation
-									</h2>
-									<div className="flex flex-wrap gap-3">
-										{product.documentation.map((doc, i) => (
-											<button
-												key={i}
-												type="button"
-												onClick={() => setBrochureModal({ open: true, title: doc.title })}
-												className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
-											>
-												<FileText className="h-4 w-4 shrink-0" />
-												{doc.title || "Broschyr"}
-											</button>
-										))}
+									<div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 sm:p-8 shadow-sm">
+										{/* Decorative icon backdrop */}
+										<div className="pointer-events-none absolute -right-6 -top-6 opacity-10">
+											<FileText className="h-32 w-32 text-primary" />
+										</div>
+
+										<div className="relative">
+											<div className="mb-1 flex items-center gap-2">
+												<span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary shrink-0">
+													<FileText className="h-5 w-5" />
+												</span>
+												<h2 className="text-xl sm:text-2xl font-bold text-secondary">
+													Broschyrer & Dokumentation
+												</h2>
+											</div>
+											<p className="mb-5 text-sm text-secondary/70 max-w-2xl">
+												Ladda ner produktbroschyrer och teknisk dokumentation – fyll i
+												dina uppgifter så skickar vi materialet direkt till dig.
+											</p>
+
+											<div className="flex flex-wrap gap-3">
+												{product.documentation.map((doc, i) => (
+													<button
+														key={i}
+														type="button"
+														onClick={() => setBrochureModal({ open: true, title: doc.title })}
+														className="group inline-flex items-center gap-2.5 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
+													>
+														<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
+														{doc.title || "Broschyr"}
+													</button>
+												))}
+											</div>
+										</div>
 									</div>
 								</div>
 							)}
