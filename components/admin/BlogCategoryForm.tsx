@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { optionalNumberField } from "@/lib/utils/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -195,8 +196,8 @@ export function BlogCategoryForm({
 				placeholder="Select category image"
 				disabled={isLoading}
 				galleryTitle="Select Category Image"
-				widthInputProps={register("imageWidth" as any, { valueAsNumber: true })}
-				heightInputProps={register("imageHeight" as any, { valueAsNumber: true })}
+				widthInputProps={register("imageWidth" as any, optionalNumberField)}
+				heightInputProps={register("imageHeight" as any, optionalNumberField)}
 			/>
 			{errors.image && (
 				<p className="text-sm text-red-500">{errors.image.message}</p>
@@ -208,7 +209,7 @@ export function BlogCategoryForm({
 				<Input
 					id="order"
 					type="number"
-					{...register("order", { valueAsNumber: true })}
+					{...register("order", optionalNumberField)}
 					placeholder="0"
 					disabled={isLoading}
 				/>

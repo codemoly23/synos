@@ -1798,7 +1798,13 @@ export default function SettingsPage() {
 															type="number"
 															placeholder="587"
 															{...field}
-															onChange={(e) => field.onChange(e.target.valueAsNumber)}
+															onChange={(e) =>
+																field.onChange(
+																	Number.isNaN(e.target.valueAsNumber)
+																		? undefined
+																		: e.target.valueAsNumber
+																)
+															}
 														/>
 													</FormControl>
 													<FormMessage />

@@ -3,6 +3,7 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { optionalNumberField } from "@/lib/utils/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -294,7 +295,7 @@ export function TechnologyGroupForm({
 					id="order"
 					type="number"
 					min={0}
-					{...register("order", { valueAsNumber: true })}
+					{...register("order", optionalNumberField)}
 					placeholder="0"
 					disabled={isLoading}
 					className="w-32"
@@ -349,8 +350,8 @@ export function TechnologyGroupForm({
 				placeholder="Select group image"
 				galleryTitle="Select Technology Group Image"
 				disabled={isLoading}
-				widthInputProps={register("imageWidth", { valueAsNumber: true })}
-				heightInputProps={register("imageHeight", { valueAsNumber: true })}
+				widthInputProps={register("imageWidth", optionalNumberField)}
+				heightInputProps={register("imageHeight", optionalNumberField)}
 			/>
 
 			<Separator className="my-8" />
@@ -439,8 +440,8 @@ export function TechnologyGroupForm({
 					placeholder="Select mobile background"
 					galleryTitle="Select Mobile Hero Background"
 					disabled={isLoading}
-					widthInputProps={register("heroBgMobileWidth", { valueAsNumber: true })}
-					heightInputProps={register("heroBgMobileHeight", { valueAsNumber: true })}
+					widthInputProps={register("heroBgMobileWidth", optionalNumberField)}
+					heightInputProps={register("heroBgMobileHeight", optionalNumberField)}
 				/>
 
 				{/* Hero Background Desktop */}
@@ -452,8 +453,8 @@ export function TechnologyGroupForm({
 					placeholder="Select desktop background"
 					galleryTitle="Select Desktop Hero Background"
 					disabled={isLoading}
-					widthInputProps={register("heroBgDesktopWidth", { valueAsNumber: true })}
-					heightInputProps={register("heroBgDesktopHeight", { valueAsNumber: true })}
+					widthInputProps={register("heroBgDesktopWidth", optionalNumberField)}
+					heightInputProps={register("heroBgDesktopHeight", optionalNumberField)}
 				/>
 			</div>
 
@@ -476,8 +477,8 @@ export function TechnologyGroupForm({
 					placeholder="Select mobile inquiry background"
 					galleryTitle="Select Mobile Inquiry Background"
 					disabled={isLoading}
-					widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
-					heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+					widthInputProps={register("inquiryBgMobileWidth", optionalNumberField)}
+					heightInputProps={register("inquiryBgMobileHeight", optionalNumberField)}
 				/>
 
 				<ImagePickerWithDimensions
@@ -488,8 +489,8 @@ export function TechnologyGroupForm({
 					placeholder="Select desktop inquiry background"
 					galleryTitle="Select Desktop Inquiry Background"
 					disabled={isLoading}
-					widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
-					heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+					widthInputProps={register("inquiryBgDesktopWidth", optionalNumberField)}
+					heightInputProps={register("inquiryBgDesktopHeight", optionalNumberField)}
 				/>
 			</div>
 

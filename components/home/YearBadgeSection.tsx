@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Script from "next/script";
 
 const YEARS = [2021, 2022, 2023, 2024, 2025];
+const SCALE = 0.7;
 const BADGE_W = 110;
 const BADGE_H = 103;
 const GAP = 5;
@@ -58,9 +59,18 @@ export function YearBadgeContent() {
 		>
 			<div className="flex items-center justify-center px-6">
 				<div
-					className="relative flex-shrink-0"
-					style={{ width: TOTAL_WIDTH, height: BADGE_H }}
+					className="flex-shrink-0"
+					style={{ width: TOTAL_WIDTH * SCALE, height: BADGE_H * SCALE }}
 				>
+					<div
+						className="relative"
+						style={{
+							width: TOTAL_WIDTH,
+							height: BADGE_H,
+							transform: `scale(${SCALE})`,
+							transformOrigin: "top left",
+						}}
+					>
 					{/* Year badges 2021–2025 */}
 					{YEARS.map((year, index) => {
 						let opacityTarget: number;
@@ -144,6 +154,7 @@ export function YearBadgeContent() {
 						/>
 						<div id="reco--badge-yearsInRowBadge" />
 					</motion.div>
+					</div>
 				</div>
 			</div>
 

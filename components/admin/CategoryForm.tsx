@@ -4,6 +4,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { optionalNumberField } from "@/lib/utils/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -373,8 +374,8 @@ export function CategoryForm({
 					placeholder="Select mobile hero background"
 					galleryTitle="Select Mobile Hero Background"
 					disabled={isLoading}
-					widthInputProps={register("heroBgMobileWidth", { valueAsNumber: true })}
-					heightInputProps={register("heroBgMobileHeight", { valueAsNumber: true })}
+					widthInputProps={register("heroBgMobileWidth", optionalNumberField)}
+					heightInputProps={register("heroBgMobileHeight", optionalNumberField)}
 				/>
 
 				{/* Hero Background — Desktop */}
@@ -386,8 +387,8 @@ export function CategoryForm({
 					placeholder="Select desktop hero background"
 					galleryTitle="Select Desktop Hero Background"
 					disabled={isLoading}
-					widthInputProps={register("heroBgDesktopWidth", { valueAsNumber: true })}
-					heightInputProps={register("heroBgDesktopHeight", { valueAsNumber: true })}
+					widthInputProps={register("heroBgDesktopWidth", optionalNumberField)}
+					heightInputProps={register("heroBgDesktopHeight", optionalNumberField)}
 				/>
 			</div>
 
@@ -402,8 +403,8 @@ export function CategoryForm({
 				placeholder="Select category image"
 				galleryTitle="Select Category Image"
 				disabled={isLoading}
-				widthInputProps={register("imageWidth", { valueAsNumber: true })}
-				heightInputProps={register("imageHeight", { valueAsNumber: true })}
+				widthInputProps={register("imageWidth", optionalNumberField)}
+				heightInputProps={register("imageHeight", optionalNumberField)}
 			/>
 			{errors.image && (
 				<p className="text-sm text-red-500">{errors.image.message}</p>
@@ -540,8 +541,8 @@ export function CategoryForm({
 				placeholder="Select mobile contact background"
 				galleryTitle="Select Mobile Contact Background"
 				disabled={isLoading}
-				widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
-				heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+				widthInputProps={register("inquiryBgMobileWidth", optionalNumberField)}
+				heightInputProps={register("inquiryBgMobileHeight", optionalNumberField)}
 			/>
 
 			<Separator className="my-8" />
@@ -555,8 +556,8 @@ export function CategoryForm({
 				placeholder="Select desktop contact background"
 				galleryTitle="Select Desktop Contact Background"
 				disabled={isLoading}
-				widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
-				heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+				widthInputProps={register("inquiryBgDesktopWidth", optionalNumberField)}
+				heightInputProps={register("inquiryBgDesktopHeight", optionalNumberField)}
 			/>
 
 			<Separator className="my-8" />

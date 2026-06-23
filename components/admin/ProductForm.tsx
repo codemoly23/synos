@@ -53,6 +53,7 @@ import {
 	type UpdateProductInput,
 } from "@/lib/validations/product.validation";
 import { generateSlug } from "@/lib/utils/product-helpers";
+import { optionalNumberField } from "@/lib/utils/form";
 import { ICON_NAMES } from "@/lib/data/product-sections";
 import type { IProduct } from "@/models/product.model";
 import type { ICategoryTreeNode } from "@/models/category.model";
@@ -2074,8 +2075,8 @@ export function ProductForm({
 									placeholder="Select overview image"
 									galleryTitle="Select Overview Image"
 									disabled={isLoading}
-									widthInputProps={register("imageWidth", { valueAsNumber: true })}
-									heightInputProps={register("imageHeight", { valueAsNumber: true })}
+									widthInputProps={register("imageWidth", optionalNumberField)}
+									heightInputProps={register("imageHeight", optionalNumberField)}
 								/>
 
 								<Separator />
@@ -2091,8 +2092,8 @@ export function ProductForm({
 									placeholder="Select mobile hero background"
 									galleryTitle="Select Mobile Hero Background"
 									disabled={isLoading}
-									widthInputProps={register("heroBackgroundMobileWidth", { valueAsNumber: true })}
-									heightInputProps={register("heroBackgroundMobileHeight", { valueAsNumber: true })}
+									widthInputProps={register("heroBackgroundMobileWidth", optionalNumberField)}
+									heightInputProps={register("heroBackgroundMobileHeight", optionalNumberField)}
 								/>
 
 								<Separator />
@@ -2108,8 +2109,8 @@ export function ProductForm({
 									placeholder="Select desktop hero background"
 									galleryTitle="Select Desktop Hero Background"
 									disabled={isLoading}
-									widthInputProps={register("heroBackgroundDesktopWidth", { valueAsNumber: true })}
-									heightInputProps={register("heroBackgroundDesktopHeight", { valueAsNumber: true })}
+									widthInputProps={register("heroBackgroundDesktopWidth", optionalNumberField)}
+									heightInputProps={register("heroBackgroundDesktopHeight", optionalNumberField)}
 								/>
 
 								<Separator />
@@ -2125,8 +2126,8 @@ export function ProductForm({
 									placeholder="Select mobile contact background"
 									galleryTitle="Select Mobile Contact Background"
 									disabled={isLoading}
-									widthInputProps={register("inquiryBgMobileWidth", { valueAsNumber: true })}
-									heightInputProps={register("inquiryBgMobileHeight", { valueAsNumber: true })}
+									widthInputProps={register("inquiryBgMobileWidth", optionalNumberField)}
+									heightInputProps={register("inquiryBgMobileHeight", optionalNumberField)}
 								/>
 
 								<Separator />
@@ -2142,8 +2143,8 @@ export function ProductForm({
 									placeholder="Select desktop contact background"
 									galleryTitle="Select Desktop Contact Background"
 									disabled={isLoading}
-									widthInputProps={register("inquiryBgDesktopWidth", { valueAsNumber: true })}
-									heightInputProps={register("inquiryBgDesktopHeight", { valueAsNumber: true })}
+									widthInputProps={register("inquiryBgDesktopWidth", optionalNumberField)}
+									heightInputProps={register("inquiryBgDesktopHeight", optionalNumberField)}
 								/>
 
 								<Separator />
@@ -2166,8 +2167,8 @@ export function ProductForm({
 										placeholder="Select section 1 image"
 										galleryTitle="Select Section 1 Image"
 										disabled={isLoading}
-										widthInputProps={register("section1ImageWidth", { valueAsNumber: true })}
-										heightInputProps={register("section1ImageHeight", { valueAsNumber: true })}
+										widthInputProps={register("section1ImageWidth", optionalNumberField)}
+										heightInputProps={register("section1ImageHeight", optionalNumberField)}
 									/>
 
 									<ImagePickerWithDimensions
@@ -2180,8 +2181,8 @@ export function ProductForm({
 										placeholder="Select section 2 top image"
 										galleryTitle="Select Section 2 Top Image"
 										disabled={isLoading}
-										widthInputProps={register("section2TopImageWidth", { valueAsNumber: true })}
-										heightInputProps={register("section2TopImageHeight", { valueAsNumber: true })}
+										widthInputProps={register("section2TopImageWidth", optionalNumberField)}
+										heightInputProps={register("section2TopImageHeight", optionalNumberField)}
 									/>
 
 									<ImagePickerWithDimensions
@@ -2194,8 +2195,8 @@ export function ProductForm({
 										placeholder="Select section 2 bottom image"
 										galleryTitle="Select Section 2 Bottom Image"
 										disabled={isLoading}
-										widthInputProps={register("section2BottomImageWidth", { valueAsNumber: true })}
-										heightInputProps={register("section2BottomImageHeight", { valueAsNumber: true })}
+										widthInputProps={register("section2BottomImageWidth", optionalNumberField)}
+										heightInputProps={register("section2BottomImageHeight", optionalNumberField)}
 									/>
 
 									<ImagePickerWithDimensions
@@ -2208,8 +2209,8 @@ export function ProductForm({
 										placeholder="Select section 3 image"
 										galleryTitle="Select Section 3 Image"
 										disabled={isLoading}
-										widthInputProps={register("section3ImageWidth", { valueAsNumber: true })}
-										heightInputProps={register("section3ImageHeight", { valueAsNumber: true })}
+										widthInputProps={register("section3ImageWidth", optionalNumberField)}
+										heightInputProps={register("section3ImageHeight", optionalNumberField)}
 									/>
 								</div>
 
@@ -2238,8 +2239,8 @@ export function ProductForm({
 									placeholder="Select video thumbnail"
 									galleryTitle="Select Video Thumbnail"
 									disabled={isLoading}
-									widthInputProps={register("videoThumbnailWidth", { valueAsNumber: true })}
-									heightInputProps={register("videoThumbnailHeight", { valueAsNumber: true })}
+									widthInputProps={register("videoThumbnailWidth", optionalNumberField)}
+									heightInputProps={register("videoThumbnailHeight", optionalNumberField)}
 								/>
 
 								<Separator />

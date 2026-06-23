@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalNumber } from "./media.validation";
 
 /**
  * Check if a string is a valid local path (starts with /)
@@ -61,8 +62,8 @@ const slugSchema = z
 const blogImageSchema = z.object({
 	url: z.string().min(1, "Image URL is required"),
 	alt: z.string().max(200).optional().default(""),
-	width: z.number().optional(),
-	height: z.number().optional(),
+	width: optionalNumber,
+	height: optionalNumber,
 });
 
 /**
@@ -72,8 +73,8 @@ const blogHeaderImageSchema = z.object({
 	url: z.string().min(1, "Header image URL is required"),
 	alt: z.string().max(200).optional().default(""),
 	showTitleOverlay: z.boolean().optional().default(false),
-	width: z.number().optional(),
-	height: z.number().optional(),
+	width: optionalNumber,
+	height: optionalNumber,
 });
 
 /**
