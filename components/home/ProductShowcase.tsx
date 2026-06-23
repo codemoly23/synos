@@ -71,7 +71,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 					className="overflow-hidden"
 				>
 					{validProducts.map((product, index) => (
-						<SwiperSlide key={index}>
+						<SwiperSlide key={index} className="h-auto!">
 							<Link
 								href={
 									product.href ||
@@ -79,11 +79,11 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 										.toLowerCase()
 										.replace(/\s+/g, "-")}`
 								}
-								className="block group"
+								className="block h-full group"
 							>
-								<div className="rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100">
+								<div className="h-full flex flex-col rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100">
 									{/* Image with category badge overlay */}
-									<div className="relative w-full h-64 overflow-hidden bg-slate-100">
+									<div className="relative w-full h-64 shrink-0 overflow-hidden bg-slate-100">
 										<ImageComponent
 											src={product.mobileImage || product.image}
 											alt={product.name || "Product"}
@@ -100,15 +100,10 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 									</div>
 
 									{/* Content */}
-									<div className="px-4 pt-4 pb-5">
+									<div className="px-4 pt-4 pb-5 flex flex-col grow">
 										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors mb-1">
 											{product.name}
 										</h3>
-										{product.description && (
-											<p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">
-												{product.description}
-											</p>
-										)}
 										{product.category && (
 											<div className="flex flex-wrap gap-2">
 												<span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
@@ -116,7 +111,7 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 												</span>
 											</div>
 										)}
-										<div className="flex items-center justify-between mt-3">
+										<div className="flex items-center justify-between mt-auto pt-3">
 											<span className="text-base text-slate-500">Läs mer</span>
 											<div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary transition-colors">
 												<ArrowRight className="h-4 w-4 text-white" />
