@@ -498,7 +498,7 @@ function MobileInquiryForm({
 			)}
 
 			{/* Form */}
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-black px-4 sm:px-6 py-6 -mx-4 sm:-mx-6">
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-4 sm:px-6 py-6 -mx-4 sm:-mx-6">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
 						<label className={labelCls}>Förnamn <span className="text-red-400">*</span></label>

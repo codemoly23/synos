@@ -102,18 +102,6 @@ export function ProductContent({
 							className="object-cover object-top"
 							sizes="100vw"
 						/>
-						{/* <div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-							<div className="relative w-full h-full">
-								<ImageComponent
-									src="/images/motus-ax-3.jpg"
-									alt="Motus Pro"
-									fill
-									className="object-contain drop-shadow-2xl"
-									priority
-									sizes="100vw"
-								/>
-							</div>
-						</div> */}
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
@@ -173,50 +161,6 @@ export function ProductContent({
 											filter: 'blur(22px)',
 										}}
 									/>
-									{/* Product image — anchored to floor */}
-									{/* {primaryImage && (
-										<div className="relative w-full h-[620px] z-10">
-											<ImageComponent
-												src={primaryImage}
-												alt={product.title}
-												fill
-												className="object-contain object-bottom drop-shadow-2xl"
-												priority
-												sizes="(max-width: 1280px) 50vw, 640px"
-											/>
-										</div>
-									)} */}
-									{/* Contact shadow + floor reflection */}
-									{/* <div className="relative z-10 w-full shrink-0 -mt-3">
-										<div
-											className="mx-auto pointer-events-none"
-											style={{
-												width: '46%',
-												height: '16px',
-												background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)',
-												filter: 'blur(9px)',
-											}}
-										/>
-										<div
-											className="w-full mt-1 overflow-hidden"
-											style={{
-												height: '68px',
-												opacity: 0.35,
-												maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-												WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-											}}
-										>
-											<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-												<ImageComponent
-													src="/images/motus.png"
-													fill
-													alt=""
-													className="object-contain object-bottom"
-													sizes="700px"
-												/>
-											</div>
-										</div>
-									</div> */}
 								</div>
 								{/* Right — Form */}
 								<div className="flex flex-col justify-center py-10 pl-10 pr-8">
