@@ -34,9 +34,6 @@ interface ProductInquiryFormProps {
 	purchaseDescription?: string;
 	formSubtitle?: string;
 	buttonText?: string;
-	productImage?: string;
-	imageWidth?: number;
-	imageHeight?: number;
 	contactPhone?: string;
 	contactEmail?: string;
 	pillLabel?: string;
@@ -574,9 +571,6 @@ export function ProductInquiryForm({
 	purchaseDescription,
 	formSubtitle,
 	buttonText,
-	productImage,
-	imageWidth,
-	imageHeight,
 	contactPhone,
 	contactEmail,
 	pillLabel,
@@ -680,23 +674,6 @@ export function ProductInquiryForm({
 								</a>
 							)}
 						</div>
-
-						{productImage && (
-							<div
-								className="relative mx-auto"
-								style={imageWidth && imageHeight
-									? { width: imageWidth, height: imageHeight, maxWidth: "100%" }
-									: { height: 320 }}
-							>
-								<ImageComponent
-									src={productImage}
-									alt={productName ?? "Product"}
-									fill
-									className="object-contain drop-shadow-2xl"
-									sizes="(max-width: 1280px) 50vw, 600px"
-								/>
-							</div>
-						)}
 					</div>
 
 					{/* Right — Desktop Form Card */}

@@ -380,9 +380,6 @@ export function ProductContent({
 					purchaseDescription={product.purchaseInfo?.description}
 					formSubtitle={product.purchaseInfo?.formSubtitle}
 					buttonText={product.purchaseInfo?.buttonText}
-					productImage={product.overviewImage}
-					imageWidth={product.imageWidth}
-					imageHeight={product.imageHeight}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}
 					bgMobile={product.inquiryBgMobile || undefined}
