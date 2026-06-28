@@ -161,7 +161,7 @@ export function FAQAccordionClient({
 					{helpButtonText && helpButtonHref && (
 						<a
 							href={helpButtonHref}
-							className="inline-flex items-center justify-center px-8 py-3 rounded-md bg-primary text-white font-semibold hover:bg-secondary transition-all duration-300 shadow-sm hover:shadow-md"
+							className="inline-flex items-center justify-center px-8 py-3 rounded-md btn-copper-gradient font-semibold transition-all duration-300 shadow-sm hover:shadow-md"
 						>
 							{helpButtonText}
 						</a>

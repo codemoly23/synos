@@ -175,7 +175,7 @@ export function ImageGallery({ data }: ImageGalleryProps) {
 						</div>
 						<button
 							onClick={() => setIsTourModalOpen(true)}
-							className="shrink-0 px-6 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+							className="shrink-0 px-6 py-3 btn-copper-gradient font-bold rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
 							aria-label={data?.ctaButtonText}
 						>
 							{data?.ctaButtonText}

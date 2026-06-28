@@ -104,7 +104,7 @@ export function FAQSidebarClient({ data }: FAQSidebarClientProps) {
 					{data.contactButtonText && data.contactButtonHref && (
 						<Link
 							href={data.contactButtonHref}
-							className="mt-6 flex items-center justify-center gap-2 w-full px-6 py-4 rounded-full bg-primary text-white font-semibold hover:bg-secondary transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 group"
+							className="mt-6 flex items-center justify-center gap-2 w-full px-6 py-4 rounded-full btn-copper-gradient font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 group"
 						>
 							<span>{data.contactButtonText}</span>
 							<ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />

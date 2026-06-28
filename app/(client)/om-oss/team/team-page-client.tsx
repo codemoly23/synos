@@ -749,7 +749,7 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							{(data.joinUs?.primaryCta?.text || data.joinUs?.secondaryCta?.text) && (
 								<div className="flex flex-wrap justify-center gap-4">
 									{data.joinUs?.primaryCta?.text && data.joinUs?.primaryCta?.href && (
-										<Button asChild size="lg">
+										<Button asChild size="lg" className="btn-copper-gradient">
 											<Link href={data.joinUs.primaryCta.href}>
 												{data.joinUs.primaryCta.text}
 											</Link>

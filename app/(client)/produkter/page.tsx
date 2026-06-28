@@ -180,7 +180,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -281,7 +281,7 @@ function ProduktSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex items-center justify-center rounded-lg btn-copper-gradient px-4 py-2 text-sm font-medium transition-colors border border-transparent"
 					>
 						Kontakta oss
 					</Link>

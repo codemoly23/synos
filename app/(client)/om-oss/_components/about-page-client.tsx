@@ -836,7 +836,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										</div>
 
 										{/* Submit Button */}
-										<Button className="w-full bg-primary hover:bg-primary/90 text-white">
+										<Button className="w-full btn-copper-gradient">
 											Send Message
 											<ArrowRight className="ml-2 h-4 w-4" />
 										</Button>
@@ -895,7 +895,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								</div>
 
 								{/* Contact Button */}
-								<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
+								<Button asChild className="w-full btn-copper-gradient">
 									<Link href="/kontakt">
 										Kontakta Oss
 										<ArrowRight className="ml-2 h-4 w-4" />
@@ -982,7 +982,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											<p className="text-muted-foreground mb-6 text-sm">
 												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
 											</p>
-											<Button asChild className="w-fit bg-primary hover:bg-primary/90 text-white">
+											<Button asChild className="w-fit btn-copper-gradient">
 												<Link href="/kontakt">
 													Contact Us
 													<ArrowRight className="ml-2 h-4 w-4" />
@@ -1143,7 +1143,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											<p className="text-muted-foreground mb-4 text-sm">
 												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
 											</p>
-											<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
+											<Button asChild className="w-full btn-copper-gradient">
 												<Link href="/kontakt">
 													Contact Us
 													<ArrowRight className="ml-2 h-4 w-4" />

@@ -289,7 +289,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 								variants={fadeUp}
 								className="mt-8 flex flex-wrap justify-center gap-4"
 							>
-								<Button asChild size="lg" className="group">
+								<Button asChild size="lg" className="btn-copper-gradient group">
 									<a
 										href="https://synos.academy"
 										target="_blank"
@@ -781,7 +781,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 											<Button
 												type="submit"
 												disabled={isSubmitting}
-												className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-medium"
+												className="w-full h-11 btn-copper-gradient font-medium"
 											>
 												{isSubmitting ? (
 													<>
@@ -933,7 +933,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 										<Button
 											type="submit"
 											disabled={isSubmitting}
-											className="w-full h-11"
+											className="w-full h-11 btn-copper-gradient"
 										>
 											{isSubmitting ? (
 												<>
@@ -1072,7 +1072,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 							<Button
 								asChild
 								size="lg"
-								className="bg-primary hover:bg-primary/90 text-white group"
+								className="btn-copper-gradient group"
 							>
 								<a
 									href="https://synos.academy"
@@ -1345,7 +1345,7 @@ function ApplicationFormSection() {
 							{/* Submit Button */}
 							<button
 								type="submit"
-								className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25"
+								className="inline-flex items-center gap-2 px-8 py-3 btn-copper-gradient text-white font-semibold rounded-xl transition-all"
 							>
 								Submit
 								<ArrowRight className="w-5 h-5" />

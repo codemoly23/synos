@@ -192,7 +192,7 @@ export function Footer({
 								placeholder={settings.newsletterPlaceholder}
 								className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary"
 							/>
-							<Button className="bg-primary hover:bg-primary-hover text-white w-full">
+							<Button className="btn-copper-gradient w-full">
 								{settings.newsletterButtonText}
 							</Button>
 						</div>

@@ -165,7 +165,7 @@ export default async function MiniutbildningPage() {
 							</p>
 
 							<div className="flex flex-wrap gap-4">
-								<Button asChild size="lg" className="bg-primary text-white">
+								<Button asChild size="lg" className="btn-copper-gradient">
 									<Link href={hero.buttonHref || "#kontakt"}>
 										<Play className="mr-2 h-4 w-4" />
 										{hero.buttonText || "Boka miniutbildning"}
@@ -302,7 +302,7 @@ export default async function MiniutbildningPage() {
 									{processSection.highlightSubtitle ||
 										"Ingen förpliktelse att köpa. Lär dig grunderna och fatta sedan ditt eget beslut."}
 								</p>
-								<Button asChild size="lg" className="bg-primary text-white">
+								<Button asChild size="lg" className="btn-copper-gradient">
 									<Link href={processSection.highlightButtonHref || "#kontakt"}>
 										{processSection.highlightButtonText || "Boka din plats"}
 										<ArrowRight className="ml-2 h-4 w-4" />
