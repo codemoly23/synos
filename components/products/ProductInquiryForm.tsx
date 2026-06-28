@@ -336,8 +336,8 @@ function DesktopInquiryForm({
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="w-full h-12 rounded-md font-semibold text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-						style={{ background: BRAND, boxShadow: `0 0 26px rgba(${BRAND_RGB},0.25)` }}
+						className="w-full h-12 rounded-md font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed btn-copper-gradient"
+						style={{ boxShadow: `0 0 26px rgba(${BRAND_RGB},0.25)` }}
 					>
 						{isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" />Skickar...</> : <><Send className="h-4 w-4" />{buttonText || "Skicka förfrågan"}</>}
 					</button>
@@ -545,8 +545,8 @@ function MobileInquiryForm({
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					className="w-full h-12 rounded-md font-semibold text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-					style={{ background: BRAND }}
+					className="w-full h-12 rounded-md font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed btn-copper-gradient"
+					style={{}}
 				>
 					{isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" />Skickar...</> : <><Send className="h-4 w-4" />{buttonText || "Skicka förfrågan"}</>}
 				</button>

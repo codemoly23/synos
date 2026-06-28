@@ -203,7 +203,7 @@ export function Hero({ data }: HeroProps) {
 								<Button
 									asChild
 									size="lg"
-									className="bg-primary hover:bg-primary-hover text-white rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-primary/20"
+									className="btn-copper-gradient rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-primary/20"
 								>
 									<Link href={slide.primaryCta.href}>
 										{slide.primaryCta.text}

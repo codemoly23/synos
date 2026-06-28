@@ -251,7 +251,7 @@ export default async function UtrustningPage() {
 							<Button
 								asChild
 								size="lg"
-								className="bg-primary hover:bg-primary/90 text-white"
+								className="btn-copper-gradient"
 							>
 								<Link href="/kontakt">Kontakta oss</Link>
 							</Button>

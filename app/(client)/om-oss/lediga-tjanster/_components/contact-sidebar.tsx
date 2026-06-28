@@ -252,7 +252,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 						<Button
 							type="submit"
 							disabled={isSubmitting}
-							className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-medium"
+							className="w-full h-11 btn-copper-gradient font-medium"
 						>
 							{isSubmitting ? (
 								<>
