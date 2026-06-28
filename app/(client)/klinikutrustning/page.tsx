@@ -5,6 +5,7 @@ import {
 	getPublishedProducts,
 	getActiveCategories,
 	getActiveTechnologyGroupNames,
+	getTechnologyCategoriesPageDescription,
 } from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,13 +16,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
-import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDrawer";
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
@@ -157,7 +153,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -205,7 +201,7 @@ function KategoriSidebar({
 					</CardTitle>
 					<Link
 						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Produkter
 					</Link>
@@ -234,7 +230,7 @@ function KategoriSidebar({
 					</CardTitle>
 					<Link
 						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Teknologier
 					</Link>
@@ -271,7 +267,7 @@ function KategoriSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex items-center justify-center rounded-lg btn-copper-gradient px-4 py-2 text-sm font-medium transition-colors border border-transparent"
 					>
 						Kontakta oss
 					</Link>
@@ -319,29 +315,9 @@ function KategoriSidebar({
 	);
 }
 
-// Mobile Drawer Component
-function MobileDrawer({ categories, techGroups }: { categories: ICategory[]; techGroups: TechGroupItem[] }) {
-	return (
-		<div className="flex justify-end">
-			<Drawer>
-				<DrawerTrigger asChild>
-					<Button variant="primary" size="sm" className="block sm:hidden">
-						<ListFilter className="h-4 w-4" />
-					</Button>
-				</DrawerTrigger>
-				<DrawerContent className="p-0! rounded-t-sm">
-					<DrawerTitle className="sr-only">Filter</DrawerTitle>
-					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KategoriSidebar categories={categories} techGroups={techGroups} />
-					</div>
-				</DrawerContent>
-			</Drawer>
-		</div>
-	);
-}
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups, techPageDescription] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
@@ -352,6 +328,7 @@ export default async function KategoriPage() {
 		getKlinikutrustningHeroSection().catch(() => null),
 		getKlinikutrustningPage().catch(() => null),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		getTechnologyCategoriesPageDescription().catch(() => ""),
 	]);
 
 	const heroTitle = heroSection?.title || "Motus Pro";
@@ -422,7 +399,7 @@ export default async function KategoriPage() {
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -483,7 +460,9 @@ export default async function KategoriPage() {
 							<div className="lg:sticky lg:top-28 hidden sm:block">
 								<KategoriSidebar categories={categories} techGroups={techGroups} />
 							</div>
-							<MobileDrawer categories={categories} techGroups={techGroups} />
+							<MobileFilterDrawer>
+							<KategoriSidebar categories={categories} techGroups={techGroups} />
+						</MobileFilterDrawer>
 						</div>
 
 						{/* Main Content */}
@@ -516,6 +495,14 @@ export default async function KategoriPage() {
 										Inga produkter tillgängliga för tillfället.
 									</p>
 								</div>
+							)}
+
+							{/* Technology Categories Page Description */}
+							{techPageDescription && (
+								<div
+									className="mt-10 prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+									dangerouslySetInnerHTML={{ __html: techPageDescription }}
+								/>
 							)}
 						</div>
 					</div>

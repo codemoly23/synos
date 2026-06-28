@@ -16,18 +16,14 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
-import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDrawer";
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo } from "@/lib/services/site-settings.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
+import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -145,7 +141,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -213,7 +209,7 @@ function TeknologiSidebar({
 								href={`/klinikutrustning/teknologi/${tech.slug}`}
 								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
 									activeSlug === tech.slug
-										? "bg-primary text-primary-foreground"
+										? "btn-copper-gradient"
 										: "text-foreground hover:bg-primary/20"
 								}`}
 							>
@@ -238,7 +234,7 @@ function TeknologiSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex items-center justify-center rounded-lg btn-copper-gradient px-4 py-2 text-sm font-medium transition-colors border border-transparent"
 					>
 						Kontakta oss
 					</Link>
@@ -285,33 +281,6 @@ function TeknologiSidebar({
 }
 
 // Mobile Drawer Component
-function MobileDrawer({
-	categories,
-	techGroups,
-	activeSlug,
-}: {
-	categories: ICategory[];
-	techGroups: TechGroupItem[];
-	activeSlug: string;
-}) {
-	return (
-		<div className="flex justify-end">
-			<Drawer>
-				<DrawerTrigger asChild>
-					<Button variant="primary" size="sm" className="block sm:hidden">
-						<ListFilter className="h-4 w-4" />
-					</Button>
-				</DrawerTrigger>
-				<DrawerContent className="p-0! rounded-t-sm">
-					<DrawerTitle className="sr-only">Filter</DrawerTitle>
-					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<TeknologiSidebar categories={categories} techGroups={techGroups} activeSlug={activeSlug} />
-					</div>
-				</DrawerContent>
-			</Drawer>
-		</div>
-	);
-}
 
 export default async function TeknologiPage({ params }: TeknologiPageProps) {
 	const { slug } = await params;
@@ -399,7 +368,7 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">{heroTitle}</h1>
+					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">{heroTitle}</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
 					<p className="text-white/70 text-sm mb-8 leading-relaxed">{heroSubtitle}</p>
 					<ul className="space-y-4">
@@ -451,7 +420,9 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 							<div className="lg:sticky lg:top-28 hidden sm:block">
 								<TeknologiSidebar categories={categories} techGroups={techGroups} activeSlug={slug} />
 							</div>
-							<MobileDrawer categories={categories} techGroups={techGroups} activeSlug={slug} />
+							<MobileFilterDrawer>
+							<TeknologiSidebar categories={categories} techGroups={techGroups} activeSlug={slug} />
+						</MobileFilterDrawer>
 						</div>
 
 						{/* Main Content */}
@@ -485,6 +456,11 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 										← Tillbaka till all klinikutrustning
 									</Link>
 								</div>
+							)}
+
+							{/* Technology Group Description */}
+							{group.description && (
+								<CategoryDescriptionExpander html={group.description} />
 							)}
 						</div>
 					</div>

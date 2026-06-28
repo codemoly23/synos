@@ -223,7 +223,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			<button
 				type="submit"
 				disabled={isSubmitting}
-				className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
+				className="w-full py-3 rounded-md btn-copper-gradient font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
 			>
 				{isSubmitting ? (
 					<>

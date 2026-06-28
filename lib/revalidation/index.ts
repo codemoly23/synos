@@ -45,6 +45,7 @@ export const CACHE_TAGS = {
 	CUSTOM_404_PAGE: "custom-404-page",
 	KLINIKUTRUSTNING_PAGE: "klinikutrustning-page",
 	PRODUKTER_PAGE: "produkter-page",
+	TECHNOLOGY_CATEGORIES_PAGE: "technology-categories-page",
 
 	// Sitemaps
 	SITEMAPS: "sitemaps",
