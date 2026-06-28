@@ -424,6 +424,14 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-600;
   }
 
+  .btn-copper-gradient {
+    background: linear-gradient(135deg, #f0d8c5 0%, #d4a07b 18%, #b87a52 40%, #8f5a3a 55%, #b87a52 70%, #d4a07b 85%, #f0d8c5 100%);
+    color: #fff;
+  }
+  .btn-copper-gradient:hover {
+    background: linear-gradient(135deg, #e8cdb8 0%, #c8956e 18%, #a86d47 40%, #7a4a2d 55%, #a86d47 70%, #c8956e 85%, #e8cdb8 100%);
+  }
+
   /* Layout */
   ._container {
     @apply max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8;

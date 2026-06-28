@@ -310,6 +310,24 @@ export function ProductContent({
 								</div>
 							)}
 
+							{/* Technical Specifications Section */}
+							{product.techSpecifications && product.techSpecifications.length > 0 && (
+								<div className="mb-12">
+									<h2 className="text-2xl font-light text-secondary mb-6">Tekniska specifikationer</h2>
+									<div className="overflow-hidden rounded-xl border border-primary/20">
+										{product.techSpecifications.map((spec, index) => (
+											<div
+												key={spec._id || index}
+												className={`flex flex-col sm:flex-row gap-2 px-5 py-4 ${index % 2 === 0 ? "bg-primary/5" : "bg-white"}`}
+											>
+												<span className="text-sm font-semibold text-secondary w-full sm:w-2/5 shrink-0">{spec.title}</span>
+												<span className="text-sm text-muted-foreground">{spec.description}</span>
+											</div>
+										))}
+									</div>
+								</div>
+							)}
+
 							{/* Documentation / Brochure Section - CTA style (always visible) */}
 							<div className="mb-12">
 								<div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 sm:p-8 shadow-sm">

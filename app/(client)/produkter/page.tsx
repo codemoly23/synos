@@ -492,7 +492,7 @@ export default async function ProductsPage({
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />

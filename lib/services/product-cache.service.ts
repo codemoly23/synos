@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { getTechnologyGroupModel } from "@/models/technology-group.model";
+import { technologyCategoriesPageRepository } from "@/lib/repositories/technology-categories-page.repository";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -277,6 +278,21 @@ export const getTechnologyGroupBySlug = unstable_cache(
 	["technology-group-by-slug"],
 	{
 		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+/**
+ * Get technology categories page description (for /klinikutrustning listing page)
+ */
+export const getTechnologyCategoriesPageDescription = unstable_cache(
+	async (): Promise<string> => {
+		const page = await technologyCategoriesPageRepository.get();
+		return page.description || "";
+	},
+	["technology-categories-page-description"],
+	{
+		tags: ["technology-categories-page"],
 		revalidate: CACHE_REVALIDATE,
 	}
 );
