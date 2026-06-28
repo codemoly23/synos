@@ -357,7 +357,7 @@ export function ProductContent({
 														key={i}
 														type="button"
 														onClick={() => setBrochureModal({ open: true, title: doc.title })}
-														className="group inline-flex items-center gap-2.5 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
+														className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
 													>
 														<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
 														{doc.title || "Broschyr"}
@@ -367,7 +367,7 @@ export function ProductContent({
 												<button
 													type="button"
 													onClick={() => setBrochureModal({ open: true, title: product.title })}
-													className="group inline-flex items-center gap-2.5 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
+													className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
 												>
 													<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
 													Begär broschyr
