@@ -335,7 +335,7 @@ export function ContactFormSection() {
 							type="submit"
 							disabled={isSubmitting}
 							size="lg"
-							className="w-full sm:w-auto min-w-[200px] h-12 text-base font-semibold"
+							className="w-full sm:w-auto min-w-[200px] h-12 text-base font-semibold btn-copper-gradient"
 						>
 							{isSubmitting ? (
 								<>

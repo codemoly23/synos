@@ -16,7 +16,7 @@ import { BrochureRequestModal } from "@/components/product/BrochureRequestModal"
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, FileText } from "lucide-react";
+import { ArrowLeft, Check, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
@@ -102,18 +102,6 @@ export function ProductContent({
 							className="object-cover object-top"
 							sizes="100vw"
 						/>
-						{/* <div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-							<div className="relative w-full h-full">
-								<ImageComponent
-									src="/images/motus-ax-3.jpg"
-									alt="Motus Pro"
-									fill
-									className="object-contain drop-shadow-2xl"
-									priority
-									sizes="100vw"
-								/>
-							</div>
-						</div> */}
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
@@ -173,50 +161,6 @@ export function ProductContent({
 											filter: 'blur(22px)',
 										}}
 									/>
-									{/* Product image — anchored to floor */}
-									{/* {primaryImage && (
-										<div className="relative w-full h-[620px] z-10">
-											<ImageComponent
-												src={primaryImage}
-												alt={product.title}
-												fill
-												className="object-contain object-bottom drop-shadow-2xl"
-												priority
-												sizes="(max-width: 1280px) 50vw, 640px"
-											/>
-										</div>
-									)} */}
-									{/* Contact shadow + floor reflection */}
-									{/* <div className="relative z-10 w-full shrink-0 -mt-3">
-										<div
-											className="mx-auto pointer-events-none"
-											style={{
-												width: '46%',
-												height: '16px',
-												background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)',
-												filter: 'blur(9px)',
-											}}
-										/>
-										<div
-											className="w-full mt-1 overflow-hidden"
-											style={{
-												height: '68px',
-												opacity: 0.35,
-												maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-												WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-											}}
-										>
-											<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-												<ImageComponent
-													src="/images/motus.png"
-													fill
-													alt=""
-													className="object-contain object-bottom"
-													sizes="700px"
-												/>
-											</div>
-										</div>
-									</div> */}
 								</div>
 								{/* Right — Form */}
 								<div className="flex flex-col justify-center py-10 pl-10 pr-8">
@@ -366,27 +310,73 @@ export function ProductContent({
 								</div>
 							)}
 
-							{/* Documentation / Brochure Section */}
-							{product.documentation && product.documentation.length > 0 && (
+							{/* Technical Specifications Section */}
+							{product.techSpecifications && product.techSpecifications.length > 0 && (
 								<div className="mb-12">
-									<h2 className="text-xl font-semibold text-secondary mb-4">
-										Broschyrer & Dokumentation
-									</h2>
-									<div className="flex flex-wrap gap-3">
-										{product.documentation.map((doc, i) => (
-											<button
-												key={i}
-												type="button"
-												onClick={() => setBrochureModal({ open: true, title: doc.title })}
-												className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+									<h2 className="text-2xl font-light text-secondary mb-6">Tekniska specifikationer</h2>
+									<div className="overflow-hidden rounded-xl border border-primary/20">
+										{product.techSpecifications.map((spec, index) => (
+											<div
+												key={spec._id || index}
+												className={`flex flex-col sm:flex-row gap-2 px-5 py-4 ${index % 2 === 0 ? "bg-primary/5" : "bg-white"}`}
 											>
-												<FileText className="h-4 w-4 shrink-0" />
-												{doc.title || "Broschyr"}
-											</button>
+												<span className="text-sm font-semibold text-secondary w-full sm:w-2/5 shrink-0">{spec.title}</span>
+												<span className="text-sm text-muted-foreground">{spec.description}</span>
+											</div>
 										))}
 									</div>
 								</div>
 							)}
+
+							{/* Documentation / Brochure Section - CTA style (always visible) */}
+							<div className="mb-12">
+								<div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 sm:p-8 shadow-sm">
+									{/* Decorative icon backdrop */}
+									<div className="pointer-events-none absolute -right-6 -top-6 opacity-10">
+										<FileText className="h-32 w-32 text-primary" />
+									</div>
+
+									<div className="relative">
+										<div className="mb-1 flex items-center gap-2">
+											<span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary shrink-0">
+												<FileText className="h-5 w-5" />
+											</span>
+											<h2 className="text-xl sm:text-2xl font-bold text-secondary">
+												Broschyrer & Dokumentation
+											</h2>
+										</div>
+										<p className="mb-5 text-sm text-secondary/70 max-w-2xl">
+											Ladda ner produktbroschyrer och teknisk dokumentation – fyll i
+											dina uppgifter så skickar vi materialet direkt till dig.
+										</p>
+
+										<div className="flex flex-wrap gap-3">
+											{product.documentation && product.documentation.length > 0 ? (
+												product.documentation.map((doc, i) => (
+													<button
+														key={i}
+														type="button"
+														onClick={() => setBrochureModal({ open: true, title: doc.title })}
+														className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+													>
+														<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
+														{doc.title || "Broschyr"}
+													</button>
+												))
+											) : (
+												<button
+													type="button"
+													onClick={() => setBrochureModal({ open: true, title: product.title })}
+													className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+												>
+													<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
+													Begär broschyr
+												</button>
+											)}
+										</div>
+									</div>
+								</div>
+							</div>
 
 						</article>
 
@@ -417,9 +407,6 @@ export function ProductContent({
 					purchaseDescription={product.purchaseInfo?.description}
 					formSubtitle={product.purchaseInfo?.formSubtitle}
 					buttonText={product.purchaseInfo?.buttonText}
-					productImage={product.overviewImage}
-					imageWidth={product.imageWidth}
-					imageHeight={product.imageHeight}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}
 					bgMobile={product.inquiryBgMobile || undefined}

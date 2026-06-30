@@ -150,7 +150,7 @@ const toggleCategory = (categoryId: string) => {
 																</Link>
 															))}
 															<Link
-																href="/klinikutrustning"
+																href={`/klinikutrustning/teknologi/${tech.slug}`}
 																className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
 																onClick={() => setOpen(false)}
 															>
@@ -174,7 +174,10 @@ const toggleCategory = (categoryId: string) => {
 																		{category.products.length > 0 ? (
 																			<>
 																				<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-																					<span className="flex-1 px-3 py-2 text-sm font-medium text-primary">
+																					<span
+																						className="flex-1 px-3 py-2 text-sm font-medium text-primary cursor-pointer"
+																						onClick={() => toggleCategory(category._id)}
+																					>
 																						{category.name}
 																					</span>
 																					<button

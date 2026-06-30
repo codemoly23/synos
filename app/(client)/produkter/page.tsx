@@ -180,7 +180,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -281,7 +281,7 @@ function ProduktSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex items-center justify-center rounded-lg btn-copper-gradient px-4 py-2 text-sm font-medium transition-colors border border-transparent"
 					>
 						Kontakta oss
 					</Link>
@@ -492,7 +492,7 @@ export default async function ProductsPage({
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
 						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />

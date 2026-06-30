@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 
@@ -39,8 +39,17 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const [menuValue, setMenuValue] = useState("");
+	const [expandedTech, setExpandedTech] = useState<string | null>(null);
+	const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 	const { data: navigationData } = useNavigation();
 	const { variant } = useNavbarVariant();
+
+	const toggleTech = (techName: string) => {
+		setExpandedTech(expandedTech === techName ? null : techName);
+	};
+	const toggleCategory = (categoryId: string) => {
+		setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+	};
 
 	// Always use light text since navbar is always dark
 	const useLightText = true;
@@ -131,17 +140,28 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 														>
 																{item.title}
 														</NavigationMenuTrigger>
-														<NavigationMenuContent className="bg-slate-100/80! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]! rounded-2xl! overflow-hidden!">
-															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 bg-slate-100/80 backdrop-blur-xl border border-white/20 shadow-sm rounded-2xl max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
+														<NavigationMenuContent className="bg-white! border! border-slate-200! ring-0! outline-none! backdrop-blur-xl fixed! left-1/2! -translate-x-1/2! top-[72px]! rounded-2xl! overflow-hidden!">
+															<div className="w-[calc(100vw-6rem)] max-w-[1150px] p-4 max-h-[60vh] overflow-y-auto nav-dropdown-scroll">
 																{item.isTechnologyMenu ? (
 																	/* UTRUSTNING: DB technology groups */
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{(navigationData?.technologyGroups || []).map((tech) => (
 																			<div key={tech.name} className="space-y-1">
-																				<p className="text-sm font-bold text-primary">
-																					{tech.name}
-																				</p>
-																				<ul className="space-y-0">
+																				<button
+																					type="button"
+																					onClick={() => toggleTech(tech.name)}
+																					className="flex w-full items-center justify-between gap-2 text-left text-sm font-bold text-primary hover:text-secondary transition-colors"
+																				>
+																					<span>{tech.name}</span>
+																					<ChevronDown
+																						className={cn(
+																							"h-4 w-4 shrink-0 transition-transform duration-200",
+																							expandedTech === tech.name && "rotate-180"
+																						)}
+																					/>
+																				</button>
+																				{expandedTech === tech.name && (
+																				<ul className="space-y-0 animate-in slide-in-from-top-1 duration-200">
 																					{tech.products.map((product) => (
 																						<li key={`${tech.name}:${product.slug}`}>
 																							<Link
@@ -156,7 +176,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																					{tech.products.length > 0 && (
 																						<li>
 																						<Link
-																							href="/klinikutrustning"
+																							href={`/klinikutrustning/teknologi/${tech.slug}`}
 																							className="block text-sm text-primary font-medium hover:underline mt-1"
 																							onClick={() => setMenuValue("")}
 																						>
@@ -165,6 +185,7 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																						</li>
 																					)}
 																				</ul>
+																			)}
 																			</div>
 																		))}
 																		{!navigationData && (
@@ -179,11 +200,21 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	<div className="grid grid-cols-4 gap-x-6 gap-y-5">
 																		{navigationData?.categories.map((category) => (
 																			<div key={category._id} className="space-y-1">
-																				<p className="text-sm font-bold text-primary">
-																					{category.name}
-																				</p>
-																				{category.products.length > 0 && (
-																					<ul className="space-y-0">
+																				<button
+																					type="button"
+																					onClick={() => toggleCategory(category._id)}
+																					className="flex w-full items-center justify-between gap-2 text-left text-sm font-bold text-primary hover:text-secondary transition-colors"
+																				>
+																					<span>{category.name}</span>
+																					<ChevronDown
+																						className={cn(
+																							"h-4 w-4 shrink-0 transition-transform duration-200",
+																							expandedCategory === category._id && "rotate-180"
+																						)}
+																					/>
+																				</button>
+																				{expandedCategory === category._id && category.products.length > 0 && (
+																					<ul className="space-y-0 animate-in slide-in-from-top-1 duration-200">
 																						{category.products.map((product) => (
 																							<li key={product._id}>
 																								<Link

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 interface HeroCategoryFormProps {
 	categoryName: string;
@@ -49,10 +51,10 @@ const err =
 	"w-full bg-transparent border border-red-400/60 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-red-400 transition-colors";
 
 export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
+	const router = useRouter();
 	const [form, setForm] = useState<FormState>(EMPTY);
 	const [errors, setErrors] = useState<FormErrors>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
 
 	function onChange(
@@ -89,9 +91,10 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			});
 			const result = await res.json();
 			if (result.success) {
-				setIsSuccess(true);
 				setForm(EMPTY);
 				setErrors({});
+				pushEvent("generate_lead", { form_type: "hero_inquiry", category: categoryName });
+				router.push("/tack");
 			} else {
 				setServerError(result.message || "Något gick fel. Försök igen.");
 			}
@@ -100,29 +103,6 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 		} finally {
 			setIsSubmitting(false);
 		}
-	}
-
-	if (isSuccess) {
-		return (
-			<div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-				<div className="h-14 w-14 rounded-full bg-primary/20 border border-primary flex items-center justify-center">
-					<CheckCircle2 className="h-7 w-7 text-primary" />
-				</div>
-				<h3 className="text-2xl font-sans font-light text-white">
-					Tack för din förfrågan!
-				</h3>
-				<p className="text-white/60 text-sm max-w-xs leading-relaxed">
-					Vi återkommer till dig inom 24 timmar med personlig rådgivning.
-				</p>
-				<button
-					type="button"
-					onClick={() => setIsSuccess(false)}
-					className="text-xs text-white/40 hover:text-white/70 underline underline-offset-2 transition-colors"
-				>
-					Skicka en ny förfrågan
-				</button>
-			</div>
-		);
 	}
 
 	return (
@@ -223,7 +203,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			<button
 				type="submit"
 				disabled={isSubmitting}
-				className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
+				className="w-full py-3 rounded-md btn-copper-gradient font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
 			>
 				{isSubmitting ? (
 					<>
