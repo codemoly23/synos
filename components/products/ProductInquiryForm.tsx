@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,12 +10,10 @@ import {
 	Phone,
 	User,
 	Loader2,
-	CheckCircle2,
 	Building,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -97,38 +96,6 @@ async function submitInquiry(
 	return response.json();
 }
 
-function SuccessCard({ context, onReset }: { context: string; onReset: () => void }) {
-	return (
-		<div
-			className="max-w-2xl mx-auto text-center p-8 sm:p-12 rounded-2xl"
-			style={{
-				background: "rgb(24,24,27)",
-				boxShadow: `0 0 0 2px rgba(${BRAND_RGB},0.4), 0 0 60px rgba(${BRAND_RGB},0.12)`,
-			}}
-		>
-			<div
-				className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
-				style={{ background: `rgba(${BRAND_RGB},0.1)` }}
-			>
-				<CheckCircle2 className="h-10 w-10" style={{ color: BRAND }} />
-			</div>
-			<h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-				Tack för din förfrågan!
-			</h2>
-			<p className="text-lg text-zinc-400 mb-6">
-				Vi har mottagit {context} och återkommer till dig inom 24 timmar.
-			</p>
-			<Button
-				variant="outline"
-				onClick={onReset}
-				className="mt-4 border-zinc-700 text-zinc-200 hover:bg-zinc-800"
-			>
-				Skicka ny förfrågan
-			</Button>
-		</div>
-	);
-}
-
 // ─── Desktop Form ────────────────────────────────────────────────────────────
 
 function DesktopInquiryForm({
@@ -141,7 +108,6 @@ function DesktopInquiryForm({
 	formSubtitle,
 	buttonText,
 	isGeneric,
-	successContext,
 }: {
 	productName?: string;
 	productId?: string;
@@ -152,10 +118,9 @@ function DesktopInquiryForm({
 	formSubtitle?: string;
 	buttonText?: string;
 	isGeneric: boolean;
-	successContext: string;
 }) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const { register, handleSubmit, setValue, reset, formState: { errors } } =
@@ -184,11 +149,8 @@ function DesktopInquiryForm({
 		try {
 			const result = await submitInquiry(data, { isGeneric, categoryName });
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 10000);
 
 				// Analytics conversion events
 				const eventData = {
@@ -199,6 +161,8 @@ function DesktopInquiryForm({
 				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
+
+				router.push("/tack");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const msg = result.errors
@@ -217,10 +181,6 @@ function DesktopInquiryForm({
 			setIsSubmitting(false);
 		}
 	};
-
-	if (isSuccess) {
-		return <SuccessCard context={successContext} onReset={() => setIsSuccess(false)} />;
-	}
 
 	return (
 		<div className="relative">
@@ -366,7 +326,6 @@ function MobileInquiryForm({
 	contactPhone,
 	contactEmail,
 	isGeneric,
-	successContext,
 }: {
 	productName?: string;
 	productId?: string;
@@ -379,10 +338,9 @@ function MobileInquiryForm({
 	contactPhone?: string;
 	contactEmail?: string;
 	isGeneric: boolean;
-	successContext: string;
 }) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const { register, handleSubmit, setValue, reset, formState: { errors } } =
@@ -409,11 +367,8 @@ function MobileInquiryForm({
 		try {
 			const result = await submitInquiry(data, { isGeneric, categoryName });
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 10000);
 
 				// Analytics conversion events
 				const eventData = {
@@ -424,6 +379,8 @@ function MobileInquiryForm({
 				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
+
+				router.push("/tack");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
@@ -434,10 +391,6 @@ function MobileInquiryForm({
 			setIsSubmitting(false);
 		}
 	};
-
-	if (isSuccess) {
-		return <SuccessCard context={successContext} onReset={() => setIsSuccess(false)} />;
-	}
 
 	const inputCls = "w-full bg-transparent border border-white/30 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/25 outline-none focus:border-white/50 transition-colors";
 	const labelCls = "block text-xs text-white/60 mb-1.5";
@@ -580,7 +533,6 @@ export function ProductInquiryForm({
 	const isGeneric = !productId;
 	const resolvedPillLabel = pillLabel ?? (productName ? `${productName.toUpperCase()} DEMO` : "SYNOS MEDICAL");
 	const resolvedTitle = purchaseTitle || (productName ? `Intresserad av ${productName}?` : "Kontakta oss");
-	const successContext = productName || "din förfrågan";
 
 	const defaultBg = "/images/Product detail breadcrumbs background.jpeg";
 
@@ -622,7 +574,6 @@ export function ProductInquiryForm({
 						contactPhone={contactPhone}
 						contactEmail={contactEmail}
 						isGeneric={isGeneric}
-						successContext={successContext}
 					/>
 				</div>
 
@@ -687,7 +638,6 @@ export function ProductInquiryForm({
 						formSubtitle={formSubtitle}
 						buttonText={buttonText}
 						isGeneric={isGeneric}
-						successContext={successContext}
 					/>
 				</div>
 			</div>
