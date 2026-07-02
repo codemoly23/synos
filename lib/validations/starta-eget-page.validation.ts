@@ -30,6 +30,9 @@ export const startaEgetMainContentSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(300).optional(),
 	paragraphs: z.array(z.string().max(2000)).optional(),
+	image: z.string().max(500).optional(),
+	highlightsTitle: z.string().max(200).optional(),
+	highlights: z.array(z.string().max(300)).optional(),
 });
 
 // ============================================================================

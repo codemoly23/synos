@@ -59,6 +59,11 @@ interface SubmissionDetail {
 	subject: string | null;
 	preferredDate: string | null;
 	preferredTime: string | null;
+	jobTitle: string | null;
+	careerType: string | null;
+	resumeUrl: string | null;
+	category: string | null;
+	attachmentUrl: string | null;
 	metadata: {
 		ipAddress: string;
 		userAgent: string;
@@ -462,6 +467,86 @@ export function InquiryDetail({ submission }: InquiryDetailProps) {
 											Call this number: {submission.countryCode} {submission.phone}
 										</p>
 									</div>
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Job Application Details (if applicable) */}
+						{submission.type === "job_application" && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<FileText className="h-5 w-5" />
+										Job Application Details
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										{submission.jobTitle && (
+											<div className="space-y-1">
+												<label className="text-sm text-slate-500">Position</label>
+												<p className="font-medium">{submission.jobTitle}</p>
+											</div>
+										)}
+										{submission.careerType && (
+											<div className="space-y-1">
+												<label className="text-sm text-slate-500">Career Type</label>
+												<p className="font-medium">{submission.careerType}</p>
+											</div>
+										)}
+									</div>
+									{submission.resumeUrl && (
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Resume</label>
+											<div>
+												<a
+													href={submission.resumeUrl}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+												>
+													<ExternalLink className="h-4 w-4" />
+													Download Resume
+												</a>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Training Application Details (if applicable) */}
+						{submission.type === "training_application" && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<FileText className="h-5 w-5" />
+										Training Application Details
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{submission.category && (
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Category</label>
+											<p className="font-medium">{submission.category}</p>
+										</div>
+									)}
+									{submission.attachmentUrl && (
+										<div className="space-y-1">
+											<label className="text-sm text-slate-500">Attachment</label>
+											<div>
+												<a
+													href={submission.attachmentUrl}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+												>
+													<ExternalLink className="h-4 w-4" />
+													Download Attachment
+												</a>
+											</div>
+										</div>
+									)}
 								</CardContent>
 							</Card>
 						)}

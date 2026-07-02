@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { MapPin, Mail, Phone, Send, Loader2, User, CheckCircle2, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Mail, Phone, Send, Loader2, User, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { ICareersContactSidebar } from "@/models/careers-page.model";
 
@@ -18,10 +21,13 @@ interface ContactSidebarProps {
 
 // Form schema
 const quickContactSchema = z.object({
-	name: z.string().min(2, "Name is required"),
-	email: z.string().email("Valid email required"),
-	phone: z.string().min(6, "Phone number required"),
+	name: z.string().min(2, "Namn krävs"),
+	email: z.string().email("Giltig e-postadress krävs"),
+	phone: z.string().min(6, "Telefonnummer krävs"),
 	message: z.string().optional(),
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
 });
 
 type QuickContactData = z.infer<typeof quickContactSchema>;
@@ -33,17 +39,24 @@ type QuickContactData = z.infer<typeof quickContactSchema>;
  * and quick contact form (Wave Hi!).
  */
 export function ContactSidebar({ data, className }: ContactSidebarProps) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
+	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
+		setValue,
 		reset,
 		formState: { errors },
 	} = useForm<QuickContactData>({
 		resolver: zodResolver(quickContactSchema),
 	});
+
+	const handleGdprChange = (checked: boolean) => {
+		setGdprChecked(checked);
+		setValue("gdprConsent", checked as unknown as true);
+	};
 
 	const onSubmit = async (formData: QuickContactData) => {
 		setIsSubmitting(true);
@@ -58,21 +71,21 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 					email: formData.email,
 					phone: formData.phone,
 					message: formData.message,
+					gdprConsent: formData.gdprConsent,
 					pageUrl: window.location.href,
 				}),
 			});
 
 			const result = await response.json();
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
-				toast.success("Message sent! We'll get back to you soon.");
-				setTimeout(() => setIsSuccess(false), 5000);
+				setGdprChecked(false);
+				router.push("/tack");
 			} else {
-				toast.error(result.message || "Something went wrong. Please try again.");
+				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
 		} catch {
-			toast.error("Failed to send message. Please try again later.");
+			toast.error("Kunde inte skicka meddelandet. Försök igen senare.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -87,7 +100,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 		>
 			{/* Title */}
 			<h3 className="text-xl font-bold text-secondary mb-6">
-				{data?.title || "Always Nearby"}
+				{data?.title || "Alltid nära dig"}
 			</h3>
 
 			{/* Contact Info */}
@@ -99,7 +112,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							<MapPin className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-bold text-secondary text-base mb-1">Reach Us</p>
+							<p className="font-bold text-secondary text-base mb-1">Nå oss</p>
 							<p className="text-muted-foreground text-sm whitespace-pre-line leading-relaxed">
 								{data.address}
 							</p>
@@ -114,7 +127,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							<Mail className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-bold text-secondary text-base mb-1">Drop Us Mail</p>
+							<p className="font-bold text-secondary text-base mb-1">Maila oss</p>
 							<a
 								href={`mailto:${data.email}`}
 								className="text-muted-foreground text-sm hover:text-primary transition-colors"
@@ -132,7 +145,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							<Phone className="w-6 h-6 text-white" />
 						</div>
 						<div>
-							<p className="font-bold text-secondary text-base mb-1">Connect Now</p>
+							<p className="font-bold text-secondary text-base mb-1">Ring oss</p>
 							{data?.phone && (
 								<a
 									href={`tel:${data.phone.replace(/\s/g, "")}`}
@@ -160,26 +173,16 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 			{/* Quick Contact Form */}
 			<div>
 				<h4 className="text-xl font-bold text-secondary mb-4">
-					{data?.formTitle || "Say, Hello !"}
+					{data?.formTitle || "Säg hej!"}
 				</h4>
 
-				{isSuccess ? (
-					<div className="text-center py-6">
-						<div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
-							<CheckCircle2 className="w-6 h-6 text-green-600" />
-						</div>
-						<p className="text-sm text-muted-foreground">
-							Thanks! We&apos;ll be in touch soon.
-						</p>
-					</div>
-				) : (
-					<form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
 						<div>
 							<div className="relative">
 								<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 								<Input
 									{...register("name")}
-									placeholder="Your Name*"
+									placeholder="Namn*"
 									className={cn(
 										"pl-10 h-11 bg-slate-50 border-slate-200",
 										errors.name && "border-red-500"
@@ -198,7 +201,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 								<Input
 									{...register("email")}
 									type="email"
-									placeholder="Email Address*"
+									placeholder="E-postadress*"
 									className={cn(
 										"pl-10 h-11 bg-slate-50 border-slate-200",
 										errors.email && "border-red-500"
@@ -217,7 +220,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 								<Input
 									{...register("phone")}
 									type="tel"
-									placeholder="Your Number*"
+									placeholder="Telefonnummer*"
 									className={cn(
 										"pl-10 h-11 bg-slate-50 border-slate-200",
 										errors.phone && "border-red-500"
@@ -235,7 +238,7 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 								<MessageSquare className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
 								<textarea
 									{...register("message")}
-									placeholder="Additional Message"
+									placeholder="Meddelande"
 									rows={4}
 									className={cn(
 										"w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors placeholder:text-slate-400",
@@ -249,6 +252,32 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							)}
 						</div>
 
+						<div>
+							<label className="flex items-start gap-2 cursor-pointer">
+								<Checkbox
+									checked={gdprChecked}
+									onCheckedChange={(checked) => handleGdprChange(checked === true)}
+									disabled={isSubmitting}
+									className="mt-0.5 shrink-0"
+								/>
+								<span className="text-xs text-muted-foreground leading-normal">
+									Jag godkänner Synos Medical AB:s{" "}
+									<Link
+										href="/integritetspolicy"
+										className="text-primary hover:underline font-medium"
+										target="_blank"
+										onClick={(e) => e.stopPropagation()}
+									>
+										integritetspolicy
+									</Link>
+									. *
+								</span>
+							</label>
+							{errors.gdprConsent && (
+								<p className="text-xs text-red-500 mt-1">{errors.gdprConsent.message}</p>
+							)}
+						</div>
+
 						<Button
 							type="submit"
 							disabled={isSubmitting}
@@ -257,17 +286,16 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 							{isSubmitting ? (
 								<>
 									<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-									Sending...
+									Skickar...
 								</>
 							) : (
 								<>
-									Send Message
+									Skicka meddelande
 									<Send className="w-4 h-4 ml-2" />
 								</>
 							)}
 						</Button>
 					</form>
-				)}
 			</div>
 		</div>
 	);

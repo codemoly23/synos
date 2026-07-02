@@ -240,6 +240,13 @@ const toggleCategory = (categoryId: string) => {
 													</AccordionTrigger>
 													<AccordionContent className="pb-1 pt-0.5">
 														<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
+															<Link
+																href={item.href}
+																className="block px-3 py-2 text-sm font-medium text-primary hover:underline rounded-lg transition-all"
+																onClick={() => setOpen(false)}
+															>
+																Översikt →
+															</Link>
 															{item.items.map((subItem) => (
 																<Link
 																	key={subItem.title}

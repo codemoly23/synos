@@ -121,7 +121,7 @@ function ProductCardDB({
 	return (
 		<Link href={`/klinikutrustning/${categorySlug}/${product.slug}`} className="h-full">
 			<Card className="group h-full flex flex-col overflow-hidden border-primary/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 p-0!">
-				<div className="relative aspect-square overflow-hidden bg-white p-4 shrink-0">
+				<div className="relative aspect-4/3 overflow-hidden bg-primary/50 shrink-0">
 					<ImageComponent
 						src={primaryImage}
 						alt={product.title}
@@ -130,7 +130,7 @@ function ProductCardDB({
 						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 						showLoader
 						wrapperClasses="w-full h-full"
-						className="object-contain transition-transform h-full w-full duration-300 group-hover:scale-105"
+						className="object-cover transition-transform h-full w-full duration-300 group-hover:scale-105"
 					/>
 				</div>
 				<div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">

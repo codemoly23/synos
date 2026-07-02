@@ -93,6 +93,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "training_application") {
+			submission = await formSubmissionService.createTrainingApplication(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

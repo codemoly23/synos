@@ -6,6 +6,7 @@ import {
 	type ITeamSectionVisibility,
 	type ITeamHeroSection,
 	type ITeamStat,
+	type ITeamMembersSection,
 	type ITeamMember,
 	type ITeamValuesSection,
 	type ITeamJoinUsSection,
@@ -20,6 +21,7 @@ export interface UpdateTeamPageInput {
 	sectionVisibility?: ITeamSectionVisibility;
 	hero?: Partial<ITeamHeroSection>;
 	stats?: ITeamStat[];
+	teamSection?: Partial<ITeamMembersSection>;
 	teamMembers?: ITeamMember[];
 	valuesSection?: Partial<ITeamValuesSection>;
 	joinUs?: Partial<ITeamJoinUsSection>;
@@ -85,6 +87,14 @@ class TeamPageRepository {
 
 		if (data.stats) {
 			updateData.stats = data.stats;
+		}
+
+		if (data.teamSection) {
+			Object.entries(data.teamSection).forEach(([key, value]) => {
+				if (value !== undefined) {
+					updateData[`teamSection.${key}`] = value;
+				}
+			});
 		}
 
 		if (data.teamMembers) {

@@ -92,6 +92,24 @@ const TeamMemberSchema = new Schema<ITeamMember>(
 );
 
 // ============================================================================
+// TEAM MEMBERS SECTION HEADING
+// ============================================================================
+export interface ITeamMembersSection {
+	badge?: string;
+	title?: string;
+	subtitle?: string;
+}
+
+const TeamMembersSectionSchema = new Schema<ITeamMembersSection>(
+	{
+		badge: { type: String, trim: true },
+		title: { type: String, trim: true },
+		subtitle: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
 // VALUES SECTION
 // ============================================================================
 export interface ITeamValue {
@@ -204,6 +222,7 @@ export interface ITeamPage extends Document {
 	sectionVisibility: ITeamSectionVisibility;
 	hero: ITeamHeroSection;
 	stats: ITeamStat[];
+	teamSection: ITeamMembersSection;
 	teamMembers: ITeamMember[];
 	valuesSection: ITeamValuesSection;
 	joinUs: ITeamJoinUsSection;
@@ -230,6 +249,7 @@ const TeamPageSchema = new Schema<ITeamPage>(
 		},
 		hero: { type: TeamHeroSectionSchema, default: {} },
 		stats: { type: [TeamStatSchema], default: [] },
+		teamSection: { type: TeamMembersSectionSchema, default: {} },
 		teamMembers: { type: [TeamMemberSchema], default: [] },
 		valuesSection: { type: TeamValuesSectionSchema, default: {} },
 		joinUs: { type: TeamJoinUsSectionSchema, default: {} },

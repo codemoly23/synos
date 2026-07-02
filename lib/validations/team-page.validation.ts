@@ -31,6 +31,15 @@ export const teamStatSchema = z.object({
 });
 
 // ============================================================================
+// TEAM MEMBERS SECTION HEADING
+// ============================================================================
+export const teamMembersSectionSchema = z.object({
+	badge: z.string().max(100).optional(),
+	title: z.string().max(200).optional(),
+	subtitle: z.string().max(500).optional(),
+});
+
+// ============================================================================
 // TEAM MEMBER
 // ============================================================================
 export const teamMemberSchema = z.object({
@@ -104,6 +113,7 @@ export const updateTeamPageSchema = z.object({
 	sectionVisibility: teamSectionVisibilitySchema.optional(),
 	hero: teamHeroSectionSchema.optional(),
 	stats: z.array(teamStatSchema).optional(),
+	teamSection: teamMembersSectionSchema.optional(),
 	teamMembers: z.array(teamMemberSchema).optional(),
 	valuesSection: teamValuesSectionSchema.optional(),
 	joinUs: teamJoinUsSectionSchema.optional(),
@@ -115,6 +125,7 @@ export const updateTeamPageSchema = z.object({
 export type TeamSectionVisibilityInput = z.infer<typeof teamSectionVisibilitySchema>;
 export type TeamHeroSectionInput = z.infer<typeof teamHeroSectionSchema>;
 export type TeamStatInput = z.infer<typeof teamStatSchema>;
+export type TeamMembersSectionInput = z.infer<typeof teamMembersSectionSchema>;
 export type TeamMemberInput = z.infer<typeof teamMemberSchema>;
 export type TeamValueInput = z.infer<typeof teamValueSchema>;
 export type TeamValuesSectionInput = z.infer<typeof teamValuesSectionSchema>;

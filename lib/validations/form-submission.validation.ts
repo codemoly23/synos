@@ -15,6 +15,7 @@ export const formSubmissionTypes = [
 	"job_application",
 	"hero_inquiry",
 	"brochure_request",
+	"training_application",
 ] as const;
 
 /**
@@ -520,6 +521,51 @@ export const jobApplicationSchema = z.object({
 });
 
 /**
+ * Training Application Form Schema
+ * For the application form on the training/utbildningar page
+ */
+export const trainingApplicationSchema = z.object({
+	fullName: z
+		.string()
+		.min(2, "Namnet måste vara minst 2 tecken")
+		.max(100, "Namnet får inte överstiga 100 tecken")
+		.trim(),
+
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(20, "Telefonnummer får inte överstiga 20 siffror")
+		.trim(),
+
+	category: z
+		.string()
+		.min(1, "Välj en kategori")
+		.max(100, "Kategori får inte överstiga 100 tecken")
+		.trim(),
+
+	message: z
+		.string()
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	attachmentUrl: z
+		.string()
+		.max(500, "Bilaga-URL får inte överstiga 500 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+});
+
+/**
  * Hero Inquiry Form Schema
  * Minimal schema for the category hero section contact form.
  * No phone required — name, company, email, optional message.
@@ -602,6 +648,9 @@ export type CallbackRequestInput = z.infer<typeof callbackRequestSchema>;
 export type TourRequestInput = z.infer<typeof tourRequestSchema>;
 export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
 export type JobApplicationInput = z.infer<typeof jobApplicationSchema>;
+export type TrainingApplicationInput = z.infer<
+	typeof trainingApplicationSchema
+>;
 export type FormSubmissionListQuery = z.infer<
 	typeof formSubmissionListQuerySchema
 >;

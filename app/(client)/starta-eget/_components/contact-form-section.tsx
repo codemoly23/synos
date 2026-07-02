@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { pushEvent } from "@/lib/analytics/gtm";
 import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
@@ -11,7 +12,6 @@ import {
 	Phone,
 	User,
 	Loader2,
-	CheckCircle2,
 	Rocket,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -49,8 +49,8 @@ const clientFormSchema = z.object({
 type FormData = z.infer<typeof clientFormSchema>;
 
 export function ContactFormSection() {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -95,15 +95,11 @@ export function ContactFormSection() {
 			const result = await response.json();
 
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success(
-					"Tack för din förfrågan! Vi återkommer inom 24 timmar."
-				);
-				setTimeout(() => setIsSuccess(false), 10000);
 				pushEvent("generate_lead", { form_type: "starta_eget" });
 				trackLead({ form_type: "starta_eget" });
+				router.push("/tack");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -131,34 +127,6 @@ export function ContactFormSection() {
 			setIsSubmitting(false);
 		}
 	};
-
-	if (isSuccess) {
-		return (
-			<section className="py-16 bg-gradient-to-b from-primary/5 to-white">
-				<div className="_container">
-					<div className="mx-auto max-w-2xl text-center p-8 sm:p-12 rounded-2xl bg-card border border-border shadow-lg">
-						<div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
-							<CheckCircle2 className="h-10 w-10 text-green-600" />
-						</div>
-						<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
-							Tack för din förfrågan!
-						</h2>
-						<p className="text-lg text-muted-foreground mb-6">
-							Vi har mottagit din förfrågan om att starta eget och
-							återkommer till dig inom 24 timmar.
-						</p>
-						<Button
-							variant="outline"
-							onClick={() => setIsSuccess(false)}
-							className="mt-4"
-						>
-							Skicka ny förfrågan
-						</Button>
-					</div>
-				</div>
-			</section>
-		);
-	}
 
 	return (
 		<section className="py-16 bg-gradient-to-b from-primary/5 to-white">

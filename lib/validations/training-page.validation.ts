@@ -13,6 +13,7 @@ export const trainingSectionVisibilitySchema = z.object({
 	inquiryForm: z.boolean(),
 	resources: z.boolean(),
 	richContent: z.boolean().default(false),
+	applicationForm: z.boolean(),
 });
 
 // ============================================================================
@@ -105,6 +106,16 @@ export const trainingInquirySectionSchema = z.object({
 });
 
 // ============================================================================
+// APPLICATION FORM SECTION
+// ============================================================================
+export const trainingApplicationSectionSchema = z.object({
+	badge: z.string().max(100).optional(),
+	title: z.string().max(200).optional(),
+	subtitle: z.string().max(500).optional(),
+	categories: z.array(z.string().max(100)).optional(),
+});
+
+// ============================================================================
 // RESOURCE CARD
 // ============================================================================
 export const trainingResourceCardSchema = z.object({
@@ -144,6 +155,7 @@ export const updateTrainingPageSchema = z.object({
 	processSection: trainingProcessSectionSchema.optional(),
 	supportSection: trainingSupportSectionSchema.optional(),
 	inquirySection: trainingInquirySectionSchema.optional(),
+	applicationSection: trainingApplicationSectionSchema.optional(),
 	resourcesSection: trainingResourcesSectionSchema.optional(),
 	seo: trainingPageSeoSchema.optional(),
 });
@@ -169,6 +181,9 @@ export type TrainingSupportSectionInput = z.infer<
 export type TrainingFaqItemInput = z.infer<typeof trainingFaqItemSchema>;
 export type TrainingInquirySectionInput = z.infer<
 	typeof trainingInquirySectionSchema
+>;
+export type TrainingApplicationSectionInput = z.infer<
+	typeof trainingApplicationSectionSchema
 >;
 export type TrainingResourceCardInput = z.infer<
 	typeof trainingResourceCardSchema

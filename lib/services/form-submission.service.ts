@@ -16,6 +16,7 @@ import {
 	jobApplicationSchema,
 	heroInquirySchema,
 	brochureRequestSchema,
+	trainingApplicationSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
@@ -25,6 +26,7 @@ import {
 	type JobApplicationInput,
 	type HeroInquiryInput,
 	type BrochureRequestInput,
+	type TrainingApplicationInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -462,6 +464,60 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Job application created: ${submission._id} for ${validData.jobTitle || "General Position"}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a training application submission (utbildningar page application form)
+	 */
+	async createTrainingApplication(
+		data: TrainingApplicationInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = trainingApplicationSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "training_application" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: "+46",
+			countryName: "Sweden",
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			category: this.sanitizeInput(validData.category) || null,
+			attachmentUrl: validData.attachmentUrl || null,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Training application created: ${submission._id}`);
 
 		return submission;
 	}

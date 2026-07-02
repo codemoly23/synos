@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -40,11 +41,8 @@ import {
 	User,
 	Send,
 	Loader2,
-	CheckCircle2,
 	Rocket,
 	ArrowRight,
-	Upload,
-	ChevronDown,
 	type LucideIcon,
 } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/animations";
@@ -99,9 +97,9 @@ type FormData = z.infer<typeof clientFormSchema>;
 export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 	// Set navbar to dark-hero variant
 	useSetNavbarVariant("dark-hero");
+	const router = useRouter();
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -146,11 +144,9 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 			const result = await response.json();
 
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 10000);
+				router.push("/tack");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
@@ -179,8 +175,12 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 	const hasMainContent =
 		data.mainContent?.title ||
 		data.mainContent?.subtitle ||
+		data.mainContent?.image ||
+		data.mainContent?.highlightsTitle ||
 		(data.mainContent?.paragraphs &&
-			data.mainContent.paragraphs.filter((p) => p && p.trim()).length > 0);
+			data.mainContent.paragraphs.filter((p) => p && p.trim()).length > 0) ||
+		(data.mainContent?.highlights &&
+			data.mainContent.highlights.filter((h) => h && h.trim()).length > 0);
 	const hasBenefits =
 		data.benefits && data.benefits.filter((b) => b.title).length > 0;
 	const hasFeatures =
@@ -197,6 +197,9 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 	const validBenefits = (data.benefits || []).filter((b) => b.title);
 	const validParagraphs = (data.mainContent?.paragraphs || []).filter(
 		(p) => p && p.trim()
+	);
+	const validHighlights = (data.mainContent?.highlights || []).filter(
+		(h) => h && h.trim()
 	);
 	const validFeatures = (data.featuresSection?.features || []).filter(
 		(f) => f.title
@@ -368,56 +371,70 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 							variants={staggerContainer}
 							className="space-y-16"
 						>
-							{/* Veritatisin Reprehenderit Section */}
-							<motion.div variants={fadeUp}>
-								{/* Image */}
-								<div className="relative rounded-xl overflow-hidden shadow-lg aspect-[16/9] mb-8">
-									<ImageComponent
-										src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=450&fit=crop"
-										alt="Veritatisin Reprehenderit"
-										width={800}
-										height={450}
-										className="w-full h-full object-cover"
-									/>
-								</div>
+							{/* Main Content Section */}
+							{visibility.mainContent && hasMainContent && (
+								<motion.div variants={fadeUp}>
+									{/* Image */}
+									{data.mainContent?.image && (
+										<div className="relative rounded-xl overflow-hidden shadow-lg aspect-[16/9] mb-8">
+											<ImageComponent
+												src={data.mainContent.image}
+												alt={data.mainContent?.title || "Starta eget"}
+												width={800}
+												height={450}
+												className="w-full h-full object-cover"
+											/>
+										</div>
+									)}
 
-								{/* Title */}
-								<h2 className="mb-4 text-2xl md:text-3xl font-bold text-secondary">
-									Veritatisin Reprehenderit
-								</h2>
+									{/* Title */}
+									{data.mainContent?.title && (
+										<h2 className="mb-4 text-2xl md:text-3xl font-bold text-secondary">
+											{data.mainContent.title}
+										</h2>
+									)}
 
-								{/* Text */}
-								<p className="text-muted-foreground leading-relaxed mb-8">
-									Vel aliquid dolores id dolor quis nam labore voluptatem sit architecto itaque aut consectetur nulla. Nam neque labore ab sunt sequi est praesentium voluptatem aut internos voluptas a molestiae consequatur non eligendi dolor et libero quod.
-								</p>
+									{/* Subtitle */}
+									{data.mainContent?.subtitle && (
+										<p className="text-lg font-medium text-secondary mb-4">
+											{data.mainContent.subtitle}
+										</p>
+									)}
 
-								{/* Dignissi Nostrum Section */}
-								<h3 className="text-xl font-bold text-secondary mb-4">
-									Dignissi Nostrum
-								</h3>
-								<ul className="space-y-3">
-									<li className="flex items-start gap-3">
-										<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
-										<span className="text-muted-foreground">Ab sunt sequi est praesentium voluptatem aut internos voluptas.</span>
-									</li>
-									<li className="flex items-start gap-3">
-										<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
-										<span className="text-muted-foreground">A molestiae consequatur non eligendi dolor et libero quod.</span>
-									</li>
-									<li className="flex items-start gap-3">
-										<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
-										<span className="text-muted-foreground">Nam neque labore ab sunt sequi est praesentium voluptatem.</span>
-									</li>
-									<li className="flex items-start gap-3">
-										<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
-										<span className="text-muted-foreground">Aut internos voluptas a molestiae consequatur non eligendi.</span>
-									</li>
-									<li className="flex items-start gap-3">
-										<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
-										<span className="text-muted-foreground">Dolor et libero quod vel aliquid dolores id dolor quis nam.</span>
-									</li>
-								</ul>
-							</motion.div>
+									{/* Paragraphs */}
+									{validParagraphs.length > 0 && (
+										<div className="space-y-4 mb-8">
+											{validParagraphs.map((paragraph, index) => (
+												<p
+													key={index}
+													className="text-muted-foreground leading-relaxed"
+												>
+													{paragraph}
+												</p>
+											))}
+										</div>
+									)}
+
+									{/* Highlights */}
+									{validHighlights.length > 0 && (
+										<>
+											{data.mainContent?.highlightsTitle && (
+												<h3 className="text-xl font-bold text-secondary mb-4">
+													{data.mainContent.highlightsTitle}
+												</h3>
+											)}
+											<ul className="space-y-3">
+												{validHighlights.map((highlight, index) => (
+													<li key={index} className="flex items-start gap-3">
+														<CheckCircle className="w-5 h-5 text-[#DCA783] mt-0.5 shrink-0" />
+														<span className="text-muted-foreground">{highlight}</span>
+													</li>
+												))}
+											</ul>
+										</>
+									)}
+								</motion.div>
+							)}
 
 							{/* Benefits Grid */}
 							{visibility.benefits && hasBenefits && (
@@ -478,10 +495,36 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 											whileInView={{ opacity: 1, y: 0 }}
 											viewport={{ once: true }}
 											transition={{ duration: 0.6, delay: 0.1 }}
-											className="text-muted-foreground leading-relaxed"
+											className="text-muted-foreground leading-relaxed mb-8"
 										>
 											{data.featuresSection.intro}
 										</motion.p>
+									)}
+
+									{/* Feature Cards */}
+									{validFeatures.length > 0 && (
+										<div className="grid gap-6 sm:grid-cols-2">
+											{validFeatures.map((feature, index) => (
+												<Card
+													key={index}
+													className="border-slate-200/80 hover:border-primary/30 transition-colors"
+												>
+													<CardContent className="p-6">
+														<div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
+															<Rocket className="h-7 w-7 text-primary" />
+														</div>
+														<h3 className="mb-2 text-lg font-semibold text-secondary">
+															{feature.title}
+														</h3>
+														{feature.description && (
+															<p className="text-muted-foreground text-sm">
+																{feature.description}
+															</p>
+														)}
+													</CardContent>
+												</Card>
+											))}
+										</div>
 									)}
 								</motion.div>
 							)}
@@ -815,32 +858,7 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 							</motion.div>
 
 							{/* Form */}
-							{isSuccess ? (
-								<motion.div
-									initial={{ opacity: 0, scale: 0.95 }}
-									animate={{ opacity: 1, scale: 1 }}
-									className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-10 text-center"
-								>
-									<div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-										<CheckCircle2 className="w-10 h-10 text-green-400" />
-									</div>
-									<h3 className="text-2xl font-bold text-white mb-3">
-										Tack för din förfrågan!
-									</h3>
-									<p className="text-white/70 mb-6">
-										Vi har mottagit din förfrågan och återkommer till dig inom
-										24 timmar.
-									</p>
-									<Button
-										variant="outline"
-										onClick={() => setIsSuccess(false)}
-										className="border-white/20 text-white hover:bg-white/10"
-									>
-										Skicka ny förfrågan
-									</Button>
-								</motion.div>
-							) : (
-								<motion.form
+							<motion.form
 									initial={{ opacity: 0, y: 20 }}
 									whileInView={{ opacity: 1, y: 0 }}
 									viewport={{ once: true }}
@@ -1013,7 +1031,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 										)}
 									</Button>
 								</motion.form>
-							)}
 						</div>
 					</div>
 				</section>
@@ -1049,264 +1066,6 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 					</motion.div>
 				</div>
 			</section>
-
-			{/* Application Form Section */}
-			<ApplicationFormSection />
 		</div>
-	);
-}
-
-function ApplicationFormSection() {
-	const [formData, setFormData] = useState({
-		name: "",
-		email: "",
-		phone: "",
-		careerType: "",
-		message: "",
-	});
-	const [selectedFile, setSelectedFile] = useState<File | null>(null);
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const careerTypes = [
-		"Account Manager",
-		"Sales Representative",
-		"Technical Support",
-		"Marketing Specialist",
-		"Software Developer",
-		"Other",
-	];
-
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setSelectedFile(e.target.files[0]);
-		}
-	};
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		// Form submission logic here
-		console.log("Form submitted:", { ...formData, file: selectedFile });
-	};
-
-	return (
-		<section className="py-16 md:py-20 bg-slate-50">
-			<div className="_container">
-				<div className="max-w-4xl mx-auto">
-					{/* Header */}
-					<motion.div
-						variants={staggerContainer}
-						initial="initial"
-						whileInView="animate"
-						viewport={{ once: true }}
-						className="text-center mb-12"
-					>
-						<motion.div variants={fadeUp} className="mb-4">
-							<span className="inline-block px-4 py-1.5 bg-[#DCA783]/10 text-[#DCA783] rounded-full text-sm font-medium">
-								Get Answers Instantly
-							</span>
-						</motion.div>
-						<motion.h2
-							variants={fadeUp}
-							className="text-3xl md:text-4xl font-bold text-secondary mb-4"
-						>
-							Tell Us What You Need
-						</motion.h2>
-						<motion.p
-							variants={fadeUp}
-							className="text-muted-foreground max-w-2xl mx-auto"
-						>
-							Fill out the form below and we&apos;ll get back to you as soon as
-							possible regarding your inquiry.
-						</motion.p>
-					</motion.div>
-
-					{/* Form */}
-					<motion.form
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						onSubmit={handleSubmit}
-						className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 shadow-sm"
-					>
-						<div className="grid gap-6 md:grid-cols-2">
-							{/* Your Name */}
-							<div>
-								<label
-									htmlFor="name"
-									className="block text-sm font-medium text-secondary mb-2"
-								>
-									Your Name <span className="text-red-500">*</span>
-								</label>
-								<input
-									type="text"
-									id="name"
-									name="name"
-									value={formData.name}
-									onChange={handleInputChange}
-									placeholder="Enter your name"
-									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
-								/>
-							</div>
-
-							{/* Email Address */}
-							<div>
-								<label
-									htmlFor="email"
-									className="block text-sm font-medium text-secondary mb-2"
-								>
-									Email Address <span className="text-red-500">*</span>
-								</label>
-								<input
-									type="email"
-									id="email"
-									name="email"
-									value={formData.email}
-									onChange={handleInputChange}
-									placeholder="Enter your email"
-									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
-								/>
-							</div>
-
-							{/* Your Number */}
-							<div>
-								<label
-									htmlFor="phone"
-									className="block text-sm font-medium text-secondary mb-2"
-								>
-									Your Number <span className="text-red-500">*</span>
-								</label>
-								<input
-									type="tel"
-									id="phone"
-									name="phone"
-									value={formData.phone}
-									onChange={handleInputChange}
-									placeholder="Enter your phone number"
-									required
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
-								/>
-							</div>
-
-							{/* Choose Careers Type */}
-							<div className="relative">
-								<label
-									htmlFor="careerType"
-									className="block text-sm font-medium text-secondary mb-2"
-								>
-									Choose Careers Type <span className="text-red-500">*</span>
-								</label>
-								<button
-									type="button"
-									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-left flex items-center justify-between bg-white"
-								>
-									<span
-										className={
-											formData.careerType
-												? "text-secondary"
-												: "text-muted-foreground/50"
-										}
-									>
-										{formData.careerType || "Select career type"}
-									</span>
-									<ChevronDown
-										className={`w-5 h-5 text-muted-foreground transition-transform ${
-											isDropdownOpen ? "rotate-180" : ""
-										}`}
-									/>
-								</button>
-								{isDropdownOpen && (
-									<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
-										{careerTypes.map((type) => (
-											<button
-												key={type}
-												type="button"
-												onClick={() => {
-													setFormData((prev) => ({ ...prev, careerType: type }));
-													setIsDropdownOpen(false);
-												}}
-												className="w-full px-4 py-2.5 text-left text-secondary hover:bg-slate-50 transition-colors"
-											>
-												{type}
-											</button>
-										))}
-									</div>
-								)}
-							</div>
-						</div>
-
-						{/* Additional Message */}
-						<div className="mt-6">
-							<label
-								htmlFor="message"
-								className="block text-sm font-medium text-secondary mb-2"
-							>
-								Additional Message
-							</label>
-							<textarea
-								id="message"
-								name="message"
-								value={formData.message}
-								onChange={handleInputChange}
-								placeholder="Tell us more about yourself and why you're interested in this position..."
-								rows={5}
-								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none"
-							/>
-						</div>
-
-						{/* File Upload and Submit Row */}
-						<div className="mt-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-							{/* File Upload */}
-							<div>
-								<div className="flex items-center">
-									<input
-										type="file"
-										ref={fileInputRef}
-										onChange={handleFileChange}
-										accept=".pdf,.doc,.docx,.jpg,.png"
-										className="hidden"
-									/>
-									<button
-										type="button"
-										onClick={() => fileInputRef.current?.click()}
-										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200"
-									>
-										<Upload className="w-4 h-4" />
-										Upload
-									</button>
-									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
-										<span className="text-muted-foreground text-sm">
-											{selectedFile ? selectedFile.name : "No file chosen"}
-										</span>
-									</div>
-								</div>
-								<p className="text-muted-foreground text-xs mt-2">
-									*Upload your resume in pdf, jpg, png, or doc format.
-								</p>
-							</div>
-
-							{/* Submit Button */}
-							<button
-								type="submit"
-								className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#DCA783] to-[#C4956E] hover:from-[#C4956E] hover:to-[#B08560] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#DCA783]/25"
-							>
-								Submit
-								<ArrowRight className="w-5 h-5" />
-							</button>
-						</div>
-					</motion.form>
-				</div>
-			</div>
-		</section>
 	);
 }

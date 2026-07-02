@@ -140,6 +140,50 @@ export default async function RootLayout({
 			<body
 				className={`${montserrat.variable} ${notoSans.variable} antialiased bg-slate-100`}
 			>
+				{gtmId && (
+					<>
+						{/*
+						  Consent Mode v2 default + GTM container bootstrap.
+						  strategy="beforeInteractive" makes Next.js inject this into the
+						  initial server-rendered HTML before hydration/any other script —
+						  this is Next.js's own documented pattern for exactly this case
+						  (App Router does not support a literal manual <head> element
+						  alongside generateMetadata — that combination crashes the render,
+						  confirmed while building this). Consent defaults to denied until
+						  TrackingScripts (below) calls gtag('consent', 'update', ...) once
+						  Cookiebot reports the user's real choice. NOTE: the GTM container
+						  itself still needs each tag's "Consent Settings" configured in
+						  the GTM UI to actually respect this signal — that's on whoever
+						  manages the container, not this repo.
+						*/}
+						<Script id="gtm-consent-init" strategy="beforeInteractive">
+							{`
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
+								gtag('consent', 'default', {
+									ad_storage: 'denied',
+									analytics_storage: 'denied',
+									ad_user_data: 'denied',
+									ad_personalization: 'denied',
+									wait_for_update: 500
+								});
+								(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+								new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+								j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+								'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+								})(window,document,'script','dataLayer','${gtmId}');
+							`}
+						</Script>
+						<noscript>
+							<iframe
+								src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+								height="0"
+								width="0"
+								style={{ display: "none", visibility: "hidden" }}
+							/>
+						</noscript>
+					</>
+				)}
 				{cookiebotId && (
 					<Script
 						id="cookiebot"
@@ -154,9 +198,11 @@ export default async function RootLayout({
 
 				{/*
 				  TrackingScripts is a client component that:
-				  - Waits for Cookiebot marketing consent before loading any scripts
-				  - Loads GTM OR (GA4 + Pixel) — never both GTM and Pixel to avoid
-				    double-firing PageView
+				  - If GTM is configured (already loaded in <head> above): pushes
+				    gtag('consent', 'update', ...) once Cookiebot reports the user's
+				    real consent choice — GTM itself is never blocked from loading.
+				  - If GTM is NOT configured: falls back to loading GA4/Ads/Pixel
+				    directly, gated on Cookiebot marketing consent as before.
 				  - Pushes pageview events to dataLayer on every SPA route change
 				*/}
 				<TrackingScripts

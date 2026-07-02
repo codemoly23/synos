@@ -1,8 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import {
 	Home,
 	ChevronRight,
@@ -18,9 +24,13 @@ import {
 	Phone,
 	Mail,
 	MapPin,
+	Loader2,
+	Send,
 	type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Accordion,
 	AccordionContent,
@@ -31,6 +41,19 @@ import { fadeUp, staggerContainer } from "@/lib/animations";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { ImageComponent } from "@/components/common/image-component";
 import type { AboutPageData } from "@/lib/repositories/about-page.repository";
+
+// Quick contact form schema (FAQ section "Say hello!" card)
+const quickContactSchema = z.object({
+	name: z.string().min(2, "Namn krävs"),
+	email: z.string().email("Giltig e-postadress krävs"),
+	phone: z.string().min(6, "Telefonnummer krävs"),
+	message: z.string().optional(),
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+});
+
+type QuickContactData = z.infer<typeof quickContactSchema>;
 
 interface AboutPageClientProps {
 	data: AboutPageData;
@@ -49,6 +72,58 @@ const ICON_MAP: Record<string, LucideIcon> = {
 export function AboutPageClient({ data }: AboutPageClientProps) {
 	// Set navbar to dark-hero variant
 	useSetNavbarVariant("dark-hero");
+
+	const router = useRouter();
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [gdprChecked, setGdprChecked] = useState(false);
+
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		reset,
+		formState: { errors },
+	} = useForm<QuickContactData>({
+		resolver: zodResolver(quickContactSchema),
+	});
+
+	const handleGdprChange = (checked: boolean) => {
+		setGdprChecked(checked);
+		setValue("gdprConsent", checked as unknown as true);
+	};
+
+	const onSubmitQuickContact = async (formData: QuickContactData) => {
+		setIsSubmitting(true);
+		try {
+			const response = await fetch("/api/form-submissions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: "contact",
+					subject: "Quick Contact - Om Oss",
+					fullName: formData.name,
+					email: formData.email,
+					phone: formData.phone,
+					message: formData.message,
+					gdprConsent: formData.gdprConsent,
+					pageUrl: window.location.href,
+				}),
+			});
+
+			const result = await response.json();
+			if (result.success) {
+				reset();
+				setGdprChecked(false);
+				router.push("/tack");
+			} else {
+				toast.error(result.message || "Något gick fel. Försök igen.");
+			}
+		} catch {
+			toast.error("Kunde inte skicka meddelandet. Försök igen senare.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	const visibility = data.sectionVisibility || {
 		hero: true,
@@ -213,12 +288,9 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<span className="text-secondary/60">●</span>
 							</div>
 
-							{/* Quote - Italic with highlighted words */}
+							{/* Quote */}
 							<h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-secondary leading-relaxed italic">
-								Sveriges ledande leverantör av professionell{" "}
-								<span className="text-primary">klinikutrustning</span> och{" "}
-								<span className="text-primary">lasermaskiner</span>. Vi kombinerar
-								kvalitetsprodukter med utbildning och support i världsklass.
+								{data.hero.subtitle}
 							</h2>
 						</motion.div>
 					</div>
@@ -680,7 +752,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									>
 										<span className="text-secondary/60">●</span>
 										<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
-											Our Faq
+											Våra Frågor
 										</span>
 										<span className="text-secondary/60">●</span>
 									</motion.div>
@@ -690,7 +762,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											variants={fadeUp}
 											className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
 										>
-											Answers To <span className="text-primary">Your</span> Questions
+											Svar På <span className="text-primary">Dina</span> Frågor
 										</motion.h2>
 									)}
 									{data.faq?.subtitle && (
@@ -750,7 +822,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 												<MapPin className="w-5 h-5 text-primary" />
 											</div>
 											<div>
-												<p className="font-semibold text-secondary">Reach Us</p>
+												<p className="font-semibold text-secondary">Nå oss</p>
 												<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
 											</div>
 										</div>
@@ -761,7 +833,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 												<Mail className="w-5 h-5 text-primary" />
 											</div>
 											<div>
-												<p className="font-semibold text-secondary">Drop Us Mail</p>
+												<p className="font-semibold text-secondary">Maila oss</p>
 												<p className="text-sm text-muted-foreground">karriar@synos.se</p>
 											</div>
 										</div>
@@ -772,7 +844,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 												<Phone className="w-5 h-5 text-primary" />
 											</div>
 											<div>
-												<p className="font-semibold text-secondary">Connect Now</p>
+												<p className="font-semibold text-secondary">Ring oss</p>
 												<p className="text-sm text-muted-foreground">010-205 15 01</p>
 											</div>
 										</div>
@@ -786,59 +858,111 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										Säg hej!
 									</h4>
 
-									<form className="space-y-4">
+									<form onSubmit={handleSubmit(onSubmitQuickContact)} className="space-y-4">
 										{/* Name */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Users className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("name")}
+													placeholder="Namn*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.name ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="text"
-												placeholder="Your Name*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.name && (
+												<p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+											)}
 										</div>
 
 										{/* Email */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Mail className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("email")}
+													type="email"
+													placeholder="E-postadress*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.email ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="email"
-												placeholder="Email Address*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.email && (
+												<p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+											)}
 										</div>
 
 										{/* Phone */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Phone className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("phone")}
+													type="tel"
+													placeholder="Telefonnummer*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.phone ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="tel"
-												placeholder="Your Number*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.phone && (
+												<p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+											)}
 										</div>
 
 										{/* Message */}
-										<div className="relative">
-											<div className="absolute left-4 top-4 text-muted-foreground">
-												<MessageCircle className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<MessageCircle className="absolute left-4 top-4 w-4 h-4 text-muted-foreground" />
+												<textarea
+													{...register("message")}
+													placeholder="Meddelande"
+													rows={4}
+													className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+													disabled={isSubmitting}
+												/>
 											</div>
-											<textarea
-												placeholder="Additional Message"
-												rows={4}
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors resize-none"
-											/>
+										</div>
+
+										{/* GDPR Consent */}
+										<div>
+											<label className="flex items-start gap-2 cursor-pointer">
+												<Checkbox
+													checked={gdprChecked}
+													onCheckedChange={(checked) => handleGdprChange(checked === true)}
+													disabled={isSubmitting}
+													className="mt-0.5 shrink-0"
+												/>
+												<span className="text-xs text-muted-foreground leading-normal">
+													Jag godkänner Synos Medical AB:s{" "}
+													<Link
+														href="/integritetspolicy"
+														className="text-primary hover:underline font-medium"
+														target="_blank"
+														onClick={(e) => e.stopPropagation()}
+													>
+														integritetspolicy
+													</Link>
+													. *
+												</span>
+											</label>
+											{errors.gdprConsent && (
+												<p className="text-xs text-red-500 mt-1">{errors.gdprConsent.message}</p>
+											)}
 										</div>
 
 										{/* Submit Button */}
-										<Button className="w-full btn-copper-gradient">
-											Send Message
-											<ArrowRight className="ml-2 h-4 w-4" />
+										<Button type="submit" disabled={isSubmitting} className="w-full btn-copper-gradient">
+											{isSubmitting ? (
+												<>
+													<Loader2 className="w-4 h-4 mr-2 animate-spin" />
+													Skickar...
+												</>
+											) : (
+												<>
+													Skicka meddelande
+													<Send className="ml-2 h-4 w-4" />
+												</>
+											)}
 										</Button>
 									</form>
 								</div>
@@ -866,7 +990,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											<MapPin className="w-5 h-5 text-primary" />
 										</div>
 										<div>
-											<p className="font-semibold text-secondary">Reach Us</p>
+											<p className="font-semibold text-secondary">Nå oss</p>
 											<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
 										</div>
 									</div>
@@ -877,7 +1001,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											<Mail className="w-5 h-5 text-primary" />
 										</div>
 										<div>
-											<p className="font-semibold text-secondary">Drop Us Mail</p>
+											<p className="font-semibold text-secondary">Maila oss</p>
 											<p className="text-sm text-muted-foreground">karriar@synos.se</p>
 										</div>
 									</div>
@@ -888,7 +1012,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											<Phone className="w-5 h-5 text-primary" />
 										</div>
 										<div>
-											<p className="font-semibold text-secondary">Connect Now</p>
+											<p className="font-semibold text-secondary">Ring oss</p>
 											<p className="text-sm text-muted-foreground">010-205 15 01</p>
 										</div>
 									</div>

@@ -375,17 +375,17 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 						{/* Section Header */}
 						<div className="text-center mb-12">
 							<div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-slate-100 text-sm font-medium text-secondary uppercase tracking-wider">
-								Team Members
+								{data.teamSection?.badge || "Vårt team"}
 							</div>
 							<h2 className="text-3xl md:text-4xl font-bold text-secondary mb-3">
-								Meet the talented team
+								{data.teamSection?.title || "Möt vårt engagerade team"}
 							</h2>
 							<p className="text-lg text-muted-foreground">
-								from our company
+								{data.teamSection?.subtitle || "Från vårt företag"}
 							</p>
 						</div>
 
-						{/* Desktop Grid - 4 columns with offset rows */}
+						{/* Desktop Grid - 4 columns, wraps normally */}
 						<motion.div
 							variants={staggerContainer}
 							initial="initial"
@@ -394,31 +394,12 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 							className="hidden lg:grid grid-cols-4 gap-6 lg:gap-8 max-w-[1400px] mx-auto"
 						>
 							{validTeamMembers.map((member, index) => {
-								// Calculate row position for alternating layout (3 cards per row visually)
-								const rowIndex = Math.floor(index / 3);
-								const isOffsetRow = rowIndex % 2 === 1;
-								const positionInRow = index % 3;
-
-								// Row 1: columns 1, 2, 3 (left aligned, column 4 empty)
-								// Row 2: columns 2, 3, 4 (right aligned, column 1 empty)
-								let gridColumn: string;
-								if (isOffsetRow) {
-									// Offset rows: start from column 2
-									gridColumn = `${positionInRow + 2}`;
-								} else {
-									// Normal rows: start from column 1
-									gridColumn = `${positionInRow + 1}`;
-								}
-
 								return (
 								<motion.div
 									key={index}
 									variants={fadeUp}
 									custom={index}
 									className="group relative overflow-visible bg-white rounded-[10px] transition-all duration-500"
-									style={{
-										gridColumn: gridColumn,
-									}}
 								>
 									{/* Image Container with Wrapper */}
 									<div className="relative">

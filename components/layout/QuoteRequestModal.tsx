@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,7 +11,6 @@ import {
 	Phone,
 	Send,
 	Loader2,
-	CheckCircle2,
 	FileText,
 	Building2,
 } from "lucide-react";
@@ -59,8 +59,8 @@ export function QuoteRequestModal({
 	open,
 	onOpenChange,
 }: QuoteRequestModalProps) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -89,7 +89,6 @@ export function QuoteRequestModal({
 	const handleClose = () => {
 		onOpenChange(false);
 		setTimeout(() => {
-			setIsSuccess(false);
 			reset();
 			setGdprChecked(false);
 		}, 200);
@@ -114,9 +113,10 @@ export function QuoteRequestModal({
 			const result = await response.json();
 
 			if (result.success) {
-				setIsSuccess(true);
+				onOpenChange(false);
 				reset();
 				setGdprChecked(false);
+				router.push("/tack");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -148,62 +148,10 @@ export function QuoteRequestModal({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className={cn(
-					"max-w-[360px] sm:max-w-lg p-0 overflow-hidden border-0 max-h-[90vh]",
-					isSuccess ? "bg-white" : "bg-secondary/95"
-				)}
+				className="max-w-[360px] sm:max-w-lg p-0 overflow-hidden border-0 max-h-[90vh] bg-secondary/95"
 				hideCloseButton
 			>
-				{/* Success State */}
-				{isSuccess && (
-					<div className="relative">
-						{/* Top gradient accent */}
-						<div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400" />
-
-						{/* Close Button */}
-						<button
-							onClick={handleClose}
-							className="absolute top-3 right-3 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-							aria-label="Stäng"
-						>
-							<X className="w-4 h-4" />
-						</button>
-
-						<div className="px-6 pt-10 pb-6 text-center">
-							{/* Success Icon */}
-							<div className="relative w-16 h-16 mx-auto">
-								<div className="absolute inset-0 rounded-full border-3 border-emerald-100" />
-								<div className="absolute inset-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50">
-									<CheckCircle2
-										className="w-7 h-7 text-white"
-										strokeWidth={2}
-									/>
-								</div>
-							</div>
-
-							{/* Success Message */}
-							<h2 className="mt-5 text-xl font-bold text-slate-800">
-								Tack för din förfrågan!
-							</h2>
-							<p className="mt-2 text-sm text-slate-500 leading-relaxed">
-								Vi har mottagit din offertförfrågan och återkommer inom 24
-								timmar med ett prisförslag.
-							</p>
-
-							{/* Close Button */}
-							<Button
-								onClick={handleClose}
-								className="mt-6 w-full h-10 rounded-lg text-sm font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
-							>
-								Stäng
-							</Button>
-						</div>
-					</div>
-				)}
-
-				{/* Form State */}
-				{!isSuccess && (
-					<div className="flex flex-col max-h-[90vh]">
+				<div className="flex flex-col max-h-[90vh]">
 						{/* Header - Fixed */}
 						<div className="relative pt-5 pb-4 px-5 text-center text-white shrink-0">
 							{/* Close Button */}
@@ -439,7 +387,6 @@ export function QuoteRequestModal({
 							</form>
 						</div>
 					</div>
-				)}
 			</DialogContent>
 		</Dialog>
 	);

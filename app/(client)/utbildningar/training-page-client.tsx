@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { pushEvent } from "@/lib/analytics/gtm";
 import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Accordion,
 	AccordionContent,
@@ -69,25 +71,35 @@ const quickContactSchema = z.object({
 	email: z.string().email("Ange en giltig e-postadress"),
 	phone: z.string().min(6, "Telefonnummer krävs"),
 	message: z.string().optional(),
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
 });
 
 type QuickContactData = z.infer<typeof quickContactSchema>;
 
-export function TrainingPageClient({ data }: TrainingPageClientProps) {
-	// Set navbar to dark-hero variant
-	useSetNavbarVariant("dark-hero");
-
+// Shared logic for the desktop/mobile Quick Contact form instances.
+// Each rendered instance calls this independently so react-hook-form
+// never has two DOM inputs registered under the same field name.
+function useQuickContactForm() {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
+	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
+		setValue,
 		reset,
 		formState: { errors },
 	} = useForm<QuickContactData>({
 		resolver: zodResolver(quickContactSchema),
 	});
+
+	const handleGdprChange = (checked: boolean) => {
+		setGdprChecked(checked);
+		setValue("gdprConsent", checked as unknown as true);
+	};
 
 	const onSubmit = async (formData: QuickContactData) => {
 		setIsSubmitting(true);
@@ -102,18 +114,18 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 					email: formData.email,
 					phone: formData.phone,
 					message: formData.message,
+					gdprConsent: formData.gdprConsent,
 					pageUrl: window.location.href,
 				}),
 			});
 
 			const result = await response.json();
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
-				toast.success("Tack! Vi återkommer inom kort.");
-				setTimeout(() => setIsSuccess(false), 5000);
+				setGdprChecked(false);
 				pushEvent("generate_lead", { form_type: "utbildning" });
 				trackLead({ form_type: "utbildning" });
+				router.push("/tack");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
@@ -124,6 +136,259 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 		}
 	};
 
+	return {
+		register,
+		handleSubmit,
+		errors,
+		isSubmitting,
+		gdprChecked,
+		handleGdprChange,
+		onSubmit,
+	};
+}
+
+function QuickContactGdprCheckbox({
+	checked,
+	onChange,
+	disabled,
+	error,
+}: {
+	checked: boolean;
+	onChange: (checked: boolean) => void;
+	disabled: boolean;
+	error?: string;
+}) {
+	return (
+		<div>
+			<label className="flex items-start gap-2 cursor-pointer">
+				<Checkbox
+					checked={checked}
+					onCheckedChange={(c) => onChange(c === true)}
+					disabled={disabled}
+					className="mt-0.5 shrink-0"
+				/>
+				<span className="text-xs text-muted-foreground leading-normal">
+					Jag godkänner Synos Medical AB:s{" "}
+					<Link
+						href="/integritetspolicy"
+						className="text-primary hover:underline font-medium"
+						target="_blank"
+						onClick={(e) => e.stopPropagation()}
+					>
+						integritetspolicy
+					</Link>
+					. *
+				</span>
+			</label>
+			{error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+		</div>
+	);
+}
+
+function DesktopQuickContactForm() {
+	const {
+		register,
+		handleSubmit,
+		errors,
+		isSubmitting,
+		gdprChecked,
+		handleGdprChange,
+		onSubmit,
+	} = useQuickContactForm();
+
+	return (
+		<form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+			<div>
+				<div className="relative">
+					<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+					<Input
+						{...register("name")}
+						placeholder="Ditt Namn*"
+						className={cn(
+							"pl-10 h-11 bg-slate-50 border-slate-200",
+							errors.name && "border-red-500"
+						)}
+						disabled={isSubmitting}
+					/>
+				</div>
+				{errors.name && (
+					<p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+				)}
+			</div>
+
+			<div>
+				<div className="relative">
+					<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+					<Input
+						{...register("email")}
+						type="email"
+						placeholder="E-postadress*"
+						className={cn(
+							"pl-10 h-11 bg-slate-50 border-slate-200",
+							errors.email && "border-red-500"
+						)}
+						disabled={isSubmitting}
+					/>
+				</div>
+				{errors.email && (
+					<p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+				)}
+			</div>
+
+			<div>
+				<div className="relative">
+					<Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+					<Input
+						{...register("phone")}
+						type="tel"
+						placeholder="Telefonnummer*"
+						className={cn(
+							"pl-10 h-11 bg-slate-50 border-slate-200",
+							errors.phone && "border-red-500"
+						)}
+						disabled={isSubmitting}
+					/>
+				</div>
+				{errors.phone && (
+					<p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+				)}
+			</div>
+
+			<div>
+				<Textarea
+					{...register("message")}
+					placeholder="Meddelande (valfritt)"
+					className="bg-slate-50 border-slate-200 resize-none"
+					rows={3}
+					disabled={isSubmitting}
+				/>
+			</div>
+
+			<QuickContactGdprCheckbox
+				checked={gdprChecked}
+				onChange={handleGdprChange}
+				disabled={isSubmitting}
+				error={errors.gdprConsent?.message}
+			/>
+
+			<Button
+				type="submit"
+				disabled={isSubmitting}
+				className="w-full h-11 btn-copper-gradient font-medium"
+			>
+				{isSubmitting ? (
+					<>
+						<Loader2 className="w-4 h-4 mr-2 animate-spin" />
+						Skickar...
+					</>
+				) : (
+					<>
+						Skicka Meddelande
+						<Send className="w-4 h-4 ml-2" />
+					</>
+				)}
+			</Button>
+		</form>
+	);
+}
+
+function MobileQuickContactForm() {
+	const {
+		register,
+		handleSubmit,
+		errors,
+		isSubmitting,
+		gdprChecked,
+		handleGdprChange,
+		onSubmit,
+	} = useQuickContactForm();
+
+	return (
+		<form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+			<div className="grid gap-3 sm:grid-cols-2">
+				<div>
+					<Input
+						{...register("name")}
+						placeholder="Ditt Namn*"
+						className={cn(
+							"h-11 bg-slate-50 border-slate-200",
+							errors.name && "border-red-500"
+						)}
+						disabled={isSubmitting}
+					/>
+					{errors.name && (
+						<p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+					)}
+				</div>
+				<div>
+					<Input
+						{...register("email")}
+						type="email"
+						placeholder="E-postadress*"
+						className={cn(
+							"h-11 bg-slate-50 border-slate-200",
+							errors.email && "border-red-500"
+						)}
+						disabled={isSubmitting}
+					/>
+					{errors.email && (
+						<p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+					)}
+				</div>
+			</div>
+			<div>
+				<Input
+					{...register("phone")}
+					type="tel"
+					placeholder="Telefonnummer*"
+					className={cn(
+						"h-11 bg-slate-50 border-slate-200",
+						errors.phone && "border-red-500"
+					)}
+					disabled={isSubmitting}
+				/>
+				{errors.phone && (
+					<p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+				)}
+			</div>
+			<Textarea
+				{...register("message")}
+				placeholder="Meddelande (valfritt)"
+				className="bg-slate-50 border-slate-200 resize-none"
+				rows={3}
+				disabled={isSubmitting}
+			/>
+			<QuickContactGdprCheckbox
+				checked={gdprChecked}
+				onChange={handleGdprChange}
+				disabled={isSubmitting}
+				error={errors.gdprConsent?.message}
+			/>
+			<Button
+				type="submit"
+				disabled={isSubmitting}
+				className="w-full h-11 btn-copper-gradient"
+			>
+				{isSubmitting ? (
+					<>
+						<Loader2 className="w-4 h-4 mr-2 animate-spin" />
+						Skickar...
+					</>
+				) : (
+					<>
+						Skicka Meddelande
+						<Send className="w-4 h-4 ml-2" />
+					</>
+				)}
+			</Button>
+		</form>
+	);
+}
+
+export function TrainingPageClient({ data }: TrainingPageClientProps) {
+	// Set navbar to dark-hero variant
+	useSetNavbarVariant("dark-hero");
+
 	const visibility = data.sectionVisibility || {
 		hero: true,
 		featuredSection: true,
@@ -133,6 +398,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 		support: true,
 		inquiryForm: true,
 		resources: true,
+		applicationForm: true,
 	};
 
 	// Check if we have content to display
@@ -692,111 +958,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 										Snabbkontakt
 									</h4>
 
-									{isSuccess ? (
-										<div className="text-center py-6">
-											<div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
-												<CheckCircle2 className="w-6 h-6 text-green-600" />
-											</div>
-											<p className="text-sm text-muted-foreground">
-												Tack! Vi återkommer inom kort.
-											</p>
-										</div>
-									) : (
-										<form
-											onSubmit={handleSubmit(onSubmit)}
-											className="space-y-3"
-										>
-											<div>
-												<div className="relative">
-													<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-													<Input
-														{...register("name")}
-														placeholder="Ditt Namn*"
-														className={cn(
-															"pl-10 h-11 bg-slate-50 border-slate-200",
-															errors.name && "border-red-500"
-														)}
-														disabled={isSubmitting}
-													/>
-												</div>
-												{errors.name && (
-													<p className="text-xs text-red-500 mt-1">
-														{errors.name.message}
-													</p>
-												)}
-											</div>
-
-											<div>
-												<div className="relative">
-													<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-													<Input
-														{...register("email")}
-														type="email"
-														placeholder="E-postadress*"
-														className={cn(
-															"pl-10 h-11 bg-slate-50 border-slate-200",
-															errors.email && "border-red-500"
-														)}
-														disabled={isSubmitting}
-													/>
-												</div>
-												{errors.email && (
-													<p className="text-xs text-red-500 mt-1">
-														{errors.email.message}
-													</p>
-												)}
-											</div>
-
-											<div>
-												<div className="relative">
-													<Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-													<Input
-														{...register("phone")}
-														type="tel"
-														placeholder="Telefonnummer*"
-														className={cn(
-															"pl-10 h-11 bg-slate-50 border-slate-200",
-															errors.phone && "border-red-500"
-														)}
-														disabled={isSubmitting}
-													/>
-												</div>
-												{errors.phone && (
-													<p className="text-xs text-red-500 mt-1">
-														{errors.phone.message}
-													</p>
-												)}
-											</div>
-
-											<div>
-												<Textarea
-													{...register("message")}
-													placeholder="Meddelande (valfritt)"
-													className="bg-slate-50 border-slate-200 resize-none"
-													rows={3}
-													disabled={isSubmitting}
-												/>
-											</div>
-
-											<Button
-												type="submit"
-												disabled={isSubmitting}
-												className="w-full h-11 btn-copper-gradient font-medium"
-											>
-												{isSubmitting ? (
-													<>
-														<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-														Skickar...
-													</>
-												) : (
-													<>
-														Skicka Meddelande
-														<Send className="w-4 h-4 ml-2" />
-													</>
-												)}
-											</Button>
-										</form>
-									)}
+									<DesktopQuickContactForm />
 								</div>
 
 								{/* Synos Academy Link */}
@@ -857,98 +1019,7 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 								</div>
 
 								{/* Mobile Form */}
-								{isSuccess ? (
-									<div className="text-center py-6">
-										<div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
-											<CheckCircle2 className="w-6 h-6 text-green-600" />
-										</div>
-										<p className="text-sm text-muted-foreground">
-											Tack! Vi återkommer inom kort.
-										</p>
-									</div>
-								) : (
-									<form
-										onSubmit={handleSubmit(onSubmit)}
-										className="space-y-3"
-									>
-										<div className="grid gap-3 sm:grid-cols-2">
-											<div>
-												<Input
-													{...register("name")}
-													placeholder="Ditt Namn*"
-													className={cn(
-														"h-11 bg-slate-50 border-slate-200",
-														errors.name && "border-red-500"
-													)}
-													disabled={isSubmitting}
-												/>
-												{errors.name && (
-													<p className="text-xs text-red-500 mt-1">
-														{errors.name.message}
-													</p>
-												)}
-											</div>
-											<div>
-												<Input
-													{...register("email")}
-													type="email"
-													placeholder="E-postadress*"
-													className={cn(
-														"h-11 bg-slate-50 border-slate-200",
-														errors.email && "border-red-500"
-													)}
-													disabled={isSubmitting}
-												/>
-												{errors.email && (
-													<p className="text-xs text-red-500 mt-1">
-														{errors.email.message}
-													</p>
-												)}
-											</div>
-										</div>
-										<div>
-											<Input
-												{...register("phone")}
-												type="tel"
-												placeholder="Telefonnummer*"
-												className={cn(
-													"h-11 bg-slate-50 border-slate-200",
-													errors.phone && "border-red-500"
-												)}
-												disabled={isSubmitting}
-											/>
-											{errors.phone && (
-												<p className="text-xs text-red-500 mt-1">
-													{errors.phone.message}
-												</p>
-											)}
-										</div>
-										<Textarea
-											{...register("message")}
-											placeholder="Meddelande (valfritt)"
-											className="bg-slate-50 border-slate-200 resize-none"
-											rows={3}
-											disabled={isSubmitting}
-										/>
-										<Button
-											type="submit"
-											disabled={isSubmitting}
-											className="w-full h-11 btn-copper-gradient"
-										>
-											{isSubmitting ? (
-												<>
-													<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-													Skickar...
-												</>
-											) : (
-												<>
-													Skicka Meddelande
-													<Send className="w-4 h-4 ml-2" />
-												</>
-											)}
-										</Button>
-									</form>
-								)}
+								<MobileQuickContactForm />
 							</div>
 						</div>
 					</div>
@@ -1016,7 +1087,9 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 			)}
 
 			{/* Application Form Section */}
-			<ApplicationFormSection />
+			{visibility.applicationForm !== false && (
+				<ApplicationFormSection data={data.applicationSection} />
+			)}
 
 			{/* CTA Section */}
 			<section className="bg-secondary py-16 md:py-20 lg:py-24 relative overflow-hidden">
@@ -1103,26 +1176,39 @@ export function TrainingPageClient({ data }: TrainingPageClientProps) {
 /**
  * Application Form Section Component
  */
-function ApplicationFormSection() {
+function ApplicationFormSection({
+	data,
+}: {
+	data?: TrainingPageData["applicationSection"];
+}) {
+	const router = useRouter();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
 		phone: "",
-		careerType: "",
+		category: "",
 		message: "",
 	});
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const careerTypes = [
-		"Account Manager",
-		"Sales Representative",
-		"Technical Support",
-		"Marketing Specialist",
-		"Software Developer",
-		"Other",
-	];
+	const badge = data?.badge || "Få svar direkt";
+	const title = data?.title || "Berätta vad du behöver";
+	const subtitle =
+		data?.subtitle ||
+		"Har du frågor om våra utbildningar eller vill boka en plats? Fyll i formuläret så återkommer en av våra utbildningsspecialister";
+	const categories =
+		data?.categories && data.categories.length > 0
+			? data.categories
+			: [
+					"Certifiering",
+					"Maskinköp",
+					"Behandlingstekniker",
+					"Uppdateringskurs",
+					"Annat",
+				];
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -1133,14 +1219,79 @@ function ApplicationFormSection() {
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
-			setSelectedFile(e.target.files[0]);
+			const file = e.target.files[0];
+			if (file.size > 10 * 1024 * 1024) {
+				toast.error("Filstorleken får inte överstiga 10MB");
+				return;
+			}
+			setSelectedFile(file);
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Form submission logic here
-		console.log("Form submitted:", { ...formData, file: selectedFile });
+
+		if (
+			!formData.name ||
+			!formData.email ||
+			!formData.phone ||
+			!formData.category
+		) {
+			toast.error("Fyll i alla obligatoriska fält");
+			return;
+		}
+
+		setIsSubmitting(true);
+
+		try {
+			let attachmentUrl = "";
+			if (selectedFile) {
+				const uploadFormData = new FormData();
+				uploadFormData.append("file", selectedFile);
+
+				const uploadResponse = await fetch("/api/upload", {
+					method: "POST",
+					body: uploadFormData,
+				});
+
+				if (!uploadResponse.ok) {
+					throw new Error("Kunde inte ladda upp filen");
+				}
+
+				const uploadResult = await uploadResponse.json();
+				attachmentUrl = uploadResult.url;
+			}
+
+			const response = await fetch("/api/form-submissions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: "training_application",
+					fullName: formData.name,
+					email: formData.email,
+					phone: formData.phone,
+					category: formData.category,
+					message: formData.message,
+					attachmentUrl,
+					pageUrl: typeof window !== "undefined" ? window.location.href : "",
+				}),
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				setFormData({ name: "", email: "", phone: "", category: "", message: "" });
+				setSelectedFile(null);
+				router.push("/tack");
+			} else {
+				toast.error(result.message || "Något gick fel. Försök igen.");
+			}
+		} catch (error) {
+			console.error("Error submitting application:", error);
+			toast.error("Kunde inte skicka ansökan. Försök igen senare.");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -1157,21 +1308,20 @@ function ApplicationFormSection() {
 					>
 						<motion.div variants={fadeUp} className="mb-4">
 							<span className="inline-block px-4 py-1.5 bg-[#DCA783]/10 text-[#DCA783] rounded-full text-sm font-medium">
-								Get Answers Instantly
+								{badge}
 							</span>
 						</motion.div>
 						<motion.h2
 							variants={fadeUp}
 							className="text-3xl md:text-4xl font-bold text-secondary mb-4"
 						>
-							Tell Us What You Need
+							{title}
 						</motion.h2>
 						<motion.p
 							variants={fadeUp}
 							className="text-muted-foreground max-w-2xl mx-auto"
 						>
-							Fill out the form below and we&apos;ll get back to you as soon as
-							possible regarding your inquiry.
+							{subtitle}
 						</motion.p>
 					</motion.div>
 
@@ -1190,7 +1340,7 @@ function ApplicationFormSection() {
 									htmlFor="name"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Your Name <span className="text-red-500">*</span>
+									Namn <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="text"
@@ -1198,7 +1348,7 @@ function ApplicationFormSection() {
 									name="name"
 									value={formData.name}
 									onChange={handleInputChange}
-									placeholder="Enter your name"
+									placeholder="Ange ditt namn"
 									required
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
 								/>
@@ -1210,7 +1360,7 @@ function ApplicationFormSection() {
 									htmlFor="email"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Email Address <span className="text-red-500">*</span>
+									E-postadress <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="email"
@@ -1218,7 +1368,7 @@ function ApplicationFormSection() {
 									name="email"
 									value={formData.email}
 									onChange={handleInputChange}
-									placeholder="Enter your email"
+									placeholder="Ange din e-postadress"
 									required
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
 								/>
@@ -1230,7 +1380,7 @@ function ApplicationFormSection() {
 									htmlFor="phone"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Your Number <span className="text-red-500">*</span>
+									Telefonnummer <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="tel"
@@ -1238,19 +1388,19 @@ function ApplicationFormSection() {
 									name="phone"
 									value={formData.phone}
 									onChange={handleInputChange}
-									placeholder="Enter your phone number"
+									placeholder="Ange ditt telefonnummer"
 									required
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50"
 								/>
 							</div>
 
-							{/* Choose Careers Type */}
+							{/* Choose Category */}
 							<div className="relative">
 								<label
-									htmlFor="careerType"
+									htmlFor="category"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Choose Careers Type <span className="text-red-500">*</span>
+									Välj kategori <span className="text-red-500">*</span>
 								</label>
 								<button
 									type="button"
@@ -1259,12 +1409,12 @@ function ApplicationFormSection() {
 								>
 									<span
 										className={
-											formData.careerType
+											formData.category
 												? "text-secondary"
 												: "text-muted-foreground/50"
 										}
 									>
-										{formData.careerType || "Select career type"}
+										{formData.category || "Välj kategori"}
 									</span>
 									<ChevronDown
 										className={`w-5 h-5 text-muted-foreground transition-transform ${
@@ -1274,12 +1424,12 @@ function ApplicationFormSection() {
 								</button>
 								{isDropdownOpen && (
 									<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
-										{careerTypes.map((type) => (
+										{categories.map((type) => (
 											<button
 												key={type}
 												type="button"
 												onClick={() => {
-													setFormData((prev) => ({ ...prev, careerType: type }));
+													setFormData((prev) => ({ ...prev, category: type }));
 													setIsDropdownOpen(false);
 												}}
 												className="w-full px-4 py-2.5 text-left text-secondary hover:bg-slate-50 transition-colors"
@@ -1298,14 +1448,14 @@ function ApplicationFormSection() {
 								htmlFor="message"
 								className="block text-sm font-medium text-secondary mb-2"
 							>
-								Additional Message
+								Meddelande
 							</label>
 							<textarea
 								id="message"
 								name="message"
 								value={formData.message}
 								onChange={handleInputChange}
-								placeholder="Tell us more about yourself and why you're interested in this position..."
+								placeholder="Berätta mer om dig själv och varför du är intresserad..."
 								rows={5}
 								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none"
 							/>
@@ -1329,26 +1479,36 @@ function ApplicationFormSection() {
 										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200"
 									>
 										<Upload className="w-4 h-4" />
-										Upload
+										Ladda upp
 									</button>
 									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
 										<span className="text-muted-foreground text-sm">
-											{selectedFile ? selectedFile.name : "No file chosen"}
+											{selectedFile ? selectedFile.name : "Ingen fil vald"}
 										</span>
 									</div>
 								</div>
 								<p className="text-muted-foreground text-xs mt-2">
-									*Upload your resume in pdf, jpg, png, or doc format.
+									*Ladda upp filen i pdf-, jpg-, png- eller doc-format.
 								</p>
 							</div>
 
 							{/* Submit Button */}
 							<button
 								type="submit"
-								className="inline-flex items-center gap-2 px-8 py-3 btn-copper-gradient text-white font-semibold rounded-xl transition-all"
+								disabled={isSubmitting}
+								className="inline-flex items-center gap-2 px-8 py-3 btn-copper-gradient text-white font-semibold rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed"
 							>
-								Submit
-								<ArrowRight className="w-5 h-5" />
+								{isSubmitting ? (
+									<>
+										<Loader2 className="w-5 h-5 animate-spin" />
+										Skickar...
+									</>
+								) : (
+									<>
+										Skicka
+										<ArrowRight className="w-5 h-5" />
+									</>
+								)}
 							</button>
 						</div>
 					</motion.form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -9,7 +10,7 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "@/components/ui/dialog";
-import { FileText, CheckCircle, Loader2 } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 
 interface BrochureRequestModalProps {
 	open: boolean;
@@ -26,6 +27,7 @@ export function BrochureRequestModal({
 	productSlug,
 	documentTitle,
 }: BrochureRequestModalProps) {
+	const router = useRouter();
 	const [form, setForm] = useState({
 		companyName: "",
 		firstName: "",
@@ -33,7 +35,6 @@ export function BrochureRequestModal({
 		email: "",
 	});
 	const [loading, setLoading] = useState(false);
-	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +64,8 @@ export function BrochureRequestModal({
 				throw new Error(data.error || "Something went wrong");
 			}
 
-			setSuccess(true);
+			handleClose(false);
+			router.push("/tack");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Could not send request");
 		} finally {
@@ -73,7 +75,6 @@ export function BrochureRequestModal({
 
 	const handleClose = (val: boolean) => {
 		if (!val) {
-			setSuccess(false);
 			setForm({ companyName: "", firstName: "", lastName: "", email: "" });
 			setError("");
 		}
@@ -96,21 +97,7 @@ export function BrochureRequestModal({
 					</DialogDescription>
 				</DialogHeader>
 
-				{success ? (
-					<div className="flex flex-col items-center gap-3 py-6 text-center">
-						<CheckCircle className="h-12 w-12 text-green-500" />
-						<h3 className="text-base font-semibold text-foreground">
-							Tack för din förfrågan!
-						</h3>
-						<p className="text-sm text-muted-foreground max-w-xs">
-							Vi har mottagit din förfrågan och återkommer till dig med broschyren via e-post.
-						</p>
-						<Button variant="outline" size="sm" onClick={() => handleClose(false)}>
-							Stäng
-						</Button>
-					</div>
-				) : (
-					<form onSubmit={handleSubmit} className="space-y-3 pt-1">
+				<form onSubmit={handleSubmit} className="space-y-3 pt-1">
 						<div>
 							<label className="block text-sm font-medium text-foreground mb-1">
 								Företag *
@@ -199,7 +186,6 @@ export function BrochureRequestModal({
 							</Button>
 						</div>
 					</form>
-				)}
 			</DialogContent>
 		</Dialog>
 	);

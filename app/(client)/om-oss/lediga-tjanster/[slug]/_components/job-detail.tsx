@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Check, Upload, ChevronDown, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { Check, Upload, ChevronDown, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { CareersHero } from "../../_components/careers-hero";
 import { ContactSidebar } from "../../_components/contact-sidebar";
@@ -41,13 +42,13 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 	const breadcrumb = [
 		{ label: "Om Oss", href: "/om-oss" },
 		{ label: "Lediga Tjänster", href: "/om-oss/lediga-tjanster" },
-		{ label: job.title || "Job" },
+		{ label: job.title || "Tjänst" },
 	];
 
 	return (
 		<div className="min-h-screen bg-slate-50">
 			{/* Hero Section */}
-			<CareersHero title={job.title || "Job Details"} breadcrumb={breadcrumb} />
+			<CareersHero title={job.title || "Tjänstedetaljer"} breadcrumb={breadcrumb} />
 
 			{/* Main Content */}
 			<section className="py-12 md:py-16 lg:py-20">
@@ -68,7 +69,7 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
 							>
 								<Image
 									src={job.featuredImage || "/images/career-details-img-04.jpg"}
-									alt={job.title || "Job image"}
+									alt={job.title || "Tjänstebild"}
 									width={800}
 									height={450}
 									className="w-full h-auto object-cover aspect-video"
@@ -277,6 +278,7 @@ export function JobDetail({ job, contactSidebar, expertCta }: JobDetailProps) {
  * Application Form Section Component
  */
 function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
+	const router = useRouter();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -287,16 +289,15 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const careerTypes = [
 		"Account Manager",
-		"Sales Representative",
-		"Technical Support",
-		"Marketing Specialist",
-		"Software Developer",
-		"Other",
+		"Säljrepresentant",
+		"Teknisk Support",
+		"Marknadsspecialist",
+		"Mjukvaruutvecklare",
+		"Annat",
 	];
 
 	const handleInputChange = (
@@ -311,7 +312,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 			const file = e.target.files[0];
 			// Validate file size (max 10MB)
 			if (file.size > 10 * 1024 * 1024) {
-				toast.error("File size must be less than 10MB");
+				toast.error("Filstorleken får inte överstiga 10MB");
 				return;
 			}
 			setSelectedFile(file);
@@ -323,7 +324,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 
 		// Validate required fields
 		if (!formData.name || !formData.email || !formData.phone || !formData.careerType) {
-			toast.error("Please fill in all required fields");
+			toast.error("Fyll i alla obligatoriska fält");
 			return;
 		}
 
@@ -342,7 +343,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 				});
 
 				if (!uploadResponse.ok) {
-					throw new Error("Failed to upload file");
+					throw new Error("Kunde inte ladda upp filen");
 				}
 
 				const uploadResult = await uploadResponse.json();
@@ -370,7 +371,6 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 			const result = await response.json();
 
 			if (result.success) {
-				setIsSuccess(true);
 				setFormData({
 					name: "",
 					email: "",
@@ -379,16 +379,13 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 					message: "",
 				});
 				setSelectedFile(null);
-				toast.success("Application submitted successfully! We'll get back to you soon.");
-
-				// Reset success state after 10 seconds
-				setTimeout(() => setIsSuccess(false), 10000);
+				router.push("/tack");
 			} else {
-				toast.error(result.message || "Something went wrong. Please try again.");
+				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
 		} catch (error) {
 			console.error("Error submitting application:", error);
-			toast.error("Failed to submit application. Please try again later.");
+			toast.error("Kunde inte skicka ansökan. Försök igen senare.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -408,21 +405,21 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 					>
 						<motion.div variants={fadeUp} className="mb-4">
 							<span className="inline-block px-4 py-1.5 bg-[#DCA783]/10 text-[#DCA783] rounded-full text-sm font-medium">
-								Get Answers Instantly
+								Få svar direkt
 							</span>
 						</motion.div>
 						<motion.h2
 							variants={fadeUp}
 							className="text-3xl md:text-4xl font-bold text-secondary mb-4"
 						>
-							Tell Us What You Need
+							Berätta vad du behöver
 						</motion.h2>
 						<motion.p
 							variants={fadeUp}
 							className="text-muted-foreground max-w-2xl mx-auto"
 						>
-							Fill out the form below and we&apos;ll get back to you as soon as
-							possible regarding your application for {jobTitle || "this position"}.
+							Fyll i formuläret nedan så återkommer vi till dig så snart som möjligt
+							angående din ansökan för {jobTitle || "denna tjänst"}.
 						</motion.p>
 					</motion.div>
 
@@ -433,19 +430,6 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 						viewport={{ once: true }}
 						className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 shadow-sm"
 					>
-						{isSuccess ? (
-							<div className="text-center py-12">
-								<div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-									<CheckCircle2 className="w-8 h-8 text-green-600" />
-								</div>
-								<h3 className="text-2xl font-bold text-secondary mb-2">
-									Application Submitted!
-								</h3>
-								<p className="text-muted-foreground max-w-md mx-auto">
-									Thank you for your application. We&apos;ll review your details and get back to you as soon as possible.
-								</p>
-							</div>
-						) : (
 						<form onSubmit={handleSubmit}>
 						<div className="grid gap-6 md:grid-cols-2">
 							{/* Your Name */}
@@ -454,7 +438,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									htmlFor="name"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Your Name <span className="text-red-500">*</span>
+									Namn <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="text"
@@ -462,7 +446,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									name="name"
 									value={formData.name}
 									onChange={handleInputChange}
-									placeholder="Enter your name"
+									placeholder="Ange ditt namn"
 									required
 									disabled={isSubmitting}
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -475,7 +459,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									htmlFor="email"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Email Address <span className="text-red-500">*</span>
+									E-postadress <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="email"
@@ -483,7 +467,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									name="email"
 									value={formData.email}
 									onChange={handleInputChange}
-									placeholder="Enter your email"
+									placeholder="Ange din e-postadress"
 									required
 									disabled={isSubmitting}
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -496,7 +480,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									htmlFor="phone"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Your Number <span className="text-red-500">*</span>
+									Telefonnummer <span className="text-red-500">*</span>
 								</label>
 								<input
 									type="tel"
@@ -504,7 +488,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									name="phone"
 									value={formData.phone}
 									onChange={handleInputChange}
-									placeholder="Enter your phone number"
+									placeholder="Ange ditt telefonnummer"
 									required
 									disabled={isSubmitting}
 									className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -517,7 +501,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 									htmlFor="careerType"
 									className="block text-sm font-medium text-secondary mb-2"
 								>
-									Choose Careers Type <span className="text-red-500">*</span>
+									Välj yrkeskategori <span className="text-red-500">*</span>
 								</label>
 								<button
 									type="button"
@@ -532,7 +516,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 												: "text-muted-foreground/50"
 										}
 									>
-										{formData.careerType || "Select career type"}
+										{formData.careerType || "Välj yrkeskategori"}
 									</span>
 									<ChevronDown
 										className={`w-5 h-5 text-muted-foreground transition-transform ${
@@ -566,14 +550,14 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 								htmlFor="message"
 								className="block text-sm font-medium text-secondary mb-2"
 							>
-								Additional Message
+								Meddelande
 							</label>
 							<textarea
 								id="message"
 								name="message"
 								value={formData.message}
 								onChange={handleInputChange}
-								placeholder="Tell us more about yourself and why you're interested in this position..."
+								placeholder="Berätta mer om dig själv och varför du är intresserad av denna tjänst..."
 								rows={5}
 								disabled={isSubmitting}
 								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-secondary placeholder:text-muted-foreground/50 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -600,16 +584,16 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 										className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#DCA783]/20 to-[#DCA783]/40 hover:from-[#DCA783]/30 hover:to-[#DCA783]/50 text-secondary font-medium rounded-l-xl transition-colors border border-r-0 border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
 									>
 										<Upload className="w-4 h-4" />
-										Upload
+										Ladda upp
 									</button>
 									<div className="px-6 py-3 bg-white border border-slate-200 rounded-r-xl min-w-[140px]">
 										<span className="text-muted-foreground text-sm truncate max-w-[200px] block">
-											{selectedFile ? selectedFile.name : "No file chosen"}
+											{selectedFile ? selectedFile.name : "Ingen fil vald"}
 										</span>
 									</div>
 								</div>
 								<p className="text-muted-foreground text-xs mt-2">
-									*Upload your resume in pdf, jpg, png, or doc format (max 10MB).
+									*Ladda upp ditt CV i pdf-, jpg-, png- eller doc-format (max 10MB).
 								</p>
 							</div>
 
@@ -622,18 +606,17 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 								{isSubmitting ? (
 									<>
 										<Loader2 className="w-5 h-5 animate-spin" />
-										Submitting...
+										Skickar...
 									</>
 								) : (
 									<>
-										Submit
+										Skicka
 										<ArrowRight className="w-5 h-5" />
 									</>
 								)}
 							</button>
 						</div>
 						</form>
-						)}
 					</motion.div>
 				</div>
 			</div>

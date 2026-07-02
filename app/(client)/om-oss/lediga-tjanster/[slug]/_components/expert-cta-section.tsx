@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { pushEvent } from "@/lib/analytics/gtm";
 import { trackLead } from "@/lib/analytics/facebook-pixel";
 import { useForm } from "react-hook-form";
@@ -8,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
 	Send,
 	Loader2,
@@ -15,11 +17,11 @@ import {
 	Mail,
 	Phone,
 	MessageSquare,
-	CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Select,
 	SelectContent,
@@ -37,11 +39,14 @@ interface ExpertCtaSectionProps {
 
 // Form schema
 const expertFormSchema = z.object({
-	name: z.string().min(2, "Name is required"),
-	email: z.string().email("Valid email required"),
-	phone: z.string().min(6, "Phone number required"),
-	subject: z.string().min(1, "Please select a subject"),
+	name: z.string().min(2, "Namn krävs"),
+	email: z.string().email("Giltig e-postadress krävs"),
+	phone: z.string().min(6, "Telefonnummer krävs"),
+	subject: z.string().min(1, "Välj ett ämne"),
 	message: z.string().optional(),
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
 });
 
 type ExpertFormData = z.infer<typeof expertFormSchema>;
@@ -60,8 +65,9 @@ const subjectOptions = [
  * "Talk To An Expert" section at bottom of job detail pages.
  */
 export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
+	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
 		register,
@@ -76,6 +82,11 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 		},
 	});
 
+	const handleGdprChange = (checked: boolean) => {
+		setGdprChecked(checked);
+		setValue("gdprConsent", checked as unknown as true);
+	};
+
 	const onSubmit = async (formData: ExpertFormData) => {
 		setIsSubmitting(true);
 		try {
@@ -89,23 +100,23 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 					email: formData.email,
 					phone: formData.phone,
 					message: formData.message,
+					gdprConsent: formData.gdprConsent,
 					pageUrl: window.location.href,
 				}),
 			});
 
 			const result = await response.json();
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
-				toast.success("Your message has been sent! We'll be in touch soon.");
-				setTimeout(() => setIsSuccess(false), 8000);
+				setGdprChecked(false);
 				pushEvent("generate_lead", { form_type: "career_application" });
 				trackLead({ form_type: "career_application" });
+				router.push("/tack");
 			} else {
-				toast.error(result.message || "Something went wrong. Please try again.");
+				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
 		} catch {
-			toast.error("Failed to send message. Please try again later.");
+			toast.error("Kunde inte skicka meddelandet. Försök igen senare.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -152,13 +163,13 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 						{/* Badge */}
 						<span className="inline-flex items-center gap-2 text-sm font-medium text-white/60 mb-4">
 							<span className="text-primary">&larr;</span>
-							{data?.badge || "We Support You"}
+							{data?.badge || "Vi stöttar dig"}
 							<span className="text-primary">&rarr;</span>
 						</span>
 
 						{/* Title */}
 						<h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-							{data?.title || "Talk To An Expert"}
+							{data?.title || "Prata med en expert"}
 						</h2>
 
 						{/* Subtitle */}
@@ -168,28 +179,11 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 					</motion.div>
 
 					{/* Form */}
-					{isSuccess ? (
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							animate={{ opacity: 1, scale: 1 }}
-							className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-10 text-center"
-						>
-							<div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-								<CheckCircle2 className="w-8 h-8 text-green-400" />
-							</div>
-							<h3 className="text-xl font-bold text-white mb-2">
-								Tack för ditt meddelande!
-							</h3>
-							<p className="text-white/70">
-								Vi har mottagit din förfrågan och återkommer inom kort.
-							</p>
-						</motion.div>
-					) : (
-						<motion.form
-							variants={fadeUp}
-							onSubmit={handleSubmit(onSubmit)}
-							className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-6 md:p-8"
-						>
+					<motion.form
+						variants={fadeUp}
+						onSubmit={handleSubmit(onSubmit)}
+						className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-6 md:p-8"
+					>
 							<div className="grid gap-5 md:grid-cols-2">
 								{/* Name */}
 								<div>
@@ -197,7 +191,7 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 										<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
 										<Input
 											{...register("name")}
-											placeholder="Your Name*"
+											placeholder="Namn*"
 											className={cn(
 												"pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary",
 												errors.name && "border-red-400"
@@ -219,7 +213,7 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 										<Input
 											{...register("email")}
 											type="email"
-											placeholder="Email Address*"
+											placeholder="E-postadress*"
 											className={cn(
 												"pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary",
 												errors.email && "border-red-400"
@@ -241,7 +235,7 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 										<Input
 											{...register("phone")}
 											type="tel"
-											placeholder="Phone Number*"
+											placeholder="Telefonnummer*"
 											className={cn(
 												"pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary",
 												errors.phone && "border-red-400"
@@ -268,7 +262,7 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 												errors.subject && "border-red-400"
 											)}
 										>
-											<SelectValue placeholder="Choose Subject Type*" />
+											<SelectValue placeholder="Välj ämne*" />
 										</SelectTrigger>
 										<SelectContent>
 											{subjectOptions.map((option) => (
@@ -291,13 +285,40 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 										<MessageSquare className="absolute left-3 top-3 w-4 h-4 text-white/50" />
 										<Textarea
 											{...register("message")}
-											placeholder="Write Message (Optional)"
+											placeholder="Skriv meddelande (valfritt)"
 											rows={4}
 											className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-primary resize-none"
 											disabled={isSubmitting}
 										/>
 									</div>
 								</div>
+							</div>
+
+							{/* GDPR Consent */}
+							<div className="mt-5">
+								<label className="flex items-start gap-2 cursor-pointer">
+									<Checkbox
+										checked={gdprChecked}
+										onCheckedChange={(checked) => handleGdprChange(checked === true)}
+										disabled={isSubmitting}
+										className="mt-0.5 shrink-0 border-white/30"
+									/>
+									<span className="text-xs text-white/70 leading-normal">
+										Jag godkänner Synos Medical AB:s{" "}
+										<Link
+											href="/integritetspolicy"
+											className="text-primary hover:underline font-medium"
+											target="_blank"
+											onClick={(e) => e.stopPropagation()}
+										>
+											integritetspolicy
+										</Link>
+										. *
+									</span>
+								</label>
+								{errors.gdprConsent && (
+									<p className="text-xs text-red-400 mt-1">{errors.gdprConsent.message}</p>
+								)}
 							</div>
 
 							{/* Submit Button */}
@@ -310,18 +331,17 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 									{isSubmitting ? (
 										<>
 											<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-											Sending...
+											Skickar...
 										</>
 									) : (
 										<>
-											Send Message
+											Skicka meddelande
 											<Send className="w-4 h-4 ml-2" />
 										</>
 									)}
 								</Button>
 							</div>
 						</motion.form>
-					)}
 				</motion.div>
 			</div>
 		</section>

@@ -88,6 +88,14 @@ const teamPageFormSchema = z.object({
 
 	stats: z.array(statSchema).optional(),
 
+	teamSection: z
+		.object({
+			badge: z.string().optional(),
+			title: z.string().optional(),
+			subtitle: z.string().optional(),
+		})
+		.optional(),
+
 	teamMembers: z.array(teamMemberSchema).optional(),
 
 	valuesSection: z
@@ -148,6 +156,7 @@ export default function TeamPageAdmin() {
 			},
 			hero: {},
 			stats: [],
+			teamSection: {},
 			teamMembers: [],
 			valuesSection: { values: [] },
 			joinUs: {},
@@ -202,6 +211,7 @@ export default function TeamPageAdmin() {
 					},
 					hero: data.hero || {},
 					stats: data.stats || [],
+					teamSection: data.teamSection || {},
 					teamMembers: data.teamMembers || [],
 					valuesSection: {
 						...data.valuesSection,
@@ -597,6 +607,67 @@ export default function TeamPageAdmin() {
 
 						{/* Team Members Tab */}
 						<TabsContent value="team" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Section Heading</CardTitle>
+									<CardDescription>
+										Text shown above the team members grid on the public page
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<div className="grid gap-4 sm:grid-cols-3">
+										<FormField
+											control={form.control}
+											name="teamSection.badge"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Badge</FormLabel>
+													<FormControl>
+														<Input
+															{...field}
+															value={field.value || ""}
+															placeholder="t.ex. Vårt team"
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="teamSection.title"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Title</FormLabel>
+													<FormControl>
+														<Input
+															{...field}
+															value={field.value || ""}
+															placeholder="t.ex. Möt vårt engagerade team"
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="teamSection.subtitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Subtitle</FormLabel>
+													<FormControl>
+														<Input
+															{...field}
+															value={field.value || ""}
+															placeholder="t.ex. Från vårt företag"
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+									</div>
+								</CardContent>
+							</Card>
+
 							<Card>
 								<CardHeader className="flex flex-row items-center justify-between">
 									<div>

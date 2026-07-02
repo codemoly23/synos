@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,7 +11,6 @@ import {
 	Building2,
 	User,
 	Loader2,
-	CheckCircle2,
 	MessageSquare,
 	FileText,
 } from "lucide-react";
@@ -38,8 +38,8 @@ const clientFormSchema = z.object({
 type FormData = z.infer<typeof clientFormSchema>;
 
 export function ContactInquiryForm() {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 	const [marketingChecked, setMarketingChecked] = useState(false);
 
@@ -77,12 +77,10 @@ export function ContactInquiryForm() {
 			});
 			const result = await response.json();
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
 				setMarketingChecked(false);
-				toast.success("Tack för ditt meddelande! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 5000);
+				router.push("/tack");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -101,19 +99,6 @@ export function ContactInquiryForm() {
 			setIsSubmitting(false);
 		}
 	};
-
-	if (isSuccess) {
-		return (
-			<div className="text-center p-2 sm:p-12 rounded-2xl bg-card border border-border shadow-lg">
-				<div className="w-10 h-10 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
-					<CheckCircle2 className="h-10 w-10 text-green-600" />
-				</div>
-				<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-4">Tack för ditt meddelande!</h2>
-				<p className="text-lg text-muted-foreground mb-6">Vi har mottagit din förfrågan och återkommer till dig inom 24 timmar.</p>
-				<Button variant="outline" onClick={() => setIsSuccess(false)} className="mt-4">Skicka nytt meddelande</Button>
-			</div>
-		);
-	}
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 md:p-8 rounded-2xl bg-card border border-border shadow-xl space-y-6">

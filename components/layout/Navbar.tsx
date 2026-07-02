@@ -264,6 +264,10 @@ export function Navbar({ config, logoUrl }: NavbarProps) {
 																	? "text-white/90! hover:text-white! focus:text-white! active:text-white! data-[state=open]:text-white!"
 																	: "text-secondary! hover:text-secondary! focus:text-secondary! active:text-primary! data-[state=open]:text-secondary!"
 															)}
+															onClick={(e) => {
+																e.preventDefault();
+																router.push(item.href);
+															}}
 														>
 																{item.title}
 														</NavigationMenuTrigger>

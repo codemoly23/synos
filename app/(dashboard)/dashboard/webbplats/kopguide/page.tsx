@@ -53,7 +53,7 @@ const formSchema = z.object({
 	sectionVisibility: z
 		.object({
 			hero: z.boolean(),
-			steps: z.boolean(),
+			guideSteps: z.boolean(),
 			checklist: z.boolean(),
 			cta: z.boolean(),
 			contactForm: z.boolean(),
@@ -124,7 +124,7 @@ export default function KopguidePageAdmin() {
 		defaultValues: {
 			sectionVisibility: {
 				hero: true,
-				steps: true,
+				guideSteps: true,
 				checklist: true,
 				cta: true,
 				contactForm: true,
@@ -159,7 +159,7 @@ export default function KopguidePageAdmin() {
 					form.reset({
 						sectionVisibility: data.sectionVisibility || {
 							hero: true,
-							steps: true,
+							guideSteps: true,
 							checklist: true,
 							cta: true,
 							contactForm: true,
@@ -287,7 +287,7 @@ export default function KopguidePageAdmin() {
 									/>
 									<FormField
 										control={form.control}
-										name="sectionVisibility.steps"
+										name="sectionVisibility.guideSteps"
 										render={({ field }) => (
 											<FormItem className="flex items-center justify-between rounded-lg border p-3">
 												<FormLabel className="cursor-pointer">Steps</FormLabel>

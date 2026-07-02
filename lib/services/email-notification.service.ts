@@ -14,6 +14,7 @@ const FORM_TYPE_LABELS: Record<string, string> = {
 	job_application: "Job Application",
 	hero_inquiry: "Hero Inquiry",
 	brochure_request: "Brochure Request",
+	training_application: "Training Application",
 };
 
 const HELP_TYPE_LABELS: Record<string, string> = {
@@ -60,6 +61,9 @@ function buildEmailHtml(submission: IFormSubmission, fromName: string): string {
 	if (submission.trainingInterestType) rows.push(["Training Interest", TRAINING_INTEREST_LABELS[submission.trainingInterestType] ?? submission.trainingInterestType]);
 	if (submission.jobTitle) rows.push(["Job Title", submission.jobTitle]);
 	if (submission.careerType) rows.push(["Career Type", submission.careerType]);
+	if (submission.resumeUrl) rows.push(["Resume", `<a href="${submission.resumeUrl}">Download</a>`]);
+	if (submission.category) rows.push(["Category", submission.category]);
+	if (submission.attachmentUrl) rows.push(["Attachment", `<a href="${submission.attachmentUrl}">Download</a>`]);
 	if (submission.preferredDate) rows.push(["Preferred Date", formatDate(submission.preferredDate)]);
 	if (submission.preferredTime) rows.push(["Preferred Time", submission.preferredTime]);
 	if (submission.message) rows.push(["Message", submission.message]);

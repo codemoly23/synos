@@ -371,6 +371,14 @@ const startaEgetPageData = {
 			"Vi vet att steget från anställd till egen företagare kan kännas stort. Därför erbjuder vi ett komplett paket som täcker allt från uppstart till långsiktig tillväxt. Du får personlig vägledning av våra experter som har lång erfarenhet av att hjälpa nya klinikägare.",
 			"Med Synos får du inte bara tillgång till marknadens bästa utrustning - du får en partner som finns med dig hela vägen. Vi tror på långsiktiga relationer byggda på förtroende och ömsesidig framgång.",
 		],
+		highlightsTitle: "Det här får du med Synos",
+		highlights: [
+			"Personlig rådgivning genom hela uppstartsprocessen.",
+			"Tillgång till marknadens mest efterfrågade behandlingsutrustning.",
+			"Flexibla finansieringslösningar anpassade efter din verksamhet.",
+			"Fullständig utbildning och certifiering för dig och din personal.",
+			"Kontinuerlig service och support efter köp.",
+		],
 	},
 
 	benefits: [
@@ -484,8 +492,8 @@ const careersPageData = {
 
 	hero: {
 		badge: "Karriär hos Synos",
-		title: "Driving Traders Toward",
-		titleHighlight: "Daily Wins",
+		title: "Vägen mot",
+		titleHighlight: "Dagliga Framgångar",
 		subtitle: "Bli en del av Synos Medical-teamet. Vi söker engagerade medarbetare som vill växa tillsammans med oss och göra skillnad i branschen.",
 	},
 
@@ -517,7 +525,7 @@ const careersPageData = {
 	},
 
 	jobOpeningsSection: {
-		title: "Success Journey",
+		title: "Framgångsresa",
 		subtitle: "Utforska våra lediga tjänster och ta nästa steg i din karriär.",
 		noJobsMessage: "Vi har för närvarande inga öppna positioner, men vi tar alltid emot spontanansökningar! Skicka din ansökan till karriar@synos.se",
 		jobOpenings: [

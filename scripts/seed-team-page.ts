@@ -87,6 +87,13 @@ const teamPageData = {
 		},
 	],
 
+	// Team Members Section Heading
+	teamSection: {
+		badge: "Vårt team",
+		title: "Möt vårt engagerade team",
+		subtitle: "Från vårt företag",
+	},
+
 	// Team Members - Using professional headshot photos
 	teamMembers: [
 		{
