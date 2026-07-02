@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Package, GraduationCap, Phone } from "lucide-react";
+import { Home, Package, GraduationCap, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
 	{
 		label: "Kontakt",
 		href: "/kontakt",
-		icon: Phone,
+		icon: User,
 	},
 ];
 

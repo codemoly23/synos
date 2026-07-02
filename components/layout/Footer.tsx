@@ -23,8 +23,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 	newsletterTitle: "Håll dig uppdaterad",
 	quickLinks: [
 		{ label: "Om oss", href: "/om-oss" },
-		{ label: "Produkter", href: "/produkter" },
-		{ label: "Tjänster", href: "/service" },
+		{ label: "Klinikutrustning", href: "/klinikutrustning" },
 		{ label: "Utbildningar", href: "/utbildningar" },
 		{ label: "Nyheter", href: "/blogg" },
 		{ label: "Kontakt", href: "/kontakt" },
