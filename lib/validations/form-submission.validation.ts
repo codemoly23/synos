@@ -16,6 +16,7 @@ export const formSubmissionTypes = [
 	"hero_inquiry",
 	"brochure_request",
 	"training_application",
+	"newsletter_subscription",
 ] as const;
 
 /**
@@ -607,6 +608,19 @@ export const heroInquirySchema = z.object({
 });
 
 /**
+ * Newsletter Subscription Form Schema
+ * Minimal schema for the footer newsletter subscription — email only.
+ */
+export const newsletterSubscriptionSchema = z.object({
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+});
+
+/**
  * Brochure Request Form Schema
  */
 export const brochureRequestSchema = z.object({
@@ -658,3 +672,6 @@ export type UpdateStatusInput = z.infer<typeof updateStatusSchema>;
 export type BulkExportInput = z.infer<typeof bulkExportSchema>;
 export type HeroInquiryInput = z.infer<typeof heroInquirySchema>;
 export type BrochureRequestInput = z.infer<typeof brochureRequestSchema>;
+export type NewsletterSubscriptionInput = z.infer<
+	typeof newsletterSubscriptionSchema
+>;

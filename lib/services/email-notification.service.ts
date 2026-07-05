@@ -15,6 +15,7 @@ const FORM_TYPE_LABELS: Record<string, string> = {
 	hero_inquiry: "Hero Inquiry",
 	brochure_request: "Brochure Request",
 	training_application: "Training Application",
+	newsletter_subscription: "Newsletter Subscription",
 };
 
 const HELP_TYPE_LABELS: Record<string, string> = {

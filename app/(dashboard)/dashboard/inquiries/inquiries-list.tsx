@@ -490,6 +490,7 @@ export function InquiriesList({
 								<option value="brochure_request">Brochure Request</option>
 								<option value="job_application">Job Application</option>
 								<option value="training_application">Training Application</option>
+								<option value="newsletter_subscription">Newsletter Subscription</option>
 							</select>
 						</div>
 					</CardContent>

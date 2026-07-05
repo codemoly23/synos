@@ -1633,6 +1633,29 @@ export function ProductForm({
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-6">
+								{/* Main Description */}
+								<div className="space-y-2">
+									<Label>
+										Description{" "}
+										<span className="text-muted-foreground font-normal">
+											(main content shown at the top of the product page)
+										</span>
+									</Label>
+									<TextEditor
+										height="500px"
+										defaultValue={watch("description") || ""}
+										onChange={(val) =>
+											setValue("description", val, {
+												shouldDirty: true,
+											})
+										}
+										placeholder="Enter main product description..."
+										variant={"advanceFull"}
+									/>
+								</div>
+
+								<Separator />
+
 								{/* Product Description */}
 								<div className="space-y-2">
 									<Label>

@@ -98,6 +98,11 @@ export async function POST(request: NextRequest) {
 				body,
 				metadata
 			);
+		} else if (type === "newsletter_subscription") {
+			submission = await formSubmissionService.createNewsletterSubscription(
+				body,
+				metadata
+			);
 		} else {
 			return badRequestResponse("Unsupported form type");
 		}

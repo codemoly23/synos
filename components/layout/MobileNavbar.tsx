@@ -93,13 +93,22 @@ const toggleCategory = (categoryId: string) => {
 											/* Dynamic items: Link + expand button */
 											<>
 												<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-													<Link
-														href={item.href}
-														className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary"
-														onClick={() => setOpen(false)}
-													>
-														{item.title}
-													</Link>
+													{item.isTechnologyMenu || item.isCategoryMenu ? (
+														<span
+															className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary cursor-pointer"
+															onClick={() => toggleDynamic(item.title)}
+														>
+															{item.title}
+														</span>
+													) : (
+														<Link
+															href={item.href}
+															className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary"
+															onClick={() => setOpen(false)}
+														>
+															{item.title}
+														</Link>
+													)}
 													<button
 														onClick={() => toggleDynamic(item.title)}
 														className="px-3 py-2 text-muted-foreground hover:text-secondary transition-colors"
@@ -163,6 +172,13 @@ const toggleCategory = (categoryId: string) => {
 											{isLoading && (
 												<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
 											)}
+											<Link
+												href={item.href}
+												className="block px-3 py-1.5 text-xs text-secondary font-semibold hover:underline"
+												onClick={() => setOpen(false)}
+											>
+												Visa alla →
+											</Link>
 										</>
 									) : item.isCategoryMenu ? (
 															<>
@@ -226,6 +242,13 @@ const toggleCategory = (categoryId: string) => {
 																		Inga kategorier tillgängliga
 																	</div>
 																)}
+																<Link
+																	href={item.href}
+																	className="block px-3 py-1.5 text-xs text-secondary font-semibold hover:underline"
+																	onClick={() => setOpen(false)}
+																>
+																	Visa alla →
+																</Link>
 															</>
 														) : null}
 													</div>

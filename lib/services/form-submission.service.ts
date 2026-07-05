@@ -17,6 +17,7 @@ import {
 	heroInquirySchema,
 	brochureRequestSchema,
 	trainingApplicationSchema,
+	newsletterSubscriptionSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
@@ -27,6 +28,7 @@ import {
 	type HeroInquiryInput,
 	type BrochureRequestInput,
 	type TrainingApplicationInput,
+	type NewsletterSubscriptionInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -605,6 +607,52 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Brochure request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a newsletter subscription submission (footer newsletter form)
+	 */
+	async createNewsletterSubscription(
+		data: NewsletterSubscriptionInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		const validationResult = newsletterSubscriptionSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		const sanitizedData = {
+			type: "newsletter_subscription" as FormSubmissionType,
+			fullName: "Newsletter Subscriber",
+			email: validData.email.toLowerCase().trim(),
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			marketingConsent: true,
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Newsletter subscription created: ${submission._id}`);
 
 		return submission;
 	}
