@@ -1,11 +1,25 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, ExternalLink } from "lucide-react";
+import { Loader2, Plus, Trash2, ExternalLink, GripVertical } from "lucide-react";
+import {
+	DndContext,
+	closestCenter,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	verticalListSortingStrategy,
+	useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -136,6 +150,167 @@ const teamPageFormSchema = z.object({
 
 type TeamPageFormValues = z.infer<typeof teamPageFormSchema>;
 
+function SortableTeamMemberCard({
+	id,
+	index,
+	control,
+	onRemove,
+}: {
+	id: string;
+	index: number;
+	control: Control<TeamPageFormValues>;
+	onRemove: () => void;
+}) {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+		useSortable({ id });
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+	};
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={style}
+			className={`rounded-lg border p-4 space-y-4 bg-background ${
+				isDragging ? "z-10 shadow-lg" : ""
+			}`}
+		>
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
+						aria-label="Drag to reorder"
+						{...attributes}
+						{...listeners}
+					>
+						<GripVertical className="h-4 w-4" />
+					</button>
+					<span className="font-medium">Team Member {index + 1}</span>
+				</div>
+				<Button type="button" variant="ghost" size="icon" onClick={onRemove}>
+					<Trash2 className="h-4 w-4 text-destructive" />
+				</Button>
+			</div>
+
+			<div className="grid gap-4 sm:grid-cols-2">
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.name`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Name</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="Förnamn Efternamn" />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.role`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Role</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="t.ex. VD & Grundare" />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.department`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Department</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="t.ex. Ledning" />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.image`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Image</FormLabel>
+							<p className="text-xs text-blue-600 dark:text-blue-400">
+								Recommended: 400×500px • Ratio: 4:5 (portrait) • Max: 5MB •
+								Format: JPG, PNG, WebP
+							</p>
+							<FormControl>
+								<MediaPicker
+									type="image"
+									value={field.value || null}
+									onChange={(url) => field.onChange(url || "")}
+									placeholder="Select team member image"
+									galleryTitle="Select Team Member Image"
+								/>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.email`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Email</FormLabel>
+							<FormControl>
+								<Input {...field} type="email" placeholder="namn@synosmedical.se" />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.phone`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Phone</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="t.ex. 010-205 15 01" />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.linkedin`}
+					render={({ field }) => (
+						<FormItem className="sm:col-span-2">
+							<FormLabel>LinkedIn URL</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="https://linkedin.com/in/..." />
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`teamMembers.${index}.bio`}
+					render={({ field }) => (
+						<FormItem className="sm:col-span-2">
+							<FormLabel>Biography</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									placeholder="Kort beskrivning av personen..."
+									rows={3}
+								/>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+			</div>
+		</div>
+	);
+}
+
 export default function TeamPageAdmin() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
@@ -178,10 +353,28 @@ export default function TeamPageAdmin() {
 		fields: teamMemberFields,
 		append: appendTeamMember,
 		remove: removeTeamMember,
+		move: moveTeamMember,
 	} = useFieldArray({
 		control: form.control,
 		name: "teamMembers",
 	});
+
+	const teamMemberSensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: { distance: 8 },
+		})
+	);
+
+	function handleTeamMemberDragEnd(event: DragEndEvent) {
+		const { active, over } = event;
+		if (!over || active.id === over.id) return;
+
+		const oldIndex = teamMemberFields.findIndex((field) => field.id === active.id);
+		const newIndex = teamMemberFields.findIndex((field) => field.id === over.id);
+		if (oldIndex === -1 || newIndex === -1) return;
+
+		moveTeamMember(oldIndex, newIndex);
+	}
 
 	const {
 		fields: valueFields,
@@ -704,168 +897,34 @@ export default function TeamPageAdmin() {
 											Member&quot; to begin.
 										</p>
 									)}
-									{teamMemberFields.map((field, index) => (
-										<div
-											key={field.id}
-											className="rounded-lg border p-4 space-y-4"
+									<DndContext
+										sensors={teamMemberSensors}
+										collisionDetection={closestCenter}
+										onDragEnd={handleTeamMemberDragEnd}
+									>
+										<SortableContext
+											items={teamMemberFields.map((field) => field.id)}
+											strategy={verticalListSortingStrategy}
 										>
-											<div className="flex items-center justify-between">
-												<div className="flex items-center gap-2">
-													<span className="font-medium">
-														Team Member {index + 1}
-													</span>
-												</div>
-												<Button
-													type="button"
-													variant="ghost"
-													size="icon"
-													onClick={async () => {
+											{teamMemberFields.map((field, index) => (
+												<SortableTeamMemberCard
+													key={field.id}
+													id={field.id}
+													index={index}
+													control={form.control}
+													onRemove={async () => {
 														const confirmed = await confirm({
 															title: "Remove Team Member",
 															description:
 																"Are you sure you want to remove this team member?",
 															confirmText: "Remove",
 														});
-														if (confirmed)
-															removeTeamMember(index);
+														if (confirmed) removeTeamMember(index);
 													}}
-												>
-													<Trash2 className="h-4 w-4 text-destructive" />
-												</Button>
-											</div>
-
-											<div className="grid gap-4 sm:grid-cols-2">
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.name`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Name</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	placeholder="Förnamn Efternamn"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
 												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.role`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Role</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	placeholder="t.ex. VD & Grundare"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.department`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Department</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	placeholder="t.ex. Ledning"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.image`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Image</FormLabel>
-															<p className="text-xs text-blue-600 dark:text-blue-400">Recommended: 400×500px • Ratio: 4:5 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
-															<FormControl>
-																<MediaPicker
-																	type="image"
-																	value={field.value || null}
-																	onChange={(url) =>
-																		field.onChange(url || "")
-																	}
-																	placeholder="Select team member image"
-																	galleryTitle="Select Team Member Image"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.email`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Email</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	type="email"
-																	placeholder="namn@synosmedical.se"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.phone`}
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Phone</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	placeholder="t.ex. 010-205 15 01"
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.linkedin`}
-													render={({ field }) => (
-														<FormItem className="sm:col-span-2">
-															<FormLabel>LinkedIn URL</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	placeholder="https://linkedin.com/in/..."
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-												<FormField
-													control={form.control}
-													name={`teamMembers.${index}.bio`}
-													render={({ field }) => (
-														<FormItem className="sm:col-span-2">
-															<FormLabel>Biography</FormLabel>
-															<FormControl>
-																<Textarea
-																	{...field}
-																	placeholder="Kort beskrivning av personen..."
-																	rows={3}
-																/>
-															</FormControl>
-														</FormItem>
-													)}
-												/>
-											</div>
-										</div>
-									))}
+											))}
+										</SortableContext>
+									</DndContext>
 								</CardContent>
 							</Card>
 						</TabsContent>
