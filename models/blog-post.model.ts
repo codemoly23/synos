@@ -42,6 +42,9 @@ export interface IBlogPost extends Document {
 	featuredImage?: IBlogImage;
 	headerImage?: IBlogHeaderImage;
 	author: mongoose.Types.ObjectId; // Reference to User
+	authorRole?: string; // Display title shown under the author's name
+	authorImage?: string; // Overrides the author's profile image for this post
+	authorLabel?: string; // Overrides the "Skriven av" / "Written by" label
 	categories: mongoose.Types.ObjectId[]; // References to BlogCategory
 	tags: string[];
 	seo: IBlogSeo;
@@ -167,6 +170,23 @@ const BlogPostSchema = new Schema<IBlogPost>(
 			type: Schema.Types.ObjectId,
 			ref: "User",
 			required: [true, "Author is required"],
+		},
+		authorRole: {
+			type: String,
+			default: "",
+			trim: true,
+			maxlength: [100, "Author role cannot exceed 100 characters"],
+		},
+		authorImage: {
+			type: String,
+			default: "",
+			trim: true,
+		},
+		authorLabel: {
+			type: String,
+			default: "",
+			trim: true,
+			maxlength: [50, "Author label cannot exceed 50 characters"],
 		},
 		categories: [
 			{

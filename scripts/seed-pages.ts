@@ -184,6 +184,18 @@ const aboutPageData = {
 				rating: 5,
 			},
 		],
+		ctaTitle: "Betrodd av över 1300 nöjda kunder",
+		ctaDescription: "Vi hjälper klinikägare i hela Sverige med rätt utrustning, utbildning och support för att lyckas med sin verksamhet.",
+		ctaButtonText: "Kontakta oss",
+		ctaButtonLink: "/kontakt",
+		rating: 4.8,
+		reviewCount: "2 568",
+		reviewCountLabel: "recensioner och räknas",
+		reviewPlatforms: [
+			{ icon: "🍎", iconColor: "", url: "" },
+			{ icon: "G", iconColor: "#4285F4", url: "" },
+			{ icon: "▶", iconColor: "#EF4444", url: "" },
+		],
 	},
 
 	partners: {

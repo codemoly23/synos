@@ -102,11 +102,25 @@ export const aboutGroupCooperationSchema = z.object({
 	teamMembers: z.array(aboutTeamMemberSchema).optional(),
 });
 
+export const aboutReviewPlatformSchema = z.object({
+	icon: z.string().max(10).optional(),
+	iconColor: z.string().max(20).optional(),
+	url: z.string().max(500).optional(),
+});
+
 export const aboutTestimonialsSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	testimonials: z.array(aboutTestimonialSchema).optional(),
 	groupCooperation: aboutGroupCooperationSchema.optional(),
+	ctaTitle: z.string().max(200).optional(),
+	ctaDescription: z.string().max(1000).optional(),
+	ctaButtonText: z.string().max(100).optional(),
+	ctaButtonLink: z.string().max(500).optional(),
+	rating: z.number().min(0).max(5).optional(),
+	reviewCount: z.string().max(20).optional(),
+	reviewCountLabel: z.string().max(100).optional(),
+	reviewPlatforms: z.array(aboutReviewPlatformSchema).optional(),
 });
 
 // ============================================================================
@@ -180,6 +194,7 @@ export type AboutFaqSectionInput = z.infer<typeof aboutFaqSectionSchema>;
 export type AboutTestimonialInput = z.infer<typeof aboutTestimonialSchema>;
 export type AboutTeamMemberInput = z.infer<typeof aboutTeamMemberSchema>;
 export type AboutGroupCooperationInput = z.infer<typeof aboutGroupCooperationSchema>;
+export type AboutReviewPlatformInput = z.infer<typeof aboutReviewPlatformSchema>;
 export type AboutTestimonialsSectionInput = z.infer<typeof aboutTestimonialsSectionSchema>;
 export type AboutPartnerInput = z.infer<typeof aboutPartnerSchema>;
 export type AboutPartnersSectionInput = z.infer<typeof aboutPartnersSectionSchema>;

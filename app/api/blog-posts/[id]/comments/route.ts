@@ -11,7 +11,6 @@ import {
 	createdResponse,
 } from "@/lib/utils/api-response";
 import { z } from "zod";
-import { isValidPhoneNumber } from "libphonenumber-js";
 
 interface RouteParams {
 	params: Promise<{ id: string }>;
@@ -19,46 +18,25 @@ interface RouteParams {
 
 /**
  * Comment validation schema
- * Uses libphonenumber-js for international phone validation
  */
-const createCommentSchema = z
-	.object({
-		name: z
-			.string()
-			.min(2, "Namn måste vara minst 2 tecken")
-			.max(100, "Namn kan inte överstiga 100 tecken")
-			.trim(),
-		email: z
-			.string()
-			.email("Ogiltig e-postadress")
-			.max(255, "E-post kan inte överstiga 255 tecken")
-			.trim()
-			.toLowerCase(),
-		countryCode: z
-			.string()
-			.min(2, "Landskod krävs")
-			.max(10, "Landskod kan inte överstiga 10 tecken"),
-		phone: z
-			.string()
-			.min(6, "Telefonnummer måste vara minst 6 siffror")
-			.max(20, "Telefonnummer kan inte överstiga 20 tecken"),
-		comment: z
-			.string()
-			.min(10, "Kommentar måste vara minst 10 tecken")
-			.max(2000, "Kommentar kan inte överstiga 2000 tecken")
-			.trim(),
-	})
-	.refine(
-		(data) => {
-			const fullPhone =
-				data.countryCode + data.phone.replace(/[\s\-]/g, "");
-			return isValidPhoneNumber(fullPhone);
-		},
-		{
-			message: "Ogiltigt telefonnummer för valt land",
-			path: ["phone"],
-		}
-	);
+const createCommentSchema = z.object({
+	name: z
+		.string()
+		.min(2, "Namn måste vara minst 2 tecken")
+		.max(100, "Namn kan inte överstiga 100 tecken")
+		.trim(),
+	email: z
+		.string()
+		.email("Ogiltig e-postadress")
+		.max(255, "E-post kan inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
+	comment: z
+		.string()
+		.min(10, "Kommentar måste vara minst 10 tecken")
+		.max(2000, "Kommentar kan inte överstiga 2000 tecken")
+		.trim(),
+});
 
 /**
  * GET /api/blog-posts/[id]/comments
@@ -138,10 +116,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			);
 		}
 
-		const { name, email, countryCode, phone, comment } = validationResult.data;
-
-		// Store full phone number with country code
-		const fullPhone = countryCode + phone.replace(/[\s\-]/g, "");
+		const { name, email, comment } = validationResult.data;
 
 		// Create comment (pending approval)
 		const BlogComment = await getBlogCommentModel();
@@ -149,7 +124,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			postId: id,
 			name,
 			email,
-			phone: fullPhone,
 			comment,
 			status: "pending",
 		});

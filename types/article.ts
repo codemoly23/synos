@@ -35,5 +35,6 @@ export interface Author {
   role: string;
   image?: string;
   bio?: string;
+  label?: string;
 }
 

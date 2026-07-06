@@ -117,6 +117,30 @@ class AboutPageRepository {
 			if (data.testimonials.groupCooperation !== undefined) {
 				updateData["testimonials.groupCooperation"] = data.testimonials.groupCooperation;
 			}
+			if (data.testimonials.ctaTitle !== undefined) {
+				updateData["testimonials.ctaTitle"] = data.testimonials.ctaTitle;
+			}
+			if (data.testimonials.ctaDescription !== undefined) {
+				updateData["testimonials.ctaDescription"] = data.testimonials.ctaDescription;
+			}
+			if (data.testimonials.ctaButtonText !== undefined) {
+				updateData["testimonials.ctaButtonText"] = data.testimonials.ctaButtonText;
+			}
+			if (data.testimonials.ctaButtonLink !== undefined) {
+				updateData["testimonials.ctaButtonLink"] = data.testimonials.ctaButtonLink;
+			}
+			if (data.testimonials.rating !== undefined) {
+				updateData["testimonials.rating"] = data.testimonials.rating;
+			}
+			if (data.testimonials.reviewCount !== undefined) {
+				updateData["testimonials.reviewCount"] = data.testimonials.reviewCount;
+			}
+			if (data.testimonials.reviewCountLabel !== undefined) {
+				updateData["testimonials.reviewCountLabel"] = data.testimonials.reviewCountLabel;
+			}
+			if (data.testimonials.reviewPlatforms !== undefined) {
+				updateData["testimonials.reviewPlatforms"] = data.testimonials.reviewPlatforms;
+			}
 		}
 
 		if (data.partners) {

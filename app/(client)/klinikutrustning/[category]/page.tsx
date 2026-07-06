@@ -472,7 +472,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		heroBgDesktop?: string;
 	};
 
-	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title;
+	// Always resolve a hero title (own field → legacy static config → category name)
+	// so every category — including brand-new ones with no hero config set yet —
+	// gets the full hero layout with the inquiry form, matching the technology
+	// group pages' behavior (see teknologi/[slug]/page.tsx).
+	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title || category.name;
 	const resolvedHeroSubtitle = catExtra.heroSubtitle || heroConfig?.subtitle;
 	const resolvedBulletPoints =
 		catExtra.heroBulletPoints?.filter(Boolean).length
@@ -480,121 +484,81 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			: heroConfig?.bulletPoints ?? [];
 	const resolvedBgMobile = catExtra.heroBgMobile || "/images/Background Mobile.jpeg";
 	const resolvedBgDesktop = catExtra.heroBgDesktop || "/images/Product detail breadcrumbs background.jpeg";
-	const showHeroLayout = !!resolvedHeroTitle;
 
 	return (
 		<div className="min-h-screen">
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 
-				{showHeroLayout ? (
-					<>
-						{/* ── MOBILE LAYOUT ── */}
-						<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
-							<ImageComponent
-								src={resolvedBgMobile}
-								alt=""
-								fill
-								priority
-								className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
-								sizes="100vw"
-							/>
-						</div>
+				{/* ── MOBILE LAYOUT ── */}
+				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
+					<ImageComponent
+						src={resolvedBgMobile}
+						alt=""
+						fill
+						priority
+						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+						sizes="100vw"
+					/>
+				</div>
 
-						{/* Mobile text */}
-						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-							<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
-								{resolvedHeroTitle}
-							</h1>
-							<div className="w-14 h-[2px] bg-primary mb-4" />
-							{resolvedHeroSubtitle && (
-								<p className="text-white/70 text-sm mb-8 leading-relaxed">
-									{resolvedHeroSubtitle}
-								</p>
-							)}
-							{resolvedBulletPoints.length > 0 && (
-								<ul className="space-y-4">
-									{resolvedBulletPoints.map((item) => (
-										<li key={item} className="flex items-center gap-3">
-											<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
-												<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
-											</div>
-											<span className="text-white/90 text-sm font-thin">{item}</span>
-										</li>
-									))}
-								</ul>
-							)}
-							<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
-								<FileText className="h-4 w-4 shrink-0" />
-								Begär offert
-							</a>
-						</div>
-
-						{/* ── DESKTOP LAYOUT ── */}
-						<div className="hidden lg:block">
-							<div className="_container relative overflow-hidden min-h-[740px]">
-								<ImageComponent
-									src={resolvedBgDesktop}
-									alt=""
-									fill
-									priority
-									className="object-cover object-center"
-									sizes="(max-width: 2560px) 100vw, 2560px"
-								/>
-								<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
-									<div />
-									{/* Right — Form */}
-									<div className="flex flex-col justify-center py-10 pl-10 pr-8">
-										<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
-											{resolvedHeroTitle}
-										</h2>
-										{resolvedHeroSubtitle && (
-											<p className="text-white/60 text-base mb-8 leading-relaxed">
-												{resolvedHeroSubtitle}
-											</p>
-										)}
-										<HeroCategoryForm categoryName={resolvedHeroTitle} />
+				{/* Mobile text */}
+				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
+					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
+						{resolvedHeroTitle}
+					</h1>
+					<div className="w-14 h-[2px] bg-primary mb-4" />
+					{resolvedHeroSubtitle && (
+						<p className="text-white/70 text-sm mb-8 leading-relaxed">
+							{resolvedHeroSubtitle}
+						</p>
+					)}
+					{resolvedBulletPoints.length > 0 && (
+						<ul className="space-y-4">
+							{resolvedBulletPoints.map((item) => (
+								<li key={item} className="flex items-center gap-3">
+									<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
+										<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
 									</div>
-								</div>
-							</div>
-						</div>
-					</>
-				) : (
-					/* Fallback for categories without hero config */
-					<div className="relative bg-secondary pt-20 sm:pt-24 pb-0">
-						<div className="_container relative z-10">
-							<div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 min-h-[280px]">
-								<div className="py-12 lg:py-16">
-									<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
-										Klinikutrustning
+									<span className="text-white/90 text-sm font-thin">{item}</span>
+								</li>
+							))}
+						</ul>
+					)}
+					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+						<FileText className="h-4 w-4 shrink-0" />
+						Begär offert
+					</a>
+				</div>
+
+				{/* ── DESKTOP LAYOUT ── */}
+				<div className="hidden lg:block">
+					<div className="_container relative overflow-hidden min-h-[740px]">
+						<ImageComponent
+							src={resolvedBgDesktop}
+							alt=""
+							fill
+							priority
+							className="object-cover object-center"
+							sizes="(max-width: 2560px) 100vw, 2560px"
+						/>
+						<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
+							<div />
+							{/* Right — Form */}
+							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
+								<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
+									{resolvedHeroTitle}
+								</h2>
+								{resolvedHeroSubtitle && (
+									<p className="text-white/60 text-base mb-8 leading-relaxed">
+										{resolvedHeroSubtitle}
 									</p>
-									<h1 className="text-[2.2rem] md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
-										{category.name}
-									</h1>
-									{resolvedHeroSubtitle && (
-										<p className="text-white/60 text-base max-w-lg leading-relaxed">
-											{resolvedHeroSubtitle}
-										</p>
-									)}
-								</div>
-								{category.image && (
-									<div className="hidden lg:flex items-center justify-end">
-										<div className="relative w-[500px] h-80 drop-shadow-2xl">
-											<ImageComponent
-												src={category.image}
-												alt={category.name}
-												fill
-												className="object-contain object-center"
-												priority
-												sizes="500px"
-											/>
-										</div>
-									</div>
 								)}
+								<HeroCategoryForm categoryName={resolvedHeroTitle} />
 							</div>
 						</div>
 					</div>
-				)}
+				</div>
 
 			</section>
 

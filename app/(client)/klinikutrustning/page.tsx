@@ -162,21 +162,6 @@ function ProductCardDB({
 	);
 }
 
-const staticCategories = [
-	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning" },
-	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning" },
-	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser" },
-	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar" },
-	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom" },
-	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-];
-
 type TechGroupItem = { _id: string; name: string; slug: string; order: number };
 
 // Sidebar Component
@@ -207,15 +192,19 @@ function KategoriSidebar({
 					</Link>
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
-				<CardContent className="pb-2! p-0">
-					<div className="px-3">
-						{staticCategories.map((cat) => (
+				<CardContent className="space-y-2 pb-2! p-0">
+					<div className="max-h-[200px] overflow-y-auto px-3">
+						{categories.map((category) => (
 							<Link
-								key={cat.name}
-								href={cat.href}
-								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+								key={category._id.toString()}
+								href={`/klinikutrustning/${category.slug}`}
+								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+									activeCategory === category.slug
+										? "btn-copper-gradient"
+										: "text-foreground hover:bg-primary/20"
+								}`}
 							>
-								{cat.name}
+								{category.name}
 							</Link>
 						))}
 					</div>

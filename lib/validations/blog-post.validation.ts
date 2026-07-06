@@ -105,10 +105,15 @@ export const createBlogPostSchema = z.object({
 	content: z.string().optional().default(""),
 	featuredImage: blogImageSchema.nullable().optional(),
 	headerImage: blogHeaderImageSchema.nullable().optional(),
+	author: z.string().min(1, "Author is required").optional(),
+	authorRole: z.string().max(100, "Author role cannot exceed 100 characters").optional(),
+	authorImage: optionalUrlSchema,
+	authorLabel: z.string().max(50, "Author label cannot exceed 50 characters").optional(),
 	categories: z.array(z.string()).optional().default([]),
 	tags: z.array(z.string().max(50)).optional().default([]),
 	seo: blogSeoSchema.optional(),
 	publishType: z.enum(["publish", "draft", "private"]).default("draft"),
+	publishedAt: z.coerce.date().optional(),
 });
 
 /**
@@ -121,6 +126,10 @@ export const updateBlogPostSchema = z.object({
 	content: z.string().optional(),
 	featuredImage: blogImageSchema.nullable().optional(),
 	headerImage: blogHeaderImageSchema.nullable().optional(),
+	author: z.string().min(1, "Author is required").optional(),
+	authorRole: z.string().max(100, "Author role cannot exceed 100 characters").optional(),
+	authorImage: optionalUrlSchema,
+	authorLabel: z.string().max(50, "Author label cannot exceed 50 characters").optional(),
 	categories: z.array(z.string()).optional(),
 	tags: z.array(z.string().max(50)).optional(),
 	seo: blogSeoSchema.optional(),

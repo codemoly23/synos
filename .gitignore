@@ -44,3 +44,6 @@ nul.bak
 
 # claude temp directories
 tmpclaude-*
+
+# playwright mcp
+.playwright-mcp/

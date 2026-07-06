@@ -197,11 +197,25 @@ export interface IAboutGroupCooperation {
 	teamMembers?: IAboutTeamMember[];
 }
 
+export interface IAboutReviewPlatform {
+	icon?: string;
+	iconColor?: string;
+	url?: string;
+}
+
 export interface IAboutTestimonialsSection {
 	title?: string;
 	subtitle?: string;
 	testimonials?: IAboutTestimonial[];
 	groupCooperation?: IAboutGroupCooperation;
+	ctaTitle?: string;
+	ctaDescription?: string;
+	ctaButtonText?: string;
+	ctaButtonLink?: string;
+	rating?: number;
+	reviewCount?: string;
+	reviewCountLabel?: string;
+	reviewPlatforms?: IAboutReviewPlatform[];
 }
 
 const AboutTestimonialSchema = new Schema<IAboutTestimonial>(
@@ -233,12 +247,49 @@ const AboutGroupCooperationSchema = new Schema<IAboutGroupCooperation>(
 	{ _id: false }
 );
 
+const AboutReviewPlatformSchema = new Schema<IAboutReviewPlatform>(
+	{
+		icon: { type: String, trim: true },
+		iconColor: { type: String, trim: true },
+		url: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
 const AboutTestimonialsSectionSchema = new Schema<IAboutTestimonialsSection>(
 	{
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		testimonials: { type: [AboutTestimonialSchema], default: [] },
 		groupCooperation: { type: AboutGroupCooperationSchema, default: {} },
+		ctaTitle: {
+			type: String,
+			trim: true,
+			default: "Trusted By Over 1300 Loyal Clients",
+		},
+		ctaDescription: {
+			type: String,
+			trim: true,
+			default:
+				"Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.",
+		},
+		ctaButtonText: { type: String, trim: true, default: "Contact Us" },
+		ctaButtonLink: { type: String, trim: true, default: "/kontakt" },
+		rating: { type: Number, min: 0, max: 5, default: 4.8 },
+		reviewCount: { type: String, trim: true, default: "2,568" },
+		reviewCountLabel: {
+			type: String,
+			trim: true,
+			default: "Reviews and counting",
+		},
+		reviewPlatforms: {
+			type: [AboutReviewPlatformSchema],
+			default: [
+				{ icon: "🍎", iconColor: "", url: "" },
+				{ icon: "G", iconColor: "#4285F4", url: "" },
+				{ icon: "▶", iconColor: "#EF4444", url: "" },
+			],
+		},
 	},
 	{ _id: false }
 );

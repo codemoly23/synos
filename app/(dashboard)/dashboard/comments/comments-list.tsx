@@ -49,7 +49,7 @@ interface Comment {
 	postSlug: string;
 	name: string;
 	email: string;
-	phone: string;
+	phone?: string;
 	comment: string;
 	status: CommentStatus;
 	createdAt: string;
@@ -353,17 +353,19 @@ export function CommentsList({
 											{selectedComment.email}
 										</a>
 									</div>
-									<div className="min-w-0">
-										<p className="text-sm text-slate-500 mb-1">
-											Phone
-										</p>
-										<a
-											href={`tel:${selectedComment.phone}`}
-											className="font-medium text-primary hover:underline block"
-										>
-											{selectedComment.phone}
-										</a>
-									</div>
+									{selectedComment.phone && (
+										<div className="min-w-0">
+											<p className="text-sm text-slate-500 mb-1">
+												Phone
+											</p>
+											<a
+												href={`tel:${selectedComment.phone}`}
+												className="font-medium text-primary hover:underline block"
+											>
+												{selectedComment.phone}
+											</a>
+										</div>
+									)}
 								</div>
 
 								{/* Comment Content */}
@@ -598,10 +600,12 @@ export function CommentsList({
 														<Mail className="h-3 w-3" />
 														{comment.email}
 													</span>
-													<span className="flex items-center gap-1">
-														<Phone className="h-3 w-3" />
-														{comment.phone}
-													</span>
+													{comment.phone && (
+														<span className="flex items-center gap-1">
+															<Phone className="h-3 w-3" />
+															{comment.phone}
+														</span>
+													)}
 												</div>
 
 												{/* Post Reference */}

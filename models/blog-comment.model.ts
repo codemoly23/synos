@@ -14,7 +14,7 @@ export interface IBlogComment extends Document {
 	postId: mongoose.Types.ObjectId; // Reference to BlogPost
 	name: string;
 	email: string;
-	phone: string;
+	phone?: string;
 	comment: string;
 	status: CommentStatus;
 	createdAt: Date;
@@ -51,7 +51,6 @@ const BlogCommentSchema = new Schema<IBlogComment>(
 		},
 		phone: {
 			type: String,
-			required: [true, "Phone number is required"],
 			trim: true,
 			maxlength: [20, "Phone number cannot exceed 20 characters"],
 		},

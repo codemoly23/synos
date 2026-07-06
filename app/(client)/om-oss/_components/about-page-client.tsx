@@ -164,6 +164,20 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 	);
 	const validPartners = (data.partners?.partners || []).filter((p) => p.logo || p.name);
 	const validFeatures = (data.mission?.features || []).filter((f) => f.title);
+	const validReviewPlatforms = (data.testimonials?.reviewPlatforms || []).filter(
+		(p) => p.icon
+	);
+	const testimonialsCtaTitle =
+		data.testimonials?.ctaTitle || "Trusted By Over 1300 Loyal Clients";
+	const testimonialsCtaDescription =
+		data.testimonials?.ctaDescription ||
+		"Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.";
+	const testimonialsCtaButtonText = data.testimonials?.ctaButtonText || "Contact Us";
+	const testimonialsCtaButtonLink = data.testimonials?.ctaButtonLink || "/kontakt";
+	const testimonialsRating = data.testimonials?.rating ?? 4.8;
+	const testimonialsReviewCount = data.testimonials?.reviewCount || "2,568";
+	const testimonialsReviewCountLabel =
+		data.testimonials?.reviewCountLabel || "Reviews and counting";
 
 	return (
 		<div className="min-h-screen bg-slate-50">
@@ -1101,14 +1115,14 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 										<div className="relative z-10 h-full flex flex-col justify-center">
 											<h3 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
-												Trusted By Over 1300 Loyal Clients
+												{testimonialsCtaTitle}
 											</h3>
 											<p className="text-muted-foreground mb-6 text-sm">
-												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
+												{testimonialsCtaDescription}
 											</p>
 											<Button asChild className="w-fit btn-copper-gradient">
-												<Link href="/kontakt">
-													Contact Us
+												<Link href={testimonialsCtaButtonLink}>
+													{testimonialsCtaButtonText}
 													<ArrowRight className="ml-2 h-4 w-4" />
 												</Link>
 											</Button>
@@ -1262,14 +1276,14 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									<div className="p-6 relative overflow-hidden border-b border-slate-100">
 										<div className="relative z-10">
 											<h3 className="text-xl font-bold text-secondary mb-3">
-												Trusted By Over 1300 Loyal Clients
+												{testimonialsCtaTitle}
 											</h3>
 											<p className="text-muted-foreground mb-4 text-sm">
-												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
+												{testimonialsCtaDescription}
 											</p>
 											<Button asChild className="w-full btn-copper-gradient">
-												<Link href="/kontakt">
-													Contact Us
+												<Link href={testimonialsCtaButtonLink}>
+													{testimonialsCtaButtonText}
 													<ArrowRight className="ml-2 h-4 w-4" />
 												</Link>
 											</Button>
@@ -1349,7 +1363,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									{/* Mobile Rating Bar */}
 									<div className="p-4 border-t border-slate-100 flex items-center justify-between">
 										<div className="flex items-center gap-3">
-											<p className="text-2xl font-bold text-secondary">4.80</p>
+											<p className="text-2xl font-bold text-secondary">{testimonialsRating.toFixed(2)}</p>
 											<div className="flex gap-0.5">
 												{[...Array(5)].map((_, i) => (
 													<Star
@@ -1360,7 +1374,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											</div>
 										</div>
 										<p className="text-xs text-muted-foreground">
-											2,568 Reviews
+											{testimonialsReviewCount} {testimonialsReviewCountLabel}
 										</p>
 									</div>
 								</div>
@@ -1370,7 +1384,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							<div className="hidden lg:flex flex-col gap-5">
 								{/* Rating Card */}
 								<div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center flex-1">
-									<p className="text-5xl font-bold text-secondary mb-2">4.80</p>
+									<p className="text-5xl font-bold text-secondary mb-2">{testimonialsRating.toFixed(2)}</p>
 									<div className="flex gap-0.5 mb-3">
 										{[...Array(5)].map((_, i) => (
 											<Star
@@ -1380,19 +1394,36 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										))}
 									</div>
 									<p className="text-sm text-muted-foreground mb-4">
-										2,568 Reviews and counting
+										{testimonialsReviewCount} {testimonialsReviewCountLabel}
 									</p>
-									<div className="flex items-center gap-4">
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg">🍎</span>
+									{validReviewPlatforms.length > 0 && (
+										<div className="flex items-center gap-4">
+											{validReviewPlatforms.map((platform, index) => {
+												const icon = (
+													<span
+														className="text-lg font-bold"
+														style={platform.iconColor ? { color: platform.iconColor } : undefined}
+													>
+														{platform.icon}
+													</span>
+												);
+												return (
+													<div
+														key={index}
+														className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center"
+													>
+														{platform.url ? (
+															<Link href={platform.url} target="_blank" rel="noopener noreferrer">
+																{icon}
+															</Link>
+														) : (
+															icon
+														)}
+													</div>
+												);
+											})}
 										</div>
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg font-bold text-blue-500">G</span>
-										</div>
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg text-red-500">▶</span>
-										</div>
-									</div>
+									)}
 								</div>
 
 								{/* Group Cooperation Card */}

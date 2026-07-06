@@ -118,6 +118,24 @@ export function BlogPostForm({
 	className,
 }: BlogPostFormProps) {
 	const isEditing = !!post;
+	const [authorOptions, setAuthorOptions] = React.useState<
+		{ _id: string; name: string; email: string }[]
+	>([]);
+
+	// Load users for the author dropdown
+	React.useEffect(() => {
+		fetch("/api/admin/users?limit=100")
+			.then((res) => res.json())
+			.then((result) => {
+				if (result.success) {
+					setAuthorOptions(result.data.users);
+				}
+			})
+			.catch((error) => {
+				console.error("Failed to load authors:", error);
+			});
+	}, []);
+
 	const [validationResults, setValidationResults] = React.useState<{
 		errors: PublishValidationError[];
 		warnings: PublishValidationError[];
@@ -210,6 +228,12 @@ export function BlogPostForm({
 						height: post.headerImage.height,
 				  }
 				: null,
+			author: post?.author
+				? normalizeCategoryId(post.author as CategoryInput)
+				: "",
+			authorRole: post?.authorRole || "",
+			authorImage: post?.authorImage || "",
+			authorLabel: post?.authorLabel || "",
 			categories: normalizeCategories(
 				post?.categories as CategoryInput[]
 			),
@@ -226,6 +250,12 @@ export function BlogPostForm({
 		},
 	});
 
+	// Managed outside react-hook-form: the schema types this as a Date, but a
+	// native <input type="date"> only ever produces/accepts a "YYYY-MM-DD" string.
+	const [publishedAtInput, setPublishedAtInput] = React.useState(
+		post?.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 10) : ""
+	);
+
 	const title = watch("title");
 	const slug = watch("slug");
 
@@ -236,6 +266,10 @@ export function BlogPostForm({
 		}
 	};
 
+	// Merge the manually-managed published date into the RHF payload
+	const withPublishedAt = (data: BlogPostFormData): BlogPostFormData =>
+		({ ...data, publishedAt: publishedAtInput || undefined }) as BlogPostFormData;
+
 	// Handle save draft
 	const handleSaveDraft = async (data: BlogPostFormData) => {
 		setIsSaving(true);
@@ -243,7 +277,7 @@ export function BlogPostForm({
 		setGeneralError(null);
 		setValidationResults(null);
 		try {
-			const result = await onSaveDraft(data);
+			const result = await onSaveDraft(withPublishedAt(data));
 			if (!result.success) {
 				const publishErrors = processServerErrors(result.errors);
 				if (publishErrors.length > 0) {
@@ -266,7 +300,7 @@ export function BlogPostForm({
 		setGeneralError(null);
 		setValidationResults(null);
 		try {
-			const result = await onPublish(data);
+			const result = await onPublish(withPublishedAt(data));
 			if (result.success) {
 				setValidationResults({
 					errors: [],
@@ -464,6 +498,99 @@ export function BlogPostForm({
 										<option value="publish">Published</option>
 										<option value="private">Private</option>
 									</select>
+								</div>
+
+								{/* Author */}
+								<div className="grid gap-4 md:grid-cols-2">
+									<div className="space-y-2">
+										<Label htmlFor="author">Author</Label>
+										<select
+											id="author"
+											{...register("author")}
+											disabled={isLoading}
+											className="w-full h-11 px-4 rounded-md border border-slate-200 bg-white"
+										>
+											<option value="">
+												{isEditing ? "Keep current author" : "Assign to me"}
+											</option>
+											{authorOptions.map((user) => (
+												<option key={user._id} value={user._id}>
+													{user.name} ({user.email})
+												</option>
+											))}
+										</select>
+										<p className="text-xs text-slate-500">
+											Shown as &quot;Written by&quot; on the published post.
+										</p>
+										{getFieldError("author") && (
+											<p className="text-sm text-red-500">
+												{getFieldError("author")}
+											</p>
+										)}
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="authorRole">Author Title</Label>
+										<Input
+											id="authorRole"
+											{...register("authorRole")}
+											placeholder="e.g. Editorial team"
+											disabled={isLoading}
+										/>
+										<p className="text-xs text-slate-500">
+											Defaults to &quot;Redaktionen&quot; if left empty.
+										</p>
+									</div>
+								</div>
+
+								<div className="grid gap-4 md:grid-cols-2">
+									<div className="space-y-3">
+										<Label>Author Image</Label>
+										<p className="text-xs text-slate-500">
+											Overrides the author&apos;s profile picture for this
+											post only.
+										</p>
+										<MediaPicker
+											type="image"
+											value={watch("authorImage") || null}
+											onChange={(url) =>
+												setValue("authorImage", url || "", {
+													shouldDirty: true,
+												})
+											}
+											placeholder="Select author image"
+											disabled={isLoading}
+											galleryTitle="Select Author Image"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="publishedAt">Published Date</Label>
+										<Input
+											id="publishedAt"
+											type="date"
+											value={publishedAtInput}
+											onChange={(e) => setPublishedAtInput(e.target.value)}
+											disabled={isLoading}
+										/>
+										<p className="text-xs text-slate-500">
+											Controls the date shown on the post. Auto-set to today
+											the first time you publish if left empty.
+										</p>
+									</div>
+								</div>
+
+								<div className="space-y-2">
+									<Label htmlFor="authorLabel">Author Label</Label>
+									<Input
+										id="authorLabel"
+										{...register("authorLabel")}
+										placeholder="e.g. Skriven av"
+										disabled={isLoading}
+									/>
+									<p className="text-xs text-slate-500">
+										The small heading above the author&apos;s name (e.g.
+										&quot;Skriven av&quot; / &quot;Written by&quot;). Defaults
+										to &quot;Skriven av&quot; if left empty.
+									</p>
 								</div>
 							</CardContent>
 						</Card>
