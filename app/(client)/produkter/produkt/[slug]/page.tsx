@@ -198,6 +198,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
 				defaultBackground={branding?.productDefaultBackground || undefined}
+				defaultInquiryBgMobile={branding?.inquiryDefaultBgMobile || undefined}
+				defaultInquiryBgDesktop={branding?.inquiryDefaultBgDesktop || undefined}
 				productCategorySlug={
 					(product.primaryCategory as unknown as { slug?: string } | null)?.slug ||
 					(product.categories as unknown as Array<{ slug?: string }>)?.[0]?.slug

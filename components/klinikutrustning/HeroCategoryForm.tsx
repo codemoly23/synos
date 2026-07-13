@@ -109,7 +109,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 		<form onSubmit={onSubmit} noValidate className="space-y-4">
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Förnamn <span className="text-primary">*</span>
 					</label>
 					<input
@@ -126,7 +126,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 					)}
 				</div>
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Efternamn <span className="text-primary">*</span>
 					</label>
 					<input
@@ -146,7 +146,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Företag <span className="text-primary">*</span>
 					</label>
 					<input
@@ -163,7 +163,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 					)}
 				</div>
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						E-post <span className="text-primary">*</span>
 					</label>
 					<input
@@ -182,7 +182,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			</div>
 
 			<div>
-				<label className="block text-xs text-white/60 mb-1.5">
+				<label className="block text-xs text-white/80 mb-1.5">
 					När är du intresserad av att ta nästa steg?
 				</label>
 				<textarea

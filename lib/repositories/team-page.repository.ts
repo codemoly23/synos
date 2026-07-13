@@ -5,6 +5,7 @@ import {
 	type ITeamPage,
 	type ITeamSectionVisibility,
 	type ITeamHeroSection,
+	type ITeamMissionSection,
 	type ITeamStat,
 	type ITeamMembersSection,
 	type ITeamMember,
@@ -20,6 +21,7 @@ import {
 export interface UpdateTeamPageInput {
 	sectionVisibility?: ITeamSectionVisibility;
 	hero?: Partial<ITeamHeroSection>;
+	mission?: Partial<ITeamMissionSection>;
 	stats?: ITeamStat[];
 	teamSection?: Partial<ITeamMembersSection>;
 	teamMembers?: ITeamMember[];
@@ -81,6 +83,14 @@ class TeamPageRepository {
 			Object.entries(data.hero).forEach(([key, value]) => {
 				if (value !== undefined) {
 					updateData[`hero.${key}`] = value;
+				}
+			});
+		}
+
+		if (data.mission) {
+			Object.entries(data.mission).forEach(([key, value]) => {
+				if (value !== undefined) {
+					updateData[`mission.${key}`] = value;
 				}
 			});
 		}

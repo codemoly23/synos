@@ -23,6 +23,20 @@ interface TeamMember {
 	phone?: string;
 }
 
+// Renders "**highlighted**" segments in primary color, e.g. "smarta **lösningar**"
+function renderHighlightedText(text: string) {
+	return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+		if (part.startsWith("**") && part.endsWith("**")) {
+			return (
+				<span key={index} className="text-primary">
+					{part.slice(2, -2)}
+				</span>
+			);
+		}
+		return <React.Fragment key={index}>{part}</React.Fragment>;
+	});
+}
+
 // Mobile Team Card Component with click toggle for social icons
 function TeamMemberMobileCard({ member, index }: { member: TeamMember; index: number }) {
 	const [isOpen, setIsOpen] = useState(false);
@@ -139,6 +153,7 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 
 	const visibility = data.sectionVisibility || {
 		hero: true,
+		mission: true,
 		stats: true,
 		teamMembers: true,
 		values: true,
@@ -148,6 +163,7 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 
 	// Check if we have content to display
 	const hasHero = data.hero?.badge || data.hero?.title || data.hero?.subtitle;
+	const hasMission = data.mission?.badge || data.mission?.text;
 	const hasStats =
 		data.stats && data.stats.filter((s) => s.value && s.label).length > 0;
 	const hasTeamMembers =
@@ -294,34 +310,37 @@ export function TeamPageClient({ data }: TeamPageClientProps) {
 			)}
 
 			{/* Mission Quote Section */}
-			<section className="py-16 md:py-20 bg-slate-100">
-				<div className="_container">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className="max-w-4xl mx-auto text-center"
-					>
-						{/* Badge */}
-						<div className="mb-6 inline-flex items-center gap-2">
-							<span className="text-secondary">●</span>
-							<span className="text-sm font-medium text-secondary uppercase tracking-wider">
-								Vårt Uppdrag
-							</span>
-							<span className="text-secondary">●</span>
-						</div>
+			{visibility.mission && hasMission && (
+				<section className="py-16 md:py-20 bg-slate-100">
+					<div className="_container">
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6 }}
+							className="max-w-4xl mx-auto text-center"
+						>
+							{/* Badge */}
+							{data.mission?.badge && (
+								<div className="mb-6 inline-flex items-center gap-2">
+									<span className="text-secondary">●</span>
+									<span className="text-sm font-medium text-secondary uppercase tracking-wider">
+										{data.mission.badge}
+									</span>
+									<span className="text-secondary">●</span>
+								</div>
+							)}
 
-						{/* Quote */}
-						<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary leading-tight">
-							Vårt erfarna team levererar skräddarsydd{" "}
-							<span className="text-primary">service</span> och{" "}
-							<span className="text-primary">smarta lösningar</span>{" "}
-							för att hjälpa kliniker att växa effektivt.
-						</h2>
-					</motion.div>
-				</div>
-			</section>
+							{/* Quote */}
+							{data.mission?.text && (
+								<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary leading-tight">
+									{renderHighlightedText(data.mission.text)}
+								</h2>
+							)}
+						</motion.div>
+					</div>
+				</section>
+			)}
 
 			{/* Stats Section */}
 			{visibility.stats && hasStats && (

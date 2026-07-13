@@ -47,6 +47,12 @@ export interface IBrandingSettings {
 	productDefaultBackground?: string; // Global fallback background for all product pages
 	productDefaultBackgroundWidth?: number;
 	productDefaultBackgroundHeight?: number;
+	inquiryDefaultBgMobile?: string; // Global fallback background for the inquiry/contact form section (mobile)
+	inquiryDefaultBgMobileWidth?: number;
+	inquiryDefaultBgMobileHeight?: number;
+	inquiryDefaultBgDesktop?: string; // Global fallback background for the inquiry/contact form section (desktop)
+	inquiryDefaultBgDesktopWidth?: number;
+	inquiryDefaultBgDesktopHeight?: number;
 }
 
 /**
@@ -266,6 +272,12 @@ const BrandingSettingsSchema = new Schema<IBrandingSettings>(
 		productDefaultBackground: { type: String, trim: true },
 		productDefaultBackgroundWidth: { type: Number },
 		productDefaultBackgroundHeight: { type: Number },
+		inquiryDefaultBgMobile: { type: String, trim: true },
+		inquiryDefaultBgMobileWidth: { type: Number },
+		inquiryDefaultBgMobileHeight: { type: Number },
+		inquiryDefaultBgDesktop: { type: String, trim: true },
+		inquiryDefaultBgDesktopWidth: { type: Number },
+		inquiryDefaultBgDesktopHeight: { type: Number },
 	},
 	{ _id: false }
 );

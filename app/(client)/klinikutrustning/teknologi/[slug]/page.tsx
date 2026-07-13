@@ -21,7 +21,7 @@ import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDr
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
 import type { IProduct } from "@/models/product.model";
@@ -290,11 +290,12 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 		notFound();
 	}
 
-	const [products, categories, techGroups, contactInfo] = await Promise.all([
+	const [products, categories, techGroups, contactInfo, branding] = await Promise.all([
 		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	// Filter products to this technology group (matched by name on the product).
@@ -485,8 +486,8 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 					categoryName={group.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={group.inquiryBgMobile || undefined}
-					bgDesktop={group.inquiryBgDesktop || undefined}
+					bgMobile={group.inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={group.inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

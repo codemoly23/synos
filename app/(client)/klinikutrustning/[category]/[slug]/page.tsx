@@ -5,7 +5,7 @@ import { generateProductPageJsonLd } from "@/lib/seo";
 import { ProductContent } from "@/components/product/ProductContent";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { productRepository } from "@/lib/repositories/product.repository";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import type { ProductType } from "@/types";
 
 /**
@@ -193,9 +193,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 		notFound();
 	}
 
-	const [product, contactInfo] = await Promise.all([
+	const [product, contactInfo, branding] = await Promise.all([
 		getProduct(slug),
 		getContactInfo(),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	if (!product) {
@@ -228,6 +229,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				]}
 				contactPhone={contactInfo.phone}
 				contactEmail={contactInfo.email}
+				defaultInquiryBgMobile={branding?.inquiryDefaultBgMobile || undefined}
+				defaultInquiryBgDesktop={branding?.inquiryDefaultBgDesktop || undefined}
 				productCategorySlug={category.slug}
 			/>
 		</>

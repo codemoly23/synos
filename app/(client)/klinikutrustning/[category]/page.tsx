@@ -19,7 +19,7 @@ import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDr
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { getActiveTechnologyGroupNames } from "@/lib/services/product-cache.service";
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
@@ -167,6 +167,7 @@ async function getProductsByCategory(categoryId: string) {
 			const { data } = await productRepository.findUncategorized({
 				limit: 100,
 				publishedOnly: true,
+				sort: "order",
 			});
 			return data;
 		}
@@ -174,6 +175,7 @@ async function getProductsByCategory(categoryId: string) {
 		const { data } = await productRepository.findByCategory(categoryId, {
 			limit: 100,
 			publishedOnly: true,
+			sort: "order",
 		});
 		return data;
 	} catch (error) {
@@ -456,10 +458,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const [products, contactInfo, techGroups] = await Promise.all([
+	const [products, contactInfo, techGroups, branding] = await Promise.all([
 		getProductsByCategory(category._id.toString()),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	const heroConfig = categoryHeroConfig[categorySlug];
@@ -670,8 +673,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					categoryName={category.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || undefined}
-					bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || undefined}
+					bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

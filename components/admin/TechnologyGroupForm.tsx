@@ -465,7 +465,7 @@ export function TechnologyGroupForm({
 				<div>
 					<h3 className="text-lg font-semibold">Inquiry Form Background</h3>
 					<p className="text-sm text-muted-foreground mt-1">
-						Background images for the inquiry form section on /produkter when this technology is selected. Leave empty to use the global defaults.
+						Background images for the inquiry form section on /produkter when this technology is selected. Leave empty to use the global defaults (set under Settings → Branding).
 					</p>
 				</div>
 

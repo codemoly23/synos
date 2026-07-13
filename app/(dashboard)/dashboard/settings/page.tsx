@@ -115,6 +115,12 @@ const settingsFormSchema = z.object({
 		productDefaultBackground: z.string().optional(),
 		productDefaultBackgroundWidth: z.number().optional(),
 		productDefaultBackgroundHeight: z.number().optional(),
+		inquiryDefaultBgMobile: z.string().optional(),
+		inquiryDefaultBgMobileWidth: z.number().optional(),
+		inquiryDefaultBgMobileHeight: z.number().optional(),
+		inquiryDefaultBgDesktop: z.string().optional(),
+		inquiryDefaultBgDesktopWidth: z.number().optional(),
+		inquiryDefaultBgDesktopHeight: z.number().optional(),
 	}),
 
 	// Footer
@@ -232,6 +238,12 @@ export default function SettingsPage() {
 				productDefaultBackground: "",
 				productDefaultBackgroundWidth: undefined,
 				productDefaultBackgroundHeight: undefined,
+				inquiryDefaultBgMobile: "",
+				inquiryDefaultBgMobileWidth: undefined,
+				inquiryDefaultBgMobileHeight: undefined,
+				inquiryDefaultBgDesktop: "",
+				inquiryDefaultBgDesktopWidth: undefined,
+				inquiryDefaultBgDesktopHeight: undefined,
 			},
 			footer: {
 				quickLinksTitle: "Snabblänkar",
@@ -342,6 +354,12 @@ export default function SettingsPage() {
 						productDefaultBackground: settings.branding?.productDefaultBackground || "",
 						productDefaultBackgroundWidth: settings.branding?.productDefaultBackgroundWidth || undefined,
 						productDefaultBackgroundHeight: settings.branding?.productDefaultBackgroundHeight || undefined,
+						inquiryDefaultBgMobile: settings.branding?.inquiryDefaultBgMobile || "",
+						inquiryDefaultBgMobileWidth: settings.branding?.inquiryDefaultBgMobileWidth || undefined,
+						inquiryDefaultBgMobileHeight: settings.branding?.inquiryDefaultBgMobileHeight || undefined,
+						inquiryDefaultBgDesktop: settings.branding?.inquiryDefaultBgDesktop || "",
+						inquiryDefaultBgDesktopWidth: settings.branding?.inquiryDefaultBgDesktopWidth || undefined,
+						inquiryDefaultBgDesktopHeight: settings.branding?.inquiryDefaultBgDesktopHeight || undefined,
 					},
 					footer: {
 						quickLinksTitle: settings.footer?.quickLinksTitle || "Snabblänkar",
@@ -1198,6 +1216,130 @@ export default function SettingsPage() {
 														<Input
 															type="number"
 															placeholder="e.g. 1080"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									<FormField
+										control={form.control}
+										name="branding.inquiryDefaultBgMobile"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Inquiry Form Default Background — Mobile</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP
+												</p>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select default mobile inquiry background"
+														galleryTitle="Select Mobile Inquiry Background"
+													/>
+												</FormControl>
+												<FormDescription>
+													Global fallback background used on all contact/inquiry form sections (products, categories, technologies, homepage, kontakt) when no page-specific background is set.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div className="grid grid-cols-2 gap-4">
+										<FormField
+											control={form.control}
+											name="branding.inquiryDefaultBgMobileWidth"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Width (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 768"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="branding.inquiryDefaultBgMobileHeight"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Height (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 1024"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									<FormField
+										control={form.control}
+										name="branding.inquiryDefaultBgDesktop"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Inquiry Form Default Background — Desktop</FormLabel>
+												<p className="text-xs text-blue-600 dark:text-blue-400">
+													Desktop: 1920×800px • Ratio: 21:9 • Max: 15MB • Format: JPG, PNG, WebP
+												</p>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select default desktop inquiry background"
+														galleryTitle="Select Desktop Inquiry Background"
+													/>
+												</FormControl>
+												<FormDescription>
+													Desktop version of the global inquiry form background fallback.
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div className="grid grid-cols-2 gap-4">
+										<FormField
+											control={form.control}
+											name="branding.inquiryDefaultBgDesktopWidth"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Width (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 1920"
+															value={field.value ?? ""}
+															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+										<FormField
+											control={form.control}
+											name="branding.inquiryDefaultBgDesktopHeight"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="text-xs text-muted-foreground">Height (px)</FormLabel>
+													<FormControl>
+														<Input
+															type="number"
+															placeholder="e.g. 800"
 															value={field.value ?? ""}
 															onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
 														/>

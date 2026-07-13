@@ -173,6 +173,8 @@ export default async function Home({ searchParams }: HomeProps) {
 				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
 				contactPhone={siteSettings.phone}
 				contactEmail={siteSettings.email}
+				bgMobile={siteSettings.branding?.inquiryDefaultBgMobile || undefined}
+				bgDesktop={siteSettings.branding?.inquiryDefaultBgDesktop || undefined}
 			/>
 
 			{/* Floating Contact Button - Always visible */}

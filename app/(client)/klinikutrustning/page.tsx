@@ -21,7 +21,7 @@ import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDr
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
@@ -306,9 +306,9 @@ function KategoriSidebar({
 
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups, techPageDescription] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups, techPageDescription, branding] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
-		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
+		getPublishedProducts({ limit: 100, sort: "order" }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
 		getKlinikutrustningFaqSection().catch(() => ({
 			title: FALLBACK_FAQ_TITLE,
@@ -318,6 +318,7 @@ export default async function KategoriPage() {
 		getKlinikutrustningPage().catch(() => null),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
 		getTechnologyCategoriesPageDescription().catch(() => ""),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	const heroTitle = heroSection?.title || "Motus Pro";
@@ -513,8 +514,8 @@ export default async function KategoriPage() {
 					purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
-					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

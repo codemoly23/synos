@@ -6,6 +6,7 @@ import { connectMongoose } from "@/lib/db/db-connect";
 // ============================================================================
 export interface ITeamSectionVisibility {
 	hero: boolean;
+	mission: boolean;
 	stats: boolean;
 	teamMembers: boolean;
 	values: boolean;
@@ -17,6 +18,7 @@ export interface ITeamSectionVisibility {
 const TeamSectionVisibilitySchema = new Schema<ITeamSectionVisibility>(
 	{
 		hero: { type: Boolean, default: true },
+		mission: { type: Boolean, default: true },
 		stats: { type: Boolean, default: true },
 		teamMembers: { type: Boolean, default: true },
 		values: { type: Boolean, default: true },
@@ -41,6 +43,22 @@ const TeamHeroSectionSchema = new Schema<ITeamHeroSection>(
 		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
+// ============================================================================
+// MISSION QUOTE SECTION
+// ============================================================================
+export interface ITeamMissionSection {
+	badge?: string;
+	text?: string;
+}
+
+const TeamMissionSectionSchema = new Schema<ITeamMissionSection>(
+	{
+		badge: { type: String, trim: true },
+		text: { type: String, trim: true },
 	},
 	{ _id: false }
 );
@@ -221,6 +239,7 @@ export interface ITeamPage extends Document {
 	_id: mongoose.Types.ObjectId;
 	sectionVisibility: ITeamSectionVisibility;
 	hero: ITeamHeroSection;
+	mission: ITeamMissionSection;
 	stats: ITeamStat[];
 	teamSection: ITeamMembersSection;
 	teamMembers: ITeamMember[];
@@ -239,6 +258,7 @@ const TeamPageSchema = new Schema<ITeamPage>(
 			type: TeamSectionVisibilitySchema,
 			default: {
 				hero: true,
+				mission: true,
 				stats: true,
 				teamMembers: true,
 				values: true,
@@ -248,6 +268,7 @@ const TeamPageSchema = new Schema<ITeamPage>(
 			},
 		},
 		hero: { type: TeamHeroSectionSchema, default: {} },
+		mission: { type: TeamMissionSectionSchema, default: {} },
 		stats: { type: [TeamStatSchema], default: [] },
 		teamSection: { type: TeamMembersSectionSchema, default: {} },
 		teamMembers: { type: [TeamMemberSchema], default: [] },

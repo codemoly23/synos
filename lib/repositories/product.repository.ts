@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { BaseRepository } from "./base.repository";
 import {
 	getProductModelSync,
@@ -291,6 +292,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 			page?: number;
 			limit?: number;
 			publishedOnly?: boolean;
+			sort?: string;
 		}
 	): Promise<{
 		data: IProduct[];
@@ -299,7 +301,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 		limit: number;
 		totalPages: number;
 	}> {
-		const { page = 1, limit = 10, publishedOnly = true } = options || {};
+		const { page = 1, limit = 10, publishedOnly = true, sort } = options || {};
 
 		const filter: Record<string, unknown> = {
 			categories: categoryId,
@@ -310,7 +312,12 @@ class ProductRepository extends BaseRepository<IProduct> {
 			filter.visibility = "public";
 		}
 
-		return this.findPaginated(filter, page, limit, { createdAt: -1 });
+		return this.findPaginated(
+			filter,
+			page,
+			limit,
+			sort ? parseSortString(sort) : { createdAt: -1 }
+		);
 	}
 
 	/**
@@ -541,6 +548,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 		page?: number;
 		limit?: number;
 		publishedOnly?: boolean;
+		sort?: string;
 	}): Promise<{
 		data: IProduct[];
 		total: number;
@@ -548,7 +556,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 		limit: number;
 		totalPages: number;
 	}> {
-		const { page = 1, limit = 100, publishedOnly = true } = options || {};
+		const { page = 1, limit = 100, publishedOnly = true, sort } = options || {};
 
 		const filter: Record<string, unknown> = {
 			$or: [
@@ -563,7 +571,36 @@ class ProductRepository extends BaseRepository<IProduct> {
 			filter.visibility = "public";
 		}
 
-		return this.findPaginated(filter, page, limit, { createdAt: -1 });
+		return this.findPaginated(
+			filter,
+			page,
+			limit,
+			sort ? parseSortString(sort) : { createdAt: -1 }
+		);
+	}
+
+	/**
+	 * Bulk update product display order (for admin drag-and-drop reordering)
+	 */
+	async bulkUpdateOrder(updates: { id: string; order: number }[]): Promise<void> {
+		try {
+			await this.ensureConnection();
+			const startTime = Date.now();
+
+			const bulkOps = updates.map((update) => ({
+				updateOne: {
+					filter: { _id: new Types.ObjectId(update.id) },
+					update: { $set: { order: update.order } },
+				},
+			}));
+
+			await this.model.bulkWrite(bulkOps);
+
+			logger.db("bulkUpdateOrder", this.modelName, Date.now() - startTime);
+		} catch (error) {
+			logger.error("Error bulk updating product orders", error);
+			throw new DatabaseError("Failed to update product orders");
+		}
 	}
 
 	/**

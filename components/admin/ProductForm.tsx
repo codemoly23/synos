@@ -2141,7 +2141,7 @@ export function ProductForm({
 								{/* Inquiry/Contact Background — Mobile */}
 								<ImagePickerWithDimensions
 									label="Contact Section Background — Mobile"
-									hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP"
+									hint="Mobile: 768×1024px • Ratio: 3:4 • Max: 15MB • Format: JPG, PNG, WebP • Leave empty to use the global default (Settings → Branding)"
 									value={watch("inquiryBgMobile") || null}
 									onChange={(url) =>
 										setValue("inquiryBgMobile", url || "", { shouldDirty: true })

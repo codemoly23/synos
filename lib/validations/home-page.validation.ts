@@ -28,6 +28,7 @@ export const heroSlideSchema = z.object({
 	primaryCta: ctaButtonSchema.optional(),
 	secondaryCta: ctaButtonSchema.optional(),
 	backgroundImage: z.string().optional(),
+	overlayOpacity: z.number().min(0).max(1).optional(),
 	mainImage: z.string().optional(),
 	mobileImage: z.string().optional(),
 	trustIndicators: z.array(trustIndicatorSchema).optional(),

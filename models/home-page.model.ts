@@ -40,6 +40,7 @@ export interface IHeroSlide {
 	primaryCta?: ICtaButton;
 	secondaryCta?: ICtaButton;
 	backgroundImage?: string;
+	overlayOpacity?: number; // Dark overlay opacity over the background image (0-1), defaults to 0.6
 	mainImage?: string;
 	mobileImage?: string;
 	trustIndicators?: Array<{
@@ -315,6 +316,7 @@ const HeroSlideSchema = new Schema<IHeroSlide>(
 		primaryCta: { type: CtaButtonSchema },
 		secondaryCta: { type: CtaButtonSchema },
 		backgroundImage: { type: String, trim: true },
+		overlayOpacity: { type: Number, min: 0, max: 1, default: 0.6 },
 		mainImage: { type: String, trim: true },
 		mobileImage: { type: String, trim: true },
 		trustIndicators: [
@@ -622,16 +624,30 @@ HomePageSchema.set("toJSON", {
 HomePageSchema.set("toObject", { virtuals: true });
 
 /**
+ * Ensure the cached Mongoose model is up-to-date with the current schema.
+ * If the schema has been extended (e.g. added new fields) after the model was
+ * first compiled during dev hot-reload, Mongoose silently drops writes to
+ * the new paths. Re-registering fixes that.
+ */
+function resolveHomePageModel(): Model<IHomePage> {
+	const cached = mongoose.models.HomePage as Model<IHomePage> | undefined;
+	if (cached) {
+		const currentPaths = Object.keys(HomePageSchema.paths);
+		const cachedPaths = Object.keys(cached.schema.paths);
+		const hasAllPaths = currentPaths.every((p) => cachedPaths.includes(p));
+		if (hasAllPaths) return cached;
+		delete mongoose.models.HomePage;
+	}
+	return mongoose.model<IHomePage>("HomePage", HomePageSchema);
+}
+
+/**
  * Get HomePage Model
  * Uses function to prevent model overwrite during hot reload
  */
 export const getHomePageModel = async (): Promise<Model<IHomePage>> => {
 	await connectMongoose();
-
-	return (
-		(mongoose.models.HomePage as Model<IHomePage>) ||
-		mongoose.model<IHomePage>("HomePage", HomePageSchema)
-	);
+	return resolveHomePageModel();
 };
 
 /**
@@ -639,8 +655,5 @@ export const getHomePageModel = async (): Promise<Model<IHomePage>> => {
  * Note: Ensure connectMongoose is called before using this
  */
 export function getHomePageModelSync(): Model<IHomePage> {
-	return (
-		(mongoose.models.HomePage as Model<IHomePage>) ||
-		mongoose.model<IHomePage>("HomePage", HomePageSchema)
-	);
+	return resolveHomePageModel();
 }

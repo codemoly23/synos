@@ -51,6 +51,7 @@ import { useConfirmModal } from "@/components/ui/confirm-modal";
 // Section Visibility schema
 const sectionVisibilitySchema = z.object({
 	hero: z.boolean(),
+	mission: z.boolean(),
 	stats: z.boolean(),
 	teamMembers: z.boolean(),
 	values: z.boolean(),
@@ -97,6 +98,13 @@ const teamPageFormSchema = z.object({
 			badge: z.string().optional(),
 			title: z.string().optional(),
 			subtitle: z.string().optional(),
+		})
+		.optional(),
+
+	mission: z
+		.object({
+			badge: z.string().optional(),
+			text: z.string().optional(),
 		})
 		.optional(),
 
@@ -323,6 +331,7 @@ export default function TeamPageAdmin() {
 		defaultValues: {
 			sectionVisibility: {
 				hero: true,
+				mission: true,
 				stats: true,
 				teamMembers: true,
 				values: true,
@@ -330,6 +339,7 @@ export default function TeamPageAdmin() {
 				contact: true,
 			},
 			hero: {},
+			mission: {},
 			stats: [],
 			teamSection: {},
 			teamMembers: [],
@@ -396,6 +406,7 @@ export default function TeamPageAdmin() {
 				form.reset({
 					sectionVisibility: data.sectionVisibility || {
 						hero: true,
+						mission: true,
 						stats: true,
 						teamMembers: true,
 						values: true,
@@ -403,6 +414,7 @@ export default function TeamPageAdmin() {
 						contact: true,
 					},
 					hero: data.hero || {},
+					mission: data.mission || {},
 					stats: data.stats || [],
 					teamSection: data.teamSection || {},
 					teamMembers: data.teamMembers || [],
@@ -506,6 +518,7 @@ export default function TeamPageAdmin() {
 						<TabsList className="flex flex-wrap h-auto gap-1 justify-start">
 							<TabsTrigger value="visibility">Visibility</TabsTrigger>
 							<TabsTrigger value="hero">Hero</TabsTrigger>
+							<TabsTrigger value="mission">Mission</TabsTrigger>
 							<TabsTrigger value="stats">Statistics</TabsTrigger>
 							<TabsTrigger value="team">Team</TabsTrigger>
 							<TabsTrigger value="values">Values</TabsTrigger>
@@ -532,6 +545,26 @@ export default function TeamPageAdmin() {
 													<FormLabel>Hero Section</FormLabel>
 													<FormDescription>
 														Badge, title and subtitle
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="sectionVisibility.mission"
+										render={({ field }) => (
+											<FormItem className="flex items-center justify-between rounded-lg border p-4">
+												<div>
+													<FormLabel>Mission Quote</FormLabel>
+													<FormDescription>
+														&quot;Vårt Uppdrag&quot; quote below the hero
 													</FormDescription>
 												</div>
 												<FormControl>
@@ -702,6 +735,58 @@ export default function TeamPageAdmin() {
 														rows={3}
 													/>
 												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Mission Quote Tab */}
+						<TabsContent value="mission" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Mission Quote</CardTitle>
+									<CardDescription>
+										The quote section shown below the hero (e.g. &quot;Vårt Uppdrag&quot;)
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField
+										control={form.control}
+										name="mission.badge"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Badge</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={field.value || ""}
+														placeholder="t.ex. Vårt Uppdrag"
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="mission.text"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Quote Text</FormLabel>
+												<FormControl>
+													<Textarea
+														{...field}
+														value={field.value || ""}
+														placeholder="Vårt erfarna team levererar skräddarsydd **service** och **smarta lösningar** för att hjälpa kliniker att växa effektivt."
+														rows={4}
+													/>
+												</FormControl>
+												<FormDescription>
+													Wrap words in double asterisks, e.g. **service**, to highlight them in the accent color.
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}

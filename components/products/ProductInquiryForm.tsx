@@ -393,7 +393,7 @@ function MobileInquiryForm({
 	};
 
 	const inputCls = "w-full bg-transparent border border-white/30 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/25 outline-none focus:border-white/50 transition-colors";
-	const labelCls = "block text-xs text-white/60 mb-1.5";
+	const labelCls = "block text-xs text-white/80 mb-1.5";
 
 	return (
 		<div className="space-y-8">
@@ -427,7 +427,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Ring oss</p>
-								<p className="text-xs text-zinc-500">Vi finns tillgängliga för att hjälpa dig</p>
+								<p className="text-xs text-zinc-400">Vi finns tillgängliga för att hjälpa dig</p>
 								<span className="text-sm font-semibold block" style={{ color: BRAND }}>{contactPhone}</span>
 							</div>
 						</a>
@@ -439,7 +439,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Maila oss</p>
-								<p className="text-xs text-zinc-500">Skicka oss ett meddelande</p>
+								<p className="text-xs text-zinc-400">Skicka oss ett meddelande</p>
 								<span className="text-sm font-medium block" style={{ color: BRAND }}>{contactEmail}</span>
 							</div>
 						</a>

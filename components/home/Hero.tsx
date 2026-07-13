@@ -54,6 +54,9 @@ export function Hero({ data }: HeroProps) {
 	const hasCertificationCard = slide?.certificationCard?.title && slide?.certificationCard?.subtitle;
 	const hasMainImage = !!slide?.mainImage;
 
+	// Overlay darkness over the background image, configurable per slide in the admin
+	const overlayOpacity = slide?.overlayOpacity ?? 0.6;
+
 	if (!hasSlides) {
 		return (
 			<section className="relative w-full overflow-hidden padding-top pb-4 lg:pb-8 min-h-[65svh] lg:min-h-0 bg-slate-100">
@@ -89,13 +92,13 @@ export function Hero({ data }: HeroProps) {
 										fill
 										sizes="(max-width: 2560px) 100vw, 2560px"
 										wrapperClasses="w-full h-full"
-										className="object-cover object-center opacity-40"
+										className="object-cover object-center"
 									/>
 								</motion.div>
 							) : null
 						)}
 					</AnimatePresence>
-					<div className="absolute inset-0 bg-slate-900/60 z-1" />
+					<div className="absolute inset-0 bg-slate-900 z-1" style={{ opacity: overlayOpacity }} />
 				</div>
 			)}
 
@@ -153,7 +156,7 @@ export function Hero({ data }: HeroProps) {
 				</div>
 			)}
 
-			<div className="relative z-20 _container grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+			<div className="relative z-20 _container grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center lg:min-h-[600px]">
 				{/* Left Content - Animated per slide */}
 				<AnimatePresence mode="wait">
 					<motion.div

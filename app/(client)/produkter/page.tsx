@@ -26,7 +26,7 @@ import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lu
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { getProdukterFaqSection, getProdukterHeroSection, getProdukterPage } from "@/lib/services/produkter-page.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import type { IProduct } from "@/models/product.model";
@@ -373,7 +373,7 @@ export default async function ProductsPage({
 	searchParams: Promise<{ technology?: string }>;
 }) {
 	const { technology: selectedTech } = await searchParams;
-	const [products, categories, techGroups, selectedGroup, contactInfo, faqSection, heroSection, pageData] = await Promise.all([
+	const [products, categories, techGroups, selectedGroup, contactInfo, faqSection, heroSection, pageData, branding] = await Promise.all([
 		getNewestProducts(100).catch(() => [] as IProduct[]),
 		getActiveCategories().catch(() => [] as ICategory[]),
 		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
@@ -385,6 +385,7 @@ export default async function ProductsPage({
 		})),
 		getProdukterHeroSection().catch(() => null),
 		getProdukterPage().catch(() => null),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	const defaultBullets = ["Snabb och effektiv behandling", "Skonsam teknik med hög precision", "Intuitiv touchskärm och smart arbetsflöde", "Anpassad för professionella kliniker"];
@@ -620,8 +621,8 @@ export default async function ProductsPage({
 					categoryName={selectedGroup?.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={selectedGroup?.inquiryBgMobile || (pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
-					bgDesktop={selectedGroup?.inquiryBgDesktop || (pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+					bgMobile={selectedGroup?.inquiryBgMobile || (pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={selectedGroup?.inquiryBgDesktop || (pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

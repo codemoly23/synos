@@ -85,6 +85,8 @@ export default async function ContactPage() {
 				data={kontaktPage.formSection}
 				contactPhone={siteSettings.phone}
 				contactEmail={siteSettings.email}
+				bgMobile={siteSettings.branding?.inquiryDefaultBgMobile || undefined}
+				bgDesktop={siteSettings.branding?.inquiryDefaultBgDesktop || undefined}
 			/>
 
 			{/* Office Locations Section */}

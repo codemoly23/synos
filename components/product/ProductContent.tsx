@@ -35,6 +35,9 @@ interface ProductContentProps {
 	hardcodedHero?: boolean;
 	/** Global fallback background for the product hero (from site settings) */
 	defaultBackground?: string;
+	/** Global fallback background for the inquiry/contact form section (from site settings) */
+	defaultInquiryBgMobile?: string;
+	defaultInquiryBgDesktop?: string;
 	/** Category slug for correct URL construction in form submissions */
 	productCategorySlug?: string;
 }
@@ -52,6 +55,8 @@ export function ProductContent({
 	contactEmail,
 	hardcodedHero = false,
 	defaultBackground,
+	defaultInquiryBgMobile,
+	defaultInquiryBgDesktop,
 	productCategorySlug,
 }: ProductContentProps) {
 	const [brochureModal, setBrochureModal] = useState<{ open: boolean; title?: string }>({ open: false });
@@ -105,7 +110,7 @@ export function ProductContent({
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-						<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+						<h1 className="text-[2.2rem] font-sans font-light text-white mb-3 leading-tight">
 							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -179,42 +184,78 @@ export function ProductContent({
 					</div>
 				</section>
 			) : (
-				<section className="relative overflow-hidden pt-20 sm:pt-24 min-h-[580px] lg:min-h-[640px] bg-black">
-					<div className="_container relative overflow-hidden min-h-[640px] lg:min-h-[740px]">
-						{/* Background */}
-						<ImageComponent
-							src={resolvedBg}
-							alt=""
-							fill
-							priority
-							className="object-cover object-[30%_top]"
-							sizes="100vw"
-						/>
-						<div className="relative z-10 grid grid-cols-2 items-center min-h-[640px] lg:min-h-[740px] gap-8">
-							{/* Left — machine image overlay */}
-							{primaryImage ? (
-								<div className="relative h-[640px] lg:h-[740px]">
-									<ImageComponent
-										src={primaryImage}
-										alt={product.title}
-										fill
-										priority
-										className="object-contain object-bottom drop-shadow-2xl"
-										sizes="(max-width: 1280px) 50vw, 640px"
-									/>
-								</div>
-							) : (
-								<div />
+				<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
+					{/* ── MOBILE LAYOUT ── */}
+					<div className="lg:hidden">
+						<div className="relative h-[50vh] min-h-[360px]">
+							<ImageComponent
+								src={resolvedBg}
+								alt=""
+								fill
+								priority
+								className="object-cover object-[30%_top]"
+								sizes="100vw"
+							/>
+							{primaryImage && (
+								<ImageComponent
+									src={primaryImage}
+									alt={product.title}
+									fill
+									priority
+									className="object-contain object-bottom drop-shadow-2xl"
+									sizes="100vw"
+								/>
 							)}
-							{/* Right – text */}
-							<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
-								<h1 className="text-6xl lg:text-8xl font-sans font-light text-white mb-3 leading-tight">
-									{product.title}
-								</h1>
-								<div className="w-14 h-[2px] bg-primary mb-5" />
-								<p className="text-white/70 text-3xl mb-12 leading-relaxed">
-									{product.shortDescription}
-								</p>
+						</div>
+						<div className="relative z-10 px-6 py-8 pb-12 bg-black">
+							<h1 className="text-[2.2rem] font-sans font-light text-white mb-3 leading-tight">
+								{product.title}
+							</h1>
+							<div className="w-14 h-[2px] bg-primary mb-4" />
+							<p className="text-white/70 text-sm leading-relaxed">
+								{product.shortDescription}
+							</p>
+						</div>
+					</div>
+
+					{/* ── DESKTOP LAYOUT ── */}
+					<div className="hidden lg:block">
+						<div className="_container relative overflow-hidden min-h-[740px]">
+							{/* Background */}
+							<ImageComponent
+								src={resolvedBg}
+								alt=""
+								fill
+								priority
+								className="object-cover object-[30%_top]"
+								sizes="100vw"
+							/>
+							<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
+								{/* Left — machine image overlay */}
+								{primaryImage ? (
+									<div className="relative h-[740px]">
+										<ImageComponent
+											src={primaryImage}
+											alt={product.title}
+											fill
+											priority
+											className="object-contain object-bottom drop-shadow-2xl"
+											sizes="640px"
+										/>
+									</div>
+								) : (
+									<div />
+								)}
+								{/* Right – text */}
+								<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
+									<h1 className="text-6xl lg:text-8xl font-sans font-light text-white mb-3 leading-tight">
+										{product.title}
+									</h1>
+									<div className="w-14 h-[2px] bg-primary mb-5" />
+									<p className="text-white/70 text-3xl mb-12 leading-relaxed">
+										{product.shortDescription}
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -409,8 +450,8 @@ export function ProductContent({
 					buttonText={product.purchaseInfo?.buttonText}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}
-					bgMobile={product.inquiryBgMobile || undefined}
-					bgDesktop={product.inquiryBgDesktop || undefined}
+					bgMobile={product.inquiryBgMobile || defaultInquiryBgMobile || undefined}
+					bgDesktop={product.inquiryBgDesktop || defaultInquiryBgDesktop || undefined}
 				/>
 			</div>
 

@@ -374,10 +374,27 @@ export const productListQuerySchema = z.object({
 			"-title",
 			"publishedAt",
 			"-publishedAt",
+			"order",
+			"-order",
 		])
 		.nullable()
 		.default("-createdAt")
 		.transform((val) => val || "-createdAt"),
+});
+
+/**
+ * Bulk product reorder schema
+ * Body: array of { id, order } pairs to persist in one bulk write
+ */
+export const reorderProductsSchema = z.object({
+	updates: z
+		.array(
+			z.object({
+				id: z.string().min(1, "Product id is required"),
+				order: z.number().int().min(0),
+			})
+		)
+		.min(1, "At least one product order update is required"),
 });
 
 // Type exports
@@ -385,3 +402,4 @@ export type CreateProductDraftInput = z.infer<typeof createProductDraftSchema>;
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
 export type PublishProductInput = z.infer<typeof publishProductSchema>;
 export type ProductListQuery = z.infer<typeof productListQuerySchema>;
+export type ReorderProductsInput = z.infer<typeof reorderProductsSchema>;

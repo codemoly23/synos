@@ -175,6 +175,7 @@ const heroSlideSchema = z.object({
 	primaryCta: ctaButtonSchema.optional(),
 	secondaryCta: ctaButtonSchema.optional(),
 	backgroundImage: z.string().optional(),
+	overlayOpacity: z.number().min(0).max(1).optional(),
 	mainImage: z.string().optional(),
 	mobileImage: z.string().optional(),
 	trustIndicators: z.array(trustIndicatorSchema).optional(),
@@ -1038,6 +1039,7 @@ export default function StartsidaPage() {
 													primaryCta: { text: "", href: "", variant: "primary" },
 													secondaryCta: { text: "", href: "", variant: "outline" },
 													backgroundImage: "",
+													overlayOpacity: 0.6,
 													mainImage: "",
 													mobileImage: "",
 													trustIndicators: [],
@@ -1228,6 +1230,37 @@ export default function StartsidaPage() {
 															<FormMessage />
 														</FormItem>
 													)}
+												/>
+
+												{/* Overlay Opacity */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.overlayOpacity`}
+													render={({ field }) => {
+														const value = field.value ?? 0.6;
+														return (
+															<FormItem>
+																<FormLabel>
+																	Background Overlay Darkness ({Math.round(value * 100)}%)
+																</FormLabel>
+																<FormControl>
+																	<input
+																		type="range"
+																		min={0}
+																		max={100}
+																		step={5}
+																		value={Math.round(value * 100)}
+																		onChange={(e) => field.onChange(Number(e.target.value) / 100)}
+																		className="w-full accent-primary"
+																	/>
+																</FormControl>
+																<FormDescription>
+																	Controls how dark the shadow over the background image is. Lower = background image more visible, higher = darker overlay for better text contrast.
+																</FormDescription>
+																<FormMessage />
+															</FormItem>
+														);
+													}}
 												/>
 
 												{/* Main Image */}
