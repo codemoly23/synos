@@ -404,7 +404,7 @@ export default function TeamPageAdmin() {
 				const data = await response.json();
 
 				form.reset({
-					sectionVisibility: data.sectionVisibility || {
+					sectionVisibility: {
 						hero: true,
 						mission: true,
 						stats: true,
@@ -412,6 +412,7 @@ export default function TeamPageAdmin() {
 						values: true,
 						joinUs: true,
 						contact: true,
+						...(data.sectionVisibility || {}),
 					},
 					hero: data.hero || {},
 					mission: data.mission || {},
