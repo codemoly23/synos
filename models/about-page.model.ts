@@ -383,8 +383,11 @@ const AboutPageSeoSchema = new Schema<IAboutPageSeo>(
 // ============================================================================
 // MAIN ABOUT PAGE
 // ============================================================================
+export const ABOUT_PAGE_SINGLETON_KEY = "singleton";
+
 export interface IAboutPage extends Document {
 	_id: mongoose.Types.ObjectId;
+	singleton: string;
 	sectionVisibility: IAboutSectionVisibility;
 	hero: IAboutHeroSection;
 	mission: IAboutMissionSection;
@@ -401,6 +404,12 @@ export interface IAboutPage extends Document {
 
 const AboutPageSchema = new Schema<IAboutPage>(
 	{
+		singleton: {
+			type: String,
+			default: ABOUT_PAGE_SINGLETON_KEY,
+			required: true,
+			unique: true,
+		},
 		sectionVisibility: {
 			type: AboutSectionVisibilitySchema,
 			default: {

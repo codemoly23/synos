@@ -2,6 +2,7 @@ import type { Document } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 import {
 	getAboutPageModelSync,
+	ABOUT_PAGE_SINGLETON_KEY,
 	type IAboutPage,
 	type IAboutHeroSection,
 	type IAboutMissionSection,
@@ -54,11 +55,26 @@ class AboutPageRepository {
 		await connectMongoose();
 		const AboutPage = getAboutPageModelSync();
 
-		let aboutPage = await AboutPage.findOne().lean<AboutPageData>();
+		let aboutPage: AboutPageData | null;
+		try {
+			aboutPage = await AboutPage.findOneAndUpdate(
+				{ singleton: ABOUT_PAGE_SINGLETON_KEY },
+				{ $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
+				{ new: true, upsert: true, setDefaultsOnInsert: true }
+			).lean<AboutPageData>();
+		} catch (err) {
+			// A concurrent request won the upsert race (duplicate key) — just re-read it.
+			if ((err as { code?: number }).code === 11000) {
+				aboutPage = await AboutPage.findOne({
+					singleton: ABOUT_PAGE_SINGLETON_KEY,
+				}).lean<AboutPageData>();
+			} else {
+				throw err;
+			}
+		}
 
 		if (!aboutPage) {
-			const created = await AboutPage.create({});
-			aboutPage = created.toObject() as AboutPageData;
+			throw new Error("Failed to load about page");
 		}
 
 		return toPlainObject(aboutPage);
@@ -164,8 +180,8 @@ class AboutPageRepository {
 		}
 
 		const aboutPage = await AboutPage.findOneAndUpdate(
-			{},
-			{ $set: updateData },
+			{ singleton: ABOUT_PAGE_SINGLETON_KEY },
+			{ $set: updateData, $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
 			{ new: true, upsert: true, runValidators: true }
 		).lean<AboutPageData>();
 
