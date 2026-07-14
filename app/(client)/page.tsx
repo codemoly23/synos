@@ -101,8 +101,14 @@ export default async function Home({ searchParams }: HomeProps) {
 
 	// Fetch CMS data for homepage
 	const [homePage, siteSettings] = await Promise.all([
-		getHomePage().catch(() => null),
-		getSiteSettings().catch(() => null),
+		getHomePage().catch((error) => {
+			console.error("Failed to load home page:", error);
+			return null;
+		}),
+		getSiteSettings().catch((error) => {
+			console.error("Failed to load site settings:", error);
+			return null;
+		}),
 	]);
 
 	if (!homePage || !siteSettings) return <></>;

@@ -31,7 +31,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-	const aboutPage = await getAboutPage().catch(() => null);
+	const aboutPage = await getAboutPage().catch((error) => {
+		console.error("Failed to load about page:", error);
+		return null;
+	});
 
 	if (!aboutPage) return <></>;
 
