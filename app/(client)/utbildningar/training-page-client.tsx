@@ -125,7 +125,7 @@ function useQuickContactForm() {
 				setGdprChecked(false);
 				pushEvent("generate_lead", { form_type: "utbildning" });
 				trackLead({ form_type: "utbildning" });
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
@@ -1282,7 +1282,7 @@ function ApplicationFormSection({
 			if (result.success) {
 				setFormData({ name: "", email: "", phone: "", category: "", message: "" });
 				setSelectedFile(null);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

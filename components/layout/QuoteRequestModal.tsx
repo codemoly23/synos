@@ -116,7 +116,7 @@ export function QuoteRequestModal({
 				onOpenChange(false);
 				reset();
 				setGdprChecked(false);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors

@@ -379,7 +379,7 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 					message: "",
 				});
 				setSelectedFile(null);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

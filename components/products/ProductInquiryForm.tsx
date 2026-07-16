@@ -162,7 +162,7 @@ function DesktopInquiryForm({
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
 
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const msg = result.errors
@@ -380,7 +380,7 @@ function MobileInquiryForm({
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
 
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

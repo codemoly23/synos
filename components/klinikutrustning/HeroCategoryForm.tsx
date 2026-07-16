@@ -94,7 +94,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				setForm(EMPTY);
 				setErrors({});
 				pushEvent("generate_lead", { form_type: "hero_inquiry", category: categoryName });
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				setServerError(result.message || "Något gick fel. Försök igen.");
 			}

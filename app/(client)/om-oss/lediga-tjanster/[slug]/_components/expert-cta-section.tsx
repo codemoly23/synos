@@ -111,7 +111,7 @@ export function ExpertCtaSection({ data }: ExpertCtaSectionProps) {
 				setGdprChecked(false);
 				pushEvent("generate_lead", { form_type: "career_application" });
 				trackLead({ form_type: "career_application" });
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

@@ -51,11 +51,12 @@ function buildEmailHtml(submission: IFormSubmission, fromName: string): string {
 		["Form Type", typeLabel],
 		["Full Name", submission.fullName],
 		["Email", submission.email],
-		["Phone", `${submission.countryCode ?? ""} ${submission.phone}`.trim()],
 	];
 
+	if (submission.phone) rows.push(["Phone", `${submission.countryCode ?? ""} ${submission.phone}`.trim()]);
 	if (submission.countryName) rows.push(["Country", submission.countryName]);
 	if (submission.corporationNumber) rows.push(["Corp. Number", submission.corporationNumber]);
+	if (submission.companyName) rows.push(["Company", submission.companyName]);
 	if (submission.subject) rows.push(["Subject", submission.subject]);
 	if (submission.productName) rows.push(["Product", submission.productName]);
 	if (submission.helpType) rows.push(["Help Type", HELP_TYPE_LABELS[submission.helpType] ?? submission.helpType]);

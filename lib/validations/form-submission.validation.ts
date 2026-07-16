@@ -210,7 +210,9 @@ export const contactInquirySchema = z.object({
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
 		.max(25, "Telefonnummer får inte överstiga 25 tecken")
-		.trim(),
+		.trim()
+		.optional()
+		.or(z.literal("")),
 
 	subject: z
 		.string()
@@ -225,11 +227,19 @@ export const contactInquirySchema = z.object({
 		.optional()
 		.or(z.literal("")),
 
+	companyName: z
+		.string()
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
 	message: z
 		.string()
-		.min(10, "Meddelandet måste vara minst 10 tecken")
 		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
-		.trim(),
+		.trim()
+		.optional()
+		.or(z.literal("")),
 
 	gdprConsent: z
 		.boolean()

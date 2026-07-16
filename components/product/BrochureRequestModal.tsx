@@ -65,7 +65,7 @@ export function BrochureRequestModal({
 			}
 
 			handleClose(false);
-			router.push("/tack");
+			router.push("/tack/");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Could not send request");
 		} finally {

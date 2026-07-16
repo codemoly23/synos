@@ -146,7 +146,7 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

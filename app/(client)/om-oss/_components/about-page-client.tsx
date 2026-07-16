@@ -114,7 +114,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}

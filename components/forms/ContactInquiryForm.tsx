@@ -80,7 +80,7 @@ export function ContactInquiryForm() {
 				reset();
 				setGdprChecked(false);
 				setMarketingChecked(false);
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors

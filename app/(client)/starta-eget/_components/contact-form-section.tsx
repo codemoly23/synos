@@ -99,7 +99,7 @@ export function ContactFormSection() {
 				setGdprChecked(false);
 				pushEvent("generate_lead", { form_type: "starta_eget" });
 				trackLead({ form_type: "starta_eget" });
-				router.push("/tack");
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
