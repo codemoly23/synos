@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { pushEvent } from "@/lib/analytics/gtm";
 import { cn } from "@/lib/utils/cn";
 import { z } from "zod";
 
@@ -80,6 +81,11 @@ export function ContactInquiryForm() {
 				reset();
 				setGdprChecked(false);
 				setMarketingChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "contact_form",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {

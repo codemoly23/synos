@@ -157,8 +157,10 @@ function DesktopInquiryForm({
 					form_type: isGeneric ? "contact" : "product_inquiry",
 					...(productName && { product_name: productName }),
 					...(categoryName && { category: categoryName }),
+					page_path: window.location.pathname,
+					page_url: window.location.href,
 				};
-				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				pushEvent("generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
 
@@ -375,8 +377,10 @@ function MobileInquiryForm({
 					form_type: isGeneric ? "contact" : "product_inquiry",
 					...(productName && { product_name: productName }),
 					...(categoryName && { category: categoryName }),
+					page_path: window.location.pathname,
+					page_url: window.location.href,
 				};
-				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				pushEvent("generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
 

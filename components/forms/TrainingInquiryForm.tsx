@@ -33,6 +33,7 @@ import {
 	trainingInterestTypeLabels,
 	trainingInterestTypes,
 } from "@/lib/validations/form-submission.validation";
+import { pushEvent } from "@/lib/analytics/gtm";
 import { cn } from "@/lib/utils/cn";
 import { z } from "zod";
 
@@ -157,6 +158,11 @@ export function TrainingInquiryForm() {
 				setMarketingChecked(false);
 				setSelectedInterestType(undefined);
 				setSelectedCountry(defaultCountry);
+				pushEvent("generate_lead", {
+					form_type: "training_inquiry",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {

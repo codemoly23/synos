@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { pushEvent } from "@/lib/analytics/gtm";
 import {
 	Accordion,
 	AccordionContent,
@@ -146,6 +147,11 @@ export function StartaEgetPageClient({ data }: StartaEgetPageClientProps) {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "starta_eget_contact",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");

@@ -30,6 +30,7 @@ import {
 	defaultCountry,
 	type Country,
 } from "@/components/ui/country-code-select";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 // Client-side form schema
 const tourFormSchema = z.object({
@@ -139,6 +140,11 @@ export function TourRequestModal({
 				reset();
 				setGdprChecked(false);
 				setSelectedCountry(defaultCountry);
+				pushEvent("generate_lead", {
+					form_type: "tour_request",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {

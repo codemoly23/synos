@@ -10,6 +10,7 @@ import { CareersHero } from "../../_components/careers-hero";
 import { ContactSidebar } from "../../_components/contact-sidebar";
 import { ExpertCtaSection } from "./expert-cta-section";
 import { staggerContainer, fadeUp } from "@/lib/animations";
+import { pushEvent } from "@/lib/analytics/gtm";
 import {
 	Accordion,
 	AccordionContent,
@@ -379,6 +380,12 @@ function ApplicationFormSection({ jobTitle }: { jobTitle?: string }) {
 					message: "",
 				});
 				setSelectedFile(null);
+				pushEvent("generate_lead", {
+					form_type: "job_application",
+					job_title: jobTitle,
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");

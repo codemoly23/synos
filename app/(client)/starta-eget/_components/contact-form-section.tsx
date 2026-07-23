@@ -97,7 +97,11 @@ export function ContactFormSection() {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
-				pushEvent("generate_lead", { form_type: "starta_eget" });
+				pushEvent("generate_lead", {
+					form_type: "starta_eget",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				trackLead({ form_type: "starta_eget" });
 				router.push("/tack/");
 			} else {

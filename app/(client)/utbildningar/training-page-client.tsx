@@ -123,7 +123,11 @@ function useQuickContactForm() {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
-				pushEvent("generate_lead", { form_type: "utbildning" });
+				pushEvent("generate_lead", {
+					form_type: "utbildning",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				trackLead({ form_type: "utbildning" });
 				router.push("/tack/");
 			} else {
@@ -1282,6 +1286,12 @@ function ApplicationFormSection({
 			if (result.success) {
 				setFormData({ name: "", email: "", phone: "", category: "", message: "" });
 				setSelectedFile(null);
+				pushEvent("generate_lead", {
+					form_type: "training_application",
+					category: formData.category,
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");

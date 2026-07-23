@@ -38,6 +38,7 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { fadeUp, staggerContainer } from "@/lib/animations";
+import { pushEvent } from "@/lib/analytics/gtm";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { ImageComponent } from "@/components/common/image-component";
 import type { AboutPageData } from "@/lib/repositories/about-page.repository";
@@ -114,6 +115,11 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "about_quick_contact",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");

@@ -11,6 +11,7 @@ import { MapPin, Mail, Phone, Send, Loader2, User, MessageSquare } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { pushEvent } from "@/lib/analytics/gtm";
 import { cn } from "@/lib/utils";
 import type { ICareersContactSidebar } from "@/models/careers-page.model";
 
@@ -80,6 +81,11 @@ export function ContactSidebar({ data, className }: ContactSidebarProps) {
 			if (result.success) {
 				reset();
 				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "careers_sidebar_contact",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");

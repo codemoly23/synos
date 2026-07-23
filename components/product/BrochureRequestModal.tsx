@@ -11,6 +11,7 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import { FileText, Loader2 } from "lucide-react";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 interface BrochureRequestModalProps {
 	open: boolean;
@@ -65,6 +66,12 @@ export function BrochureRequestModal({
 			}
 
 			handleClose(false);
+			pushEvent("generate_lead", {
+				form_type: "brochure_request",
+				product_name: productName,
+				page_path: window.location.pathname,
+				page_url: window.location.href,
+			});
 			router.push("/tack/");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Could not send request");

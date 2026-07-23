@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 // Client-side form schema
 const quoteFormSchema = z.object({
@@ -116,6 +117,11 @@ export function QuoteRequestModal({
 				onOpenChange(false);
 				reset();
 				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "quote_request",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
 				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
