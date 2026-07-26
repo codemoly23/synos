@@ -205,7 +205,7 @@ export class BaseRepository<T extends Document> {
 	async updateById(
 		id: string,
 		update: UpdateQuery<T>,
-		options: QueryOptions = { new: true, runValidators: true }
+		options: QueryOptions = { returnDocument: "after", runValidators: true }
 	): Promise<T | null> {
 		try {
 			await this.ensureConnection();
@@ -236,7 +236,7 @@ export class BaseRepository<T extends Document> {
 	async updateOne(
 		filter: any,
 		update: UpdateQuery<T>,
-		options: QueryOptions = { new: true, runValidators: true }
+		options: QueryOptions = { returnDocument: "after", runValidators: true }
 	): Promise<T | null> {
 		try {
 			await this.ensureConnection();

@@ -141,7 +141,7 @@ class KontaktPageRepository {
 		const kontaktPage = await KontaktPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<KontaktPageData>();
 
 		if (!kontaktPage) {
@@ -161,7 +161,7 @@ class KontaktPageRepository {
 		const KontaktPage = getKontaktPageModelSync();
 
 		const kontaktPage = await KontaktPage.findOneAndUpdate({}, data, {
-			new: true,
+			returnDocument: "after",
 			upsert: true,
 			runValidators: true,
 		}).lean<KontaktPageData>();

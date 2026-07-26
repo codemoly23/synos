@@ -77,7 +77,7 @@ class ProdukterPageRepository {
 		const updated = await ProdukterPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<ProdukterPageData>();
 
 		if (!updated) {

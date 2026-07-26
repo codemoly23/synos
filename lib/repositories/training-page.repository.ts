@@ -43,7 +43,7 @@ class TrainingPageRepository {
 		const updated = await TrainingPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<TrainingPageData>();
 
 		if (!updated) {

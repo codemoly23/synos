@@ -43,7 +43,7 @@ class KopguidePageRepository {
 		const updated = await KopguidePage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<KopguidePageData>();
 
 		if (!updated) {

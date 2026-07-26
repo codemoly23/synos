@@ -146,7 +146,7 @@ class TeamPageRepository {
 		const teamPage = await TeamPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<TeamPageData>();
 
 		if (!teamPage) {

@@ -45,7 +45,7 @@ class CareersPageRepository {
 		const updated = await CareersPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<CareersPageData>();
 
 		if (!updated) {

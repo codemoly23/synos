@@ -45,7 +45,7 @@ class VarforValjaSynosPageRepository {
 		const updated = await VarforValjaSynosPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<VarforValjaSynosPageData>();
 
 		if (!updated) {

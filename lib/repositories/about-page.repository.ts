@@ -60,7 +60,7 @@ class AboutPageRepository {
 			aboutPage = await AboutPage.findOneAndUpdate(
 				{ singleton: ABOUT_PAGE_SINGLETON_KEY },
 				{ $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
-				{ new: true, upsert: true, setDefaultsOnInsert: true }
+				{ returnDocument: "after", upsert: true, setDefaultsOnInsert: true }
 			).lean<AboutPageData>();
 		} catch (err) {
 			// A concurrent request won the upsert race (duplicate key) — just re-read it.
@@ -182,7 +182,7 @@ class AboutPageRepository {
 		const aboutPage = await AboutPage.findOneAndUpdate(
 			{ singleton: ABOUT_PAGE_SINGLETON_KEY },
 			{ $set: updateData, $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<AboutPageData>();
 
 		if (!aboutPage) {

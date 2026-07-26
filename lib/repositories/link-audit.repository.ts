@@ -86,7 +86,7 @@ class LinkAuditRepository {
 					...stats,
 				},
 			},
-			{ new: true }
+			{ returnDocument: "after" }
 		).lean<LinkAuditData>();
 
 		if (!audit) throw new Error("Audit not found");

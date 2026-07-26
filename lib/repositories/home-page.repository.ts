@@ -157,7 +157,7 @@ class HomePageRepository {
 		const homePage = await HomePage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<HomePageData>();
 
 		if (!homePage) {
@@ -177,7 +177,7 @@ class HomePageRepository {
 		const HomePage = getHomePageModelSync();
 
 		const homePage = await HomePage.findOneAndUpdate({}, data, {
-			new: true,
+			returnDocument: "after",
 			upsert: true,
 			runValidators: true,
 		}).lean<HomePageData>();

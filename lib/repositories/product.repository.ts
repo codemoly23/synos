@@ -346,7 +346,7 @@ class ProductRepository extends BaseRepository<IProduct> {
 				.findByIdAndUpdate(
 					id,
 					{ $set: updateData },
-					{ new: true, runValidators: true }
+					{ returnDocument: "after", runValidators: true }
 				)
 				.exec();
 

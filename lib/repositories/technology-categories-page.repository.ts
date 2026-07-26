@@ -23,7 +23,7 @@ class TechnologyCategoriesPageRepository {
 		const updated = await Model.findOneAndUpdate(
 			{},
 			{ $set: { description: data.description } },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<{ description: string }>();
 		if (!updated) throw new Error("Failed to update technology categories page");
 		return serialize(updated);

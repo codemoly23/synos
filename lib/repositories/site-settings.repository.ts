@@ -177,7 +177,7 @@ class SiteSettingsRepository {
 			const settings = await SiteSettings.findOneAndUpdate(
 				{},
 				{ $set: updateData },
-				{ new: true, upsert: true, runValidators: true }
+				{ returnDocument: "after", upsert: true, runValidators: true }
 			).lean<SiteSettingsData>().exec();
 
 			if (!settings) {

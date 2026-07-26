@@ -45,7 +45,7 @@ class MiniutbildningPageRepository {
 		const updated = await MiniutbildningPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<MiniutbildningPageData>();
 
 		if (!updated) {
