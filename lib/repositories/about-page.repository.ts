@@ -55,21 +55,25 @@ class AboutPageRepository {
 		await connectMongoose();
 		const AboutPage = getAboutPageModelSync();
 
-		let aboutPage: AboutPageData | null;
-		try {
-			aboutPage = await AboutPage.findOneAndUpdate(
-				{ singleton: ABOUT_PAGE_SINGLETON_KEY },
-				{ $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
-				{ returnDocument: "after", upsert: true, setDefaultsOnInsert: true }
-			).lean<AboutPageData>();
-		} catch (err) {
-			// A concurrent request won the upsert race (duplicate key) — just re-read it.
-			if ((err as { code?: number }).code === 11000) {
-				aboutPage = await AboutPage.findOne({
+		let aboutPage: AboutPageData | null = await AboutPage.findOne({
+			singleton: ABOUT_PAGE_SINGLETON_KEY,
+		}).lean<AboutPageData>();
+
+		if (!aboutPage) {
+			try {
+				const created = await AboutPage.create({
 					singleton: ABOUT_PAGE_SINGLETON_KEY,
-				}).lean<AboutPageData>();
-			} else {
-				throw err;
+				});
+				aboutPage = created.toObject() as AboutPageData;
+			} catch (err) {
+				// A concurrent request won the create race (duplicate key) — just re-read it.
+				if ((err as { code?: number }).code === 11000) {
+					aboutPage = await AboutPage.findOne({
+						singleton: ABOUT_PAGE_SINGLETON_KEY,
+					}).lean<AboutPageData>();
+				} else {
+					throw err;
+				}
 			}
 		}
 
