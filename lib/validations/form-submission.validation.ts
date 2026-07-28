@@ -427,11 +427,15 @@ export const quoteRequestSchema = z
 			.trim()
 			.toLowerCase(),
 
+		// Optional: the "Begär offert" modal has no country selector, only a
+		// plain phone input — desktop/other flows may still provide it.
 		countryCode: z
 			.string()
 			.min(2, "Landskod krävs")
 			.max(10, "Ogiltig landskod")
-			.regex(/^\+\d{1,4}$/, "Ogiltig landskod"),
+			.regex(/^\+\d{1,4}$/, "Ogiltig landskod")
+			.optional()
+			.or(z.literal("")),
 
 		phone: z
 			.string()
@@ -463,6 +467,7 @@ export const quoteRequestSchema = z
 	})
 	.refine(
 		(data) => {
+			if (!data.countryCode) return true;
 			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
 			return isValidPhoneNumber(fullPhone);
 		},
