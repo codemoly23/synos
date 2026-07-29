@@ -70,7 +70,7 @@ const ImageComponent = ({
 		<div className={`relative ${wrapperClasses}`}>
 			{showLoader && loading && (
 				<Skeleton
-					className={`absolute bottom-0 left-0 h-full w-full animate-bounce-down rounded-none! motion-safe:animate-bounce-down`}
+					className="absolute inset-0 animate-pulse rounded-none!"
 				/>
 			)}
 			{imageElement}

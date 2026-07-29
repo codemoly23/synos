@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
 				host: smtp.host,
 				port: smtp.port ?? 587,
 				secure: isSecure,
+				connectionTimeout: 10000,
+				greetingTimeout: 10000,
+				socketTimeout: 10000,
 				...(smtp.encryption === "tls" && { requireTLS: true }),
 				...(smtp.username
 					? { auth: { user: smtp.username, pass: smtp.password ?? "" } }
@@ -87,14 +90,16 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`;
 
-			await transporter.sendMail({
-				from: `"${fromName}" <${fromEmail}>`,
-				to: smtp.adminNotificationEmail,
-				subject: `Broschyrförfrågan: ${productName ?? "Produkt"} – ${firstName} ${lastName}`,
-				html,
-			});
-
-			logger.info(`Brochure request email sent for product: ${productSlug}`);
+			// Fire-and-forget: a slow/unreachable SMTP host must never block this response
+			transporter
+				.sendMail({
+					from: `"${fromName}" <${fromEmail}>`,
+					to: smtp.adminNotificationEmail,
+					subject: `Broschyrförfrågan: ${productName ?? "Produkt"} – ${firstName} ${lastName}`,
+					html,
+				})
+				.then(() => logger.info(`Brochure request email sent for product: ${productSlug}`))
+				.catch((err) => logger.error("Failed to send brochure request email", err));
 		}
 
 		// Save to database so it appears in dashboard inquiries

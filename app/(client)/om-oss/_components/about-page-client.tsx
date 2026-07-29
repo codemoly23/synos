@@ -42,6 +42,7 @@ import { pushEvent } from "@/lib/analytics/gtm";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { ImageComponent } from "@/components/common/image-component";
 import type { AboutPageData } from "@/lib/repositories/about-page.repository";
+import type { IOffice } from "@/models/site-settings.model";
 
 // Quick contact form schema (FAQ section "Say hello!" card)
 const quickContactSchema = z.object({
@@ -58,6 +59,11 @@ type QuickContactData = z.infer<typeof quickContactSchema>;
 
 interface AboutPageClientProps {
 	data: AboutPageData;
+	contact: {
+		phone: string;
+		email: string;
+		offices: IOffice[];
+	};
 }
 
 // Icon mapping for mission features
@@ -70,7 +76,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 	Star,
 };
 
-export function AboutPageClient({ data }: AboutPageClientProps) {
+export function AboutPageClient({ data, contact }: AboutPageClientProps) {
 	// Set navbar to dark-hero variant
 	useSetNavbarVariant("dark-hero");
 
@@ -165,6 +171,13 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 	const validStats = (data.stats || []).filter((s) => s.value && s.label);
 	const validImages = (data.imageGallery?.images || []).filter((i) => i.src);
 	const validFaqItems = (data.faq?.items || []).filter((f) => f.question);
+	const contactCardTitle = data.faq?.contactCard?.title || "Alltid nära dig";
+	const contactFormTitle = data.faq?.contactCard?.formTitle || "Säg hej!";
+	const contactOffice =
+		contact.offices.find((o) => o.isHeadquarters) || contact.offices[0];
+	const contactAddress = contactOffice
+		? `${contactOffice.street}, ${contactOffice.postalCode} ${contactOffice.city}`
+		: "";
 	const validTestimonials = (data.testimonials?.testimonials || []).filter(
 		(t) => t.quote
 	);
@@ -623,23 +636,21 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<motion.div
 									key={index}
 									variants={fadeUp}
-									className={`relative rounded-2xl overflow-hidden shadow-lg group ${
-										index === 0 ? "sm:col-span-2 lg:col-span-1 lg:row-span-2" : ""
-									}`}
+									className="relative rounded-2xl overflow-hidden shadow-lg group"
 								>
 									<ImageComponent
 										src={image.src || ""}
 										alt={image.alt || `Bild ${index + 1}`}
-										width={index === 0 ? 600 : 400}
-										height={index === 0 ? 600 : 300}
+										width={400}
+										height={400}
 										className={`w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 ${image.mobileSrc ? "hidden md:block" : ""}`}
 									/>
 									{image.mobileSrc && (
 										<ImageComponent
 											src={image.mobileSrc}
 											alt={image.alt || `Bild ${index + 1}`}
-											width={index === 0 ? 600 : 400}
-											height={index === 0 ? 600 : 300}
+											width={400}
+											height={400}
 											className="w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 md:hidden"
 										/>
 									)}
@@ -831,43 +842,49 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<div className="sticky top-32 rounded-2xl overflow-hidden bg-white shadow-xl p-8">
 									{/* Title */}
 									<h3 className="text-xl font-bold text-secondary mb-6">
-										Alltid nära dig
+										{contactCardTitle}
 									</h3>
 
 									{/* Contact Info */}
 									<div className="space-y-5 mb-8">
 										{/* Location */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<MapPin className="w-5 h-5 text-primary" />
+										{contactAddress && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<MapPin className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Nå oss</p>
+													<p className="text-sm text-muted-foreground">{contactAddress}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Nå oss</p>
-												<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
-											</div>
-										</div>
+										)}
 
 										{/* Email */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<Mail className="w-5 h-5 text-primary" />
+										{contact.email && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<Mail className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Maila oss</p>
+													<p className="text-sm text-muted-foreground">{contact.email}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Maila oss</p>
-												<p className="text-sm text-muted-foreground">karriar@synos.se</p>
-											</div>
-										</div>
+										)}
 
 										{/* Phone */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<Phone className="w-5 h-5 text-primary" />
+										{contact.phone && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<Phone className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Ring oss</p>
+													<p className="text-sm text-muted-foreground">{contact.phone}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Ring oss</p>
-												<p className="text-sm text-muted-foreground">010-205 15 01</p>
-											</div>
-										</div>
+										)}
 									</div>
 
 									{/* Divider */}
@@ -875,7 +892,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 									{/* Contact Form */}
 									<h4 className="text-lg font-bold text-secondary mb-4">
-										Säg hej!
+										{contactFormTitle}
 									</h4>
 
 									<form onSubmit={handleSubmit(onSubmitQuickContact)} className="space-y-4">
@@ -999,43 +1016,49 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							<div className="rounded-2xl overflow-hidden bg-white shadow-xl p-8">
 								{/* Title */}
 								<h3 className="text-xl font-bold text-secondary mb-6">
-									Alltid nära dig
+									{contactCardTitle}
 								</h3>
 
 								{/* Contact Info */}
 								<div className="space-y-5 mb-8">
 									{/* Location */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<MapPin className="w-5 h-5 text-primary" />
+									{contactAddress && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<MapPin className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Nå oss</p>
+												<p className="text-sm text-muted-foreground">{contactAddress}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Nå oss</p>
-											<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
-										</div>
-									</div>
+									)}
 
 									{/* Email */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<Mail className="w-5 h-5 text-primary" />
+									{contact.email && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Mail className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Maila oss</p>
+												<p className="text-sm text-muted-foreground">{contact.email}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Maila oss</p>
-											<p className="text-sm text-muted-foreground">karriar@synos.se</p>
-										</div>
-									</div>
+									)}
 
 									{/* Phone */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<Phone className="w-5 h-5 text-primary" />
+									{contact.phone && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Phone className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Ring oss</p>
+												<p className="text-sm text-muted-foreground">{contact.phone}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Ring oss</p>
-											<p className="text-sm text-muted-foreground">010-205 15 01</p>
-										</div>
-									</div>
+									)}
 								</div>
 
 								{/* Contact Button */}

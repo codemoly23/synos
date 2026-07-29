@@ -151,10 +151,16 @@ export interface IAboutFaqItem {
 	answer?: string;
 }
 
+export interface IAboutFaqContactCard {
+	title?: string;
+	formTitle?: string;
+}
+
 export interface IAboutFaqSection {
 	title?: string;
 	subtitle?: string;
 	items?: IAboutFaqItem[];
+	contactCard?: IAboutFaqContactCard;
 }
 
 const AboutFaqItemSchema = new Schema<IAboutFaqItem>(
@@ -165,11 +171,20 @@ const AboutFaqItemSchema = new Schema<IAboutFaqItem>(
 	{ _id: false }
 );
 
+const AboutFaqContactCardSchema = new Schema<IAboutFaqContactCard>(
+	{
+		title: { type: String, trim: true },
+		formTitle: { type: String, trim: true },
+	},
+	{ _id: false }
+);
+
 const AboutFaqSectionSchema = new Schema<IAboutFaqSection>(
 	{
 		title: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		items: { type: [AboutFaqItemSchema], default: [] },
+		contactCard: { type: AboutFaqContactCardSchema, default: {} },
 	},
 	{ _id: false }
 );

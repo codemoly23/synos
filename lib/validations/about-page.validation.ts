@@ -73,10 +73,16 @@ export const aboutFaqItemSchema = z.object({
 	answer: z.string().max(2000).optional(),
 });
 
+export const aboutFaqContactCardSchema = z.object({
+	title: z.string().max(100).optional(),
+	formTitle: z.string().max(100).optional(),
+});
+
 export const aboutFaqSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	items: z.array(aboutFaqItemSchema).optional(),
+	contactCard: aboutFaqContactCardSchema.optional(),
 });
 
 // ============================================================================
@@ -190,6 +196,7 @@ export type AboutStatInput = z.infer<typeof aboutStatSchema>;
 export type AboutGalleryImageInput = z.infer<typeof aboutGalleryImageSchema>;
 export type AboutImageGallerySectionInput = z.infer<typeof aboutImageGallerySectionSchema>;
 export type AboutFaqItemInput = z.infer<typeof aboutFaqItemSchema>;
+export type AboutFaqContactCardInput = z.infer<typeof aboutFaqContactCardSchema>;
 export type AboutFaqSectionInput = z.infer<typeof aboutFaqSectionSchema>;
 export type AboutTestimonialInput = z.infer<typeof aboutTestimonialSchema>;
 export type AboutTeamMemberInput = z.infer<typeof aboutTeamMemberSchema>;

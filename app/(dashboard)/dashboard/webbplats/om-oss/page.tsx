@@ -106,6 +106,12 @@ const formSchema = z.object({
 				})
 			)
 			.optional(),
+		contactCard: z
+			.object({
+				title: z.string().optional(),
+				formTitle: z.string().optional(),
+			})
+			.optional(),
 	}),
 	testimonials: z.object({
 		title: z.string().optional(),
@@ -227,7 +233,7 @@ export default function AboutPageCMS() {
 			mission: { features: [] },
 			stats: [],
 			imageGallery: { images: [] },
-			faq: { items: [] },
+			faq: { items: [], contactCard: {} },
 			testimonials: {
 				testimonials: [],
 				groupCooperation: { teamMembers: [] },
@@ -326,6 +332,10 @@ export default function AboutPageCMS() {
 						title: data.faq?.title || "",
 						subtitle: data.faq?.subtitle || "",
 						items: data.faq?.items || [],
+						contactCard: {
+							title: data.faq?.contactCard?.title || "",
+							formTitle: data.faq?.contactCard?.formTitle || "",
+						},
 					},
 					testimonials: {
 						title: data.testimonials?.title || "",
@@ -933,6 +943,35 @@ export default function AboutPageCMS() {
 										</div>
 									</div>
 								))}
+							</div>
+
+							{/* Contact Card Section */}
+							<div className="border-t pt-6 mt-6">
+								<h3 className="text-lg font-semibold mb-4">Contact Card</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									The card shown next to the FAQ list. Address, email and phone
+									number always come from{" "}
+									<a href="/dashboard/settings" className="underline">
+										Site Settings
+									</a>{" "}
+									— only the headings below are editable here.
+								</p>
+								<div className="grid gap-4 md:grid-cols-2">
+									<div className="space-y-2">
+										<Label>Card Title</Label>
+										<Input
+											{...form.register("faq.contactCard.title")}
+											placeholder="e.g., Alltid nara dig"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Form Title</Label>
+										<Input
+											{...form.register("faq.contactCard.formTitle")}
+											placeholder="e.g., Sag hej!"
+										/>
+									</div>
+								</div>
 							</div>
 						</CardContent>
 					</Card>

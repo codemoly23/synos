@@ -3,6 +3,7 @@ import {
 	getAboutPage,
 	getAboutPageSeo,
 } from "@/lib/services/about-page.service";
+import { getContactInfo } from "@/lib/services/site-settings.service";
 import { AboutPageClient } from "./_components/about-page-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,12 +30,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-	const aboutPage = await getAboutPage().catch((error) => {
-		console.error("Failed to load about page:", error);
-		return null;
-	});
+	const [aboutPage, contact] = await Promise.all([
+		getAboutPage().catch((error) => {
+			console.error("Failed to load about page:", error);
+			return null;
+		}),
+		getContactInfo(),
+	]);
 
 	if (!aboutPage) return <></>;
 
-	return <AboutPageClient data={aboutPage} />;
+	return <AboutPageClient data={aboutPage} contact={contact} />;
 }
