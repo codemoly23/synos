@@ -24,6 +24,11 @@ import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
 import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
+import {
+	generateSimpleBreadcrumbJsonLd,
+	generateCollectionPageJsonLd,
+	generateFaqJsonLd,
+} from "@/lib/seo";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -175,7 +180,7 @@ function TeknologiSidebar({
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
-					<div className="px-3">
+					<div className="max-h-[200px] overflow-y-auto px-3">
 						{categories.map((cat) => (
 							<Link
 								key={cat._id.toString()}
@@ -202,7 +207,7 @@ function TeknologiSidebar({
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
-					<div className="px-3">
+					<div className="max-h-[200px] overflow-y-auto px-3">
 						{techGroups.map((tech) => (
 							<Link
 								key={tech._id}
@@ -351,8 +356,40 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 		return "uncategorized";
 	}
 
+	const siteConfig = await getSiteConfig();
+	const breadcrumbJsonLd = generateSimpleBreadcrumbJsonLd([
+		{ name: "Hem", url: siteConfig.url },
+		{ name: "Klinikutrustning", url: `${siteConfig.url}/klinikutrustning` },
+		{ name: group.name, url: `${siteConfig.url}/klinikutrustning/teknologi/${slug}` },
+	]);
+	const collectionPageJsonLd = generateCollectionPageJsonLd({
+		name: group.name,
+		description: group.description ? stripHtml(group.description).slice(0, 300) : undefined,
+		url: `${siteConfig.url}/klinikutrustning/teknologi/${slug}`,
+		items: filteredProducts.map((product) => ({
+			name: product.title,
+			url: `${siteConfig.url}/klinikutrustning/${getCategorySlugForProduct(product)}/${product.slug}`,
+		})),
+	});
+	const faqJsonLd = generateFaqJsonLd(techFaqs);
+
 	return (
 		<div className="min-h-screen">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+			/>
+			{faqJsonLd && (
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+				/>
+			)}
+
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 				{/* ── MOBILE LAYOUT ── */}
@@ -369,7 +406,7 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">{heroTitle}</h1>
+					<h1 className="text-[1.75rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight break-words">{heroTitle}</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
 					<p className="text-white/70 text-sm mb-8 leading-relaxed">{heroSubtitle}</p>
 					<ul className="space-y-4">

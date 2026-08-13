@@ -4,6 +4,7 @@ import {
 	getAboutPageSeo,
 } from "@/lib/services/about-page.service";
 import { getContactInfo } from "@/lib/services/site-settings.service";
+import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@/lib/seo";
 import { AboutPageClient } from "./_components/about-page-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -40,5 +41,22 @@ export default async function AboutPage() {
 
 	if (!aboutPage) return <></>;
 
-	return <AboutPageClient data={aboutPage} contact={contact} />;
+	const [organizationJsonLd, websiteJsonLd] = await Promise.all([
+		generateOrganizationJsonLd(),
+		generateWebSiteJsonLd(),
+	]);
+
+	return (
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+			/>
+			<AboutPageClient data={aboutPage} contact={contact} />
+		</>
+	);
 }

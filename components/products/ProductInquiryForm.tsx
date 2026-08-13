@@ -413,9 +413,9 @@ function MobileInquiryForm({
 					<h2 className="text-4xl font-bold text-white leading-tight">{purchaseTitle}</h2>
 				) : null}
 				{purchaseDescription ? (
-					<div className="text-zinc-400 text-sm leading-relaxed [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: purchaseDescription }} />
+					<div className="text-white/80 text-sm leading-relaxed [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: purchaseDescription }} />
 				) : (
-					<p className="text-zinc-400 text-sm leading-relaxed">
+					<p className="text-white/80 text-sm leading-relaxed">
 						Kontakta oss idag för en kostnadsfri konsultation och upptäck hur vi kan hjälpa dig att nå dina mål.
 					</p>
 				)}
@@ -431,7 +431,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Ring oss</p>
-								<p className="text-xs text-zinc-400">Vi finns tillgängliga för att hjälpa dig</p>
+								<p className="text-xs text-white/80">Vi finns tillgängliga för att hjälpa dig</p>
 								<span className="text-sm font-semibold block" style={{ color: BRAND }}>{contactPhone}</span>
 							</div>
 						</a>
@@ -443,7 +443,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Maila oss</p>
-								<p className="text-xs text-zinc-400">Skicka oss ett meddelande</p>
+								<p className="text-xs text-white/80">Skicka oss ett meddelande</p>
 								<span className="text-sm font-medium block" style={{ color: BRAND }}>{contactEmail}</span>
 							</div>
 						</a>
@@ -479,7 +479,7 @@ function MobileInquiryForm({
 				</div>
 
 				<div>
-					<label className={labelCls}>När är du intresserad av att ta nästa steg?</label>
+					<label className={labelCls}>Meddelande</label>
 					<textarea {...register("message")} rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className={`${inputCls} resize-none`} />
 				</div>
 

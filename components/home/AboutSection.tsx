@@ -80,7 +80,7 @@ const AboutSection = ({ data }: AboutSectionProps) => {
 							<span className="text-primary">{data.titleHighlight}</span>
 						)}
 					</h2>
-					<p className="text-slate-600 text-lg leading-relaxed">
+					<p className="text-slate-600 text-lg leading-relaxed whitespace-pre-line">
 						{data.content}
 					</p>
 

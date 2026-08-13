@@ -137,7 +137,7 @@ export function ProductContent({
 								</li>
 							))}
 						</ul>
-						<button type="button" onClick={() => document.getElementById("product-inquiry-form")?.scrollIntoView({ behavior: "smooth" })} className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#dba481]/50 text-sm font-light" style={{ color: '#dba481', boxShadow: '-10px 0 8px -6px rgba(219,164,129,0.35), 10px 0 8px -6px rgba(219,164,129,0.35)' }}>
+						<button type="button" onClick={() => document.getElementById("product-inquiry-form")?.scrollIntoView({ behavior: "smooth" })} className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold btn-copper-gradient shadow-lg">
 							<FileText className="h-4 w-4 shrink-0" />
 							Begär offert
 						</button>
@@ -261,6 +261,20 @@ export function ProductContent({
 					</div>
 				</section>
 			)}
+
+			{/* Quick CTA - Mobile only, shown upfront right after the hero */}
+			<div className="_container pt-8 md:hidden">
+				<aside className="space-y-4">
+					<ProductDetailSidebar
+						certifications={product.certifications}
+						onScrollToForm={() =>
+							document
+								.getElementById("product-inquiry-form")
+								?.scrollIntoView({ behavior: "smooth" })
+						}
+					/>
+				</aside>
+			</div>
 
 			{/* Custom Feature Sections (per-product, after hero) */}
 			{customSections && (
@@ -420,18 +434,6 @@ export function ProductContent({
 							</div>
 
 						</article>
-
-						{/* Sidebar - Mobile only */}
-						<aside className="sticky top-28 self-start space-y-4 block md:hidden">
-							<ProductDetailSidebar
-								certifications={product.certifications}
-								onScrollToForm={() =>
-									document
-										.getElementById("product-inquiry-form")
-										?.scrollIntoView({ behavior: "smooth" })
-								}
-							/>
-						</aside>
 					</div>
 				</div>
 			</section>

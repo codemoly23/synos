@@ -157,103 +157,113 @@ export function Hero({ data }: HeroProps) {
 			)}
 
 			<div className="relative z-20 _container grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center lg:min-h-[600px]">
-				{/* Left Content - Animated per slide */}
-				<AnimatePresence mode="wait">
-					<motion.div
-						key={currentSlide}
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -20 }}
-						transition={{ duration: 0.5, ease: "easeOut" }}
-						className="flex flex-col gap-6 lg:gap-8 max-w-2xl"
-					>
-						{/* Trust Badge */}
-						{slide?.badge && (
-							<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200 animate-pulse tracking-widest">
-								<span className="flex h-2 w-2 rounded-full bg-primary" />
-								<span className="text-[9px] font-semibold text-primary uppercase leading-relaxed">
-									{slide.badge}
-								</span>
-							</div>
-						)}
+				{/* Left Content - all slides stacked in the same grid cell so the box
+				    height always equals the tallest slide (no jump, no clipping);
+				    only the active slide is visible/interactive. */}
+				<div className="grid">
+					{slides.map((s, index) => {
+						const isActive = index === currentSlide;
+						const isDark = !!s.backgroundImage;
 
-						{/* Heading */}
-						{(slide?.title || slide?.titleHighlight) && (
-							<h1 className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] tracking-tight ${
-								isDarkBackground ? 'text-white' : 'text-secondary'
-							}`}>
-								{slide?.title} <br />
-								{slide?.titleHighlight && (
-									<span className="text-gradient-primary text-2xl sm:text-3xl lg:text-4xl">
-										{slide.titleHighlight}
-									</span>
+						return (
+							<motion.div
+								key={index}
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+								className="col-start-1 row-start-1 flex flex-col gap-6 lg:gap-8 max-w-2xl"
+								aria-hidden={!isActive}
+								inert={!isActive}
+							>
+								{/* Trust Badge */}
+								{s.badge && (
+									<div className="inline-flex items-center gap-2 w-fit px-3 py-1 rounded-full bg-green-50 border border-green-200 animate-pulse tracking-widest">
+										<span className="flex h-2 w-2 rounded-full bg-primary" />
+										<span className="text-[9px] font-semibold text-primary uppercase leading-relaxed">
+											{s.badge}
+										</span>
+									</div>
 								)}
-							</h1>
-						)}
 
-						{/* Description */}
-						{slide?.subtitle && (
-							<p className={`text-lg leading-relaxed max-w-xl ${
-								isDarkBackground ? 'text-slate-200' : 'text-slate-600'
-							}`}>
-								{slide.subtitle}
-							</p>
-						)}
+								{/* Heading */}
+								{(s.title || s.titleHighlight) && (
+									<h1 className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] tracking-tight ${
+										isDark ? 'text-white' : 'text-secondary'
+									}`}>
+										{s.title} <br />
+										{s.titleHighlight && (
+											<span className="text-gradient-primary text-2xl sm:text-3xl lg:text-4xl">
+												{s.titleHighlight}
+											</span>
+										)}
+									</h1>
+								)}
 
-						{/* Actions */}
-						<div className="flex flex-wrap gap-4 pt-2">
-							{slide?.primaryCta?.text && slide?.primaryCta?.href && (
-								<Button
-									asChild
-									size="lg"
-									className="btn-copper-gradient rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-primary/20"
-								>
-									<Link href={slide.primaryCta.href}>
-										{slide.primaryCta.text}
-										<ArrowRight className="ml-2 h-4 w-4" />
-									</Link>
-								</Button>
-							)}
-							{slide?.secondaryCta?.text && slide?.secondaryCta?.href && (
-								<Button
-									asChild
-									variant="outline"
-									size="lg"
-									className={`rounded-full px-8 h-12 text-base ${
-										isDarkBackground
-											? 'border-white/30 text-white hover:bg-white/10 hover:border-white'
-											: 'border-secondary/20 text-secondary hover:bg-secondary/5'
-									}`}
-								>
-									<Link href={slide.secondaryCta.href}>
-										{slide.secondaryCta.text}
-									</Link>
-								</Button>
-							)}
-						</div>
+								{/* Description */}
+								{s.subtitle && (
+									<p className={`text-lg leading-relaxed max-w-xl ${
+										isDark ? 'text-slate-200' : 'text-slate-600'
+									}`}>
+										{s.subtitle}
+									</p>
+								)}
 
-						{/* Trust Indicators */}
-						{slide?.trustIndicators && slide.trustIndicators.length > 0 && (
-							<div className={`flex items-center gap-6 pt-6 text-sm ${
-								isDarkBackground ? 'text-slate-300' : 'text-slate-600'
-							}`}>
-								{slide.trustIndicators
-									.filter((ind) => ind.icon && ind.text)
-									.map((indicator, index) => {
-										const IconComponent = indicator.icon
-											? iconMap[indicator.icon] || ShieldCheck
-											: ShieldCheck;
-										return (
-											<div key={index} className="flex items-center gap-2">
-												<IconComponent className="h-5 w-5 text-success" />
-												<span>{indicator.text}</span>
-											</div>
-										);
-									})}
-							</div>
-						)}
-					</motion.div>
-				</AnimatePresence>
+								{/* Actions */}
+								<div className="flex flex-wrap gap-4 pt-2">
+									{s.primaryCta?.text && s.primaryCta?.href && (
+										<Button
+											asChild
+											size="lg"
+											className="btn-copper-gradient rounded-full cursor-pointer px-8 h-12 text-base shadow-lg shadow-primary/20"
+										>
+											<Link href={s.primaryCta.href} tabIndex={isActive ? undefined : -1}>
+												{s.primaryCta.text}
+												<ArrowRight className="ml-2 h-4 w-4" />
+											</Link>
+										</Button>
+									)}
+									{s.secondaryCta?.text && s.secondaryCta?.href && (
+										<Button
+											asChild
+											variant="outline"
+											size="lg"
+											className={`rounded-full px-8 h-12 text-base ${
+												isDark
+													? 'border-white/30 text-white hover:bg-white/10 hover:border-white'
+													: 'border-secondary/20 text-secondary hover:bg-secondary/5'
+											}`}
+										>
+											<Link href={s.secondaryCta.href} tabIndex={isActive ? undefined : -1}>
+												{s.secondaryCta.text}
+											</Link>
+										</Button>
+									)}
+								</div>
+
+								{/* Trust Indicators */}
+								{s.trustIndicators && s.trustIndicators.length > 0 && (
+									<div className={`flex items-center gap-6 pt-6 text-sm ${
+										isDark ? 'text-slate-300' : 'text-slate-600'
+									}`}>
+										{s.trustIndicators
+											.filter((ind) => ind.icon && ind.text)
+											.map((indicator, i) => {
+												const IconComponent = indicator.icon
+													? iconMap[indicator.icon] || ShieldCheck
+													: ShieldCheck;
+												return (
+													<div key={i} className="flex items-center gap-2">
+														<IconComponent className="h-5 w-5 text-success" />
+														<span>{indicator.text}</span>
+													</div>
+												);
+											})}
+									</div>
+								)}
+							</motion.div>
+						);
+					})}
+				</div>
 
 				{/* Right Content - Main Image + Floating Cards - Animated per slide */}
 				{hasMainImage && (

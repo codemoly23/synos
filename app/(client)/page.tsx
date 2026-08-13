@@ -10,7 +10,9 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { RecoReviews } from "@/components/widgets/RecoReviews";
 import AboutSection from "@/components/home/AboutSection";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
+import { PreviewEditor } from "@/components/common/TextEditor";
 import { getHomePage, getHomePageSeo } from "@/lib/services/home-page.service";
+import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { searchService } from "@/lib/services/search.service";
 import { SearchPageClient } from "./search-page";
@@ -123,10 +125,26 @@ export default async function Home({ searchParams }: HomeProps) {
 		about: true,
 		testimonials: true,
 		cta: true,
+		richContent: true,
 	};
+	const ctaSection = homePage.ctaSection;
+
+	const [organizationJsonLd, websiteJsonLd] = await Promise.all([
+		generateOrganizationJsonLd(),
+		generateWebSiteJsonLd(),
+	]);
 
 	return (
 		<div className="flex flex-col min-h-screen">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+			/>
+
 			{/* Hero Section */}
 			{visibility.hero && homePage.hero && <Hero data={homePage.hero} />}
 
@@ -172,16 +190,33 @@ export default async function Home({ searchParams }: HomeProps) {
 					)
 				))}
 
+			{/* Rich Content */}
+			{visibility.richContent && homePage.richContent && (
+				<section className="py-16">
+					<div className="_container prose prose-lg max-w-none">
+						<PreviewEditor>{homePage.richContent}</PreviewEditor>
+					</div>
+				</section>
+			)}
+
 			{/* Contact Form */}
-			<ProductInquiryForm
-				pillLabel="SYNOS MEDICAL"
-				purchaseTitle="Kontakta oss"
-				purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
-				contactPhone={siteSettings.phone}
-				contactEmail={siteSettings.email}
-				bgMobile={siteSettings.branding?.inquiryDefaultBgMobile || undefined}
-				bgDesktop={siteSettings.branding?.inquiryDefaultBgDesktop || undefined}
-			/>
+			{visibility.cta !== false && (
+				<ProductInquiryForm
+					pillLabel="SYNOS MEDICAL"
+					purchaseTitle={ctaSection?.title || "Kontakta oss"}
+					purchaseDescription={
+						ctaSection?.subtitle
+							? `<p>${ctaSection.subtitle}</p>`
+							: "<p>Behöver du hjälp att hitta rätt klinikutrustning? Fyll i formuläret så återkommer vi inom 24 timmar.</p>"
+					}
+					formSubtitle={ctaSection?.formSubtitle}
+					buttonText={ctaSection?.formCtaText}
+					contactPhone={siteSettings.phone}
+					contactEmail={siteSettings.email}
+					bgMobile={siteSettings.branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={siteSettings.branding?.inquiryDefaultBgDesktop || undefined}
+				/>
+			)}
 
 			{/* Floating Contact Button - Always visible */}
 			{/* <FloatingContactButton /> */}

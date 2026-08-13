@@ -24,6 +24,11 @@ import { getActiveTechnologyGroupNames } from "@/lib/services/product-cache.serv
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
+import {
+	generateSimpleBreadcrumbJsonLd,
+	generateCollectionPageJsonLd,
+	generateFaqJsonLd,
+} from "@/lib/seo";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -357,7 +362,7 @@ function KategoriSidebar({
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
-					<div className="px-3">
+					<div className="max-h-[200px] overflow-y-auto px-3">
 						{techGroups.map((tech) => (
 							<Link
 								key={tech._id}
@@ -488,8 +493,59 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 	const resolvedBgMobile = catExtra.heroBgMobile || "/images/Background Mobile.jpeg";
 	const resolvedBgDesktop = catExtra.heroBgDesktop || "/images/Product detail breadcrumbs background.jpeg";
 
+	const adminFaqs = category.faqs
+		?.filter((f) => f.visible)
+		.map((f) => ({
+			_id: f._id?.toString() || `cat-faq-${Math.random()}`,
+			question: f.question,
+			answer: f.answer,
+			visible: f.visible,
+		}));
+	const faqs =
+		adminFaqs && adminFaqs.length > 0
+			? adminFaqs
+			: buildCategoryFaqs(category.name);
+	const faqTitle =
+		category.faqTitle && category.faqTitle.trim().length > 0
+			? category.faqTitle
+			: `Vanliga frågor om ${category.name.toLowerCase()}`;
+
+	const siteConfig = await getSiteConfig();
+	const breadcrumbJsonLd = generateSimpleBreadcrumbJsonLd([
+		{ name: "Hem", url: siteConfig.url },
+		{ name: "Klinikutrustning", url: `${siteConfig.url}/klinikutrustning` },
+		{ name: category.name, url: `${siteConfig.url}/klinikutrustning/${categorySlug}` },
+	]);
+	const collectionPageJsonLd = generateCollectionPageJsonLd({
+		name: category.name,
+		description: (category as unknown as { description?: string }).description
+			? stripHtml((category as unknown as { description?: string }).description!).slice(0, 300)
+			: undefined,
+		url: `${siteConfig.url}/klinikutrustning/${categorySlug}`,
+		items: products.map((product) => ({
+			name: product.title,
+			url: `${siteConfig.url}/klinikutrustning/${categorySlug}/${product.slug}`,
+		})),
+	});
+	const faqJsonLd = generateFaqJsonLd(faqs);
+
 	return (
 		<div className="min-h-screen">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+			/>
+			{faqJsonLd && (
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+				/>
+			)}
+
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 
@@ -507,7 +563,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
 				{/* Mobile text */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-[2.2rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight">
+					<h1 className="text-[1.75rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight break-words">
 						{resolvedHeroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -638,31 +694,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			</div>
 
 			{/* FAQ Footer Section — admin-controllable via dashboard, falls back to default content */}
-			{(() => {
-				const adminFaqs = category.faqs
-					?.filter((f) => f.visible)
-					.map((f) => ({
-						_id: f._id?.toString() || `cat-faq-${Math.random()}`,
-						question: f.question,
-						answer: f.answer,
-						visible: f.visible,
-					}));
-				const faqs =
-					adminFaqs && adminFaqs.length > 0
-						? adminFaqs
-						: buildCategoryFaqs(category.name);
-				const faqTitle =
-					category.faqTitle && category.faqTitle.trim().length > 0
-						? category.faqTitle
-						: `Vanliga frågor om ${category.name.toLowerCase()}`;
-				return (
-					<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-						<div className="_container mx-auto px-4">
-							<ProductFAQ title={faqTitle} faqs={faqs} />
-						</div>
-					</section>
-				);
-			})()}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ title={faqTitle} faqs={faqs} />
+				</div>
+			</section>
 
 			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
 			<div id="inquiry-form">

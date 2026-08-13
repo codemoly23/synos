@@ -4,4 +4,7 @@ export {
 	generateFaqJsonLd,
 	generateOrganizationJsonLd,
 	generateProductPageJsonLd,
+	generateWebSiteJsonLd,
+	generateSimpleBreadcrumbJsonLd,
+	generateCollectionPageJsonLd,
 } from "./product-jsonld";

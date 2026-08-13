@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Home, Package, GraduationCap, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface NavItem {
 	label: string;
@@ -39,6 +39,8 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
 	const pathname = usePathname();
 	const [nearFooter, setNearFooter] = useState(false);
+	const [isHidden, setIsHidden] = useState(false);
+	const lastScrollY = useRef(0);
 
 	useEffect(() => {
 		const footer = document.querySelector("footer");
@@ -49,6 +51,21 @@ export function MobileBottomNav() {
 		);
 		observer.observe(footer);
 		return () => observer.disconnect();
+	}, []);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const currentY = window.scrollY;
+
+			if (currentY > 60) {
+				setIsHidden(currentY > lastScrollY.current);
+			} else {
+				setIsHidden(false);
+			}
+			lastScrollY.current = currentY;
+		};
+		window.addEventListener("scroll", handleScroll, { passive: true });
+		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
 	const isActive = (href: string) => {
@@ -65,7 +82,10 @@ export function MobileBottomNav() {
 		<>
 			{/* Floating Bottom Navigation - Mobile Only */}
 			<nav
-				className="fixed bottom-0 w-full left-0 z-50 md:hidden"
+				className={cn(
+					"fixed bottom-0 w-full left-0 z-50 md:hidden transition-transform duration-300 ease-in-out",
+					isHidden ? "translate-y-[calc(100%+env(safe-area-inset-bottom))]" : "translate-y-0"
+				)}
 				aria-label="Mobile navigation"
 			>
 				{/* Outer container with dark bg matching top navbar */}

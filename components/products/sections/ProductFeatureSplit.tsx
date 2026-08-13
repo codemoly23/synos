@@ -159,15 +159,15 @@ export function ProductFeatureSplit({
 									return (
 										<div
 											key={idx}
-											className="flex items-start gap-3 p-4 sm:p-5 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-primary/50 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(220,167,131,0.25)] transition-all duration-300"
+											className="flex flex-col sm:flex-row sm:items-start gap-3 p-4 sm:p-5 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-primary/50 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(220,167,131,0.25)] transition-all duration-300"
 										>
-											<div className="shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-slate-100">
+											<div className="shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-slate-100 mb-1 sm:mb-0">
 												<Icon
 													strokeWidth={1.5}
 													className="h-5 w-5 sm:h-7 sm:w-7 text-[#98a7b5]"
 												/>
 											</div>
-											<div className="min-w-0 overflow-hidden">
+											<div className="min-w-0 w-full overflow-hidden">
 												<h4 className="text-xs sm:text-sm font-semibold text-secondary leading-snug break-words">
 													{b.title}
 												</h4>

@@ -3878,3 +3878,18 @@ html.translated-rtl .lang-en {
 .blog-article-prose h6 a:hover {
   opacity: 0.75;
 }
+
+/* ============================================
+   COOKIEBOT WIDGET — MOBILE OVERLAP FIX
+   Cookiebot's floating "renew consent" icon is fixed at
+   bottom:10px/left:10px with an inline z-index (2147483631) that
+   can't be beaten by our own stacking context. On mobile it sits
+   directly on top of the bottom navigation's "Hem" tab, so it's
+   pushed up above the nav bar here instead. !important is required
+   to win over Cookiebot's inline styles.
+   ============================================ */
+@media (max-width: 767px) {
+  #CookiebotWidget {
+    bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+  }
+}
