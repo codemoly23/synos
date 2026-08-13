@@ -133,6 +133,7 @@ const settingsFormSchema = z.object({
 		newsletterPlaceholder: z.string().optional(),
 		newsletterButtonText: z.string().optional(),
 		bottomLinks: z.array(footerLinkSchema).optional(),
+		copyrightText: z.string().optional(),
 	}),
 
 	// Reviews (Reco widget)
@@ -254,6 +255,7 @@ export default function SettingsPage() {
 				newsletterPlaceholder: "Din e-postadress",
 				newsletterButtonText: "Prenumerera",
 				bottomLinks: [],
+				copyrightText: "Alla rättigheter förbehållna | Designed by NordiGate",
 			},
 			reviews: {
 				recoWidgetUrl: "",
@@ -370,6 +372,9 @@ export default function SettingsPage() {
 						newsletterPlaceholder: settings.footer?.newsletterPlaceholder || "Din e-postadress",
 						newsletterButtonText: settings.footer?.newsletterButtonText || "Prenumerera",
 						bottomLinks: settings.footer?.bottomLinks || [],
+						copyrightText:
+							settings.footer?.copyrightText ||
+							"Alla rättigheter förbehållna | Designed by NordiGate",
 					},
 					reviews: {
 						recoWidgetUrl: settings.reviews?.recoWidgetUrl || "",
@@ -1650,6 +1655,35 @@ export default function SettingsPage() {
 											</div>
 										))
 									)}
+								</CardContent>
+							</Card>
+
+							{/* Copyright Text Card */}
+							<Card>
+								<CardHeader>
+									<CardTitle>Copyright Text</CardTitle>
+									<CardDescription>
+										Text shown next to the company name and year at the very
+										bottom of the footer, e.g. &quot;© 2026 Company Name.
+										[this text]&quot;.
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<FormField
+										control={form.control}
+										name="footer.copyrightText"
+										render={({ field }) => (
+											<FormItem>
+												<FormControl>
+													<Input
+														placeholder="Alla rättigheter förbehållna | Designed by NordiGate"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 								</CardContent>
 							</Card>
 						</TabsContent>

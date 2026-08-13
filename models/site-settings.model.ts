@@ -123,6 +123,7 @@ export interface IFooterSettings {
 	newsletterPlaceholder: string; // "Din e-postadress"
 	newsletterButtonText: string; // "Prenumerera"
 	bottomLinks: IFooterLink[];
+	copyrightText?: string; // "Alla rättigheter förbehållna | Designed by NordiGate"
 }
 
 /**
@@ -421,6 +422,11 @@ const FooterSettingsSchema = new Schema<IFooterSettings>(
 				{ label: "Villkor", href: "/villkor" },
 				{ label: "Sitemap", href: "/sitemap.xml" },
 			],
+		},
+		copyrightText: {
+			type: String,
+			trim: true,
+			default: "Alla rättigheter förbehållna | Designed by NordiGate",
 		},
 	},
 	{ _id: false }

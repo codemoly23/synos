@@ -139,6 +139,10 @@ export const footerSettingsSchema = z.object({
 		.max(30, "Newsletter button text cannot exceed 30 characters")
 		.optional(),
 	bottomLinks: z.array(footerLinkSchema).optional(),
+	copyrightText: z
+		.string()
+		.max(150, "Copyright text cannot exceed 150 characters")
+		.optional(),
 });
 
 /**

@@ -39,6 +39,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 		{ label: "FAQ", href: "/faq" },
 		{ label: "Sitemap", href: "/sitemap.xml" },
 	],
+	copyrightText: "Alla rättigheter förbehållna | Designed by NordiGate",
 };
 
 interface FooterProps {
@@ -119,6 +120,8 @@ export function Footer({
 			footerSettings?.bottomLinks?.length
 				? footerSettings.bottomLinks
 				: DEFAULT_FOOTER_SETTINGS.bottomLinks,
+		copyrightText:
+			footerSettings?.copyrightText || DEFAULT_FOOTER_SETTINGS.copyrightText,
 	};
 
 	// Social media icons mapping
@@ -254,8 +257,7 @@ export function Footer({
 
 				<div className="flex flex-col md:grid md:grid-cols-2 items-center gap-4 text-sm text-primary-foreground/50">
 					<p>
-						© {currentYear} {config.company.name}. Alla rättigheter
-						förbehållna.
+						© {currentYear} {config.company.name}. {settings.copyrightText}
 					</p>
 					<div className="flex justify-end gap-6">
 						{settings.bottomLinks
