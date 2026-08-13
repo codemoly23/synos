@@ -1,25 +1,11 @@
 import type { Metadata } from "next";
-import { Montserrat, Noto_Sans } from "next/font/google";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import { montserrat, notoSans } from "./fonts";
 import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { getSiteSettings } from "@/lib/services/site-settings.service";
 import { TrackingScripts } from "@/components/analytics/tracking-scripts";
-
-const montserrat = Montserrat({
-	variable: "--font-montserrat",
-	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700"],
-	style: ["normal", "italic"],
-});
-
-const notoSans = Noto_Sans({
-	variable: "--font-noto-sans",
-	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700"],
-	style: ["normal", "italic"],
-});
 
 const DEFAULT_KEYWORDS = [
 	"laser",

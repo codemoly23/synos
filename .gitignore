@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-# .env*
+# env files — server-local secrets (Mongo creds, auth secrets). Never commit.
+# .env / .env.production etc. are already tracked; only *local* files are ignored.
+.env*.local
+.env.local.*
 
 # vercel
 .vercel
