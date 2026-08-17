@@ -317,7 +317,7 @@ function KategoriSidebar({
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/kategori"
+						href="/klinikutrustning"
 						className={`block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
 							!activeCategory
 								? "btn-copper-gradient"
@@ -674,7 +674,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									Inga produkter tillgängliga i denna kategori för tillfället.
 								</p>
 								<Link
-									href="/kategori"
+									href="/klinikutrustning"
 									className="mt-4 inline-block text-primary hover:underline"
 								>
 									← Tillbaka till alla kategorier

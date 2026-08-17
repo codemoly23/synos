@@ -25,12 +25,12 @@ turbopack: {
 		return [
 			{
 				source: "/produkter",
-				destination: "/klinikutrustning",
+				destination: "/klinikutrustning/",
 				permanent: true,
 			},
 			{
 				source: "/utrustning",
-				destination: "/klinikutrustning",
+				destination: "/klinikutrustning/",
 				permanent: true,
 			},
 			{
@@ -40,102 +40,122 @@ turbopack: {
 			},
 			{
 				source: "/kategori",
-				destination: "/klinikutrustning",
+				destination: "/klinikutrustning/",
 				permanent: true,
 			},
 			{
 				source: "/kategori/:category",
-				destination: "/klinikutrustning/:category",
+				destination: "/klinikutrustning/:category/",
 				permanent: true,
 			},
 			{
 				source: "/kategori/:category/:slug",
-				destination: "/klinikutrustning/:category/:slug",
+				destination: "/klinikutrustning/:category/:slug/",
+				permanent: true,
+			},
+			{
+				source: "/motus-ax-produktforfragan",
+				destination: "/klinikutrustning/harborttagning/harborttagningslaser-kopa-motus-ax/",
+				permanent: true,
+			},
+			{
+				source: "/klinikutrustning/hudforyngring/redtouch-pro",
+				destination: "/klinikutrustning/hudforyngring/redium/",
+				permanent: true,
+			},
+			{
+				source: "/klinikutrustning/muskeltoning/jovena",
+				destination: "/klinikutrustning/ansiktsbehandlingar/jovena/",
+				permanent: true,
+			},
+			{
+				source: "/klinikutrustning/hudatstramning/tetra-pro",
+				destination: "/klinikutrustning/hudforyngring/tetra-pro/",
 				permanent: true,
 			},
 			{
 				source: "/nyheter",
-				destination: "/blogg",
+				destination: "/blogg/",
 				permanent: true,
 			},
 			{
 				source: "/nyheter/:slug",
-				destination: "/blogg/:slug",
+				destination: "/blogg/:slug/",
 				permanent: true,
 			},
 			{
 				source: "/nyheter/category/:slug",
-				destination: "/blogg/category/:slug",
+				destination: "/blogg/category/:slug/",
 				permanent: true,
 			},
 			{
 				source: "/nyheter/tag/:slug",
-				destination: "/blogg/tag/:slug",
+				destination: "/blogg/tag/:slug/",
 				permanent: true,
 			},
 			{
 				source: "/nyheter/author/:slug",
-				destination: "/blogg/author/:slug",
+				destination: "/blogg/author/:slug/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/varfor-valja-synos",
-				destination: "/starta-eget/varfor-valja-synos",
+				destination: "/starta-eget/varfor-valja-synos/",
 				permanent: true,
 			},
 			{
 				source: "/kopguide",
-				destination: "/starta-eget/kopguide",
+				destination: "/starta-eget/kopguide/",
 				permanent: true,
 			},
 			{
 				source: "/utbildningar/miniutbildning-online",
-				destination: "/starta-eget/miniutbildning",
+				destination: "/starta-eget/miniutbildning/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/jobba-hos-oss",
-				destination: "/om-oss/lediga-tjanster",
+				destination: "/om-oss/lediga-tjanster/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/integritetspolicy",
-				destination: "/integritetspolicy",
+				destination: "/integritetspolicy/",
 				permanent: true,
 			},
 			{
 				source: "/villkor",
-				destination: "/faq",
+				destination: "/faq/",
 				permanent: false,
 			},
 			{
 				source: "/nyheter/",
-				destination: "/blogg",
+				destination: "/blogg/",
 				permanent: true,
 			},
 			{
 				source: "/kopguide/",
-				destination: "/starta-eget/kopguide",
+				destination: "/starta-eget/kopguide/",
 				permanent: true,
 			},
 			{
 				source: "/utbildningar/miniutbildning-online/",
-				destination: "/starta-eget/miniutbildning",
+				destination: "/starta-eget/miniutbildning/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/varfor-valja-synos/",
-				destination: "/starta-eget/varfor-valja-synos",
+				destination: "/starta-eget/varfor-valja-synos/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/jobba-hos-oss/",
-				destination: "/om-oss/lediga-tjanster",
+				destination: "/om-oss/lediga-tjanster/",
 				permanent: true,
 			},
 			{
 				source: "/om-oss/integritetspolicy/",
-				destination: "/integritetspolicy",
+				destination: "/integritetspolicy/",
 				permanent: true,
 			},
 		];

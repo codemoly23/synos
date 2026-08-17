@@ -110,13 +110,13 @@ export async function generateMetadata(): Promise<Metadata> {
 				title: `Kategori | ${siteConfig.name}`,
 				description:
 					"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-				url: `${siteConfig.url}/kategori`,
+				url: `${siteConfig.url}/klinikutrustning`,
 				siteName: siteConfig.name,
 				locale: "sv_SE",
 				type: "website",
 			},
 			alternates: {
-				canonical: `${siteConfig.url}/kategori`,
+				canonical: `${siteConfig.url}/klinikutrustning`,
 			},
 		};
 	} catch {
@@ -190,7 +190,7 @@ function KategoriSidebar({
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/kategori"
+						href="/klinikutrustning"
 						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Produkter
@@ -223,7 +223,7 @@ function KategoriSidebar({
 						Technology Category
 					</CardTitle>
 					<Link
-						href="/kategori"
+						href="/klinikutrustning"
 						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Teknologier

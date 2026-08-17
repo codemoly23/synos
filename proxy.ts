@@ -16,6 +16,23 @@ let redirectCache: Map<string, string> | null = null;
 let cacheExpiry = 0;
 const CACHE_TTL = 60_000; // 60 seconds
 
+async function fetchRedirectSource(
+	url: string,
+	headers: Record<string, string>
+): Promise<Array<{ url?: string; redirectUrl?: string; fromUrl?: string; toUrl?: string }>> {
+	try {
+		const res = await fetch(url, {
+			headers,
+			signal: AbortSignal.timeout(3000),
+		});
+		if (!res.ok) return [];
+		const data = await res.json();
+		return data.redirects || [];
+	} catch {
+		return [];
+	}
+}
+
 async function getRedirects(
 	request: NextRequest
 ): Promise<Map<string, string>> {
@@ -24,30 +41,33 @@ async function getRedirects(
 		return redirectCache;
 	}
 
-	try {
-		const baseUrl = request.nextUrl.origin;
-		const res = await fetch(`${baseUrl}/api/404-logs/redirects`, {
-			headers: {
-				"x-middleware-secret": process.env.MIDDLEWARE_SECRET || "",
-			},
-			signal: AbortSignal.timeout(3000),
-		});
+	const baseUrl = request.nextUrl.origin;
+	const headers = {
+		"x-middleware-secret": process.env.MIDDLEWARE_SECRET || "",
+	};
 
-		if (res.ok) {
-			const data = await res.json();
-			const map = new Map<string, string>();
-			for (const entry of data.redirects || []) {
-				map.set(entry.url, entry.redirectUrl);
-			}
-			redirectCache = map;
-			cacheExpiry = now + CACHE_TTL;
-			return map;
-		}
-	} catch {
-		// If fetch fails, return existing cache or empty map
+	const [legacyEntries, redirectEntries] = await Promise.all([
+		fetchRedirectSource(`${baseUrl}/api/404-logs/redirects`, headers),
+		fetchRedirectSource(`${baseUrl}/api/redirects/active`, headers),
+	]);
+
+	if (legacyEntries.length === 0 && redirectEntries.length === 0) {
+		return redirectCache || new Map();
 	}
 
-	return redirectCache || new Map();
+	const map = new Map<string, string>();
+	// Legacy 404-log redirects first, then the dedicated Redirect model
+	// overrides on conflict (source of truth for anything created going forward).
+	for (const entry of legacyEntries) {
+		if (entry.url && entry.redirectUrl) map.set(entry.url, entry.redirectUrl);
+	}
+	for (const entry of redirectEntries) {
+		if (entry.fromUrl && entry.toUrl) map.set(entry.fromUrl, entry.toUrl);
+	}
+
+	redirectCache = map;
+	cacheExpiry = now + CACHE_TTL;
+	return map;
 }
 
 /**
@@ -155,6 +175,20 @@ export async function proxy(request: NextRequest) {
 		}
 	} catch {
 		// Never block page rendering due to redirect check failure
+	}
+
+	// ================================================================
+	// 3. TRAILING SLASH ENFORCEMENT for public page routes
+	// ================================================================
+	// Handled here instead of Next's built-in trailingSlash redirect
+	// (next.config.mjs keeps skipTrailingSlashRedirect: true) because that
+	// built-in redirect was found to also fire on /api/** routes, including
+	// POST requests — a real regression risk for form submissions. This
+	// block only runs for routes that already passed the /api/ exclusion
+	// above, so API routes are never affected.
+	if (pathname !== "/" && !pathname.endsWith("/")) {
+		const destination = `${request.nextUrl.origin}${pathname}/${request.nextUrl.search}`;
+		return NextResponse.redirect(destination, 308);
 	}
 
 	return NextResponse.next();

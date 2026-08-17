@@ -224,7 +224,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				basePath={`/klinikutrustning/${category.slug}`}
 				baseLabel={category.name}
 				parentBreadcrumbs={[
-					{ label: "Kategori", href: "/kategori" },
+					{ label: "Kategori", href: "/klinikutrustning" },
 					{ label: category.name, href: `/klinikutrustning/${category.slug}` },
 				]}
 				contactPhone={contactInfo.phone}

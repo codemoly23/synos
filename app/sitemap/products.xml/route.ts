@@ -31,7 +31,7 @@ export async function GET(): Promise<NextResponse> {
 
 		// Add main products listing page (at /klinikutrustning/)
 		urls.push({
-			loc: `${SITEMAP_CONFIG.baseUrl}/klinikutrustning`,
+			loc: `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/`,
 			lastmod: formatSitemapDate(new Date()),
 			changefreq: SITEMAP_CONFIG.changeFreq.listing,
 			priority: SITEMAP_CONFIG.priority.mainListing,

@@ -14,6 +14,7 @@ import {
 	conflictResponse,
 } from "@/lib/utils/api-response";
 import { revalidateCategory } from "@/lib/revalidation/actions";
+import { redirectService } from "@/lib/services/redirect.service";
 
 interface RouteParams {
 	params: Promise<{ id: string }>;
@@ -98,6 +99,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		await revalidateCategory(category.slug);
 		if (oldSlug !== category.slug) {
 			await revalidateCategory(oldSlug);
+			await redirectService.createAutoRedirect(
+				`/klinikutrustning/${oldSlug}`,
+				`/klinikutrustning/${category.slug}`
+			);
 		}
 
 		logger.info("Category updated", {

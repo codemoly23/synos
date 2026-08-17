@@ -68,7 +68,7 @@ export function NoResults({ query, popularSearches, onClear }: NoResultsProps) {
 			{/* Browse categories link */}
 			<div className="mt-8 pt-8 border-t border-slate-200 w-full max-w-md">
 				<Link
-					href="/kategori"
+					href="/klinikutrustning"
 					className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
 				>
 					Utforska alla kategorier

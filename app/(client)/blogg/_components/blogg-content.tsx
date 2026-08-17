@@ -17,6 +17,7 @@ import { useState, useMemo } from "react";
 import { sanitizeHtmlContent } from "@/lib/sanitize-html";
 import { NyheterAuthorCard } from "./blogg-author-card";
 import Link from "next/link";
+import { generateSlug } from "@/lib/utils/product-helpers";
 
 interface NyheterContentProps {
 	article: Article;
@@ -173,7 +174,7 @@ export function NyheterContent({ article, basePath = "/blogg" }: NyheterContentP
 												{article.categories.map((category) => (
 													<Link
 														key={category}
-														href={`${basePath}/category/${category.toLowerCase().replace(/\s+/g, "-")}`}
+														href={`${basePath}/category/${generateSlug(category)}`}
 														className="inline-flex items-center gap-1.5 rounded-full bg-linear-to-r from-primary/15 to-primary/5 px-4 py-2 text-sm font-medium text-primary border border-primary/20 hover:border-primary/40 hover:from-primary/25 hover:to-primary/15 transition-all duration-300 hover:shadow-md hover:shadow-primary/10"
 													>
 														<span>{category}</span>
