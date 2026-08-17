@@ -41,7 +41,10 @@ async function getRedirects(
 		return redirectCache;
 	}
 
-	const baseUrl = request.nextUrl.origin;
+	// Self-fetch via loopback, not the public origin: on many hosts the
+	// server cannot reach its own public domain (hairpin NAT), which would
+	// otherwise make this fetch silently fail/time out on every request.
+	const baseUrl = `http://127.0.0.1:${process.env.PORT || 3000}`;
 	const headers = {
 		"x-middleware-secret": process.env.MIDDLEWARE_SECRET || "",
 	};
