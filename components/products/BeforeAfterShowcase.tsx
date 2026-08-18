@@ -136,6 +136,15 @@ export function BeforeAfterShowcase({
 	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 	const [lightboxSliderPosition, setLightboxSliderPosition] = useState(50);
 
+	// Desktop defaults to "side-by-side"; mobile keeps the "slider" default.
+	// SSR always renders "slider" to avoid a hydration mismatch — this effect
+	// corrects it once on mount for desktop viewports only.
+	useEffect(() => {
+		if (window.innerWidth >= 768) {
+			setViewMode("side-by-side");
+		}
+	}, []);
+
 	const currentPair = pairs[selectedIndex];
 
 	// Unified pointer handler — covers mouse, touch, and stylus with one API.

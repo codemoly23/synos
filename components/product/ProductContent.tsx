@@ -11,6 +11,8 @@ import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatu
 import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
 import { ProductFeatureGrid } from "@/components/products/sections/ProductFeatureGrid";
 import { getProductCustomSections } from "@/lib/data/product-sections";
+import { ExpandableSection } from "@/components/ui/expandable-section";
+import { ProductTechSpecs } from "@/components/products/ProductTechSpecs";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { BrochureRequestModal } from "@/components/product/BrochureRequestModal";
 import { Badge } from "@/components/ui/badge";
@@ -320,18 +322,26 @@ export function ProductContent({
 						<article className="min-w-0">
 							{/* Main Description */}
 							{product.description?.trim() && (
-								<div
-									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-									dangerouslySetInnerHTML={{ __html: product.description }}
-								/>
+								<div className="mb-10">
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.description }}
+										/>
+									</ExpandableSection>
+								</div>
 							)}
 
 							{/* Extended Description */}
 							{product.productDescription?.trim() && (
-								<div
-									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-									dangerouslySetInnerHTML={{ __html: product.productDescription }}
-								/>
+								<div className="mb-10">
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.productDescription }}
+										/>
+									</ExpandableSection>
+								</div>
 							)}
 
 							{/* Before & After Section */}
@@ -351,35 +361,26 @@ export function ProductContent({
 											{product.additionalDescriptionTitle}
 										</h2>
 									)}
-									<div
-										className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-										dangerouslySetInnerHTML={{ __html: product.additionalDescription }}
-									/>
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.additionalDescription }}
+										/>
+									</ExpandableSection>
 								</div>
 							)}
 
 							{/* FAQ Section */}
 							{product.qa && product.qa.length > 0 && (
 								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
+									<ProductFAQ faqs={product.qa} title={product.faqTitle} limit={5} />
 								</div>
 							)}
 
 							{/* Technical Specifications Section */}
 							{product.techSpecifications && product.techSpecifications.length > 0 && (
 								<div className="mb-12">
-									<h2 className="text-2xl font-light text-secondary mb-6">Tekniska specifikationer</h2>
-									<div className="overflow-hidden rounded-xl border border-primary/20">
-										{product.techSpecifications.map((spec, index) => (
-											<div
-												key={spec._id || index}
-												className={`flex flex-col sm:flex-row gap-2 px-5 py-4 ${index % 2 === 0 ? "bg-primary/5" : "bg-white"}`}
-											>
-												<span className="text-sm font-semibold text-secondary w-full sm:w-2/5 shrink-0">{spec.title}</span>
-												<span className="text-sm text-muted-foreground">{spec.description}</span>
-											</div>
-										))}
-									</div>
+									<ProductTechSpecs specs={product.techSpecifications} limit={5} />
 								</div>
 							)}
 

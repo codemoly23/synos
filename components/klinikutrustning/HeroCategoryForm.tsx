@@ -13,7 +13,9 @@ interface FormState {
 	firstName: string;
 	lastName: string;
 	companyName: string;
+	corporationNumber: string;
 	email: string;
+	phone: string;
 	message: string;
 }
 
@@ -22,13 +24,16 @@ interface FormErrors {
 	lastName?: string;
 	companyName?: string;
 	email?: string;
+	phone?: string;
 }
 
 const EMPTY: FormState = {
 	firstName: "",
 	lastName: "",
 	companyName: "",
+	corporationNumber: "",
 	email: "",
+	phone: "",
 	message: "",
 };
 
@@ -42,6 +47,7 @@ function validate(data: FormState): FormErrors {
 	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
 		errors.email = "Ogiltig e-postadress";
 	}
+	if (!data.phone.trim()) errors.phone = "Obligatoriskt";
 	return errors;
 }
 
@@ -81,9 +87,12 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					type: "hero_inquiry",
-					fullName: `${form.firstName.trim()} ${form.lastName.trim()}`,
+					firstName: form.firstName.trim(),
+					lastName: form.lastName.trim(),
 					email: form.email.trim(),
+					phone: form.phone.trim(),
 					companyName: form.companyName.trim() || undefined,
+					corporationNumber: form.corporationNumber.trim() || undefined,
 					message: form.message.trim() || undefined,
 					categoryName,
 					pageUrl: window.location.href,
@@ -186,16 +195,50 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				</div>
 			</div>
 
+			<div className="grid grid-cols-2 gap-4">
+				<div>
+					<label className="block text-xs text-white/80 mb-1.5">
+						Telefon <span className="text-primary">*</span>
+					</label>
+					<input
+						type="tel"
+						name="phone"
+						value={form.phone}
+						onChange={onChange}
+						placeholder="070 123 45 67"
+						className={errors.phone ? err : base}
+						disabled={isSubmitting}
+					/>
+					{errors.phone && (
+						<p className="mt-1 text-xs text-red-400">{errors.phone}</p>
+					)}
+				</div>
+				<div>
+					<label className="block text-xs text-white/80 mb-1.5">
+						Org. nummer <span className="text-white/40">(valfritt)</span>
+					</label>
+					<input
+						type="text"
+						name="corporationNumber"
+						value={form.corporationNumber}
+						onChange={onChange}
+						placeholder="t.ex. 556789-1234"
+						className={base}
+						disabled={isSubmitting}
+					/>
+				</div>
+			</div>
+
 			<div>
 				<label className="block text-xs text-white/80 mb-1.5">
-					När är du intresserad av att ta nästa steg?
+					Meddelande (valfritt)
 				</label>
 				<textarea
 					name="message"
 					value={form.message}
 					onChange={onChange}
 					rows={4}
-					placeholder="Beskriv när det passar er bäst eller andra detaljer..."
+					placeholder="Berätta mer om dina behov, frågor eller önskemål…"
 					className={`${base} resize-none`}
 					disabled={isSubmitting}
 				/>

@@ -44,8 +44,9 @@ const desktopSchema = z.object({
 	firstName: z.string().min(1, "Förnamn är obligatoriskt").max(50),
 	lastName: z.string().min(1, "Efternamn är obligatoriskt").max(50),
 	email: z.string().email("Ange en giltig e-postadress"),
-	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(20),
-	corporationNumber: z.string().min(1, "Org. nummer är obligatoriskt"),
+	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(25),
+	companyName: z.string().min(1, "Företag är obligatoriskt"),
+	corporationNumber: z.string().optional(),
 	message: z.string().max(2000).optional(),
 	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	productId: z.string().optional(),
@@ -58,7 +59,9 @@ const mobileSchema = z.object({
 	firstName: z.string().min(1, "Förnamn är obligatoriskt").max(50),
 	lastName: z.string().min(1, "Efternamn är obligatoriskt").max(50),
 	email: z.string().email("Ange en giltig e-postadress"),
+	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(25),
 	companyName: z.string().min(1, "Företag är obligatoriskt"),
+	corporationNumber: z.string().optional(),
 	message: z.string().max(2000).optional(),
 	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	productId: z.string().optional(),
@@ -129,6 +132,7 @@ function DesktopInquiryForm({
 			defaultValues: {
 				firstName: "", lastName: "", email: "",
 				phone: "",
+				companyName: "",
 				corporationNumber: "",
 				message: "",
 				gdprConsent: undefined as unknown as true,
@@ -266,17 +270,25 @@ function DesktopInquiryForm({
 					</div>
 
 					<div className="space-y-1.5">
-						<Label className="text-sm font-semibold text-zinc-200">Org. nummer <span className="text-red-400">*</span></Label>
+						<Label className="text-sm font-semibold text-zinc-200">Företag <span className="text-red-400">*</span></Label>
+						<div className="relative">
+							<Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+							<Input {...register("companyName")} placeholder="Ditt företagsnamn" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+						</div>
+						{errors.companyName && <p className="text-xs text-red-400">{errors.companyName.message}</p>}
+					</div>
+
+					<div className="space-y-1.5">
+						<Label className="text-sm font-semibold text-zinc-200">Org. nummer <span className="text-zinc-500 font-normal">(valfritt)</span></Label>
 						<div className="relative">
 							<Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
 							<Input {...register("corporationNumber")} placeholder="t.ex. 556789-1234" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 						</div>
-						{errors.corporationNumber && <p className="text-xs text-red-400">{errors.corporationNumber.message}</p>}
 					</div>
 
-<div className="space-y-1.5">
-						<Label className="text-sm font-semibold text-zinc-200">Meddelande</Label>
-						<Textarea {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål..." className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
+					<div className="space-y-1.5">
+						<Label className="text-sm font-semibold text-zinc-200">Meddelande (valfritt)</Label>
+						<Textarea {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål…" className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
 					</div>
 
 					<div className="flex items-start gap-3 pt-1">
@@ -350,7 +362,8 @@ function MobileInquiryForm({
 			resolver: zodResolver(mobileSchema),
 			defaultValues: {
 				firstName: "", lastName: "", email: "",
-				companyName: "", message: "",
+				phone: "",
+				companyName: "", corporationNumber: "", message: "",
 				gdprConsent: undefined as unknown as true,
 				productId: productId ?? "",
 				productName: productName ?? "",
@@ -473,14 +486,25 @@ function MobileInquiryForm({
 				</div>
 
 				<div>
+					<label className={labelCls}>Org. nummer <span className="text-white/50">(valfritt)</span></label>
+					<input {...register("corporationNumber")} placeholder="t.ex. 556789-1234" className={inputCls} />
+				</div>
+
+				<div>
 					<label className={labelCls}>E-post <span className="text-red-400">*</span></label>
 					<input {...register("email")} type="email" placeholder="din.email@exempel.se" className={inputCls} />
 					{errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
 				</div>
 
 				<div>
-					<label className={labelCls}>Meddelande</label>
-					<textarea {...register("message")} rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className={`${inputCls} resize-none`} />
+					<label className={labelCls}>Telefon <span className="text-red-400">*</span></label>
+					<input {...register("phone")} type="tel" placeholder="070 123 45 67" className={inputCls} />
+					{errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone.message}</p>}
+				</div>
+
+				<div>
+					<label className={labelCls}>Meddelande (valfritt)</label>
+					<textarea {...register("message")} rows={4} placeholder="Berätta mer om dina behov, frågor eller önskemål…" className={`${inputCls} resize-none`} />
 				</div>
 
 				<div className="flex items-start gap-3">

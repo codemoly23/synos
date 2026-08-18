@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -26,8 +26,23 @@ import {
 	Phone,
 	Mail,
 	Globe,
+	GripVertical,
 	type LucideIcon,
 } from "lucide-react";
+import {
+	DndContext,
+	closestCenter,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	verticalListSortingStrategy,
+	useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -312,6 +327,235 @@ const homePageFormSchema = z.object({
 
 type HomePageFormValues = z.infer<typeof homePageFormSchema>;
 
+interface SortableFeaturedProductCardProps {
+	id: string;
+	index: number;
+	control: Control<HomePageFormValues>;
+	onRemove: () => void;
+}
+
+function SortableFeaturedProductCard({
+	id,
+	index,
+	control,
+	onRemove,
+}: SortableFeaturedProductCardProps) {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+		useSortable({ id });
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+	};
+
+	return (
+		<Card ref={setNodeRef} style={style} className={`border-dashed ${isDragging ? "z-10 shadow-lg" : ""}`}>
+			<CardHeader className="pb-3">
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing shrink-0"
+							aria-label="Drag to reorder"
+							{...attributes}
+							{...listeners}
+						>
+							<GripVertical className="h-5 w-5" />
+						</button>
+						<CardTitle className="text-base">
+							Product {index + 1}
+						</CardTitle>
+					</div>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onClick={onRemove}
+						className="text-destructive hover:text-destructive"
+					>
+						<Trash2 className="h-4 w-4" />
+					</Button>
+				</div>
+			</CardHeader>
+			<CardContent className="space-y-4">
+				<div className="grid gap-4 sm:grid-cols-2">
+					<FormField
+						control={control}
+						name={`productShowcase.products.${index}.name`}
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Name</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										value={field.value || ""}
+										placeholder="Advanced MRI Scanner X1"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={control}
+						name={`productShowcase.products.${index}.category`}
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									Category
+								</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										value={field.value || ""}
+										placeholder="Imaging"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+				<FormField
+					control={control}
+					name={`productShowcase.products.${index}.description`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>
+								Description
+							</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									value={field.value || ""}
+									placeholder="Professional grade equipment..."
+									rows={2}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<div className="grid gap-4 sm:grid-cols-2">
+					<FormField
+						control={control}
+						name={`productShowcase.products.${index}.status`}
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Status</FormLabel>
+								<Select
+									onValueChange={
+										field.onChange
+									}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="Select status" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										<SelectItem value="In Stock">
+											In Stock
+										</SelectItem>
+										<SelectItem value="Low Stock">
+											Low Stock
+										</SelectItem>
+										<SelectItem value="Pre-order">
+											Pre-order
+										</SelectItem>
+										<SelectItem value="Out of Stock">
+											Out of Stock
+										</SelectItem>
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={control}
+						name={`productShowcase.products.${index}.href`}
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									Link (optional)
+								</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										value={field.value || ""}
+										placeholder="/produkter/product-slug"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+				<FormField
+					control={control}
+					name={`productShowcase.products.${index}.image`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Image (Desktop)</FormLabel>
+							<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 800×600px • Ratio: 4:3 • Max: 5MB • Format: JPG, PNG, WebP</p>
+							<FormControl>
+								<MediaPicker
+									type="image"
+									value={
+										field.value || null
+									}
+									onChange={(url) =>
+										field.onChange(
+											url || ""
+										)
+									}
+									placeholder="Select product image for desktop"
+									galleryTitle="Select Product Image (Desktop)"
+								/>
+							</FormControl>
+							<FormDescription>
+								This image will be shown on desktop/tablet
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={control}
+					name={`productShowcase.products.${index}.mobileImage`}
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Image (Mobile)</FormLabel>
+							<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 600×800px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
+							<FormControl>
+								<MediaPicker
+									type="image"
+									value={
+										field.value || null
+									}
+									onChange={(url) =>
+										field.onChange(
+											url || ""
+										)
+									}
+									placeholder="Select product image for mobile"
+									galleryTitle="Select Product Image (Mobile)"
+								/>
+							</FormControl>
+							<FormDescription>
+								This image will be shown on mobile (portrait recommended)
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function StartsidaPage() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
@@ -484,10 +728,24 @@ export default function StartsidaPage() {
 		fields: productFields,
 		append: appendProduct,
 		remove: removeProduct,
+		move: moveProduct,
 	} = useFieldArray({
 		control: form.control,
 		name: "productShowcase.products",
 	});
+
+	const productDragSensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+	);
+
+	function handleProductDragEnd(event: DragEndEvent) {
+		const { active, over } = event;
+		if (!over || active.id === over.id) return;
+		const oldIndex = productFields.findIndex((f) => f.id === active.id);
+		const newIndex = productFields.findIndex((f) => f.id === over.id);
+		if (oldIndex === -1 || newIndex === -1) return;
+		moveProduct(oldIndex, newIndex);
+	}
 
 	const {
 		fields: galleryImageFields,
@@ -1795,18 +2053,23 @@ export default function StartsidaPage() {
 											Product&quot; to add one.
 										</div>
 									) : (
-										productFields.map((field, index) => (
-											<Card key={field.id} className="border-dashed">
-												<CardHeader className="pb-3">
-													<div className="flex items-center justify-between">
-														<CardTitle className="text-base">
-															Product {index + 1}
-														</CardTitle>
-														<Button
-															type="button"
-															variant="ghost"
-															size="sm"
-															onClick={async () => {
+										<DndContext
+											sensors={productDragSensors}
+											collisionDetection={closestCenter}
+											onDragEnd={handleProductDragEnd}
+										>
+											<SortableContext
+												items={productFields.map((f) => f.id)}
+												strategy={verticalListSortingStrategy}
+											>
+												<div className="space-y-4">
+													{productFields.map((field, index) => (
+														<SortableFeaturedProductCard
+															key={field.id}
+															id={field.id}
+															index={index}
+															control={form.control}
+															onRemove={async () => {
 																const confirmed = await confirm({
 																	title: "Remove Product",
 																	description: "Are you sure you want to remove this product?",
@@ -1814,189 +2077,11 @@ export default function StartsidaPage() {
 																});
 																if (confirmed) removeProduct(index);
 															}}
-															className="text-destructive hover:text-destructive"
-														>
-															<Trash2 className="h-4 w-4" />
-														</Button>
-													</div>
-												</CardHeader>
-												<CardContent className="space-y-4">
-													<div className="grid gap-4 sm:grid-cols-2">
-														<FormField
-															control={form.control}
-															name={`productShowcase.products.${index}.name`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>Name</FormLabel>
-																	<FormControl>
-																		<Input
-																			{...field}
-																			value={field.value || ""}
-																			placeholder="Advanced MRI Scanner X1"
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
 														/>
-														<FormField
-															control={form.control}
-															name={`productShowcase.products.${index}.category`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>
-																		Category
-																	</FormLabel>
-																	<FormControl>
-																		<Input
-																			{...field}
-																			value={field.value || ""}
-																			placeholder="Imaging"
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-													</div>
-													<FormField
-														control={form.control}
-														name={`productShowcase.products.${index}.description`}
-														render={({ field }) => (
-															<FormItem>
-																<FormLabel>
-																	Description
-																</FormLabel>
-																<FormControl>
-																	<Textarea
-																		{...field}
-																		value={field.value || ""}
-																		placeholder="Professional grade equipment..."
-																		rows={2}
-																	/>
-																</FormControl>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-													<div className="grid gap-4 sm:grid-cols-2">
-														<FormField
-															control={form.control}
-															name={`productShowcase.products.${index}.status`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>Status</FormLabel>
-																	<Select
-																		onValueChange={
-																			field.onChange
-																		}
-																		defaultValue={field.value}
-																	>
-																		<FormControl>
-																			<SelectTrigger>
-																				<SelectValue placeholder="Select status" />
-																			</SelectTrigger>
-																		</FormControl>
-																		<SelectContent>
-																			<SelectItem value="In Stock">
-																				In Stock
-																			</SelectItem>
-																			<SelectItem value="Low Stock">
-																				Low Stock
-																			</SelectItem>
-																			<SelectItem value="Pre-order">
-																				Pre-order
-																			</SelectItem>
-																			<SelectItem value="Out of Stock">
-																				Out of Stock
-																			</SelectItem>
-																		</SelectContent>
-																	</Select>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-														<FormField
-															control={form.control}
-															name={`productShowcase.products.${index}.href`}
-															render={({ field }) => (
-																<FormItem>
-																	<FormLabel>
-																		Link (optional)
-																	</FormLabel>
-																	<FormControl>
-																		<Input
-																			{...field}
-																			value={field.value || ""}
-																			placeholder="/produkter/product-slug"
-																		/>
-																	</FormControl>
-																	<FormMessage />
-																</FormItem>
-															)}
-														/>
-													</div>
-													<FormField
-														control={form.control}
-														name={`productShowcase.products.${index}.image`}
-														render={({ field }) => (
-															<FormItem>
-																<FormLabel>Image (Desktop)</FormLabel>
-																<p className="text-xs text-blue-600 dark:text-blue-400">Desktop: 800×600px • Ratio: 4:3 • Max: 5MB • Format: JPG, PNG, WebP</p>
-																<FormControl>
-																	<MediaPicker
-																		type="image"
-																		value={
-																			field.value || null
-																		}
-																		onChange={(url) =>
-																			field.onChange(
-																				url || ""
-																			)
-																		}
-																		placeholder="Select product image for desktop"
-																		galleryTitle="Select Product Image (Desktop)"
-																	/>
-																</FormControl>
-																<FormDescription>
-																	This image will be shown on desktop/tablet
-																</FormDescription>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-													<FormField
-														control={form.control}
-														name={`productShowcase.products.${index}.mobileImage`}
-														render={({ field }) => (
-															<FormItem>
-																<FormLabel>Image (Mobile)</FormLabel>
-																<p className="text-xs text-blue-600 dark:text-blue-400">Mobile: 600×800px • Ratio: 3:4 (portrait) • Max: 5MB • Format: JPG, PNG, WebP</p>
-																<FormControl>
-																	<MediaPicker
-																		type="image"
-																		value={
-																			field.value || null
-																		}
-																		onChange={(url) =>
-																			field.onChange(
-																				url || ""
-																			)
-																		}
-																		placeholder="Select product image for mobile"
-																		galleryTitle="Select Product Image (Mobile)"
-																	/>
-																</FormControl>
-																<FormDescription>
-																	This image will be shown on mobile (portrait recommended)
-																</FormDescription>
-																<FormMessage />
-															</FormItem>
-														)}
-													/>
-												</CardContent>
-											</Card>
-										))
+													))}
+												</div>
+											</SortableContext>
+										</DndContext>
 									)}
 								</CardContent>
 							</Card>

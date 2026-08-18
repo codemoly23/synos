@@ -29,18 +29,26 @@ import { pushEvent } from "@/lib/analytics/gtm";
 
 // Client-side form schema
 const quoteFormSchema = z.object({
-	fullName: z
+	firstName: z
 		.string()
-		.min(2, "Namnet måste vara minst 2 tecken")
-		.max(100, "Namnet får inte överstiga 100 tecken"),
+		.min(1, "Förnamn är obligatoriskt")
+		.max(100, "Förnamnet får inte överstiga 100 tecken"),
+	lastName: z
+		.string()
+		.min(1, "Efternamn är obligatoriskt")
+		.max(100, "Efternamnet får inte överstiga 100 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
-		.max(20, "Telefonnummer får inte överstiga 20 siffror"),
+		.max(25, "Telefonnummer får inte överstiga 25 tecken"),
 	companyName: z
 		.string()
-		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.min(1, "Företag är obligatoriskt")
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken"),
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
 		.optional(),
 	message: z
 		.string()
@@ -73,10 +81,12 @@ export function QuoteRequestModal({
 	} = useForm<FormData>({
 		resolver: zodResolver(quoteFormSchema),
 		defaultValues: {
-			fullName: "",
+			firstName: "",
+			lastName: "",
 			email: "",
 			phone: "",
 			companyName: "",
+			corporationNumber: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
 		},
@@ -189,30 +199,58 @@ export function QuoteRequestModal({
 								onSubmit={handleSubmit(onSubmit)}
 								className="space-y-3"
 							>
-								{/* Full Name */}
+								{/* First Name */}
 								<div className="space-y-1">
 									<Label
-										htmlFor="fullName"
+										htmlFor="firstName"
 										className="text-xs font-semibold"
 									>
-										Namn <span className="text-red-500">*</span>
+										Förnamn <span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
 										<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
 										<Input
-											id="fullName"
-											{...register("fullName")}
-											placeholder="Ditt fullständiga namn"
+											id="firstName"
+											{...register("firstName")}
+											placeholder="Ditt förnamn"
 											className={cn(
 												"pl-10 h-10 text-sm",
-												errors.fullName && "border-red-500"
+												errors.firstName && "border-red-500"
 											)}
 											disabled={isSubmitting}
 										/>
 									</div>
-									{errors.fullName && (
+									{errors.firstName && (
 										<p className="text-xs text-red-500">
-											{errors.fullName.message}
+											{errors.firstName.message}
+										</p>
+									)}
+								</div>
+
+								{/* Last Name */}
+								<div className="space-y-1">
+									<Label
+										htmlFor="lastName"
+										className="text-xs font-semibold"
+									>
+										Efternamn <span className="text-red-500">*</span>
+									</Label>
+									<div className="relative">
+										<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<Input
+											id="lastName"
+											{...register("lastName")}
+											placeholder="Ditt efternamn"
+											className={cn(
+												"pl-10 h-10 text-sm",
+												errors.lastName && "border-red-500"
+											)}
+											disabled={isSubmitting}
+										/>
+									</div>
+									{errors.lastName && (
+										<p className="text-xs text-red-500">
+											{errors.lastName.message}
 										</p>
 									)}
 								</div>
@@ -277,16 +315,13 @@ export function QuoteRequestModal({
 									)}
 								</div>
 
-								{/* Company Name (Optional) */}
+								{/* Company Name */}
 								<div className="space-y-1">
 									<Label
 										htmlFor="companyName"
 										className="text-xs font-semibold"
 									>
-										Företagsnamn{" "}
-										<span className="text-muted-foreground font-normal">
-											(valfritt)
-										</span>
+										Företag <span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
 										<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -294,6 +329,37 @@ export function QuoteRequestModal({
 											id="companyName"
 											{...register("companyName")}
 											placeholder="Ditt företags namn"
+											className={cn(
+												"pl-10 h-10 text-sm",
+												errors.companyName && "border-red-500"
+											)}
+											disabled={isSubmitting}
+										/>
+									</div>
+									{errors.companyName && (
+										<p className="text-xs text-red-500">
+											{errors.companyName.message}
+										</p>
+									)}
+								</div>
+
+								{/* Corporation Number (Optional) */}
+								<div className="space-y-1">
+									<Label
+										htmlFor="corporationNumber"
+										className="text-xs font-semibold"
+									>
+										Org. nummer{" "}
+										<span className="text-muted-foreground font-normal">
+											(valfritt)
+										</span>
+									</Label>
+									<div className="relative">
+										<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<Input
+											id="corporationNumber"
+											{...register("corporationNumber")}
+											placeholder="t.ex. 556789-1234"
 											className="pl-10 h-10 text-sm"
 											disabled={isSubmitting}
 										/>
@@ -314,7 +380,7 @@ export function QuoteRequestModal({
 									<Textarea
 										id="message"
 										{...register("message")}
-										placeholder="Berätta gärna vad du är intresserad av eller har frågor om..."
+										placeholder="Berätta mer om dina behov, frågor eller önskemål…"
 										className={cn(
 											"min-h-[70px] resize-none text-sm",
 											errors.message && "border-red-500"

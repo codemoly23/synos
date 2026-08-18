@@ -55,6 +55,7 @@ interface Submission {
 	phone: string;
 	countryCode: string;
 	countryName: string;
+	companyName: string | null;
 	productName: string | null;
 	productSlug: string | null;
 	helpType: HelpType | null;
@@ -603,6 +604,12 @@ export function InquiriesList({
 													{submission.phone}
 												</span>
 											</div>
+											{submission.companyName && (
+												<div className="flex items-center gap-1 text-sm text-slate-600 mt-1">
+													<Building className="h-3 w-3" />
+													{submission.companyName}
+												</div>
+											)}
 											{submission.productName && (
 												<div className="flex items-center gap-1 text-sm text-primary mt-1">
 													<Building className="h-3 w-3" />

@@ -356,26 +356,24 @@ export function InquiryDetail({ submission }: InquiryDetailProps) {
 							</Card>
 						)}
 
-						{/* Brochure Request Details (if applicable) */}
-						{submission.type === "brochure_request" && (
+						{/* Company (shown for any submission that has one) */}
+						{submission.companyName && (
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
-										<FileText className="h-5 w-5" />
-										Brochure Request Details
+										<Building className="h-5 w-5" />
+										Company
 									</CardTitle>
 								</CardHeader>
 								<CardContent className="space-y-4">
-									{submission.companyName && (
-										<div className="space-y-1">
-											<label className="text-sm text-slate-500">Company</label>
-											<div className="flex items-center gap-2">
-												<Building className="h-4 w-4 text-slate-400" />
-												<p className="font-medium">{submission.companyName}</p>
-											</div>
+									<div className="space-y-1">
+										<label className="text-sm text-slate-500">Company Name</label>
+										<div className="flex items-center gap-2">
+											<Building className="h-4 w-4 text-slate-400" />
+											<p className="font-medium">{submission.companyName}</p>
 										</div>
-									)}
-									{submission.subject && (
+									</div>
+									{submission.type === "brochure_request" && submission.subject && (
 										<div className="space-y-1">
 											<label className="text-sm text-slate-500">Requested Document</label>
 											<div className="bg-slate-50 p-3 rounded-lg">

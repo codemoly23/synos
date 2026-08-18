@@ -3,8 +3,6 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { BrightcallScript } from "@/components/callback/BrightcallScript";
-import { CookieConsent } from "@/components/cookie/CookieConsent";
-import { CookieConsentProvider } from "@/lib/context/cookie-consent-context";
 import { NavbarVariantProvider } from "@/lib/context/navbar-variant-context";
 import {
 	getLegacySiteConfig,
@@ -60,27 +58,24 @@ export default async function ClientLayout({
 	);
 
 	return (
-		<CookieConsentProvider>
-			<NavbarVariantProvider>
-				<div className="flex flex-col min-h-screen overflow-x-clip">
-					<ScrollToTop />
-					<Navbar config={siteConfig} logoUrl={logoUrl} />
-					<main className="flex-1 w-full">{children}</main>
-					<Footer
-						config={siteConfig}
-						footerSettings={footerSettings ?? undefined}
-						logoUrl={logoUrl}
+		<NavbarVariantProvider>
+			<div className="flex flex-col min-h-screen overflow-x-clip">
+				<ScrollToTop />
+				<Navbar config={siteConfig} logoUrl={logoUrl} />
+				<main className="flex-1 w-full">{children}</main>
+				<Footer
+					config={siteConfig}
+					footerSettings={footerSettings ?? undefined}
+					logoUrl={logoUrl}
+				/>
+				<MobileBottomNav />
+				{brightcallActive && (
+					<BrightcallScript
+						widgetKey={siteSettings!.brightcall!.widgetKey!}
+						apiBaseUrl={siteSettings!.brightcall?.apiBaseUrl}
 					/>
-					<MobileBottomNav />
-					{brightcallActive && (
-						<BrightcallScript
-							widgetKey={siteSettings!.brightcall!.widgetKey!}
-							apiBaseUrl={siteSettings!.brightcall?.apiBaseUrl}
-						/>
-					)}
-					<CookieConsent />
-				</div>
-			</NavbarVariantProvider>
-		</CookieConsentProvider>
+				)}
+			</div>
+		</NavbarVariantProvider>
 	);
 }

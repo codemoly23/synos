@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { PreviewEditor } from "@/components/common/TextEditor";
+import { Button } from "@/components/ui/button";
 
 interface ProductFAQProps {
 	faqs: Array<{
@@ -13,6 +14,9 @@ interface ProductFAQProps {
 		_id: string;
 	}>;
 	title?: string;
+	/** When set, only this many visible FAQs render until "showAllLabel" is clicked. */
+	limit?: number;
+	showAllLabel?: string;
 }
 
 /**
@@ -24,8 +28,9 @@ interface ProductFAQProps {
  * - One item open at a time
  * - Keyboard accessible
  */
-export function ProductFAQ({ faqs, title }: ProductFAQProps) {
+export function ProductFAQ({ faqs, title, limit, showAllLabel = "Visa alla frågor" }: ProductFAQProps) {
 	const [openIndex, setOpenIndex] = useState<number | null>(0);
+	const [showAll, setShowAll] = useState(false);
 
 	const toggleFAQ = (index: number) => {
 		setOpenIndex(openIndex === index ? null : index);
@@ -33,15 +38,18 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 
 	if (!faqs || faqs.length === 0) return null;
 
+	const visibleFaqs = faqs.filter((faq) => faq.visible);
+	const isCapped = !showAll && !!limit && visibleFaqs.length > limit;
+	const displayedFaqs = isCapped ? visibleFaqs.slice(0, limit) : visibleFaqs;
+
 	return (
-		<div className="space-y-4">
+		<div className="relative space-y-4">
 			{title && (
 				<h2 className="text-2xl md:text-3xl font-bold text-secondary mb-6">
 					{title}
 				</h2>
 			)}
-			{faqs
-				.filter((faq) => faq.visible)
+			{displayedFaqs
 				.map((faq, index) => (
 					<motion.div
 						key={faq._id}
@@ -109,6 +117,29 @@ export function ProductFAQ({ faqs, title }: ProductFAQProps) {
 						</div>
 					</motion.div>
 				))}
+			{isCapped && (
+				<div className="pointer-events-none absolute inset-x-0 bottom-16 h-24 bg-gradient-to-t from-background to-transparent" />
+			)}
+			{!!limit && visibleFaqs.length > limit && (
+				<div className="flex justify-center pt-2">
+					<Button
+						variant="outline"
+						size="sm"
+						className="rounded-full text-primary hover:text-primary/80"
+						onClick={() => setShowAll((prev) => !prev)}
+					>
+						{showAll ? (
+							<>
+								Visa färre <ChevronUp className="ml-1 h-4 w-4" />
+							</>
+						) : (
+							<>
+								{showAllLabel} <ChevronDown className="ml-1 h-4 w-4" />
+							</>
+						)}
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -73,6 +73,7 @@ export default async function InquiriesPage({ searchParams }: PageProps) {
 				phone: s.phone || "",
 				countryCode: s.countryCode || "",
 				countryName: s.countryName || "",
+				companyName: s.companyName || null,
 				productName: s.productName || null,
 				productSlug: s.productSlug || null,
 				helpType: s.helpType || null,

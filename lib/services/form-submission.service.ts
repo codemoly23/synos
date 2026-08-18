@@ -111,13 +111,16 @@ class FormSubmissionService {
 		const validData = validationResult.data;
 
 		// Sanitize user-provided fields
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "product_inquiry" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
-			phone: validData.phone ? this.sanitizeInput(validData.phone) : null,
-			countryCode: validData.countryCode || null,
-			countryName: validData.countryName ? this.sanitizeInput(validData.countryName) : null,
+			phone: this.sanitizeInput(validData.phone),
+			companyName: this.sanitizeInput(validData.companyName) || null,
 			corporationNumber:
 				this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
@@ -228,10 +231,25 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
-		// Sanitize user-provided fields
+		// Sanitize user-provided fields. firstName/lastName take precedence;
+		// legacy "quick contact" widgets elsewhere on the site still send a
+		// single combined fullName with no split, so fall back to that.
+		const firstName = validData.firstName
+			? this.sanitizeInput(validData.firstName)
+			: undefined;
+		const lastName = validData.lastName
+			? this.sanitizeInput(validData.lastName)
+			: undefined;
+		const fullName =
+			firstName && lastName
+				? `${firstName} ${lastName}`.trim()
+				: this.sanitizeInput(validData.fullName);
+
 		const sanitizedData = {
 			type: "contact" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName,
+			firstName: firstName || null,
+			lastName: lastName || null,
 			email: validData.email.toLowerCase().trim(),
 			phone: this.sanitizeInput(validData.phone) || null,
 			corporationNumber:
@@ -389,14 +407,18 @@ class FormSubmissionService {
 		const validData = validationResult.data;
 
 		// Sanitize user-provided fields
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "quote_request" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
 			phone: this.sanitizeInput(validData.phone),
-			countryCode: validData.countryCode,
 			countryName: "Sweden",
-			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
 			gdprConsent: validData.gdprConsent,
 			gdprConsentTimestamp: new Date(),
@@ -544,11 +566,17 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "hero_inquiry" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
-			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			phone: this.sanitizeInput(validData.phone),
+			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
 			gdprConsent: true,
 			gdprConsentTimestamp: new Date(),
@@ -587,11 +615,18 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "brochure_request" as FormSubmissionType,
-			fullName: `${this.sanitizeInput(validData.firstName)} ${this.sanitizeInput(validData.lastName)}`.trim(),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
 			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
+			message: this.sanitizeInput(validData.message) || null,
 			productName: this.sanitizeInput(validData.productName) || null,
 			productSlug: this.sanitizeInput(validData.productSlug) || null,
 			subject: this.sanitizeInput(validData.documentTitle) || null,

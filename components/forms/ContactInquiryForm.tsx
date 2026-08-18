@@ -26,12 +26,14 @@ import { cn } from "@/lib/utils/cn";
 import { z } from "zod";
 
 const clientFormSchema = z.object({
-	fullName: z.string().min(2, "Namnet måste vara minst 2 tecken").max(100, "Namnet får inte överstiga 100 tecken"),
+	firstName: z.string().min(1, "Förnamn är obligatoriskt").max(100, "Förnamnet får inte överstiga 100 tecken"),
+	lastName: z.string().min(1, "Efternamn är obligatoriskt").max(100, "Efternamnet får inte överstiga 100 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
-	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(20, "Telefonnummer får inte överstiga 20 siffror"),
+	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(25, "Telefonnummer får inte överstiga 25 tecken"),
 	subject: z.string().min(3, "Ämne måste vara minst 3 tecken").max(200, "Ämne får inte överstiga 200 tecken"),
+	companyName: z.string().min(1, "Företag är obligatoriskt").max(200, "Företagsnamnet får inte överstiga 200 tecken"),
 	corporationNumber: z.string().optional(),
-	message: z.string().min(10, "Meddelandet måste vara minst 10 tecken").max(2000, "Meddelandet får inte överstiga 2000 tecken"),
+	message: z.string().max(2000, "Meddelandet får inte överstiga 2000 tecken").optional(),
 	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	marketingConsent: z.boolean().optional(),
 });
@@ -47,10 +49,12 @@ export function ContactInquiryForm() {
 	const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>({
 		resolver: zodResolver(clientFormSchema),
 		defaultValues: {
-			fullName: "",
+			firstName: "",
+			lastName: "",
 			email: "",
 			phone: "",
 			subject: "",
+			companyName: "",
 			corporationNumber: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
@@ -115,14 +119,42 @@ export function ContactInquiryForm() {
 					Kontaktuppgifter
 				</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					{/* Full Name */}
+					{/* First Name */}
 					<div className="space-y-2">
-						<Label htmlFor="fullName" className="text-sm font-semibold">Namn <span className="text-red-500">*</span></Label>
+						<Label htmlFor="firstName" className="text-sm font-semibold">Förnamn <span className="text-red-500">*</span></Label>
 						<div className="relative">
 							<User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-							<Input id="fullName" {...register("fullName")} placeholder="Ditt fullständiga namn" className={cn("pl-11 h-12", errors.fullName && "border-red-500")} disabled={isSubmitting} />
+							<Input id="firstName" {...register("firstName")} placeholder="Ditt förnamn" className={cn("pl-11 h-12", errors.firstName && "border-red-500")} disabled={isSubmitting} />
 						</div>
-						{errors.fullName && <p className="text-sm text-red-500">{errors.fullName.message}</p>}
+						{errors.firstName && <p className="text-sm text-red-500">{errors.firstName.message}</p>}
+					</div>
+					{/* Last Name */}
+					<div className="space-y-2">
+						<Label htmlFor="lastName" className="text-sm font-semibold">Efternamn <span className="text-red-500">*</span></Label>
+						<div className="relative">
+							<User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+							<Input id="lastName" {...register("lastName")} placeholder="Ditt efternamn" className={cn("pl-11 h-12", errors.lastName && "border-red-500")} disabled={isSubmitting} />
+						</div>
+						{errors.lastName && <p className="text-sm text-red-500">{errors.lastName.message}</p>}
+					</div>
+					{/* Company */}
+					<div className="space-y-2">
+						<Label htmlFor="companyName" className="text-sm font-semibold">Företag <span className="text-red-500">*</span></Label>
+						<div className="relative">
+							<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+							<Input id="companyName" {...register("companyName")} placeholder="Ditt företagsnamn" className={cn("pl-11 h-12", errors.companyName && "border-red-500")} disabled={isSubmitting} />
+						</div>
+						{errors.companyName && <p className="text-sm text-red-500">{errors.companyName.message}</p>}
+					</div>
+					{/* Corporation Number */}
+					<div className="space-y-2">
+						<Label htmlFor="corporationNumber" className="text-sm font-semibold">
+							Org. nummer <span className="text-muted-foreground font-normal">(valfritt)</span>
+						</Label>
+						<div className="relative">
+							<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+							<Input id="corporationNumber" {...register("corporationNumber")} placeholder="t.ex. 556789-1234" className="pl-11 h-12" disabled={isSubmitting} />
+						</div>
 					</div>
 					{/* Email */}
 					<div className="space-y-2">
@@ -142,16 +174,6 @@ export function ContactInquiryForm() {
 						</div>
 						{errors.phone && <p className="text-sm text-red-500">{errors.phone.message}</p>}
 					</div>
-					{/* Corporation Number */}
-					<div className="space-y-2">
-						<Label htmlFor="corporationNumber" className="text-sm font-semibold">
-							Företag / Org. nummer <span className="text-muted-foreground font-normal">(valfritt)</span>
-						</Label>
-						<div className="relative">
-							<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-							<Input id="corporationNumber" {...register("corporationNumber")} placeholder="Företagsnamn eller org.nummer" className="pl-11 h-12" disabled={isSubmitting} />
-						</div>
-					</div>
 				</div>
 			</div>
 
@@ -170,8 +192,8 @@ export function ContactInquiryForm() {
 					{errors.subject && <p className="text-sm text-red-500">{errors.subject.message}</p>}
 				</div>
 				<div className="space-y-2">
-					<Label htmlFor="message" className="text-sm font-semibold">Meddelande <span className="text-red-500">*</span></Label>
-					<Textarea id="message" {...register("message")} placeholder="Berätta mer om din förfrågan, frågor eller önskemål..." className={cn("min-h-[150px] resize-none", errors.message && "border-red-500")} disabled={isSubmitting} />
+					<Label htmlFor="message" className="text-sm font-semibold">Meddelande (valfritt)</Label>
+					<Textarea id="message" {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål…" className={cn("min-h-[150px] resize-none", errors.message && "border-red-500")} disabled={isSubmitting} />
 					{errors.message && <p className="text-sm text-red-500">{errors.message.message}</p>}
 				</div>
 			</div>

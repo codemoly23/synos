@@ -130,123 +130,112 @@ const baseFormFields = {
 
 /**
  * Product Inquiry Form Schema
- * phone/countryCode/countryName/helpType are optional for mobile compatibility.
- * Desktop enforces them via its own frontend schema.
+ * Standardized field set: firstName/lastName/companyName/phone required,
+ * corporationNumber/message optional.
  */
-export const productInquirySchema = z
-	.object({
-		// Required base fields
-		fullName: baseFormFields.fullName,
-		email: baseFormFields.email,
-		corporationNumber: baseFormFields.corporationNumber,
-		message: baseFormFields.message,
-		gdprConsent: baseFormFields.gdprConsent,
-		marketingConsent: baseFormFields.marketingConsent,
+export const productInquirySchema = z.object({
+	firstName: z.string().min(1, "Förnamn krävs").max(100, "Förnamnet får inte överstiga 100 tecken").trim(),
+	lastName: z.string().min(1, "Efternamn krävs").max(100, "Efternamnet får inte överstiga 100 tecken").trim(),
+	email: baseFormFields.email,
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 siffror")
+		.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
+		.trim(),
+	companyName: z
+		.string()
+		.min(1, "Företag krävs")
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim(),
+	corporationNumber: baseFormFields.corporationNumber,
+	message: baseFormFields.message,
+	gdprConsent: baseFormFields.gdprConsent,
+	marketingConsent: baseFormFields.marketingConsent,
+	helpType: z
+		.enum(helpTypes, { message: "Välj hur vi kan hjälpa dig" })
+		.optional(),
 
-		// Optional for mobile (desktop provides via CountryCodeSelect)
-		countryCode: z
-			.string()
-			.min(2, "Landskod krävs")
-			.max(10, "Ogiltig landskod")
-			.regex(/^\+\d{1,4}$/, "Ogiltig landskod")
-			.optional()
-			.or(z.literal("")),
-		countryName: z
-			.string()
-			.min(2, "Land krävs")
-			.max(100, "Landets namn får inte överstiga 100 tecken")
-			.trim()
-			.optional()
-			.or(z.literal("")),
-		phone: z
-			.string()
-			.min(6, "Telefonnummer måste vara minst 6 siffror")
-			.max(25, "Telefonnummer får inte överstiga 25 siffror")
-			.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
-			.trim()
-			.optional()
-			.or(z.literal("")),
-		helpType: z
-			.enum(helpTypes, { message: "Välj hur vi kan hjälpa dig" })
-			.optional(),
-
-		// Required product fields
-		productId: z.string().min(1, "Produkt-ID krävs"),
-		productName: z.string().min(1, "Produktnamn krävs"),
-		productSlug: z.string().min(1, "Produkt-slug krävs"),
-		productCategorySlug: z.string().max(200).trim().optional().or(z.literal("")),
-	})
-	.refine(
-		(data) => {
-			if (!data.countryCode || !data.phone) return true;
-			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
-			return isValidPhoneNumber(fullPhone);
-		},
-		{
-			message: "Ogiltigt telefonnummer för valt land",
-			path: ["phone"],
-		}
-	);
+	// Required product fields
+	productId: z.string().min(1, "Produkt-ID krävs"),
+	productName: z.string().min(1, "Produktnamn krävs"),
+	productSlug: z.string().min(1, "Produkt-slug krävs"),
+	productCategorySlug: z.string().max(200).trim().optional().or(z.literal("")),
+});
 
 /**
  * Contact Inquiry Form Schema
  * Simpler schema — no country code picker, accepts full phone numbers.
+ *
+ * NOTE: this schema is shared by the dedicated /kontakt page form (which now
+ * sends the standardized firstName/lastName/companyName field set) AND
+ * several unrelated "quick contact" widgets across other pages (About,
+ * Careers, Starta eget, Training) that still send a single legacy `fullName`
+ * field with no company. Both must keep working, so firstName/lastName and
+ * companyName stay optional here — the split-name requirement is enforced
+ * below by the refine, while companyName's "required" behavior for the
+ * dedicated contact form is enforced client-side only.
  */
-export const contactInquirySchema = z.object({
-	fullName: z
-		.string()
-		.min(2, "Namnet måste vara minst 2 tecken")
-		.max(100, "Namnet får inte överstiga 100 tecken")
-		.trim(),
+export const contactInquirySchema = z
+	.object({
+		firstName: z.string().max(100, "Förnamnet får inte överstiga 100 tecken").trim().optional(),
+		lastName: z.string().max(100, "Efternamnet får inte överstiga 100 tecken").trim().optional(),
+		fullName: z
+			.string()
+			.max(100, "Namnet får inte överstiga 100 tecken")
+			.trim()
+			.optional(),
 
-	email: z
-		.string()
-		.email("Ange en giltig e-postadress")
-		.max(255, "E-postadressen får inte överstiga 255 tecken")
-		.trim()
-		.toLowerCase(),
+		email: z
+			.string()
+			.email("Ange en giltig e-postadress")
+			.max(255, "E-postadressen får inte överstiga 255 tecken")
+			.trim()
+			.toLowerCase(),
 
-	phone: z
-		.string()
-		.min(6, "Telefonnummer måste vara minst 6 siffror")
-		.max(25, "Telefonnummer får inte överstiga 25 tecken")
-		.trim()
-		.optional()
-		.or(z.literal("")),
+		phone: z
+			.string()
+			.min(6, "Telefonnummer måste vara minst 6 siffror")
+			.max(25, "Telefonnummer får inte överstiga 25 tecken")
+			.trim(),
 
-	subject: z
-		.string()
-		.min(3, "Ämne måste vara minst 3 tecken")
-		.max(200, "Ämne får inte överstiga 200 tecken")
-		.trim(),
+		subject: z
+			.string()
+			.min(3, "Ämne måste vara minst 3 tecken")
+			.max(200, "Ämne får inte överstiga 200 tecken")
+			.trim(),
 
-	corporationNumber: z
-		.string()
-		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
-		.trim()
-		.optional()
-		.or(z.literal("")),
+		corporationNumber: z
+			.string()
+			.max(30, "Organisationsnummer får inte överstiga 30 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
 
-	companyName: z
-		.string()
-		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
-		.trim()
-		.optional()
-		.or(z.literal("")),
+		companyName: z
+			.string()
+			.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
 
-	message: z
-		.string()
-		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
-		.trim()
-		.optional()
-		.or(z.literal("")),
+		message: z
+			.string()
+			.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+			.trim()
+			.optional()
+			.or(z.literal("")),
 
-	gdprConsent: z
-		.boolean()
-		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+		gdprConsent: z
+			.boolean()
+			.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
 
-	marketingConsent: z.boolean().optional(),
-});
+		marketingConsent: z.boolean().optional(),
+	})
+	.refine((data) => (data.firstName && data.lastName) || data.fullName, {
+		message: "Namn krävs",
+		path: ["firstName"],
+	});
 
 /**
  * Training Inquiry Form Schema
@@ -412,70 +401,48 @@ export const tourRequestSchema = z
  * Quote Request Form Schema
  * For requesting quotes/offers for products or services
  */
-export const quoteRequestSchema = z
-	.object({
-		fullName: z
-			.string()
-			.min(2, "Namnet måste vara minst 2 tecken")
-			.max(100, "Namnet får inte överstiga 100 tecken")
-			.trim(),
+export const quoteRequestSchema = z.object({
+	firstName: z.string().min(1, "Förnamn krävs").max(100, "Förnamnet får inte överstiga 100 tecken").trim(),
+	lastName: z.string().min(1, "Efternamn krävs").max(100, "Efternamnet får inte överstiga 100 tecken").trim(),
 
-		email: z
-			.string()
-			.email("Ange en giltig e-postadress")
-			.max(255, "E-postadressen får inte överstiga 255 tecken")
-			.trim()
-			.toLowerCase(),
+	email: z
+		.string()
+		.email("Ange en giltig e-postadress")
+		.max(255, "E-postadressen får inte överstiga 255 tecken")
+		.trim()
+		.toLowerCase(),
 
-		// Optional: the "Begär offert" modal has no country selector, only a
-		// plain phone input — desktop/other flows may still provide it.
-		countryCode: z
-			.string()
-			.min(2, "Landskod krävs")
-			.max(10, "Ogiltig landskod")
-			.regex(/^\+\d{1,4}$/, "Ogiltig landskod")
-			.optional()
-			.or(z.literal("")),
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 siffror")
+		.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
+		.trim(),
 
-		phone: z
-			.string()
-			.min(6, "Telefonnummer måste vara minst 6 siffror")
-			.max(20, "Telefonnummer får inte överstiga 20 siffror")
-			.regex(
-				/^[0-9\s\-]+$/,
-				"Endast siffror, mellanslag och bindestreck tillåtna"
-			)
-			.trim(),
+	companyName: z
+		.string()
+		.min(1, "Företag krävs")
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim(),
 
-		companyName: z
-			.string()
-			.max(200, "Företagsnamnet får inte överstiga 200 tecken")
-			.trim()
-			.optional()
-			.or(z.literal("")),
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
 
-		message: z
-			.string()
-			.max(2000, "Meddelandet får inte överstiga 2000 tecken")
-			.trim()
-			.optional()
-			.or(z.literal("")),
+	message: z
+		.string()
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
 
-		gdprConsent: z
-			.boolean()
-			.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
-	})
-	.refine(
-		(data) => {
-			if (!data.countryCode) return true;
-			const fullPhone = data.countryCode + data.phone.replace(/[\s\-]/g, "");
-			return isValidPhoneNumber(fullPhone);
-		},
-		{
-			message: "Ogiltigt telefonnummer för valt land",
-			path: ["phone"],
-		}
-	);
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+});
 
 /**
  * Job Application Form Schema
@@ -583,15 +550,11 @@ export const trainingApplicationSchema = z.object({
 
 /**
  * Hero Inquiry Form Schema
- * Minimal schema for the category hero section contact form.
- * No phone required — name, company, email, optional message.
+ * Standardized field set for the category hero section contact form.
  */
 export const heroInquirySchema = z.object({
-	fullName: z
-		.string()
-		.min(2, "Namnet måste vara minst 2 tecken")
-		.max(100, "Namnet får inte överstiga 100 tecken")
-		.trim(),
+	firstName: z.string().min(1, "Förnamn krävs").max(100, "Förnamnet får inte överstiga 100 tecken").trim(),
+	lastName: z.string().min(1, "Efternamn krävs").max(100, "Efternamnet får inte överstiga 100 tecken").trim(),
 
 	email: z
 		.string()
@@ -600,9 +563,22 @@ export const heroInquirySchema = z.object({
 		.trim()
 		.toLowerCase(),
 
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 siffror")
+		.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
+		.trim(),
+
 	companyName: z
 		.string()
+		.min(1, "Företag krävs")
 		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.trim(),
+
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
 		.trim()
 		.optional()
 		.or(z.literal("")),
@@ -663,6 +639,27 @@ export const brochureRequestSchema = z.object({
 		.max(255, "E-postadressen får inte överstiga 255 tecken")
 		.trim()
 		.toLowerCase(),
+
+	phone: z
+		.string()
+		.min(6, "Telefonnummer måste vara minst 6 siffror")
+		.max(25, "Telefonnummer får inte överstiga 25 siffror")
+		.regex(/^[+]?[0-9\s\-()+]+$/, "Ogiltigt telefonnummer")
+		.trim(),
+
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
+
+	message: z
+		.string()
+		.max(2000, "Meddelandet får inte överstiga 2000 tecken")
+		.trim()
+		.optional()
+		.or(z.literal("")),
 
 	productName: z.string().max(200).trim().optional().or(z.literal("")),
 	productSlug: z.string().max(200).trim().optional().or(z.literal("")),

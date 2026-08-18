@@ -64,6 +64,8 @@ export interface IFormSubmission extends Document {
 
 	// Common Fields
 	fullName: string;
+	firstName?: string;
+	lastName?: string;
 	email: string;
 	phone?: string | null;
 	countryCode?: string | null;
@@ -174,6 +176,18 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			required: [true, "Full name is required"],
 			trim: true,
 			maxlength: [100, "Full name cannot exceed 100 characters"],
+		},
+		firstName: {
+			type: String,
+			trim: true,
+			maxlength: [100, "First name cannot exceed 100 characters"],
+			default: null,
+		},
+		lastName: {
+			type: String,
+			trim: true,
+			maxlength: [100, "Last name cannot exceed 100 characters"],
+			default: null,
 		},
 		email: {
 			type: String,
