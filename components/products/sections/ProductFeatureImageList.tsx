@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { ImageComponent } from "@/components/common/image-component";
+import { Button } from "@/components/ui/button";
 import { EyebrowTag } from "./EyebrowTag";
 import { NumberMark } from "./NumberMark";
 
@@ -36,6 +38,8 @@ export interface ProductFeatureImageListProps {
 		imageAlt?: string;
 		items: NumberedListItem[];
 	};
+	ctaText?: string;
+	ctaHref?: string;
 	bottomBlock: {
 		sectionNumber: string;
 		title: string;
@@ -57,6 +61,8 @@ export function ProductFeatureImageList({
 	topBlock,
 	bottomBlock,
 	corners = "all",
+	ctaText,
+	ctaHref,
 }: ProductFeatureImageListProps) {
 	return (
 		<section>
@@ -78,6 +84,11 @@ export function ProductFeatureImageList({
 							<p className="text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[640px] mx-auto">
 								{description}
 							</p>
+						)}
+						{ctaText && ctaHref && (
+							<Button asChild className="mt-6 rounded-full">
+								<Link href={ctaHref}>{ctaText}</Link>
+							</Button>
 						)}
 					</motion.div>
 

@@ -264,24 +264,42 @@ export function ProductContent({
 				</section>
 			)}
 
-			{/* Quick CTA - Mobile only, shown upfront right after the hero */}
-			<div className="_container pt-8 md:hidden">
-				<aside className="space-y-4">
-					<ProductDetailSidebar
-						certifications={product.certifications}
-						onScrollToForm={() =>
-							document
-								.getElementById("product-inquiry-form")
-								?.scrollIntoView({ behavior: "smooth" })
-						}
-					/>
-				</aside>
-			</div>
+			{/* Quick CTA - Mobile only. Falls back to right after the hero when a
+			    product has no custom feature sections; otherwise it renders between
+			    the feature grid and the "Byggd för ..." section below. */}
+			{!customSections && (
+				<div className="_container pt-8 md:hidden">
+					<aside className="space-y-4">
+						<ProductDetailSidebar
+							certifications={product.certifications}
+							onScrollToForm={() =>
+								document
+									.getElementById("product-inquiry-form")
+									?.scrollIntoView({ behavior: "smooth" })
+							}
+						/>
+					</aside>
+				</div>
+			)}
 
 			{/* Custom Feature Sections (per-product, after hero) */}
 			{customSections && (
 				<div className="py-8 md:py-10 lg:py-12">
 					<ProductFeatureSplit {...customSections.section1} corners="top" />
+
+					<div className="_container md:hidden">
+						<aside className="space-y-4 pb-8 md:pb-10">
+							<ProductDetailSidebar
+								certifications={product.certifications}
+								onScrollToForm={() =>
+									document
+										.getElementById("product-inquiry-form")
+										?.scrollIntoView({ behavior: "smooth" })
+								}
+							/>
+						</aside>
+					</div>
+
 					<ProductFeatureImageList
 						{...customSections.section2}
 						corners="middle"

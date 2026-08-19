@@ -696,7 +696,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			{/* FAQ Footer Section — admin-controllable via dashboard, falls back to default content */}
 			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 				<div className="_container mx-auto px-4">
-					<ProductFAQ title={faqTitle} faqs={faqs} />
+					<ProductFAQ title={faqTitle} faqs={faqs} limit={5} />
 				</div>
 			</section>
 

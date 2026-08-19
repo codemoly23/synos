@@ -36,6 +36,7 @@ export interface IHeroSlide {
 	badge?: string;
 	title?: string;
 	titleHighlight?: string;
+	titleHighlightColor?: string;
 	subtitle?: string;
 	primaryCta?: ICtaButton;
 	secondaryCta?: ICtaButton;
@@ -312,6 +313,7 @@ const HeroSlideSchema = new Schema<IHeroSlide>(
 		badge: { type: String, trim: true },
 		title: { type: String, trim: true },
 		titleHighlight: { type: String, trim: true },
+		titleHighlightColor: { type: String, trim: true },
 		subtitle: { type: String, trim: true },
 		primaryCta: { type: CtaButtonSchema },
 		secondaryCta: { type: CtaButtonSchema },

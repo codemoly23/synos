@@ -3893,3 +3893,18 @@ html.translated-rtl .lang-en {
     bottom: calc(90px + env(safe-area-inset-bottom)) !important;
   }
 }
+
+/* ============================================
+   LEADCM CALLBACK WIDGET — MOBILE OVERLAP FIX
+   Same issue as the Cookiebot widget above: the floating phone
+   callback button (id="lc_widgetButton", injected by the Brightcall/
+   Convolo script) is fixed near the bottom-right corner and can sit
+   on top of page content while scrolling. Nudged up to match the
+   Cookiebot icon's height for a consistent, predictable safe zone.
+   !important is required to win over the widget's inline styles.
+   ============================================ */
+@media (max-width: 767px) {
+  #lc_widgetButton {
+    bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+  }
+}

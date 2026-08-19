@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
 	const pathname = usePathname();
 	const [nearFooter, setNearFooter] = useState(false);
-	const [isHidden, setIsHidden] = useState(false);
+	const [isHidden, setIsHidden] = useState(true);
 	const lastScrollY = useRef(0);
 
 	useEffect(() => {
@@ -56,12 +56,10 @@ export function MobileBottomNav() {
 	useEffect(() => {
 		const handleScroll = () => {
 			const currentY = window.scrollY;
-
-			if (currentY > 60) {
-				setIsHidden(currentY > lastScrollY.current);
-			} else {
-				setIsHidden(false);
-			}
+			// Hidden while scrolling down, revealed while scrolling up — including
+			// near the top, so the bar stays hidden until the user has engaged
+			// with the page (no forced reveal on first load).
+			setIsHidden(currentY > lastScrollY.current);
 			lastScrollY.current = currentY;
 		};
 		window.addEventListener("scroll", handleScroll, { passive: true });
@@ -174,7 +172,7 @@ export function MobileBottomNav() {
 									{/* Label with smooth fade + slide */}
 									<motion.span
 										className={cn(
-											"text-[11px] mt-1 font-medium truncate max-w-full",
+											"text-xs mt-1 font-medium truncate max-w-full",
 											active
 												? "text-primary font-semibold"
 												: nearFooter ? "text-secondary/70" : "text-white/70"

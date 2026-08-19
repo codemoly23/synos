@@ -601,14 +601,25 @@ export function getProductCustomSections(
 		result.section2.topBlock.image = s2topImg;
 		result.section2.bottomBlock.image = s2botImg;
 		result.section3.image = s3img;
+		applySectionCta(result);
 		return result;
 	}
 
 	// Fall back to hardcoded or generic content
-	switch (slug) {
-		case "motus-ay":
-			return buildMotusAyContent(s1img, s2topImg, s2botImg, s3img);
-		default:
-			return buildGenericContent(productName, s1img, s2topImg, s2botImg, s3img);
-	}
+	const result =
+		slug === "motus-ay"
+			? buildMotusAyContent(s1img, s2topImg, s2botImg, s3img)
+			: buildGenericContent(productName, s1img, s2topImg, s2botImg, s3img);
+	applySectionCta(result);
+	return result;
+}
+
+/**
+ * Every product's section2 ("Byggd för ..." style block) links to the
+ * inquiry form — matches the "Läs mer" CTA convention used elsewhere on
+ * the site (product cards, hero).
+ */
+function applySectionCta(sections: ProductCustomSections): void {
+	sections.section2.ctaText = "Läs mer";
+	sections.section2.ctaHref = "#product-inquiry-form";
 }

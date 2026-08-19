@@ -49,10 +49,9 @@ export function ProductFAQ({ faqs, title, limit, showAllLabel = "Visa alla fråg
 					{title}
 				</h2>
 			)}
-			{displayedFaqs
-				.map((faq, index) => (
+			{displayedFaqs.map((faq, index) => (
+				<div key={faq._id}>
 					<motion.div
-						key={faq._id}
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
@@ -116,30 +115,33 @@ export function ProductFAQ({ faqs, title, limit, showAllLabel = "Visa alla fråg
 							</AnimatePresence>
 						</div>
 					</motion.div>
-				))}
-			{isCapped && (
-				<div className="pointer-events-none absolute inset-x-0 bottom-16 h-24 bg-gradient-to-t from-background to-transparent" />
-			)}
-			{!!limit && visibleFaqs.length > limit && (
-				<div className="flex justify-center pt-2">
-					<Button
-						variant="outline"
-						size="sm"
-						className="rounded-full text-primary hover:text-primary/80"
-						onClick={() => setShowAll((prev) => !prev)}
-					>
-						{showAll ? (
-							<>
-								Visa färre <ChevronUp className="ml-1 h-4 w-4" />
-							</>
-						) : (
-							<>
-								{showAllLabel} <ChevronDown className="ml-1 h-4 w-4" />
-							</>
-						)}
-					</Button>
+
+					{/* Show-all toggle sits directly under the first question */}
+					{index === 0 && !!limit && visibleFaqs.length > limit && (
+						<div className="relative flex justify-center pt-6 pb-2">
+							{isCapped && (
+								<div className="pointer-events-none absolute inset-x-0 -top-2 bottom-10 bg-gradient-to-t from-background to-transparent" />
+							)}
+							<Button
+								variant="outline"
+								size="sm"
+								className="relative rounded-full text-primary hover:text-primary/80"
+								onClick={() => setShowAll((prev) => !prev)}
+							>
+								{showAll ? (
+									<>
+										Visa färre <ChevronUp className="ml-1 h-4 w-4" />
+									</>
+								) : (
+									<>
+										{showAllLabel} <ChevronDown className="ml-1 h-4 w-4" />
+									</>
+								)}
+							</Button>
+						</div>
+					)}
 				</div>
-			)}
+			))}
 		</div>
 	);
 }

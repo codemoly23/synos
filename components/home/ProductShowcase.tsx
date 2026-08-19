@@ -104,12 +104,10 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 										<h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors mb-1">
 											{product.name}
 										</h3>
-										{product.category && (
-											<div className="flex flex-wrap gap-2">
-												<span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
-													{product.category}
-												</span>
-											</div>
+										{product.description && (
+											<p className="text-slate-500 text-sm line-clamp-2">
+												{product.description}
+											</p>
 										)}
 										<div className="flex items-center justify-between mt-auto pt-3">
 											<span className="text-base text-slate-500">Läs mer</span>

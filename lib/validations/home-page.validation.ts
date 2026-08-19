@@ -24,6 +24,7 @@ export const heroSlideSchema = z.object({
 	badge: z.string().max(200).optional(),
 	title: z.string().max(200).optional(),
 	titleHighlight: z.string().max(200).optional(),
+	titleHighlightColor: z.string().max(20).optional(),
 	subtitle: z.string().max(1000).optional(),
 	primaryCta: ctaButtonSchema.optional(),
 	secondaryCta: ctaButtonSchema.optional(),

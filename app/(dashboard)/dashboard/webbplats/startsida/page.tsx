@@ -186,6 +186,7 @@ const heroSlideSchema = z.object({
 	badge: z.string().optional(),
 	title: z.string().optional(),
 	titleHighlight: z.string().optional(),
+	titleHighlightColor: z.string().optional(),
 	subtitle: z.string().optional(),
 	primaryCta: ctaButtonSchema.optional(),
 	secondaryCta: ctaButtonSchema.optional(),
@@ -1293,6 +1294,7 @@ export default function StartsidaPage() {
 													badge: "",
 													title: "",
 													titleHighlight: "",
+													titleHighlightColor: "",
 													subtitle: "",
 													primaryCta: { text: "", href: "", variant: "primary" },
 													secondaryCta: { text: "", href: "", variant: "outline" },
@@ -1385,6 +1387,35 @@ export default function StartsidaPage() {
 														)}
 													/>
 												</div>
+
+												{/* Title (highlight) color */}
+												<FormField
+													control={form.control}
+													name={`hero.slides.${slideIndex}.titleHighlightColor`}
+													render={({ field }) => (
+														<FormItem>
+															<FormLabel>Title (highlight) color</FormLabel>
+															<FormControl>
+																<div className="flex items-center gap-2">
+																	<input
+																		type="color"
+																		value={field.value || "#c17a3d"}
+																		onChange={(e) => field.onChange(e.target.value)}
+																		className="h-9 w-12 shrink-0 cursor-pointer rounded border border-input p-1"
+																	/>
+																	<Input
+																		{...field}
+																		value={field.value || ""}
+																		onChange={field.onChange}
+																		placeholder="Leave empty for default gradient"
+																		className="max-w-48"
+																	/>
+																</div>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
 
 												{/* Subtitle */}
 												<FormField

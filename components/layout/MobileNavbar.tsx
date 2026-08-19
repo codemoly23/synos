@@ -152,7 +152,7 @@ const toggleCategory = (categoryId: string) => {
 																<Link
 																	key={`${tech.name}:${product.slug}`}
 																	href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																	className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																	className="block px-3 py-1.5 text-xs text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																	onClick={() => setOpen(false)}
 																>
 																	{product.title}
@@ -214,7 +214,7 @@ const toggleCategory = (categoryId: string) => {
 																							<Link
 																								key={product._id}
 																								href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																								className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																								className="block px-3 py-1.5 text-xs text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																								onClick={() => setOpen(false)}
 																							>
 																								{product.title}

@@ -192,7 +192,10 @@ export function Hero({ data }: HeroProps) {
 									}`}>
 										{s.title} <br />
 										{s.titleHighlight && (
-											<span className="text-gradient-primary text-2xl sm:text-3xl lg:text-4xl">
+											<span
+												className={`text-2xl sm:text-3xl lg:text-4xl ${s.titleHighlightColor ? "" : "text-gradient-primary"}`}
+												style={s.titleHighlightColor ? { color: s.titleHighlightColor } : undefined}
+											>
 												{s.titleHighlight}
 											</span>
 										)}

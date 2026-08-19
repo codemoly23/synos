@@ -509,7 +509,7 @@ export default async function TeknologiPage({ params }: TeknologiPageProps) {
 			{techFaqs.length > 0 && (
 				<section className="bg-white py-12 md:py-16 border-t border-slate-200">
 					<div className="_container mx-auto px-4">
-						<ProductFAQ title={faqTitle} faqs={techFaqs} />
+						<ProductFAQ title={faqTitle} faqs={techFaqs} limit={5} />
 					</div>
 				</section>
 			)}
