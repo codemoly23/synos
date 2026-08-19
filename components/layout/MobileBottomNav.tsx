@@ -142,7 +142,7 @@ export function MobileBottomNav() {
 									>
 										<Icon
 											className={cn(
-												"w-5 h-5 transition-colors duration-200",
+												"w-6 h-6 transition-colors duration-200",
 												active
 													? "text-primary"
 													: nearFooter ? "text-secondary/70" : "text-white/70"
@@ -172,7 +172,7 @@ export function MobileBottomNav() {
 									{/* Label with smooth fade + slide */}
 									<motion.span
 										className={cn(
-											"text-xs mt-1 font-medium truncate max-w-full",
+											"text-sm mt-1 font-medium truncate max-w-full",
 											active
 												? "text-primary font-semibold"
 												: nearFooter ? "text-secondary/70" : "text-white/70"
