@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -115,37 +115,30 @@ export function ProductFAQ({ faqs, title, limit, showAllLabel = "Visa alla fråg
 							</AnimatePresence>
 						</div>
 					</motion.div>
-
-					{/* Show-all toggle sits directly under the first question */}
-					{index === 0 && !!limit && visibleFaqs.length > limit && (
-						<div className="relative flex justify-center pt-6 pb-2">
-							{isCapped && (
-								<div className="pointer-events-none absolute inset-x-0 -top-2 bottom-10 bg-gradient-to-t from-background to-transparent" />
-							)}
-							<Button
-								variant="outline"
-								size="sm"
-								className="relative rounded-full text-primary hover:text-primary/80"
-								onClick={() => setShowAll((prev) => !prev)}
-							>
-								{showAll ? (
-									<>
-										Visa färre <ChevronUp className="ml-1 h-4 w-4" />
-									</>
-								) : (
-									<>
-										{showAllLabel} <ChevronDown className="ml-1 h-4 w-4" />
-									</>
-								)}
-							</Button>
-						</div>
-					)}
 				</div>
 			))}
+
+			{/* Show-all toggle sits after the last visible question */}
+			{!!limit && visibleFaqs.length > limit && (
+				<div className="relative flex justify-center pt-6 pb-2">
+					<Button
+						variant="outline"
+						size="sm"
+						className="relative rounded-full text-primary hover:text-primary/80"
+						onClick={() => setShowAll((prev) => !prev)}
+					>
+						{showAll ? (
+							<>
+								Visa färre <ChevronUp className="ml-1 h-4 w-4" />
+							</>
+						) : (
+							<>
+								{showAllLabel} <ChevronDown className="ml-1 h-4 w-4" />
+							</>
+						)}
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }
-
-
-
-
