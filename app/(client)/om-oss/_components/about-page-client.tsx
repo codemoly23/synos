@@ -41,6 +41,7 @@ import { fadeUp, staggerContainer } from "@/lib/animations";
 import { pushEvent } from "@/lib/analytics/gtm";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { ImageComponent } from "@/components/common/image-component";
+import { PreviewEditor } from "@/components/common/TextEditor";
 import type { AboutPageData } from "@/lib/repositories/about-page.repository";
 import type { IOffice } from "@/models/site-settings.model";
 
@@ -146,6 +147,7 @@ export function AboutPageClient({ data, contact }: AboutPageClientProps) {
 		testimonials: true,
 		partners: true,
 		cta: true,
+		richContent: false,
 	};
 
 	// Check if we have content to display
@@ -1509,6 +1511,15 @@ export function AboutPageClient({ data, contact }: AboutPageClientProps) {
 								</div>
 							</div>
 						</motion.div>
+					</div>
+				</section>
+			)}
+
+			{/* Rich Content Section */}
+			{visibility.richContent && data.richContent && (
+				<section className="py-16">
+					<div className="_container prose prose-lg max-w-none">
+						<PreviewEditor>{data.richContent}</PreviewEditor>
 					</div>
 				</section>
 			)}

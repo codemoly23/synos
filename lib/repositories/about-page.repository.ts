@@ -36,6 +36,7 @@ export interface UpdateAboutPageInput {
 	testimonials?: Partial<IAboutTestimonialsSection>;
 	partners?: Partial<IAboutPartnersSection>;
 	cta?: Partial<IAboutCtaSection>;
+	richContent?: string;
 	seo?: Partial<IAboutPageSeo>;
 }
 
@@ -181,6 +182,10 @@ class AboutPageRepository {
 					updateData[`seo.${key}`] = value;
 				}
 			});
+		}
+
+		if (data.richContent !== undefined) {
+			updateData.richContent = data.richContent;
 		}
 
 		const aboutPage = await AboutPage.findOneAndUpdate(

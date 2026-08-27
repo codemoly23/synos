@@ -1,15 +1,18 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { useRef } from "react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ImageComponent } from "../common/image-component";
 import type { IProductShowcaseSection } from "@/models/home-page.model";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import { Autoplay, FreeMode, Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/free-mode";
+import "swiper/css/navigation";
 
 interface ProductShowcaseProps {
 	data: IProductShowcaseSection;
@@ -19,6 +22,8 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 	const validProducts = (data?.products ?? []).filter(
 		(p) => p.name && p.image
 	);
+	const prevRef = useRef<HTMLButtonElement>(null);
+	const nextRef = useRef<HTMLButtonElement>(null);
 
 	if (validProducts.length === 0) return null;
 
@@ -134,10 +139,26 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 				)}
 			</div>
 
-			{/* ── DESKTOP: Swiper carousel (unchanged) ── */}
-			<div className="hidden md:block max-w-[1920px] w-full mx-auto px-8 lg:px-16">
+			{/* ── DESKTOP: Swiper carousel ── */}
+			<div className="hidden md:block relative group/showcase max-w-[1920px] w-full mx-auto px-8 lg:px-16">
+				<button
+					ref={prevRef}
+					type="button"
+					aria-label="Föregående produkter"
+					className="absolute left-1 lg:left-3 top-[38%] -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-lg text-secondary opacity-0 group-hover/showcase:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white cursor-pointer disabled:opacity-0 disabled:pointer-events-none"
+				>
+					<ChevronLeft className="h-5 w-5" />
+				</button>
+				<button
+					ref={nextRef}
+					type="button"
+					aria-label="Fler produkter"
+					className="absolute right-1 lg:right-3 top-[38%] -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-lg text-secondary opacity-0 group-hover/showcase:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white cursor-pointer disabled:opacity-0 disabled:pointer-events-none"
+				>
+					<ChevronRight className="h-5 w-5" />
+				</button>
 				<Swiper
-					modules={[Autoplay, FreeMode]}
+					modules={[Autoplay, FreeMode, Navigation]}
 					spaceBetween={20}
 					slidesPerView={1.8}
 					freeMode={{
@@ -148,6 +169,16 @@ export function ProductShowcase({ data }: ProductShowcaseProps) {
 						delay: 4000,
 						disableOnInteraction: true,
 						pauseOnMouseEnter: true,
+					}}
+					navigation={{
+						prevEl: prevRef.current,
+						nextEl: nextRef.current,
+					}}
+					onBeforeInit={(swiper: SwiperType) => {
+						if (typeof swiper.params.navigation !== "boolean" && swiper.params.navigation) {
+							swiper.params.navigation.prevEl = prevRef.current;
+							swiper.params.navigation.nextEl = nextRef.current;
+						}
 					}}
 					breakpoints={{
 						640: { slidesPerView: 1.8, spaceBetween: 24 },

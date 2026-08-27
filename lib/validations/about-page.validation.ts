@@ -12,6 +12,8 @@ export const aboutSectionVisibilitySchema = z.object({
 	testimonials: z.boolean(),
 	partners: z.boolean(),
 	cta: z.boolean(),
+	// Added after launch — existing DB docs lack this key, so default it instead of requiring it
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================
@@ -182,6 +184,7 @@ export const updateAboutPageSchema = z.object({
 	testimonials: aboutTestimonialsSectionSchema.optional(),
 	partners: aboutPartnersSectionSchema.optional(),
 	cta: aboutCtaSectionSchema.optional(),
+	richContent: z.string().optional(),
 	seo: aboutPageSeoSchema.optional(),
 });
 

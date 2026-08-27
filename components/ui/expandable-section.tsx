@@ -48,9 +48,6 @@ export function ExpandableSection({
 			>
 				{children}
 			</div>
-			{!expanded && clamped && (
-				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
-			)}
 			{(clamped || expanded) && (
 				<div className="mt-3 flex justify-center">
 					<Button

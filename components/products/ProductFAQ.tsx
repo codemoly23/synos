@@ -49,74 +49,79 @@ export function ProductFAQ({ faqs, title, limit, showAllLabel = "Visa alla fråg
 					{title}
 				</h2>
 			)}
-			{displayedFaqs.map((faq, index) => (
-				<div key={faq._id}>
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.5, delay: index * 0.1 }}
-					>
-						<div
-							className={`
-							rounded-2xl border transition-all duration-300
-							${
-								openIndex === index
-									? "border-primary bg-card/80 backdrop-blur-sm shadow-lg"
-									: "border-primary bg-card/50 backdrop-blur-sm hover:border-primary/50"
-							}
-						`}
+			<div className="relative">
+				{displayedFaqs.map((faq, index) => (
+					<div key={faq._id} className={index > 0 ? "mt-4" : undefined}>
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.5, delay: index * 0.1 }}
 						>
-							{/* Question Button */}
-							<button
-								onClick={() => toggleFAQ(index)}
-								className="w-full px-6 py-5 flex items-start justify-between gap-4 text-left"
-								aria-expanded={openIndex === index}
-								aria-controls={`faq-answer-${faq._id}`}
+							<div
+								className={`
+								rounded-2xl border transition-all duration-300
+								${
+									openIndex === index
+										? "border-primary bg-card/80 backdrop-blur-sm shadow-lg"
+										: "border-primary bg-card/50 backdrop-blur-sm hover:border-primary/50"
+								}
+							`}
 							>
-								<span className="font-semibold text-secondary text-lg flex-1 cursor-pointer">
-									{faq.question}
-								</span>
-								<motion.div
-									animate={{
-										rotate: openIndex === index ? 180 : 0,
-									}}
-									transition={{ duration: 0.3 }}
-									className="shrink-0 mt-1"
+								{/* Question Button */}
+								<button
+									onClick={() => toggleFAQ(index)}
+									className="w-full px-6 py-5 flex items-start justify-between gap-4 text-left"
+									aria-expanded={openIndex === index}
+									aria-controls={`faq-answer-${faq._id}`}
 								>
-									<ChevronDown
-										className={`h-5 w-5 transition-colors ${
-											openIndex === index
-												? "text-primary"
-												: "text-muted-foreground"
-										}`}
-									/>
-								</motion.div>
-							</button>
-
-							{/* Answer */}
-							<AnimatePresence>
-								{openIndex === index && (
+									<span className="font-semibold text-secondary text-lg flex-1 cursor-pointer">
+										{faq.question}
+									</span>
 									<motion.div
-										id={`faq-answer-${faq._id}`}
-										initial={{ height: 0, opacity: 0 }}
-										animate={{ height: "auto", opacity: 1 }}
-										exit={{ height: 0, opacity: 0 }}
+										animate={{
+											rotate: openIndex === index ? 180 : 0,
+										}}
 										transition={{ duration: 0.3 }}
-										className="overflow-hidden"
+										className="shrink-0 mt-1"
 									>
-										<div className="px-6 pb-4 pt-0">
-											<div className="font-medium text-lg leading-relaxed border-t border-slate-300 pt-3 [&_.sun-editor-editable_*]:!text-[18px] [&_.sun-editor-editable]:![color:rgba(44,45,56,0.5)] [&_.sun-editor-editable]:!p-0 [&_.sun-editor-editable_p:last-child]:!mb-0">
-												<PreviewEditor>{faq.answer}</PreviewEditor>
-											</div>
-										</div>
+										<ChevronDown
+											className={`h-5 w-5 transition-colors ${
+												openIndex === index
+													? "text-primary"
+													: "text-muted-foreground"
+											}`}
+										/>
 									</motion.div>
-								)}
-							</AnimatePresence>
-						</div>
-					</motion.div>
-				</div>
-			))}
+								</button>
+
+								{/* Answer */}
+								<AnimatePresence>
+									{openIndex === index && (
+										<motion.div
+											id={`faq-answer-${faq._id}`}
+											initial={{ height: 0, opacity: 0 }}
+											animate={{ height: "auto", opacity: 1 }}
+											exit={{ height: 0, opacity: 0 }}
+											transition={{ duration: 0.3 }}
+											className="overflow-hidden"
+										>
+											<div className="px-6 pb-4 pt-0">
+												<div className="font-medium text-lg leading-relaxed border-t border-slate-300 pt-3 [&_.sun-editor-editable_*]:!text-[18px] [&_.sun-editor-editable]:![color:rgba(44,45,56,0.5)] [&_.sun-editor-editable]:!p-0 [&_.sun-editor-editable_p:last-child]:!mb-0">
+													<PreviewEditor>{faq.answer}</PreviewEditor>
+												</div>
+											</div>
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</div>
+						</motion.div>
+					</div>
+				))}
+				{isCapped && (
+					<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 rounded-b-2xl bg-gradient-to-t from-background to-transparent" />
+				)}
+			</div>
 
 			{/* Show-all toggle sits after the last visible question */}
 			{!!limit && visibleFaqs.length > limit && (

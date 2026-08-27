@@ -45,8 +45,8 @@ if (!MONGODB_URI) {
 
 // [deadHref, replacementHref] — replacement targets verified live (200 OK)
 const REPLACEMENTS: Array<[string, string]> = [
-	['href="/produkter/vivace"', 'href="/klinikutrustning/akne/vivace-rf-microneedling"'],
-	['href="/behandlingar/microneedling"', 'href="/klinikutrustning/akne/vivace-rf-microneedling"'],
+	['href="/produkter/vivace"', 'href="/klinikutrustning/hudforyngring/vivace-rf-microneedling"'],
+	['href="/behandlingar/microneedling"', 'href="/klinikutrustning/hudforyngring/vivace-rf-microneedling"'],
 	['href="/behandlingar/hudföryngring"', 'href="/klinikutrustning/hudforyngring"'],
 ];
 

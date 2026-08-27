@@ -23,7 +23,17 @@ import {
 	Search,
 	Star,
 	ExternalLink,
+	FileText,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import TextEditor to avoid SSR issues
+const TextEditor = dynamic(() => import("@/components/common/TextEditor"), {
+	ssr: false,
+	loading: () => (
+		<div className="h-[500px] w-full animate-pulse rounded-md border bg-muted" />
+	),
+});
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -189,6 +199,7 @@ const formSchema = z.object({
 			})
 			.optional(),
 	}),
+	richContent: z.string().optional(),
 	seo: z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
@@ -228,6 +239,7 @@ export default function AboutPageCMS() {
 				testimonials: true,
 				partners: true,
 				cta: true,
+				richContent: false,
 			},
 			hero: {},
 			mission: { features: [] },
@@ -241,6 +253,7 @@ export default function AboutPageCMS() {
 			},
 			partners: { partners: [] },
 			cta: {},
+			richContent: "",
 			seo: {},
 		},
 	});
@@ -303,7 +316,9 @@ export default function AboutPageCMS() {
 				const data: AboutPageData = await response.json();
 
 				form.reset({
-					sectionVisibility: data.sectionVisibility || {
+					// Merge over defaults so keys added later (e.g. richContent) are never undefined
+					// on older DB docs — a missing boolean would make zod reject the whole form on save.
+					sectionVisibility: {
 						hero: true,
 						mission: true,
 						stats: true,
@@ -312,6 +327,9 @@ export default function AboutPageCMS() {
 						testimonials: true,
 						partners: true,
 						cta: true,
+						richContent: false,
+						// Older docs really can lack keys, so treat the API shape as Partial here
+						...((data.sectionVisibility || {}) as Partial<AboutPageData["sectionVisibility"]>),
 					},
 					hero: data.hero || {},
 					mission: {
@@ -362,6 +380,7 @@ export default function AboutPageCMS() {
 						partners: data.partners?.partners || [],
 					},
 					cta: data.cta || {},
+					richContent: data.richContent || "",
 					seo: data.seo || {},
 				});
 			} catch (error) {
@@ -481,6 +500,10 @@ export default function AboutPageCMS() {
 						<Megaphone className="h-4 w-4" />
 						CTA
 					</TabsTrigger>
+					<TabsTrigger value="rich-content" className="gap-2">
+						<FileText className="h-4 w-4" />
+						Rich Content
+					</TabsTrigger>
 					<TabsTrigger value="seo" className="gap-2">
 						<Search className="h-4 w-4" />
 						SEO
@@ -504,6 +527,7 @@ export default function AboutPageCMS() {
 								{ key: "testimonials", label: "Testimonials" },
 								{ key: "partners", label: "Partners" },
 								{ key: "cta", label: "CTA Section" },
+								{ key: "richContent", label: "Rich Content" },
 							].map(({ key, label }) => (
 								<div
 									key={key}
@@ -1536,6 +1560,28 @@ export default function AboutPageCMS() {
 									</div>
 								</div>
 							</div>
+						</CardContent>
+					</Card>
+				</TabsContent>
+
+				{/* Rich Content Tab */}
+				<TabsContent value="rich-content" className="space-y-6">
+					<Card>
+						<CardHeader>
+							<CardTitle>Rich Content Editor</CardTitle>
+							<CardDescription>
+								Use the text editor to create flexible HTML content. This content will be rendered as-is on the page.
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<Label className="mb-2 block">Content</Label>
+							<TextEditor
+								defaultValue={form.watch("richContent") || ""}
+								onChange={(value) => form.setValue("richContent", value)}
+								variant="advanceFull"
+								height="500px"
+								placeholder="Enter your content here..."
+							/>
 						</CardContent>
 					</Card>
 				</TabsContent>

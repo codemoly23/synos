@@ -419,11 +419,11 @@ function MobileInquiryForm({
 			<div className="space-y-3">
 				{productName ? (
 					<>
-						<h2 className="text-4xl font-light text-white leading-tight">Intresserad av</h2>
-						<h2 className="text-4xl font-bold leading-tight" style={{ color: BRAND }}>{productName.toUpperCase()}?</h2>
+						<h2 className="text-[1.8rem] md:text-4xl font-light text-white leading-tight">Intresserad av</h2>
+						<h2 className="text-[1.8rem] md:text-4xl font-bold leading-tight" style={{ color: BRAND }}>{productName.toUpperCase()}?</h2>
 					</>
 				) : purchaseTitle ? (
-					<h2 className="text-4xl font-bold text-white leading-tight">{purchaseTitle}</h2>
+					<h2 className="text-[1.8rem] md:text-4xl font-bold text-white leading-tight">{purchaseTitle}</h2>
 				) : null}
 				{purchaseDescription ? (
 					<div className="text-white/80 text-sm leading-relaxed [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: purchaseDescription }} />

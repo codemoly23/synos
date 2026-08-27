@@ -129,7 +129,7 @@ const toggleCategory = (categoryId: string) => {
 												<div key={tech.name}>
 													<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
 														<span
-														className="flex-1 px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide cursor-pointer"
+														className="flex-1 px-3 py-1.5 text-sm font-medium text-primary uppercase tracking-wide cursor-pointer"
 														onClick={() => toggleTech(tech.name)}
 													>
 															{tech.name}
@@ -152,7 +152,7 @@ const toggleCategory = (categoryId: string) => {
 																<Link
 																	key={`${tech.name}:${product.slug}`}
 																	href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																	className="block px-3 py-1.5 text-xs text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																	className="block px-3 py-1.5 text-sm text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																	onClick={() => setOpen(false)}
 																>
 																	{product.title}
@@ -160,7 +160,7 @@ const toggleCategory = (categoryId: string) => {
 															))}
 															<Link
 																href={`/klinikutrustning/teknologi/${tech.slug}`}
-																className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																className="block px-3 py-1.5 text-sm text-secondary font-medium hover:underline"
 																onClick={() => setOpen(false)}
 															>
 																Visa alla →
@@ -174,7 +174,7 @@ const toggleCategory = (categoryId: string) => {
 											)}
 											<Link
 												href={item.href}
-												className="block px-3 py-1.5 text-xs text-secondary font-semibold hover:underline"
+												className="block px-3 py-1.5 text-sm text-secondary font-semibold hover:underline"
 												onClick={() => setOpen(false)}
 											>
 												Visa alla →

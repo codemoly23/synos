@@ -62,6 +62,7 @@ export function ProductContent({
 	productCategorySlug,
 }: ProductContentProps) {
 	const [brochureModal, setBrochureModal] = useState<{ open: boolean; title?: string }>({ open: false });
+	const [customSectionsExpanded, setCustomSectionsExpanded] = useState(false);
 	const primaryImage = product.overviewImage;
 	const FALLBACK_BG = "/images/Product detail breadcrumbs background.jpeg";
 	const resolvedBg = defaultBackground || FALLBACK_BG;
@@ -264,30 +265,36 @@ export function ProductContent({
 				</section>
 			)}
 
-			{/* Quick CTA - Mobile only, shown upfront right after the hero */}
-			<div className="_container pt-8 md:hidden">
-				<aside className="space-y-4">
-					<ProductDetailSidebar
-						certifications={product.certifications}
-						onScrollToForm={() =>
-							document
-								.getElementById("product-inquiry-form")
-								?.scrollIntoView({ behavior: "smooth" })
-						}
-					/>
-				</aside>
-			</div>
-
 			{/* Custom Feature Sections (per-product, after hero) */}
 			{customSections && (
 				<div className="py-8 md:py-10 lg:py-12">
 					<ProductFeatureSplit {...customSections.section1} corners="top" />
 
+					{/* Quick CTA - Mobile only, shown between the split and image-list sections */}
+					<div className="_container pt-8 md:hidden">
+						<aside className="space-y-4">
+							<ProductDetailSidebar
+								certifications={product.certifications}
+								onScrollToForm={() =>
+									document
+										.getElementById("product-inquiry-form")
+										?.scrollIntoView({ behavior: "smooth" })
+								}
+							/>
+						</aside>
+					</div>
+
 					<ProductFeatureImageList
 						{...customSections.section2}
 						corners="middle"
+						expanded={customSectionsExpanded}
+						onToggleExpanded={() => setCustomSectionsExpanded((prev) => !prev)}
 					/>
-					<ProductFeatureGrid {...customSections.section3} corners="bottom" />
+					<ProductFeatureGrid
+						{...customSections.section3}
+						corners="bottom"
+						expanded={customSectionsExpanded}
+					/>
 				</div>
 			)}
 
@@ -374,14 +381,14 @@ export function ProductContent({
 							{/* FAQ Section */}
 							{product.qa && product.qa.length > 0 && (
 								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} title={product.faqTitle} limit={5} />
+									<ProductFAQ faqs={product.qa} title={product.faqTitle} limit={1} />
 								</div>
 							)}
 
 							{/* Technical Specifications Section */}
 							{product.techSpecifications && product.techSpecifications.length > 0 && (
 								<div className="mb-12">
-									<ProductTechSpecs specs={product.techSpecifications} limit={5} />
+									<ProductTechSpecs specs={product.techSpecifications} limit={1} />
 								</div>
 							)}
 

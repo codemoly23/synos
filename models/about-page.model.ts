@@ -13,6 +13,7 @@ export interface IAboutSectionVisibility {
 	testimonials: boolean;
 	partners: boolean;
 	cta: boolean;
+	richContent: boolean;
 }
 
 const AboutSectionVisibilitySchema = new Schema<IAboutSectionVisibility>(
@@ -25,6 +26,7 @@ const AboutSectionVisibilitySchema = new Schema<IAboutSectionVisibility>(
 		testimonials: { type: Boolean, default: true },
 		partners: { type: Boolean, default: true },
 		cta: { type: Boolean, default: true },
+		richContent: { type: Boolean, default: false },
 	},
 	{ _id: false }
 );
@@ -412,6 +414,7 @@ export interface IAboutPage extends Document {
 	testimonials: IAboutTestimonialsSection;
 	partners: IAboutPartnersSection;
 	cta: IAboutCtaSection;
+	richContent: string;
 	seo: IAboutPageSeo;
 	updatedAt: Date;
 	createdAt: Date;
@@ -436,6 +439,7 @@ const AboutPageSchema = new Schema<IAboutPage>(
 				testimonials: true,
 				partners: true,
 				cta: true,
+				richContent: false,
 			},
 		},
 		hero: { type: AboutHeroSectionSchema, default: {} },
@@ -446,6 +450,7 @@ const AboutPageSchema = new Schema<IAboutPage>(
 		testimonials: { type: AboutTestimonialsSectionSchema, default: {} },
 		partners: { type: AboutPartnersSectionSchema, default: {} },
 		cta: { type: AboutCtaSectionSchema, default: {} },
+		richContent: { type: String, default: "" },
 		seo: { type: AboutPageSeoSchema, default: {} },
 	},
 	{

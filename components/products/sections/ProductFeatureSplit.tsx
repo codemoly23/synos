@@ -168,11 +168,11 @@ export function ProductFeatureSplit({
 												/>
 											</div>
 											<div className="min-w-0 w-full overflow-hidden">
-												<h4 className="text-xs sm:text-sm font-semibold text-secondary leading-snug break-words">
+												<h4 className="text-sm font-semibold text-secondary leading-snug break-words">
 													{b.title}
 												</h4>
 												{b.description && (
-													<p className="text-[10px] sm:text-xs leading-relaxed text-slate-500 mt-1 break-words">
+													<p className="text-xs leading-relaxed text-slate-500 mt-1 break-words">
 														{b.description}
 													</p>
 												)}

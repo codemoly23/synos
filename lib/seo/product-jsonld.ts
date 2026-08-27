@@ -136,6 +136,14 @@ export function generateFaqJsonLd(
  * Generate Organization JSON-LD structured data
  * @see https://schema.org/Organization
  */
+const COUNTRY_ISO_CODES: Record<string, string> = {
+	Sverige: "SE",
+};
+
+function toIsoCountryCode(country: string) {
+	return COUNTRY_ISO_CODES[country] ?? country;
+}
+
 export async function generateOrganizationJsonLd() {
 	const siteConfig = await getSiteConfig();
 	const baseUrl = siteConfig.url;
@@ -146,6 +154,8 @@ export async function generateOrganizationJsonLd() {
 		name: siteConfig.company.name,
 		url: baseUrl,
 		logo: `${baseUrl}/logo.png`,
+		description:
+			"Synos Medical AB är en svensk leverantör av professionell MDR-certifierad klinikutrustning för estetiska och medicinska behandlingar. Företaget erbjuder klinikutrustning, utbildning, service och support till sjukhus, kliniker och skönhetssalonger i Sverige.",
 		contactPoint: {
 			"@type": "ContactPoint",
 			telephone: siteConfig.company.phone,
@@ -158,7 +168,7 @@ export async function generateOrganizationJsonLd() {
 			streetAddress: addr.street,
 			addressLocality: addr.city,
 			postalCode: addr.postalCode,
-			addressCountry: addr.country,
+			addressCountry: toIsoCountryCode(addr.country),
 		})),
 		sameAs: [
 			siteConfig.links.facebook,

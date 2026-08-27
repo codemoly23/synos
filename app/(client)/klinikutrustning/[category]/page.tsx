@@ -563,7 +563,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
 				{/* Mobile text */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-[1.75rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight break-words">
+					<h1 className="text-2xl md:text-5xl font-sans font-light text-white mb-3 leading-tight break-normal">
 						{resolvedHeroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -584,7 +584,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 							))}
 						</ul>
 					)}
-					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+					<a
+						href="#inquiry-form"
+						className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full text-white text-sm font-light"
+						style={{ background: "linear-gradient(135deg, #f0d8c5 0%, #d4a07b 18%, #b87a52 40%, #8f5a3a 55%, #b87a52 70%, #d4a07b 85%, #f0d8c5 100%)" }}
+					>
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
 					</a>
