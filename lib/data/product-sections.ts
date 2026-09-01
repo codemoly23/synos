@@ -616,10 +616,10 @@ export function getProductCustomSections(
 
 /**
  * Every product's section2 ("Byggd för ..." style block) links to the
- * inquiry form — matches the "Läs mer" CTA convention used elsewhere on
- * the site (product cards, hero).
+ * inquiry form — matches the "Begär offert" CTA convention used elsewhere
+ * on the site (hero, sidebar) for the same scroll-to-inquiry-form action.
  */
 function applySectionCta(sections: ProductCustomSections): void {
-	sections.section2.ctaText = "Läs mer";
+	sections.section2.ctaText = "Begär offert";
 	sections.section2.ctaHref = "#product-inquiry-form";
 }
