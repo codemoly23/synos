@@ -16,6 +16,8 @@ import {
 	jobApplicationSchema,
 	heroInquirySchema,
 	brochureRequestSchema,
+	trainingApplicationSchema,
+	newsletterSubscriptionSchema,
 	type ProductInquiryInput,
 	type TrainingInquiryInput,
 	type ContactInquiryInput,
@@ -25,6 +27,8 @@ import {
 	type JobApplicationInput,
 	type HeroInquiryInput,
 	type BrochureRequestInput,
+	type TrainingApplicationInput,
+	type NewsletterSubscriptionInput,
 	type FormSubmissionListQuery,
 	type UpdateStatusInput,
 	type BulkExportInput,
@@ -107,13 +111,16 @@ class FormSubmissionService {
 		const validData = validationResult.data;
 
 		// Sanitize user-provided fields
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "product_inquiry" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
-			phone: validData.phone ? this.sanitizeInput(validData.phone) : null,
-			countryCode: validData.countryCode || null,
-			countryName: validData.countryName ? this.sanitizeInput(validData.countryName) : null,
+			phone: this.sanitizeInput(validData.phone),
+			companyName: this.sanitizeInput(validData.companyName) || null,
 			corporationNumber:
 				this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
@@ -224,16 +231,32 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
-		// Sanitize user-provided fields
+		// Sanitize user-provided fields. firstName/lastName take precedence;
+		// legacy "quick contact" widgets elsewhere on the site still send a
+		// single combined fullName with no split, so fall back to that.
+		const firstName = validData.firstName
+			? this.sanitizeInput(validData.firstName)
+			: undefined;
+		const lastName = validData.lastName
+			? this.sanitizeInput(validData.lastName)
+			: undefined;
+		const fullName =
+			firstName && lastName
+				? `${firstName} ${lastName}`.trim()
+				: this.sanitizeInput(validData.fullName);
+
 		const sanitizedData = {
 			type: "contact" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName,
+			firstName: firstName || null,
+			lastName: lastName || null,
 			email: validData.email.toLowerCase().trim(),
-			phone: this.sanitizeInput(validData.phone),
+			phone: this.sanitizeInput(validData.phone) || null,
 			corporationNumber:
 				this.sanitizeInput(validData.corporationNumber) || null,
+			companyName: this.sanitizeInput(validData.companyName) || null,
 			subject: this.sanitizeInput(validData.subject),
-			message: this.sanitizeInput(validData.message),
+			message: this.sanitizeInput(validData.message) || null,
 			gdprConsent: validData.gdprConsent,
 			gdprConsentTimestamp: new Date(),
 			gdprConsentVersion: "1.0",
@@ -384,14 +407,18 @@ class FormSubmissionService {
 		const validData = validationResult.data;
 
 		// Sanitize user-provided fields
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "quote_request" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
 			phone: this.sanitizeInput(validData.phone),
-			countryCode: validData.countryCode,
 			countryName: "Sweden",
-			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
 			gdprConsent: validData.gdprConsent,
 			gdprConsentTimestamp: new Date(),
@@ -467,6 +494,60 @@ class FormSubmissionService {
 	}
 
 	/**
+	 * Create a training application submission (utbildningar page application form)
+	 */
+	async createTrainingApplication(
+		data: TrainingApplicationInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		// Validate input
+		const validationResult = trainingApplicationSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		// Check rate limit
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		// Sanitize user-provided fields
+		const sanitizedData = {
+			type: "training_application" as FormSubmissionType,
+			fullName: this.sanitizeInput(validData.fullName),
+			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
+			countryCode: "+46",
+			countryName: "Sweden",
+			message: this.sanitizeInput(validData.message) || null,
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			status: "new" as FormSubmissionStatus,
+			category: this.sanitizeInput(validData.category) || null,
+			attachmentUrl: validData.attachmentUrl || null,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Training application created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
 	 * Create a hero inquiry submission (category hero form)
 	 */
 	async createHeroInquiry(
@@ -485,11 +566,17 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "hero_inquiry" as FormSubmissionType,
-			fullName: this.sanitizeInput(validData.fullName),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
-			corporationNumber: this.sanitizeInput(validData.companyName) || null,
+			phone: this.sanitizeInput(validData.phone),
+			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
 			message: this.sanitizeInput(validData.message) || null,
 			gdprConsent: true,
 			gdprConsentTimestamp: new Date(),
@@ -528,11 +615,18 @@ class FormSubmissionService {
 
 		const validData = validationResult.data;
 
+		const firstName = this.sanitizeInput(validData.firstName);
+		const lastName = this.sanitizeInput(validData.lastName);
 		const sanitizedData = {
 			type: "brochure_request" as FormSubmissionType,
-			fullName: `${this.sanitizeInput(validData.firstName)} ${this.sanitizeInput(validData.lastName)}`.trim(),
+			fullName: `${firstName} ${lastName}`.trim(),
+			firstName,
+			lastName,
 			email: validData.email.toLowerCase().trim(),
+			phone: this.sanitizeInput(validData.phone),
 			companyName: this.sanitizeInput(validData.companyName) || null,
+			corporationNumber: this.sanitizeInput(validData.corporationNumber) || null,
+			message: this.sanitizeInput(validData.message) || null,
 			productName: this.sanitizeInput(validData.productName) || null,
 			productSlug: this.sanitizeInput(validData.productSlug) || null,
 			subject: this.sanitizeInput(validData.documentTitle) || null,
@@ -549,6 +643,52 @@ class FormSubmissionService {
 		const submission = await formSubmissionRepository.create(sanitizedData);
 
 		logger.info(`Brochure request created: ${submission._id}`);
+
+		return submission;
+	}
+
+	/**
+	 * Create a newsletter subscription submission (footer newsletter form)
+	 */
+	async createNewsletterSubscription(
+		data: NewsletterSubscriptionInput,
+		metadata: Omit<IFormSubmissionMetadata, "submittedAt">
+	): Promise<IFormSubmission> {
+		const validationResult = newsletterSubscriptionSchema.safeParse(data);
+		if (!validationResult.success) {
+			throw new ValidationError(
+				"Validation failed",
+				validationResult.error.issues
+			);
+		}
+
+		const withinLimit = await this.checkRateLimit(metadata.ipAddress);
+		if (!withinLimit) {
+			throw new TooManyRequestsError(
+				"För många förfrågningar. Försök igen om 15 minuter."
+			);
+		}
+
+		const validData = validationResult.data;
+
+		const sanitizedData = {
+			type: "newsletter_subscription" as FormSubmissionType,
+			fullName: "Newsletter Subscriber",
+			email: validData.email.toLowerCase().trim(),
+			gdprConsent: true,
+			gdprConsentTimestamp: new Date(),
+			gdprConsentVersion: "1.0",
+			marketingConsent: true,
+			status: "new" as FormSubmissionStatus,
+			metadata: {
+				...metadata,
+				submittedAt: new Date(),
+			},
+		};
+
+		const submission = await formSubmissionRepository.create(sanitizedData);
+
+		logger.info(`Newsletter subscription created: ${submission._id}`);
 
 		return submission;
 	}

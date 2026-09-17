@@ -55,6 +55,9 @@ export interface IStartaEgetMainContentSection {
 	title?: string;
 	subtitle?: string;
 	paragraphs?: string[];
+	image?: string;
+	highlightsTitle?: string;
+	highlights?: string[];
 }
 
 const StartaEgetMainContentSectionSchema =
@@ -63,6 +66,9 @@ const StartaEgetMainContentSectionSchema =
 			title: { type: String, trim: true },
 			subtitle: { type: String, trim: true },
 			paragraphs: { type: [String], default: [] },
+			image: { type: String, trim: true },
+			highlightsTitle: { type: String, trim: true },
+			highlights: { type: [String], default: [] },
 		},
 		{ _id: false }
 	);

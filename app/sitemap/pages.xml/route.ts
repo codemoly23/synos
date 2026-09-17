@@ -23,49 +23,49 @@ export async function GET(): Promise<NextResponse> {
 		const urls: SitemapUrl[] = [
 			// Homepage
 			{
-				loc: SITEMAP_CONFIG.baseUrl,
+				loc: `${SITEMAP_CONFIG.baseUrl}/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.homepage,
 				priority: SITEMAP_CONFIG.priority.homepage,
 			},
 			// Contact
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/kontakt`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/kontakt/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.category,
 				priority: SITEMAP_CONFIG.priority.important,
 			},
 			// About us
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/om-oss`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/om-oss/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.category,
 				priority: SITEMAP_CONFIG.priority.important,
 			},
 			// Training/Education
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/utbildningar`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/utbildningar/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.category,
 				priority: SITEMAP_CONFIG.priority.important,
 			},
 			// Start your own business
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/starta-eget`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/starta-eget/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.category,
 				priority: SITEMAP_CONFIG.priority.category,
 			},
 			// FAQ
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/faq`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/faq/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.category,
 				priority: SITEMAP_CONFIG.priority.category,
 			},
 			// Privacy policy
 			{
-				loc: `${SITEMAP_CONFIG.baseUrl}/integritetspolicy`,
+				loc: `${SITEMAP_CONFIG.baseUrl}/integritetspolicy/`,
 				lastmod: now,
 				changefreq: SITEMAP_CONFIG.changeFreq.legal,
 				priority: SITEMAP_CONFIG.priority.legal,

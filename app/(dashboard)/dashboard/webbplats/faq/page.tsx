@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { optionalNumberField } from "@/lib/utils/form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -695,7 +696,7 @@ export default function FAQAdminPage() {
 														type="number"
 														{...form.register(
 															`faqContent.categories.${index}.order`,
-															{ valueAsNumber: true }
+															optionalNumberField
 														)}
 														placeholder="1"
 													/>
@@ -778,7 +779,7 @@ export default function FAQAdminPage() {
 																type="number"
 																{...form.register(
 																	`faqContent.items.${index}.order`,
-																	{ valueAsNumber: true }
+																	optionalNumberField
 																)}
 																placeholder="1"
 															/>

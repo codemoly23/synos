@@ -62,7 +62,7 @@ export function NyheterAuthorCard({ article }: NyheterAuthorCardProps) {
 				{/* Author Info */}
 				<div className="flex-1 min-w-0">
 					<p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-						Skriven av
+						{article.author.label || "Skriven av"}
 					</p>
 					<h3 className="text-lg font-semibold text-secondary mb-1">
 						{article.author.name}

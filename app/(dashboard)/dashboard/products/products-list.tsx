@@ -14,6 +14,7 @@ import {
 	Send,
 	FileText,
 	Settings,
+	ArrowUpDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -262,6 +263,12 @@ export function ProductsList({
 						<p className="text-slate-600">Manage your product catalog</p>
 					</div>
 					<div className="flex items-center gap-2">
+						<Link href="/dashboard/products/reorder">
+							<Button variant="outline">
+								<ArrowUpDown className="h-4 w-4 mr-2" />
+								Reorder
+							</Button>
+						</Link>
 						<Link href="/dashboard/products/settings">
 							<Button variant="outline">
 								<Settings className="h-4 w-4 mr-2" />

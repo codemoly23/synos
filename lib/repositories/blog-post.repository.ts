@@ -457,7 +457,7 @@ class BlogPostRepository extends BaseRepository<IBlogPost> {
 				.findByIdAndUpdate(
 					id,
 					{ $set: updateData },
-					{ new: true, runValidators: true }
+					{ returnDocument: "after", runValidators: true }
 				)
 				.exec();
 

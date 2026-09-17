@@ -9,6 +9,7 @@ import {
 import { generateSlug } from "@/lib/utils/product-helpers";
 import { logger } from "@/lib/utils/logger";
 import { revalidateTag, revalidatePath } from "next/cache";
+import { redirectService } from "@/lib/services/redirect.service";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
@@ -33,6 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		if (!group) return notFoundResponse("Technology group not found");
 
 		const oldName = group.name;
+		const oldSlug = group.slug;
 
 		if (name !== undefined && name !== null && String(name).trim()) {
 			group.name = String(name).trim();
@@ -128,6 +130,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		revalidateTag("technology-groups", "default");
 		revalidateTag("products", "default");
 		revalidatePath("/produkter");
+			if (group.slug) revalidatePath(`/klinikutrustning/teknologi/${group.slug}`);
+
+		if (oldSlug && group.slug && oldSlug !== group.slug) {
+			await redirectService.createAutoRedirect(
+				`/klinikutrustning/teknologi/${oldSlug}`,
+				`/klinikutrustning/teknologi/${group.slug}`
+			);
+		}
 
 		return successResponse(group, "Technology group updated successfully");
 	} catch (error: unknown) {
@@ -167,6 +177,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 		revalidateTag("technology-groups", "default");
 		revalidateTag("products", "default");
 		revalidatePath("/produkter");
+			if (group.slug) revalidatePath(`/klinikutrustning/teknologi/${group.slug}`);
 
 		return successResponse(null, "Technology group deleted successfully");
 	} catch {

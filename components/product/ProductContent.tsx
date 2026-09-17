@@ -11,12 +11,14 @@ import { ProductFeatureSplit } from "@/components/products/sections/ProductFeatu
 import { ProductFeatureImageList } from "@/components/products/sections/ProductFeatureImageList";
 import { ProductFeatureGrid } from "@/components/products/sections/ProductFeatureGrid";
 import { getProductCustomSections } from "@/lib/data/product-sections";
+import { ExpandableSection } from "@/components/ui/expandable-section";
+import { ProductTechSpecs } from "@/components/products/ProductTechSpecs";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { BrochureRequestModal } from "@/components/product/BrochureRequestModal";
 import { Badge } from "@/components/ui/badge";
 import { ImageComponent } from "@/components/common/image-component";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, FileText } from "lucide-react";
+import { ArrowLeft, Check, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
@@ -35,6 +37,9 @@ interface ProductContentProps {
 	hardcodedHero?: boolean;
 	/** Global fallback background for the product hero (from site settings) */
 	defaultBackground?: string;
+	/** Global fallback background for the inquiry/contact form section (from site settings) */
+	defaultInquiryBgMobile?: string;
+	defaultInquiryBgDesktop?: string;
 	/** Category slug for correct URL construction in form submissions */
 	productCategorySlug?: string;
 }
@@ -52,9 +57,12 @@ export function ProductContent({
 	contactEmail,
 	hardcodedHero = false,
 	defaultBackground,
+	defaultInquiryBgMobile,
+	defaultInquiryBgDesktop,
 	productCategorySlug,
 }: ProductContentProps) {
 	const [brochureModal, setBrochureModal] = useState<{ open: boolean; title?: string }>({ open: false });
+	const [customSectionsExpanded, setCustomSectionsExpanded] = useState(false);
 	const primaryImage = product.overviewImage;
 	const FALLBACK_BG = "/images/Product detail breadcrumbs background.jpeg";
 	const resolvedBg = defaultBackground || FALLBACK_BG;
@@ -102,22 +110,10 @@ export function ProductContent({
 							className="object-cover object-top"
 							sizes="100vw"
 						/>
-						{/* <div className="absolute inset-x-0 top-[6%] h-[50vh] z-10 flex items-center justify-center">
-							<div className="relative w-full h-full">
-								<ImageComponent
-									src="/images/motus-ax-3.jpg"
-									alt="Motus Pro"
-									fill
-									className="object-contain drop-shadow-2xl"
-									priority
-									sizes="100vw"
-								/>
-							</div>
-						</div> */}
 					</div>
 					{/* Mobile text */}
 					<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-						<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+						<h1 className="text-[2.2rem] font-sans font-light text-white mb-3 leading-tight">
 							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -144,7 +140,7 @@ export function ProductContent({
 								</li>
 							))}
 						</ul>
-						<button type="button" onClick={() => document.getElementById("product-inquiry-form")?.scrollIntoView({ behavior: "smooth" })} className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#dba481]/50 text-sm font-light" style={{ color: '#dba481', boxShadow: '-10px 0 8px -6px rgba(219,164,129,0.35), 10px 0 8px -6px rgba(219,164,129,0.35)' }}>
+						<button type="button" onClick={() => document.getElementById("product-inquiry-form")?.scrollIntoView({ behavior: "smooth" })} className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full text-sm font-semibold btn-copper-gradient shadow-lg">
 							<FileText className="h-4 w-4 shrink-0" />
 							Begär offert
 						</button>
@@ -173,50 +169,6 @@ export function ProductContent({
 											filter: 'blur(22px)',
 										}}
 									/>
-									{/* Product image — anchored to floor */}
-									{/* {primaryImage && (
-										<div className="relative w-full h-[620px] z-10">
-											<ImageComponent
-												src={primaryImage}
-												alt={product.title}
-												fill
-												className="object-contain object-bottom drop-shadow-2xl"
-												priority
-												sizes="(max-width: 1280px) 50vw, 640px"
-											/>
-										</div>
-									)} */}
-									{/* Contact shadow + floor reflection */}
-									{/* <div className="relative z-10 w-full shrink-0 -mt-3">
-										<div
-											className="mx-auto pointer-events-none"
-											style={{
-												width: '46%',
-												height: '16px',
-												background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, transparent 70%)',
-												filter: 'blur(9px)',
-											}}
-										/>
-										<div
-											className="w-full mt-1 overflow-hidden"
-											style={{
-												height: '68px',
-												opacity: 0.35,
-												maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-												WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-											}}
-										>
-											<div className="relative w-full h-[620px]" style={{ transform: 'scaleY(-1)' }}>
-												<ImageComponent
-													src="/images/motus.png"
-													fill
-													alt=""
-													className="object-contain object-bottom"
-													sizes="700px"
-												/>
-											</div>
-										</div>
-									</div> */}
 								</div>
 								{/* Right — Form */}
 								<div className="flex flex-col justify-center py-10 pl-10 pr-8">
@@ -235,42 +187,78 @@ export function ProductContent({
 					</div>
 				</section>
 			) : (
-				<section className="relative overflow-hidden pt-20 sm:pt-24 min-h-[580px] lg:min-h-[640px] bg-black">
-					<div className="_container relative overflow-hidden min-h-[640px] lg:min-h-[740px]">
-						{/* Background */}
-						<ImageComponent
-							src={resolvedBg}
-							alt=""
-							fill
-							priority
-							className="object-cover object-[30%_top]"
-							sizes="100vw"
-						/>
-						<div className="relative z-10 grid grid-cols-2 items-center min-h-[640px] lg:min-h-[740px] gap-8">
-							{/* Left — machine image overlay */}
-							{primaryImage ? (
-								<div className="relative h-[640px] lg:h-[740px]">
-									<ImageComponent
-										src={primaryImage}
-										alt={product.title}
-										fill
-										priority
-										className="object-contain object-bottom drop-shadow-2xl"
-										sizes="(max-width: 1280px) 50vw, 640px"
-									/>
-								</div>
-							) : (
-								<div />
+				<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
+					{/* ── MOBILE LAYOUT ── */}
+					<div className="lg:hidden">
+						<div className="relative h-[50vh] min-h-[360px]">
+							<ImageComponent
+								src={resolvedBg}
+								alt=""
+								fill
+								priority
+								className="object-cover object-[30%_top]"
+								sizes="100vw"
+							/>
+							{primaryImage && (
+								<ImageComponent
+									src={primaryImage}
+									alt={product.title}
+									fill
+									priority
+									className="object-contain object-bottom drop-shadow-2xl"
+									sizes="100vw"
+								/>
 							)}
-							{/* Right – text */}
-							<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
-								<h1 className="text-6xl lg:text-8xl font-sans font-light text-white mb-3 leading-tight">
-									{product.title}
-								</h1>
-								<div className="w-14 h-[2px] bg-primary mb-5" />
-								<p className="text-white/70 text-3xl mb-12 leading-relaxed">
-									{product.shortDescription}
-								</p>
+						</div>
+						<div className="relative z-10 px-6 py-8 pb-12 bg-black">
+							<h1 className="text-[2.2rem] font-sans font-light text-white mb-3 leading-tight">
+								{product.title}
+							</h1>
+							<div className="w-14 h-[2px] bg-primary mb-4" />
+							<p className="text-white/70 text-sm leading-relaxed">
+								{product.shortDescription}
+							</p>
+						</div>
+					</div>
+
+					{/* ── DESKTOP LAYOUT ── */}
+					<div className="hidden lg:block">
+						<div className="_container relative overflow-hidden min-h-[740px]">
+							{/* Background */}
+							<ImageComponent
+								src={resolvedBg}
+								alt=""
+								fill
+								priority
+								className="object-cover object-[30%_top]"
+								sizes="100vw"
+							/>
+							<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
+								{/* Left — machine image overlay */}
+								{primaryImage ? (
+									<div className="relative h-[740px]">
+										<ImageComponent
+											src={primaryImage}
+											alt={product.title}
+											fill
+											priority
+											className="object-contain object-bottom drop-shadow-2xl"
+											sizes="640px"
+										/>
+									</div>
+								) : (
+									<div />
+								)}
+								{/* Right – text */}
+								<div className="flex flex-col justify-center py-16 pl-8 lg:pl-16 pr-4">
+									<h1 className="text-6xl lg:text-8xl font-sans font-light text-white mb-3 leading-tight">
+										{product.title}
+									</h1>
+									<div className="w-14 h-[2px] bg-primary mb-5" />
+									<p className="text-white/70 text-3xl mb-12 leading-relaxed">
+										{product.shortDescription}
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -281,11 +269,32 @@ export function ProductContent({
 			{customSections && (
 				<div className="py-8 md:py-10 lg:py-12">
 					<ProductFeatureSplit {...customSections.section1} corners="top" />
+
+					{/* Quick CTA - Mobile only, shown between the split and image-list sections */}
+					<div className="_container pt-8 md:hidden">
+						<aside className="space-y-4">
+							<ProductDetailSidebar
+								certifications={product.certifications}
+								onScrollToForm={() =>
+									document
+										.getElementById("product-inquiry-form")
+										?.scrollIntoView({ behavior: "smooth" })
+								}
+							/>
+						</aside>
+					</div>
+
 					<ProductFeatureImageList
 						{...customSections.section2}
 						corners="middle"
+						expanded={customSectionsExpanded}
+						onToggleExpanded={() => setCustomSectionsExpanded((prev) => !prev)}
 					/>
-					<ProductFeatureGrid {...customSections.section3} corners="bottom" />
+					<ProductFeatureGrid
+						{...customSections.section3}
+						corners="bottom"
+						expanded={customSectionsExpanded}
+					/>
 				</div>
 			)}
 
@@ -321,18 +330,26 @@ export function ProductContent({
 						<article className="min-w-0">
 							{/* Main Description */}
 							{product.description?.trim() && (
-								<div
-									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-									dangerouslySetInnerHTML={{ __html: product.description }}
-								/>
+								<div className="mb-10">
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.description }}
+										/>
+									</ExpandableSection>
+								</div>
 							)}
 
 							{/* Extended Description */}
 							{product.productDescription?.trim() && (
-								<div
-									className="prose prose-slate max-w-none mb-10 prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-									dangerouslySetInnerHTML={{ __html: product.productDescription }}
-								/>
+								<div className="mb-10">
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.productDescription }}
+										/>
+									</ExpandableSection>
+								</div>
 							)}
 
 							{/* Before & After Section */}
@@ -352,55 +369,80 @@ export function ProductContent({
 											{product.additionalDescriptionTitle}
 										</h2>
 									)}
-									<div
-										className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
-										dangerouslySetInnerHTML={{ __html: product.additionalDescription }}
-									/>
+									<ExpandableSection>
+										<div
+											className="prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+											dangerouslySetInnerHTML={{ __html: product.additionalDescription }}
+										/>
+									</ExpandableSection>
 								</div>
 							)}
 
 							{/* FAQ Section */}
 							{product.qa && product.qa.length > 0 && (
 								<div className="mb-12">
-									<ProductFAQ faqs={product.qa} title={product.faqTitle} />
+									<ProductFAQ faqs={product.qa} title={product.faqTitle} limit={1} />
 								</div>
 							)}
 
-							{/* Documentation / Brochure Section */}
-							{product.documentation && product.documentation.length > 0 && (
+							{/* Technical Specifications Section */}
+							{product.techSpecifications && product.techSpecifications.length > 0 && (
 								<div className="mb-12">
-									<h2 className="text-xl font-semibold text-secondary mb-4">
-										Broschyrer & Dokumentation
-									</h2>
-									<div className="flex flex-wrap gap-3">
-										{product.documentation.map((doc, i) => (
-											<button
-												key={i}
-												type="button"
-												onClick={() => setBrochureModal({ open: true, title: doc.title })}
-												className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
-											>
-												<FileText className="h-4 w-4 shrink-0" />
-												{doc.title || "Broschyr"}
-											</button>
-										))}
+									<ProductTechSpecs specs={product.techSpecifications} limit={1} />
+								</div>
+							)}
+
+							{/* Documentation / Brochure Section - CTA style (always visible) */}
+							<div className="mb-12">
+								<div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 sm:p-8 shadow-sm">
+									{/* Decorative icon backdrop */}
+									<div className="pointer-events-none absolute -right-6 -top-6 opacity-10">
+										<FileText className="h-32 w-32 text-primary" />
+									</div>
+
+									<div className="relative">
+										<div className="mb-1 flex items-center gap-2">
+											<span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary shrink-0">
+												<FileText className="h-5 w-5" />
+											</span>
+											<h2 className="text-xl sm:text-2xl font-bold text-secondary">
+												Broschyrer & Dokumentation
+											</h2>
+										</div>
+										<p className="mb-5 text-sm text-secondary/70 max-w-2xl">
+											Ladda ner produktbroschyrer och teknisk dokumentation – fyll i
+											dina uppgifter så skickar vi materialet direkt till dig.
+										</p>
+
+										<div className="flex flex-wrap gap-3">
+											{product.documentation && product.documentation.length > 0 ? (
+												product.documentation.map((doc, i) => (
+													<button
+														key={i}
+														type="button"
+														onClick={() => setBrochureModal({ open: true, title: doc.title })}
+														className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+													>
+														<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
+														{doc.title || "Broschyr"}
+													</button>
+												))
+											) : (
+												<button
+													type="button"
+													onClick={() => setBrochureModal({ open: true, title: product.title })}
+													className="group inline-flex items-center gap-2.5 rounded-xl btn-copper-gradient px-5 py-3 text-sm font-semibold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+												>
+													<Download className="h-4 w-4 shrink-0 transition-transform group-hover:translate-y-0.5" />
+													Begär broschyr
+												</button>
+											)}
+										</div>
 									</div>
 								</div>
-							)}
+							</div>
 
 						</article>
-
-						{/* Sidebar - Mobile only */}
-						<aside className="sticky top-28 self-start space-y-4 block md:hidden">
-							<ProductDetailSidebar
-								certifications={product.certifications}
-								onScrollToForm={() =>
-									document
-										.getElementById("product-inquiry-form")
-										?.scrollIntoView({ behavior: "smooth" })
-								}
-							/>
-						</aside>
 					</div>
 				</div>
 			</section>
@@ -417,13 +459,10 @@ export function ProductContent({
 					purchaseDescription={product.purchaseInfo?.description}
 					formSubtitle={product.purchaseInfo?.formSubtitle}
 					buttonText={product.purchaseInfo?.buttonText}
-					productImage={product.overviewImage}
-					imageWidth={product.imageWidth}
-					imageHeight={product.imageHeight}
 					contactPhone={contactPhone}
 					contactEmail={contactEmail}
-					bgMobile={product.inquiryBgMobile || undefined}
-					bgDesktop={product.inquiryBgDesktop || undefined}
+					bgMobile={product.inquiryBgMobile || defaultInquiryBgMobile || undefined}
+					bgDesktop={product.inquiryBgDesktop || defaultInquiryBgDesktop || undefined}
 				/>
 			</div>
 

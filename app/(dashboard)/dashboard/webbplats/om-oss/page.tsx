@@ -23,7 +23,17 @@ import {
 	Search,
 	Star,
 	ExternalLink,
+	FileText,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import TextEditor to avoid SSR issues
+const TextEditor = dynamic(() => import("@/components/common/TextEditor"), {
+	ssr: false,
+	loading: () => (
+		<div className="h-[500px] w-full animate-pulse rounded-md border bg-muted" />
+	),
+});
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,6 +116,12 @@ const formSchema = z.object({
 				})
 			)
 			.optional(),
+		contactCard: z
+			.object({
+				title: z.string().optional(),
+				formTitle: z.string().optional(),
+			})
+			.optional(),
 	}),
 	testimonials: z.object({
 		title: z.string().optional(),
@@ -135,6 +151,22 @@ const formSchema = z.object({
 					)
 					.optional(),
 			})
+			.optional(),
+		ctaTitle: z.string().optional(),
+		ctaDescription: z.string().optional(),
+		ctaButtonText: z.string().optional(),
+		ctaButtonLink: z.string().optional(),
+		rating: z.number().min(0).max(5).optional(),
+		reviewCount: z.string().optional(),
+		reviewCountLabel: z.string().optional(),
+		reviewPlatforms: z
+			.array(
+				z.object({
+					icon: z.string().optional(),
+					iconColor: z.string().optional(),
+					url: z.string().optional(),
+				})
+			)
 			.optional(),
 	}),
 	partners: z.object({
@@ -167,6 +199,7 @@ const formSchema = z.object({
 			})
 			.optional(),
 	}),
+	richContent: z.string().optional(),
 	seo: z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
@@ -206,15 +239,21 @@ export default function AboutPageCMS() {
 				testimonials: true,
 				partners: true,
 				cta: true,
+				richContent: false,
 			},
 			hero: {},
 			mission: { features: [] },
 			stats: [],
 			imageGallery: { images: [] },
-			faq: { items: [] },
-			testimonials: { testimonials: [], groupCooperation: { teamMembers: [] } },
+			faq: { items: [], contactCard: {} },
+			testimonials: {
+				testimonials: [],
+				groupCooperation: { teamMembers: [] },
+				reviewPlatforms: [],
+			},
 			partners: { partners: [] },
 			cta: {},
+			richContent: "",
 			seo: {},
 		},
 	});
@@ -262,6 +301,12 @@ export default function AboutPageCMS() {
 		remove: removeTeamMember,
 	} = useFieldArray({ control: form.control, name: "testimonials.groupCooperation.teamMembers" });
 
+	const {
+		fields: reviewPlatformFields,
+		append: appendReviewPlatform,
+		remove: removeReviewPlatform,
+	} = useFieldArray({ control: form.control, name: "testimonials.reviewPlatforms" });
+
 	// Fetch initial data
 	useEffect(() => {
 		const fetchData = async () => {
@@ -271,7 +316,9 @@ export default function AboutPageCMS() {
 				const data: AboutPageData = await response.json();
 
 				form.reset({
-					sectionVisibility: data.sectionVisibility || {
+					// Merge over defaults so keys added later (e.g. richContent) are never undefined
+					// on older DB docs — a missing boolean would make zod reject the whole form on save.
+					sectionVisibility: {
 						hero: true,
 						mission: true,
 						stats: true,
@@ -280,6 +327,9 @@ export default function AboutPageCMS() {
 						testimonials: true,
 						partners: true,
 						cta: true,
+						richContent: false,
+						// Older docs really can lack keys, so treat the API shape as Partial here
+						...((data.sectionVisibility || {}) as Partial<AboutPageData["sectionVisibility"]>),
 					},
 					hero: data.hero || {},
 					mission: {
@@ -300,6 +350,10 @@ export default function AboutPageCMS() {
 						title: data.faq?.title || "",
 						subtitle: data.faq?.subtitle || "",
 						items: data.faq?.items || [],
+						contactCard: {
+							title: data.faq?.contactCard?.title || "",
+							formTitle: data.faq?.contactCard?.formTitle || "",
+						},
 					},
 					testimonials: {
 						title: data.testimonials?.title || "",
@@ -310,6 +364,14 @@ export default function AboutPageCMS() {
 							title: data.testimonials?.groupCooperation?.title || "",
 							teamMembers: data.testimonials?.groupCooperation?.teamMembers || [],
 						},
+						ctaTitle: data.testimonials?.ctaTitle || "",
+						ctaDescription: data.testimonials?.ctaDescription || "",
+						ctaButtonText: data.testimonials?.ctaButtonText || "",
+						ctaButtonLink: data.testimonials?.ctaButtonLink || "",
+						rating: data.testimonials?.rating ?? 4.8,
+						reviewCount: data.testimonials?.reviewCount || "",
+						reviewCountLabel: data.testimonials?.reviewCountLabel || "",
+						reviewPlatforms: data.testimonials?.reviewPlatforms || [],
 					},
 					partners: {
 						badge: data.partners?.badge || "",
@@ -318,6 +380,7 @@ export default function AboutPageCMS() {
 						partners: data.partners?.partners || [],
 					},
 					cta: data.cta || {},
+					richContent: data.richContent || "",
 					seo: data.seo || {},
 				});
 			} catch (error) {
@@ -437,6 +500,10 @@ export default function AboutPageCMS() {
 						<Megaphone className="h-4 w-4" />
 						CTA
 					</TabsTrigger>
+					<TabsTrigger value="rich-content" className="gap-2">
+						<FileText className="h-4 w-4" />
+						Rich Content
+					</TabsTrigger>
 					<TabsTrigger value="seo" className="gap-2">
 						<Search className="h-4 w-4" />
 						SEO
@@ -460,6 +527,7 @@ export default function AboutPageCMS() {
 								{ key: "testimonials", label: "Testimonials" },
 								{ key: "partners", label: "Partners" },
 								{ key: "cta", label: "CTA Section" },
+								{ key: "richContent", label: "Rich Content" },
 							].map(({ key, label }) => (
 								<div
 									key={key}
@@ -900,6 +968,35 @@ export default function AboutPageCMS() {
 									</div>
 								))}
 							</div>
+
+							{/* Contact Card Section */}
+							<div className="border-t pt-6 mt-6">
+								<h3 className="text-lg font-semibold mb-4">Contact Card</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									The card shown next to the FAQ list. Address, email and phone
+									number always come from{" "}
+									<a href="/dashboard/settings" className="underline">
+										Site Settings
+									</a>{" "}
+									— only the headings below are editable here.
+								</p>
+								<div className="grid gap-4 md:grid-cols-2">
+									<div className="space-y-2">
+										<Label>Card Title</Label>
+										<Input
+											{...form.register("faq.contactCard.title")}
+											placeholder="e.g., Alltid nara dig"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Form Title</Label>
+										<Input
+											{...form.register("faq.contactCard.formTitle")}
+											placeholder="e.g., Sag hej!"
+										/>
+									</div>
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 				</TabsContent>
@@ -1153,6 +1250,149 @@ export default function AboutPageCMS() {
 									</div>
 								</div>
 							</div>
+
+							{/* Trusted By CTA Card Section */}
+							<div className="border-t pt-6 mt-6">
+								<h3 className="text-lg font-semibold mb-4">Trusted By CTA Card</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									The highlighted card shown to the left of the scrolling reviews.
+								</p>
+
+								<div className="space-y-4">
+									<div className="space-y-2">
+										<Label>Title</Label>
+										<Input
+											{...form.register("testimonials.ctaTitle")}
+											placeholder="e.g., Trusted By Over 1300 Loyal Clients"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Description</Label>
+										<Textarea
+											{...form.register("testimonials.ctaDescription")}
+											placeholder="Short supporting text"
+											rows={3}
+										/>
+									</div>
+									<div className="grid gap-4 md:grid-cols-2">
+										<div className="space-y-2">
+											<Label>Button Text</Label>
+											<Input
+												{...form.register("testimonials.ctaButtonText")}
+												placeholder="e.g., Contact Us"
+											/>
+										</div>
+										<div className="space-y-2">
+											<Label>Button Link</Label>
+											<Input
+												{...form.register("testimonials.ctaButtonLink")}
+												placeholder="e.g., /kontakt"
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Rating & Reviews Section */}
+							<div className="border-t pt-6 mt-6">
+								<h3 className="text-lg font-semibold mb-4">Rating & Reviews</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									The rating card shown alongside the testimonials.
+								</p>
+
+								<div className="grid gap-4 md:grid-cols-3">
+									<div className="space-y-2">
+										<Label>Rating</Label>
+										<Input
+											type="number"
+											step="0.1"
+											min="0"
+											max="5"
+											{...form.register("testimonials.rating", { valueAsNumber: true })}
+											placeholder="4.8"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Review Count</Label>
+										<Input
+											{...form.register("testimonials.reviewCount")}
+											placeholder="e.g., 2,568"
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label>Review Count Label</Label>
+										<Input
+											{...form.register("testimonials.reviewCountLabel")}
+											placeholder="e.g., Reviews and counting"
+										/>
+									</div>
+								</div>
+
+								{/* Review Platforms */}
+								<div className="space-y-4 mt-6">
+									<div className="flex items-center justify-between">
+										<Label className="text-base">Review Platform Icons</Label>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												appendReviewPlatform({ icon: "", iconColor: "", url: "" })
+											}
+										>
+											<Plus className="mr-2 h-4 w-4" />
+											Add Platform
+										</Button>
+									</div>
+
+									<div className="grid gap-4 md:grid-cols-3">
+										{reviewPlatformFields.map((field, index) => (
+											<div key={field.id} className="rounded-lg border p-4 space-y-3">
+												<div className="flex items-center justify-between">
+													<span className="text-sm font-medium">
+														Platform {index + 1}
+													</span>
+													<Button
+														type="button"
+														variant="ghost"
+														size="sm"
+														onClick={() => removeReviewPlatform(index)}
+													>
+														<Trash2 className="h-4 w-4 text-destructive" />
+													</Button>
+												</div>
+												<div className="space-y-2">
+													<Label>Icon (emoji or letter)</Label>
+													<Input
+														{...form.register(
+															`testimonials.reviewPlatforms.${index}.icon`
+														)}
+														placeholder="e.g., 🍎 or G"
+													/>
+												</div>
+												<div className="space-y-2">
+													<Label>Icon Color (optional)</Label>
+													<Input
+														{...form.register(
+															`testimonials.reviewPlatforms.${index}.iconColor`
+														)}
+														placeholder="e.g., #4285F4"
+													/>
+												</div>
+												<div className="space-y-2">
+													<Label>Link (optional)</Label>
+													<Input
+														{...form.register(
+															`testimonials.reviewPlatforms.${index}.url`
+														)}
+														placeholder="https://..."
+													/>
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 				</TabsContent>
@@ -1320,6 +1560,28 @@ export default function AboutPageCMS() {
 									</div>
 								</div>
 							</div>
+						</CardContent>
+					</Card>
+				</TabsContent>
+
+				{/* Rich Content Tab */}
+				<TabsContent value="rich-content" className="space-y-6">
+					<Card>
+						<CardHeader>
+							<CardTitle>Rich Content Editor</CardTitle>
+							<CardDescription>
+								Use the text editor to create flexible HTML content. This content will be rendered as-is on the page.
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<Label className="mb-2 block">Content</Label>
+							<TextEditor
+								defaultValue={form.watch("richContent") || ""}
+								onChange={(value) => form.setValue("richContent", value)}
+								variant="advanceFull"
+								height="500px"
+								placeholder="Enter your content here..."
+							/>
 						</CardContent>
 					</Card>
 				</TabsContent>

@@ -12,6 +12,8 @@ export const aboutSectionVisibilitySchema = z.object({
 	testimonials: z.boolean(),
 	partners: z.boolean(),
 	cta: z.boolean(),
+	// Added after launch — existing DB docs lack this key, so default it instead of requiring it
+	richContent: z.boolean().default(false),
 });
 
 // ============================================================================
@@ -73,10 +75,16 @@ export const aboutFaqItemSchema = z.object({
 	answer: z.string().max(2000).optional(),
 });
 
+export const aboutFaqContactCardSchema = z.object({
+	title: z.string().max(100).optional(),
+	formTitle: z.string().max(100).optional(),
+});
+
 export const aboutFaqSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	items: z.array(aboutFaqItemSchema).optional(),
+	contactCard: aboutFaqContactCardSchema.optional(),
 });
 
 // ============================================================================
@@ -102,11 +110,25 @@ export const aboutGroupCooperationSchema = z.object({
 	teamMembers: z.array(aboutTeamMemberSchema).optional(),
 });
 
+export const aboutReviewPlatformSchema = z.object({
+	icon: z.string().max(10).optional(),
+	iconColor: z.string().max(20).optional(),
+	url: z.string().max(500).optional(),
+});
+
 export const aboutTestimonialsSectionSchema = z.object({
 	title: z.string().max(200).optional(),
 	subtitle: z.string().max(500).optional(),
 	testimonials: z.array(aboutTestimonialSchema).optional(),
 	groupCooperation: aboutGroupCooperationSchema.optional(),
+	ctaTitle: z.string().max(200).optional(),
+	ctaDescription: z.string().max(1000).optional(),
+	ctaButtonText: z.string().max(100).optional(),
+	ctaButtonLink: z.string().max(500).optional(),
+	rating: z.number().min(0).max(5).optional(),
+	reviewCount: z.string().max(20).optional(),
+	reviewCountLabel: z.string().max(100).optional(),
+	reviewPlatforms: z.array(aboutReviewPlatformSchema).optional(),
 });
 
 // ============================================================================
@@ -162,6 +184,7 @@ export const updateAboutPageSchema = z.object({
 	testimonials: aboutTestimonialsSectionSchema.optional(),
 	partners: aboutPartnersSectionSchema.optional(),
 	cta: aboutCtaSectionSchema.optional(),
+	richContent: z.string().optional(),
 	seo: aboutPageSeoSchema.optional(),
 });
 
@@ -176,10 +199,12 @@ export type AboutStatInput = z.infer<typeof aboutStatSchema>;
 export type AboutGalleryImageInput = z.infer<typeof aboutGalleryImageSchema>;
 export type AboutImageGallerySectionInput = z.infer<typeof aboutImageGallerySectionSchema>;
 export type AboutFaqItemInput = z.infer<typeof aboutFaqItemSchema>;
+export type AboutFaqContactCardInput = z.infer<typeof aboutFaqContactCardSchema>;
 export type AboutFaqSectionInput = z.infer<typeof aboutFaqSectionSchema>;
 export type AboutTestimonialInput = z.infer<typeof aboutTestimonialSchema>;
 export type AboutTeamMemberInput = z.infer<typeof aboutTeamMemberSchema>;
 export type AboutGroupCooperationInput = z.infer<typeof aboutGroupCooperationSchema>;
+export type AboutReviewPlatformInput = z.infer<typeof aboutReviewPlatformSchema>;
 export type AboutTestimonialsSectionInput = z.infer<typeof aboutTestimonialsSectionSchema>;
 export type AboutPartnerInput = z.infer<typeof aboutPartnerSchema>;
 export type AboutPartnersSectionInput = z.infer<typeof aboutPartnersSectionSchema>;

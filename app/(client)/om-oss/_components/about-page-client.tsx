@@ -1,8 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import {
 	Home,
 	ChevronRight,
@@ -18,9 +24,13 @@ import {
 	Phone,
 	Mail,
 	MapPin,
+	Loader2,
+	Send,
 	type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Accordion,
 	AccordionContent,
@@ -28,12 +38,33 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { fadeUp, staggerContainer } from "@/lib/animations";
+import { pushEvent } from "@/lib/analytics/gtm";
 import { useSetNavbarVariant } from "@/lib/context/navbar-variant-context";
 import { ImageComponent } from "@/components/common/image-component";
+import { PreviewEditor } from "@/components/common/TextEditor";
 import type { AboutPageData } from "@/lib/repositories/about-page.repository";
+import type { IOffice } from "@/models/site-settings.model";
+
+// Quick contact form schema (FAQ section "Say hello!" card)
+const quickContactSchema = z.object({
+	name: z.string().min(2, "Namn krävs"),
+	email: z.string().email("Giltig e-postadress krävs"),
+	phone: z.string().min(6, "Telefonnummer krävs"),
+	message: z.string().optional(),
+	gdprConsent: z
+		.boolean()
+		.refine((val) => val === true, "Du måste godkänna integritetspolicyn"),
+});
+
+type QuickContactData = z.infer<typeof quickContactSchema>;
 
 interface AboutPageClientProps {
 	data: AboutPageData;
+	contact: {
+		phone: string;
+		email: string;
+		offices: IOffice[];
+	};
 }
 
 // Icon mapping for mission features
@@ -46,9 +77,66 @@ const ICON_MAP: Record<string, LucideIcon> = {
 	Star,
 };
 
-export function AboutPageClient({ data }: AboutPageClientProps) {
+export function AboutPageClient({ data, contact }: AboutPageClientProps) {
 	// Set navbar to dark-hero variant
 	useSetNavbarVariant("dark-hero");
+
+	const router = useRouter();
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [gdprChecked, setGdprChecked] = useState(false);
+
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		reset,
+		formState: { errors },
+	} = useForm<QuickContactData>({
+		resolver: zodResolver(quickContactSchema),
+	});
+
+	const handleGdprChange = (checked: boolean) => {
+		setGdprChecked(checked);
+		setValue("gdprConsent", checked as unknown as true);
+	};
+
+	const onSubmitQuickContact = async (formData: QuickContactData) => {
+		setIsSubmitting(true);
+		try {
+			const response = await fetch("/api/form-submissions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: "contact",
+					subject: "Quick Contact - Om Oss",
+					fullName: formData.name,
+					email: formData.email,
+					phone: formData.phone,
+					message: formData.message,
+					gdprConsent: formData.gdprConsent,
+					pageUrl: window.location.href,
+				}),
+			});
+
+			const result = await response.json();
+			if (result.success) {
+				reset();
+				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "about_quick_contact",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
+				router.push("/tack/");
+			} else {
+				toast.error(result.message || "Något gick fel. Försök igen.");
+			}
+		} catch {
+			toast.error("Kunde inte skicka meddelandet. Försök igen senare.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	const visibility = data.sectionVisibility || {
 		hero: true,
@@ -59,6 +147,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 		testimonials: true,
 		partners: true,
 		cta: true,
+		richContent: false,
 	};
 
 	// Check if we have content to display
@@ -84,11 +173,32 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 	const validStats = (data.stats || []).filter((s) => s.value && s.label);
 	const validImages = (data.imageGallery?.images || []).filter((i) => i.src);
 	const validFaqItems = (data.faq?.items || []).filter((f) => f.question);
+	const contactCardTitle = data.faq?.contactCard?.title || "Alltid nära dig";
+	const contactFormTitle = data.faq?.contactCard?.formTitle || "Säg hej!";
+	const contactOffice =
+		contact.offices.find((o) => o.isHeadquarters) || contact.offices[0];
+	const contactAddress = contactOffice
+		? `${contactOffice.street}, ${contactOffice.postalCode} ${contactOffice.city}`
+		: "";
 	const validTestimonials = (data.testimonials?.testimonials || []).filter(
 		(t) => t.quote
 	);
 	const validPartners = (data.partners?.partners || []).filter((p) => p.logo || p.name);
 	const validFeatures = (data.mission?.features || []).filter((f) => f.title);
+	const validReviewPlatforms = (data.testimonials?.reviewPlatforms || []).filter(
+		(p) => p.icon
+	);
+	const testimonialsCtaTitle =
+		data.testimonials?.ctaTitle || "Trusted By Over 1300 Loyal Clients";
+	const testimonialsCtaDescription =
+		data.testimonials?.ctaDescription ||
+		"Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.";
+	const testimonialsCtaButtonText = data.testimonials?.ctaButtonText || "Contact Us";
+	const testimonialsCtaButtonLink = data.testimonials?.ctaButtonLink || "/kontakt";
+	const testimonialsRating = data.testimonials?.rating ?? 4.8;
+	const testimonialsReviewCount = data.testimonials?.reviewCount || "2,568";
+	const testimonialsReviewCountLabel =
+		data.testimonials?.reviewCountLabel || "Reviews and counting";
 
 	return (
 		<div className="min-h-screen bg-slate-50">
@@ -213,12 +323,9 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<span className="text-secondary/60">●</span>
 							</div>
 
-							{/* Quote - Italic with highlighted words */}
+							{/* Quote */}
 							<h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-secondary leading-relaxed italic">
-								Sveriges ledande leverantör av professionell{" "}
-								<span className="text-primary">klinikutrustning</span> och{" "}
-								<span className="text-primary">lasermaskiner</span>. Vi kombinerar
-								kvalitetsprodukter med utbildning och support i världsklass.
+								{data.hero.subtitle}
 							</h2>
 						</motion.div>
 					</div>
@@ -531,23 +638,21 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<motion.div
 									key={index}
 									variants={fadeUp}
-									className={`relative rounded-2xl overflow-hidden shadow-lg group ${
-										index === 0 ? "sm:col-span-2 lg:col-span-1 lg:row-span-2" : ""
-									}`}
+									className="relative rounded-2xl overflow-hidden shadow-lg group"
 								>
 									<ImageComponent
 										src={image.src || ""}
 										alt={image.alt || `Bild ${index + 1}`}
-										width={index === 0 ? 600 : 400}
-										height={index === 0 ? 600 : 300}
+										width={400}
+										height={400}
 										className={`w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 ${image.mobileSrc ? "hidden md:block" : ""}`}
 									/>
 									{image.mobileSrc && (
 										<ImageComponent
 											src={image.mobileSrc}
 											alt={image.alt || `Bild ${index + 1}`}
-											width={index === 0 ? 600 : 400}
-											height={index === 0 ? 600 : 300}
+											width={400}
+											height={400}
 											className="w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500 md:hidden"
 										/>
 									)}
@@ -680,7 +785,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									>
 										<span className="text-secondary/60">●</span>
 										<span className="text-sm font-medium text-secondary/80 uppercase tracking-[0.2em]">
-											Our Faq
+											Våra Frågor
 										</span>
 										<span className="text-secondary/60">●</span>
 									</motion.div>
@@ -690,7 +795,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											variants={fadeUp}
 											className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4"
 										>
-											Answers To <span className="text-primary">Your</span> Questions
+											Svar På <span className="text-primary">Dina</span> Frågor
 										</motion.h2>
 									)}
 									{data.faq?.subtitle && (
@@ -739,43 +844,49 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								<div className="sticky top-32 rounded-2xl overflow-hidden bg-white shadow-xl p-8">
 									{/* Title */}
 									<h3 className="text-xl font-bold text-secondary mb-6">
-										Alltid nära dig
+										{contactCardTitle}
 									</h3>
 
 									{/* Contact Info */}
 									<div className="space-y-5 mb-8">
 										{/* Location */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<MapPin className="w-5 h-5 text-primary" />
+										{contactAddress && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<MapPin className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Nå oss</p>
+													<p className="text-sm text-muted-foreground">{contactAddress}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Reach Us</p>
-												<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
-											</div>
-										</div>
+										)}
 
 										{/* Email */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<Mail className="w-5 h-5 text-primary" />
+										{contact.email && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<Mail className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Maila oss</p>
+													<p className="text-sm text-muted-foreground">{contact.email}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Drop Us Mail</p>
-												<p className="text-sm text-muted-foreground">karriar@synos.se</p>
-											</div>
-										</div>
+										)}
 
 										{/* Phone */}
-										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-												<Phone className="w-5 h-5 text-primary" />
+										{contact.phone && (
+											<div className="flex items-center gap-4">
+												<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+													<Phone className="w-5 h-5 text-primary" />
+												</div>
+												<div>
+													<p className="font-semibold text-secondary">Ring oss</p>
+													<p className="text-sm text-muted-foreground">{contact.phone}</p>
+												</div>
 											</div>
-											<div>
-												<p className="font-semibold text-secondary">Connect Now</p>
-												<p className="text-sm text-muted-foreground">010-205 15 01</p>
-											</div>
-										</div>
+										)}
 									</div>
 
 									{/* Divider */}
@@ -783,62 +894,114 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 									{/* Contact Form */}
 									<h4 className="text-lg font-bold text-secondary mb-4">
-										Säg hej!
+										{contactFormTitle}
 									</h4>
 
-									<form className="space-y-4">
+									<form onSubmit={handleSubmit(onSubmitQuickContact)} className="space-y-4">
 										{/* Name */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Users className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("name")}
+													placeholder="Namn*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.name ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="text"
-												placeholder="Your Name*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.name && (
+												<p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+											)}
 										</div>
 
 										{/* Email */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Mail className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("email")}
+													type="email"
+													placeholder="E-postadress*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.email ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="email"
-												placeholder="Email Address*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.email && (
+												<p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+											)}
 										</div>
 
 										{/* Phone */}
-										<div className="relative">
-											<div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-												<Phone className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+												<Input
+													{...register("phone")}
+													type="tel"
+													placeholder="Telefonnummer*"
+													className={`pl-11 h-auto py-3 border-slate-200 ${errors.phone ? "border-red-500" : ""}`}
+													disabled={isSubmitting}
+												/>
 											</div>
-											<input
-												type="tel"
-												placeholder="Your Number*"
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-											/>
+											{errors.phone && (
+												<p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+											)}
 										</div>
 
 										{/* Message */}
-										<div className="relative">
-											<div className="absolute left-4 top-4 text-muted-foreground">
-												<MessageCircle className="w-4 h-4" />
+										<div>
+											<div className="relative">
+												<MessageCircle className="absolute left-4 top-4 w-4 h-4 text-muted-foreground" />
+												<textarea
+													{...register("message")}
+													placeholder="Meddelande"
+													rows={4}
+													className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+													disabled={isSubmitting}
+												/>
 											</div>
-											<textarea
-												placeholder="Additional Message"
-												rows={4}
-												className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors resize-none"
-											/>
+										</div>
+
+										{/* GDPR Consent */}
+										<div>
+											<label className="flex items-start gap-2 cursor-pointer">
+												<Checkbox
+													checked={gdprChecked}
+													onCheckedChange={(checked) => handleGdprChange(checked === true)}
+													disabled={isSubmitting}
+													className="mt-0.5 shrink-0"
+												/>
+												<span className="text-xs text-muted-foreground leading-normal">
+													Jag godkänner Synos Medical AB:s{" "}
+													<Link
+														href="/integritetspolicy"
+														className="text-primary hover:underline font-medium"
+														target="_blank"
+														onClick={(e) => e.stopPropagation()}
+													>
+														integritetspolicy
+													</Link>
+													. *
+												</span>
+											</label>
+											{errors.gdprConsent && (
+												<p className="text-xs text-red-500 mt-1">{errors.gdprConsent.message}</p>
+											)}
 										</div>
 
 										{/* Submit Button */}
-										<Button className="w-full bg-primary hover:bg-primary/90 text-white">
-											Send Message
-											<ArrowRight className="ml-2 h-4 w-4" />
+										<Button type="submit" disabled={isSubmitting} className="w-full btn-copper-gradient">
+											{isSubmitting ? (
+												<>
+													<Loader2 className="w-4 h-4 mr-2 animate-spin" />
+													Skickar...
+												</>
+											) : (
+												<>
+													Skicka meddelande
+													<Send className="ml-2 h-4 w-4" />
+												</>
+											)}
 										</Button>
 									</form>
 								</div>
@@ -855,47 +1018,53 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							<div className="rounded-2xl overflow-hidden bg-white shadow-xl p-8">
 								{/* Title */}
 								<h3 className="text-xl font-bold text-secondary mb-6">
-									Alltid nära dig
+									{contactCardTitle}
 								</h3>
 
 								{/* Contact Info */}
 								<div className="space-y-5 mb-8">
 									{/* Location */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<MapPin className="w-5 h-5 text-primary" />
+									{contactAddress && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<MapPin className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Nå oss</p>
+												<p className="text-sm text-muted-foreground">{contactAddress}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Reach Us</p>
-											<p className="text-sm text-muted-foreground">Gävlegatan 12A, 113 30 Stockholm</p>
-										</div>
-									</div>
+									)}
 
 									{/* Email */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<Mail className="w-5 h-5 text-primary" />
+									{contact.email && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Mail className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Maila oss</p>
+												<p className="text-sm text-muted-foreground">{contact.email}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Drop Us Mail</p>
-											<p className="text-sm text-muted-foreground">karriar@synos.se</p>
-										</div>
-									</div>
+									)}
 
 									{/* Phone */}
-									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-											<Phone className="w-5 h-5 text-primary" />
+									{contact.phone && (
+										<div className="flex items-center gap-4">
+											<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+												<Phone className="w-5 h-5 text-primary" />
+											</div>
+											<div>
+												<p className="font-semibold text-secondary">Ring oss</p>
+												<p className="text-sm text-muted-foreground">{contact.phone}</p>
+											</div>
 										</div>
-										<div>
-											<p className="font-semibold text-secondary">Connect Now</p>
-											<p className="text-sm text-muted-foreground">010-205 15 01</p>
-										</div>
-									</div>
+									)}
 								</div>
 
 								{/* Contact Button */}
-								<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
+								<Button asChild className="w-full btn-copper-gradient">
 									<Link href="/kontakt">
 										Kontakta Oss
 										<ArrowRight className="ml-2 h-4 w-4" />
@@ -977,14 +1146,14 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 
 										<div className="relative z-10 h-full flex flex-col justify-center">
 											<h3 className="text-2xl md:text-3xl font-bold text-secondary mb-4">
-												Trusted By Over 1300 Loyal Clients
+												{testimonialsCtaTitle}
 											</h3>
 											<p className="text-muted-foreground mb-6 text-sm">
-												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
+												{testimonialsCtaDescription}
 											</p>
-											<Button asChild className="w-fit bg-primary hover:bg-primary/90 text-white">
-												<Link href="/kontakt">
-													Contact Us
+											<Button asChild className="w-fit btn-copper-gradient">
+												<Link href={testimonialsCtaButtonLink}>
+													{testimonialsCtaButtonText}
 													<ArrowRight className="ml-2 h-4 w-4" />
 												</Link>
 											</Button>
@@ -1138,14 +1307,14 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									<div className="p-6 relative overflow-hidden border-b border-slate-100">
 										<div className="relative z-10">
 											<h3 className="text-xl font-bold text-secondary mb-3">
-												Trusted By Over 1300 Loyal Clients
+												{testimonialsCtaTitle}
 											</h3>
 											<p className="text-muted-foreground mb-4 text-sm">
-												Ad litora torquent per conubia nostra inceptos himenaeos. Dis parturient montes nascetur ridiculus mus donec.
+												{testimonialsCtaDescription}
 											</p>
-											<Button asChild className="w-full bg-primary hover:bg-primary/90 text-white">
-												<Link href="/kontakt">
-													Contact Us
+											<Button asChild className="w-full btn-copper-gradient">
+												<Link href={testimonialsCtaButtonLink}>
+													{testimonialsCtaButtonText}
 													<ArrowRight className="ml-2 h-4 w-4" />
 												</Link>
 											</Button>
@@ -1225,7 +1394,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 									{/* Mobile Rating Bar */}
 									<div className="p-4 border-t border-slate-100 flex items-center justify-between">
 										<div className="flex items-center gap-3">
-											<p className="text-2xl font-bold text-secondary">4.80</p>
+											<p className="text-2xl font-bold text-secondary">{testimonialsRating.toFixed(2)}</p>
 											<div className="flex gap-0.5">
 												{[...Array(5)].map((_, i) => (
 													<Star
@@ -1236,7 +1405,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 											</div>
 										</div>
 										<p className="text-xs text-muted-foreground">
-											2,568 Reviews
+											{testimonialsReviewCount} {testimonialsReviewCountLabel}
 										</p>
 									</div>
 								</div>
@@ -1246,7 +1415,7 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 							<div className="hidden lg:flex flex-col gap-5">
 								{/* Rating Card */}
 								<div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center flex-1">
-									<p className="text-5xl font-bold text-secondary mb-2">4.80</p>
+									<p className="text-5xl font-bold text-secondary mb-2">{testimonialsRating.toFixed(2)}</p>
 									<div className="flex gap-0.5 mb-3">
 										{[...Array(5)].map((_, i) => (
 											<Star
@@ -1256,19 +1425,36 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 										))}
 									</div>
 									<p className="text-sm text-muted-foreground mb-4">
-										2,568 Reviews and counting
+										{testimonialsReviewCount} {testimonialsReviewCountLabel}
 									</p>
-									<div className="flex items-center gap-4">
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg">🍎</span>
+									{validReviewPlatforms.length > 0 && (
+										<div className="flex items-center gap-4">
+											{validReviewPlatforms.map((platform, index) => {
+												const icon = (
+													<span
+														className="text-lg font-bold"
+														style={platform.iconColor ? { color: platform.iconColor } : undefined}
+													>
+														{platform.icon}
+													</span>
+												);
+												return (
+													<div
+														key={index}
+														className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center"
+													>
+														{platform.url ? (
+															<Link href={platform.url} target="_blank" rel="noopener noreferrer">
+																{icon}
+															</Link>
+														) : (
+															icon
+														)}
+													</div>
+												);
+											})}
 										</div>
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg font-bold text-blue-500">G</span>
-										</div>
-										<div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
-											<span className="text-lg text-red-500">▶</span>
-										</div>
-									</div>
+									)}
 								</div>
 
 								{/* Group Cooperation Card */}
@@ -1325,6 +1511,15 @@ export function AboutPageClient({ data }: AboutPageClientProps) {
 								</div>
 							</div>
 						</motion.div>
+					</div>
+				</section>
+			)}
+
+			{/* Rich Content Section */}
+			{visibility.richContent && data.richContent && (
+				<section className="py-16">
+					<div className="_container prose prose-lg max-w-none">
+						<PreviewEditor>{data.richContent}</PreviewEditor>
 					</div>
 				</section>
 			)}

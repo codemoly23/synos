@@ -64,7 +64,7 @@ export const SITEMAP_CONFIG = {
  * Pattern: /blogg/[slug]/
  */
 export function buildBlogPostUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/${slug}/`;
 }
 
 /**
@@ -72,7 +72,7 @@ export function buildBlogPostUrl(slug: string): string {
  * Pattern: /blogg/category/[slug]/
  */
 export function buildBlogCategoryUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/category/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/category/${slug}/`;
 }
 
 /**
@@ -80,7 +80,7 @@ export function buildBlogCategoryUrl(slug: string): string {
  * Pattern: /blogg/tag/[slug]/
  */
 export function buildBlogTagUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/tag/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/tag/${slug}/`;
 }
 
 /**
@@ -88,7 +88,7 @@ export function buildBlogTagUrl(slug: string): string {
  * Pattern: /blogg/author/[slug]/
  */
 export function buildAuthorUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/blogg/author/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/blogg/author/${slug}/`;
 }
 
 /**
@@ -99,7 +99,7 @@ export function buildProductUrl(
 	categorySlug: string,
 	productSlug: string
 ): string {
-	return `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/${categorySlug}/${productSlug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/${categorySlug}/${productSlug}/`;
 }
 
 /**
@@ -107,7 +107,7 @@ export function buildProductUrl(
  * Pattern: /klinikutrustning/[slug]/
  */
 export function buildProductCategoryUrl(slug: string): string {
-	return `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/${slug}`;
+	return `${SITEMAP_CONFIG.baseUrl}/klinikutrustning/${slug}/`;
 }
 
 // ============================================================================

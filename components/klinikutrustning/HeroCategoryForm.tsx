@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 interface HeroCategoryFormProps {
 	categoryName: string;
@@ -11,7 +13,9 @@ interface FormState {
 	firstName: string;
 	lastName: string;
 	companyName: string;
+	corporationNumber: string;
 	email: string;
+	phone: string;
 	message: string;
 }
 
@@ -20,13 +24,16 @@ interface FormErrors {
 	lastName?: string;
 	companyName?: string;
 	email?: string;
+	phone?: string;
 }
 
 const EMPTY: FormState = {
 	firstName: "",
 	lastName: "",
 	companyName: "",
+	corporationNumber: "",
 	email: "",
+	phone: "",
 	message: "",
 };
 
@@ -40,6 +47,7 @@ function validate(data: FormState): FormErrors {
 	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
 		errors.email = "Ogiltig e-postadress";
 	}
+	if (!data.phone.trim()) errors.phone = "Obligatoriskt";
 	return errors;
 }
 
@@ -49,10 +57,10 @@ const err =
 	"w-full bg-transparent border border-red-400/60 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-red-400 transition-colors";
 
 export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
+	const router = useRouter();
 	const [form, setForm] = useState<FormState>(EMPTY);
 	const [errors, setErrors] = useState<FormErrors>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
 
 	function onChange(
@@ -79,9 +87,12 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					type: "hero_inquiry",
-					fullName: `${form.firstName.trim()} ${form.lastName.trim()}`,
+					firstName: form.firstName.trim(),
+					lastName: form.lastName.trim(),
 					email: form.email.trim(),
+					phone: form.phone.trim(),
 					companyName: form.companyName.trim() || undefined,
+					corporationNumber: form.corporationNumber.trim() || undefined,
 					message: form.message.trim() || undefined,
 					categoryName,
 					pageUrl: window.location.href,
@@ -89,9 +100,15 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			});
 			const result = await res.json();
 			if (result.success) {
-				setIsSuccess(true);
 				setForm(EMPTY);
 				setErrors({});
+				pushEvent("generate_lead", {
+					form_type: "hero_inquiry",
+					category: categoryName,
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
+				router.push("/tack/");
 			} else {
 				setServerError(result.message || "Något gick fel. Försök igen.");
 			}
@@ -102,34 +119,11 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 		}
 	}
 
-	if (isSuccess) {
-		return (
-			<div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-				<div className="h-14 w-14 rounded-full bg-primary/20 border border-primary flex items-center justify-center">
-					<CheckCircle2 className="h-7 w-7 text-primary" />
-				</div>
-				<h3 className="text-2xl font-sans font-light text-white">
-					Tack för din förfrågan!
-				</h3>
-				<p className="text-white/60 text-sm max-w-xs leading-relaxed">
-					Vi återkommer till dig inom 24 timmar med personlig rådgivning.
-				</p>
-				<button
-					type="button"
-					onClick={() => setIsSuccess(false)}
-					className="text-xs text-white/40 hover:text-white/70 underline underline-offset-2 transition-colors"
-				>
-					Skicka en ny förfrågan
-				</button>
-			</div>
-		);
-	}
-
 	return (
 		<form onSubmit={onSubmit} noValidate className="space-y-4">
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Förnamn <span className="text-primary">*</span>
 					</label>
 					<input
@@ -146,7 +140,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 					)}
 				</div>
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Efternamn <span className="text-primary">*</span>
 					</label>
 					<input
@@ -166,7 +160,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						Företag <span className="text-primary">*</span>
 					</label>
 					<input
@@ -183,7 +177,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 					)}
 				</div>
 				<div>
-					<label className="block text-xs text-white/60 mb-1.5">
+					<label className="block text-xs text-white/80 mb-1.5">
 						E-post <span className="text-primary">*</span>
 					</label>
 					<input
@@ -201,16 +195,50 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 				</div>
 			</div>
 
+			<div className="grid grid-cols-2 gap-4">
+				<div>
+					<label className="block text-xs text-white/80 mb-1.5">
+						Telefon <span className="text-primary">*</span>
+					</label>
+					<input
+						type="tel"
+						name="phone"
+						value={form.phone}
+						onChange={onChange}
+						placeholder="070 123 45 67"
+						className={errors.phone ? err : base}
+						disabled={isSubmitting}
+					/>
+					{errors.phone && (
+						<p className="mt-1 text-xs text-red-400">{errors.phone}</p>
+					)}
+				</div>
+				<div>
+					<label className="block text-xs text-white/80 mb-1.5">
+						Org. nummer <span className="text-white/40">(valfritt)</span>
+					</label>
+					<input
+						type="text"
+						name="corporationNumber"
+						value={form.corporationNumber}
+						onChange={onChange}
+						placeholder="t.ex. 556789-1234"
+						className={base}
+						disabled={isSubmitting}
+					/>
+				</div>
+			</div>
+
 			<div>
-				<label className="block text-xs text-white/60 mb-1.5">
-					När är du intresserad av att ta nästa steg?
+				<label className="block text-xs text-white/80 mb-1.5">
+					Meddelande (valfritt)
 				</label>
 				<textarea
 					name="message"
 					value={form.message}
 					onChange={onChange}
 					rows={4}
-					placeholder="Beskriv när det passar er bäst eller andra detaljer..."
+					placeholder="Berätta mer om dina behov, frågor eller önskemål…"
 					className={`${base} resize-none`}
 					disabled={isSubmitting}
 				/>
@@ -223,7 +251,7 @@ export function HeroCategoryForm({ categoryName }: HeroCategoryFormProps) {
 			<button
 				type="submit"
 				disabled={isSubmitting}
-				className="w-full py-3 rounded-md bg-primary text-primary-foreground font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
+				className="w-full py-3 rounded-md btn-copper-gradient font-medium text-base disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
 			>
 				{isSubmitting ? (
 					<>

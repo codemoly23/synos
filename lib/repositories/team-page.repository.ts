@@ -5,7 +5,9 @@ import {
 	type ITeamPage,
 	type ITeamSectionVisibility,
 	type ITeamHeroSection,
+	type ITeamMissionSection,
 	type ITeamStat,
+	type ITeamMembersSection,
 	type ITeamMember,
 	type ITeamValuesSection,
 	type ITeamJoinUsSection,
@@ -19,7 +21,9 @@ import {
 export interface UpdateTeamPageInput {
 	sectionVisibility?: ITeamSectionVisibility;
 	hero?: Partial<ITeamHeroSection>;
+	mission?: Partial<ITeamMissionSection>;
 	stats?: ITeamStat[];
+	teamSection?: Partial<ITeamMembersSection>;
 	teamMembers?: ITeamMember[];
 	valuesSection?: Partial<ITeamValuesSection>;
 	joinUs?: Partial<ITeamJoinUsSection>;
@@ -83,8 +87,24 @@ class TeamPageRepository {
 			});
 		}
 
+		if (data.mission) {
+			Object.entries(data.mission).forEach(([key, value]) => {
+				if (value !== undefined) {
+					updateData[`mission.${key}`] = value;
+				}
+			});
+		}
+
 		if (data.stats) {
 			updateData.stats = data.stats;
+		}
+
+		if (data.teamSection) {
+			Object.entries(data.teamSection).forEach(([key, value]) => {
+				if (value !== undefined) {
+					updateData[`teamSection.${key}`] = value;
+				}
+			});
 		}
 
 		if (data.teamMembers) {
@@ -126,7 +146,7 @@ class TeamPageRepository {
 		const teamPage = await TeamPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<TeamPageData>();
 
 		if (!teamPage) {

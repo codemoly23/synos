@@ -161,6 +161,7 @@ export interface IProduct extends Document {
 	featureSections?: IFeatureSections;
 	publishType: PublishType;
 	visibility: Visibility;
+	order: number;
 	lastEditedBy?: mongoose.Types.ObjectId;
 	publishedAt?: Date;
 	createdAt: Date;
@@ -568,6 +569,10 @@ const ProductSchema = new Schema<IProduct>(
 			enum: ["public", "hidden"],
 			default: "public",
 		},
+		order: {
+			type: Number,
+			default: 0,
+		},
 		lastEditedBy: {
 			type: Schema.Types.ObjectId,
 			ref: "User",
@@ -592,6 +597,7 @@ ProductSchema.index({ technologyGroups: 1 });
 ProductSchema.index({ certifications: 1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ publishedAt: -1 });
+ProductSchema.index({ order: 1, createdAt: -1 });
 
 // Text index for search
 ProductSchema.index(

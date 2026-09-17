@@ -57,6 +57,7 @@ const formSchema = z.object({
 		support: z.boolean(),
 		inquiryForm: z.boolean(),
 		resources: z.boolean(),
+		applicationForm: z.boolean(),
 	}).default({
 		hero: true,
 		featuredSection: true,
@@ -66,6 +67,7 @@ const formSchema = z.object({
 		support: true,
 		inquiryForm: true,
 		resources: true,
+		applicationForm: true,
 	}),
 	hero: z.object({
 		title: z.string().max(200).optional(),
@@ -116,6 +118,12 @@ const formSchema = z.object({
 			answer: z.string().max(2000).optional(),
 		})).optional(),
 	}).optional(),
+	applicationSection: z.object({
+		badge: z.string().max(100).optional(),
+		title: z.string().max(200).optional(),
+		subtitle: z.string().max(500).optional(),
+		categories: z.array(z.string().max(100)).optional(),
+	}).optional(),
 	resourcesSection: z.object({
 		title: z.string().max(200).optional(),
 		subtitle: z.string().max(300).optional(),
@@ -147,7 +155,7 @@ export default function TrainingPageAdmin() {
 		defaultValues: {
 			sectionVisibility: {
 				hero: true, featuredSection: true, mainContent: true, benefits: true, process: true,
-				support: true, inquiryForm: true, resources: true,
+				support: true, inquiryForm: true, resources: true, applicationForm: true,
 			},
 			hero: {},
 			featuredSection: { checklistItems: [] },
@@ -156,6 +164,7 @@ export default function TrainingPageAdmin() {
 			processSection: { steps: [] },
 			supportSection: { paragraphs: [] },
 			inquirySection: { faqItems: [] },
+			applicationSection: { categories: [] },
 			resourcesSection: { resources: [] },
 			seo: {},
 		},
@@ -170,6 +179,8 @@ export default function TrainingPageAdmin() {
 	const supportParagraphsFieldArray = useFieldArray({ control: form.control, name: "supportSection.paragraphs" as any });
 	const resourcesFieldArray = useFieldArray({ control: form.control, name: "resourcesSection.resources" });
 	const faqFieldArray = useFieldArray({ control: form.control, name: "inquirySection.faqItems" });
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const categoriesFieldArray = useFieldArray({ control: form.control, name: "applicationSection.categories" as any });
 
 	useEffect(() => {
 		async function fetchData() {
@@ -180,7 +191,7 @@ export default function TrainingPageAdmin() {
 					form.reset({
 						sectionVisibility: {
 							hero: true, featuredSection: true, mainContent: true, benefits: true, process: true,
-							support: true, inquiryForm: true, resources: true,
+							support: true, inquiryForm: true, resources: true, applicationForm: true,
 							...data.sectionVisibility,
 						},
 						hero: data.hero || {},
@@ -198,6 +209,7 @@ export default function TrainingPageAdmin() {
 						processSection: data.processSection || { steps: [] },
 						supportSection: data.supportSection || { paragraphs: [] },
 						inquirySection: data.inquirySection || { faqItems: [] },
+						applicationSection: data.applicationSection || { categories: [] },
 						resourcesSection: data.resourcesSection || { resources: [] },
 						seo: data.seo || {},
 					});
@@ -295,6 +307,7 @@ export default function TrainingPageAdmin() {
 							<TabsTrigger value="process">Process</TabsTrigger>
 							<TabsTrigger value="support">Support</TabsTrigger>
 							<TabsTrigger value="inquiry">Inquiry</TabsTrigger>
+							<TabsTrigger value="application">Application Form</TabsTrigger>
 							<TabsTrigger value="resources">Resources</TabsTrigger>
 							<TabsTrigger value="seo">SEO</TabsTrigger>
 						</TabsList>
@@ -304,11 +317,11 @@ export default function TrainingPageAdmin() {
 							<Card>
 								<CardHeader><CardTitle>Section Visibility</CardTitle></CardHeader>
 								<CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-									{["hero", "featuredSection", "mainContent", "benefits", "process", "support", "inquiryForm", "resources"].map((key) => (
+									{["hero", "featuredSection", "mainContent", "benefits", "process", "support", "inquiryForm", "resources", "applicationForm"].map((key) => (
 										<FormField key={key} control={form.control} name={`sectionVisibility.${key}` as `sectionVisibility.hero`}
 											render={({ field }) => (
 												<FormItem className="flex items-center justify-between rounded-lg border p-3">
-													<FormLabel className="cursor-pointer capitalize">{key === "inquiryForm" ? "Inquiry Form" : key === "mainContent" ? "Main Content" : key === "featuredSection" ? "Featured Section" : key}</FormLabel>
+													<FormLabel className="cursor-pointer capitalize">{key === "inquiryForm" ? "Inquiry Form" : key === "mainContent" ? "Main Content" : key === "featuredSection" ? "Featured Section" : key === "applicationForm" ? "Application Form" : key}</FormLabel>
 													<FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
 												</FormItem>
 											)}
@@ -753,6 +766,72 @@ export default function TrainingPageAdmin() {
 													confirmText: "Remove",
 												});
 												if (confirmed) faqFieldArray.remove(index);
+											}}>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</div>
+									))}
+								</CardContent>
+							</Card>
+						</TabsContent>
+
+						{/* Application Form Tab */}
+						<TabsContent value="application" className="space-y-4">
+							<Card>
+								<CardHeader>
+									<CardTitle>Application Form Section</CardTitle>
+									<p className="text-sm text-muted-foreground">
+										The &quot;Berätta vad du behöver&quot; form shown on the training page.
+									</p>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<FormField control={form.control} name="applicationSection.badge" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Badge</FormLabel>
+											<FormControl><Input placeholder="Få svar direkt" {...field} value={field.value || ""} /></FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<FormField control={form.control} name="applicationSection.title" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Title</FormLabel>
+											<FormControl><Input placeholder="Berätta vad du behöver" {...field} value={field.value || ""} /></FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<FormField control={form.control} name="applicationSection.subtitle" render={({ field }) => (
+										<FormItem>
+											<FormLabel>Subtitle</FormLabel>
+											<FormControl><Textarea placeholder="Har du frågor om våra utbildningar eller vill boka en plats?..." rows={2} {...field} value={field.value || ""} /></FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+								</CardContent>
+							</Card>
+							<Card>
+								<CardHeader><CardTitle>Category Options</CardTitle></CardHeader>
+								<CardContent className="space-y-4">
+									<div className="flex items-center justify-between">
+										<FormLabel>Dropdown Categories</FormLabel>
+										<Button type="button" variant="outline" size="sm" onClick={() => categoriesFieldArray.append("" as never)}>
+											<Plus className="mr-2 h-4 w-4" />Add Category
+										</Button>
+									</div>
+									{categoriesFieldArray.fields.map((field, index) => (
+										<div key={field.id} className="flex gap-4">
+											<FormField control={form.control} name={`applicationSection.categories.${index}`} render={({ field }) => (
+												<FormItem className="flex-1">
+													<FormControl><Input placeholder="T.ex. Certifiering" {...field} value={field.value || ""} /></FormControl>
+													<FormMessage />
+												</FormItem>
+											)} />
+											<Button type="button" variant="ghost" size="icon" className="shrink-0 text-destructive hover:text-destructive" onClick={async () => {
+												const confirmed = await confirm({
+													title: "Remove Category",
+													description: "Are you sure you want to remove this category?",
+													confirmText: "Remove",
+												});
+												if (confirmed) categoriesFieldArray.remove(index);
 											}}>
 												<Trash2 className="h-4 w-4" />
 											</Button>

@@ -285,7 +285,7 @@ export function BlogComments({ postId }: BlogCommentsProps) {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								className="w-full md:w-auto"
+								className="w-full md:w-auto btn-copper-gradient"
 							>
 								{isSubmitting ? (
 									<>

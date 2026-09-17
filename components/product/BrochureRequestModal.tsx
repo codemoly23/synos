@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -9,7 +10,8 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "@/components/ui/dialog";
-import { FileText, CheckCircle, Loader2 } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 interface BrochureRequestModalProps {
 	open: boolean;
@@ -26,17 +28,20 @@ export function BrochureRequestModal({
 	productSlug,
 	documentTitle,
 }: BrochureRequestModalProps) {
+	const router = useRouter();
 	const [form, setForm] = useState({
 		companyName: "",
 		firstName: "",
 		lastName: "",
 		email: "",
+		phone: "",
+		corporationNumber: "",
+		message: "",
 	});
 	const [loading, setLoading] = useState(false);
-	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 		setError("");
 	};
@@ -63,7 +68,14 @@ export function BrochureRequestModal({
 				throw new Error(data.error || "Something went wrong");
 			}
 
-			setSuccess(true);
+			handleClose(false);
+			pushEvent("generate_lead", {
+				form_type: "brochure_request",
+				product_name: productName,
+				page_path: window.location.pathname,
+				page_url: window.location.href,
+			});
+			router.push("/tack/");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Could not send request");
 		} finally {
@@ -73,8 +85,15 @@ export function BrochureRequestModal({
 
 	const handleClose = (val: boolean) => {
 		if (!val) {
-			setSuccess(false);
-			setForm({ companyName: "", firstName: "", lastName: "", email: "" });
+			setForm({
+				companyName: "",
+				firstName: "",
+				lastName: "",
+				email: "",
+				phone: "",
+				corporationNumber: "",
+				message: "",
+			});
 			setError("");
 		}
 		onOpenChange(val);
@@ -96,21 +115,7 @@ export function BrochureRequestModal({
 					</DialogDescription>
 				</DialogHeader>
 
-				{success ? (
-					<div className="flex flex-col items-center gap-3 py-6 text-center">
-						<CheckCircle className="h-12 w-12 text-green-500" />
-						<h3 className="text-base font-semibold text-foreground">
-							Tack för din förfrågan!
-						</h3>
-						<p className="text-sm text-muted-foreground max-w-xs">
-							Vi har mottagit din förfrågan och återkommer till dig med broschyren via e-post.
-						</p>
-						<Button variant="outline" size="sm" onClick={() => handleClose(false)}>
-							Stäng
-						</Button>
-					</div>
-				) : (
-					<form onSubmit={handleSubmit} className="space-y-3 pt-1">
+				<form onSubmit={handleSubmit} className="space-y-3 pt-1">
 						<div>
 							<label className="block text-sm font-medium text-foreground mb-1">
 								Företag *
@@ -169,6 +174,49 @@ export function BrochureRequestModal({
 							/>
 						</div>
 
+						<div className="grid grid-cols-2 gap-3">
+							<div>
+								<label className="block text-sm font-medium text-foreground mb-1">
+									Telefon *
+								</label>
+								<input
+									name="phone"
+									type="tel"
+									value={form.phone}
+									onChange={handleChange}
+									required
+									placeholder="070 123 45 67"
+									className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+								/>
+							</div>
+							<div>
+								<label className="block text-sm font-medium text-foreground mb-1">
+									Org. nummer <span className="text-muted-foreground font-normal">(valfritt)</span>
+								</label>
+								<input
+									name="corporationNumber"
+									value={form.corporationNumber}
+									onChange={handleChange}
+									placeholder="t.ex. 556789-1234"
+									className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label className="block text-sm font-medium text-foreground mb-1">
+								Meddelande (valfritt)
+							</label>
+							<textarea
+								name="message"
+								value={form.message}
+								onChange={handleChange}
+								rows={3}
+								placeholder="Berätta mer om dina behov, frågor eller önskemål…"
+								className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+							/>
+						</div>
+
 						{error && (
 							<p className="text-sm text-red-500">{error}</p>
 						)}
@@ -199,7 +247,6 @@ export function BrochureRequestModal({
 							</Button>
 						</div>
 					</form>
-				)}
 			</DialogContent>
 		</Dialog>
 	);

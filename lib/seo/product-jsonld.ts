@@ -136,6 +136,14 @@ export function generateFaqJsonLd(
  * Generate Organization JSON-LD structured data
  * @see https://schema.org/Organization
  */
+const COUNTRY_ISO_CODES: Record<string, string> = {
+	Sverige: "SE",
+};
+
+function toIsoCountryCode(country: string) {
+	return COUNTRY_ISO_CODES[country] ?? country;
+}
+
 export async function generateOrganizationJsonLd() {
 	const siteConfig = await getSiteConfig();
 	const baseUrl = siteConfig.url;
@@ -146,6 +154,8 @@ export async function generateOrganizationJsonLd() {
 		name: siteConfig.company.name,
 		url: baseUrl,
 		logo: `${baseUrl}/logo.png`,
+		description:
+			"Synos Medical AB är en svensk leverantör av professionell MDR-certifierad klinikutrustning för estetiska och medicinska behandlingar. Företaget erbjuder klinikutrustning, utbildning, service och support till sjukhus, kliniker och skönhetssalonger i Sverige.",
 		contactPoint: {
 			"@type": "ContactPoint",
 			telephone: siteConfig.company.phone,
@@ -158,13 +168,82 @@ export async function generateOrganizationJsonLd() {
 			streetAddress: addr.street,
 			addressLocality: addr.city,
 			postalCode: addr.postalCode,
-			addressCountry: addr.country,
+			addressCountry: toIsoCountryCode(addr.country),
 		})),
 		sameAs: [
 			siteConfig.links.facebook,
 			siteConfig.links.instagram,
 			siteConfig.links.linkedin,
 		].filter(Boolean),
+	};
+}
+
+/**
+ * Generate WebSite JSON-LD structured data
+ * @see https://schema.org/WebSite
+ */
+export async function generateWebSiteJsonLd() {
+	const siteConfig = await getSiteConfig();
+	const baseUrl = siteConfig.url;
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: siteConfig.name,
+		url: baseUrl,
+		potentialAction: {
+			"@type": "SearchAction",
+			target: `${baseUrl}/?s={search_term_string}`,
+			"query-input": "required name=search_term_string",
+		},
+	};
+}
+
+/**
+ * Generate a generic BreadcrumbList JSON-LD from a simple list of
+ * { name, url } crumbs, for non-product pages (category listings, etc.)
+ * @see https://schema.org/BreadcrumbList
+ */
+export function generateSimpleBreadcrumbJsonLd(
+	crumbs: Array<{ name: string; url: string }>
+) {
+	return {
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		itemListElement: crumbs.map((crumb, index) => ({
+			"@type": "ListItem" as const,
+			position: index + 1,
+			name: crumb.name,
+			item: crumb.url,
+		})),
+	};
+}
+
+/**
+ * Generate CollectionPage JSON-LD for category/listing pages
+ * @see https://schema.org/CollectionPage
+ */
+export function generateCollectionPageJsonLd(params: {
+	name: string;
+	description?: string;
+	url: string;
+	items: Array<{ name: string; url: string }>;
+}) {
+	return {
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		name: params.name,
+		description: params.description,
+		url: params.url,
+		mainEntity: {
+			"@type": "ItemList",
+			itemListElement: params.items.map((item, index) => ({
+				"@type": "ListItem" as const,
+				position: index + 1,
+				name: item.name,
+				url: item.url,
+			})),
+		},
 	};
 }
 

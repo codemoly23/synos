@@ -90,7 +90,7 @@ export function NyheterSidebar({
 						onClick={() => onCategoryFilter?.(null)}
 						className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200 ${
 							selectedCategory === null
-								? "bg-primary text-white shadow-sm"
+								? "btn-copper-gradient text-white shadow-sm"
 								: "text-muted-foreground hover:bg-slate-50 hover:text-secondary"
 						}`}
 					>
@@ -102,7 +102,7 @@ export function NyheterSidebar({
 							onClick={() => onCategoryFilter?.(category)}
 							className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-all duration-200 ${
 								selectedCategory === category
-									? "bg-primary text-white shadow-sm"
+									? "btn-copper-gradient text-white shadow-sm"
 									: "text-muted-foreground hover:bg-slate-50 hover:text-secondary"
 							}`}
 						>
@@ -185,7 +185,7 @@ export function NyheterSidebar({
 				<p className="mb-4 text-sm text-muted-foreground leading-relaxed">
 					Få de senaste artiklarna direkt i din inkorg.
 				</p>
-				<Button asChild variant="primary" size="sm" className="w-full">
+				<Button asChild size="sm" className="w-full btn-copper-gradient">
 					<Link href="/kontakt">Prenumerera</Link>
 				</Button>
 			</motion.div>

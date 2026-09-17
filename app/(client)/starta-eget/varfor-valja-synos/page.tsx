@@ -243,7 +243,7 @@ export default async function VarforValjaSynosPage() {
 								<Button
 									asChild
 									size="lg"
-									className="bg-primary hover:bg-primary/90 text-white"
+									className="btn-copper-gradient"
 								>
 									<Link href={ctaSection.primaryButtonHref || "/kontakt"}>
 										{ctaSection.primaryButtonText || "Kontakta oss"}

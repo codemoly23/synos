@@ -307,7 +307,7 @@
 
   .faq-accordion-item:hover,
   .faq-accordion-item[data-state="open"] {
-    background: linear-gradient(135deg, #DCA783 0%, #C4956F 50%, #B5865F 100%);
+    background: linear-gradient(135deg, #9C6A42 0%, #855530 50%, #6B4226 100%);
   }
 
   /* Dark FAQ Accordion (for dark backgrounds) */
@@ -317,7 +317,7 @@
   }
 
   .faq-accordion-item-dark[data-state="open"] {
-    background: linear-gradient(135deg, #DCA783 0%, #C4956F 50%, #B5865F 100%);
+    background: linear-gradient(135deg, #9C6A42 0%, #855530 50%, #6B4226 100%);
   }
 
   /* Partner Marquee Animation */
@@ -422,6 +422,14 @@
 
   .text-gradient-primary {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-600;
+  }
+
+  .btn-copper-gradient {
+    background: linear-gradient(135deg, #f0d8c5 0%, #d4a07b 18%, #b87a52 40%, #8f5a3a 55%, #b87a52 70%, #d4a07b 85%, #f0d8c5 100%);
+    color: #fff;
+  }
+  .btn-copper-gradient:hover {
+    background: linear-gradient(135deg, #e8cdb8 0%, #c8956e 18%, #a86d47 40%, #7a4a2d 55%, #a86d47 70%, #c8956e 85%, #e8cdb8 100%);
   }
 
   /* Layout */
@@ -3869,4 +3877,34 @@ html.translated-rtl .lang-en {
 .blog-article-prose h5 a:hover,
 .blog-article-prose h6 a:hover {
   opacity: 0.75;
+}
+
+/* ============================================
+   COOKIEBOT WIDGET — MOBILE OVERLAP FIX
+   Cookiebot's floating "renew consent" icon is fixed at
+   bottom:10px/left:10px with an inline z-index (2147483631) that
+   can't be beaten by our own stacking context. On mobile it sits
+   directly on top of the bottom navigation's "Hem" tab, so it's
+   pushed up above the nav bar here instead. !important is required
+   to win over Cookiebot's inline styles.
+   ============================================ */
+@media (max-width: 767px) {
+  #CookiebotWidget {
+    bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ============================================
+   LEADCM CALLBACK WIDGET — MOBILE OVERLAP FIX
+   Same issue as the Cookiebot widget above: the floating phone
+   callback button (id="lc_widgetButton", injected by the Brightcall/
+   Convolo script) is fixed near the bottom-right corner and can sit
+   on top of page content while scrolling. Nudged up to match the
+   Cookiebot icon's height for a consistent, predictable safe zone.
+   !important is required to win over the widget's inline styles.
+   ============================================ */
+@media (max-width: 767px) {
+  #lc_widgetButton {
+    bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+  }
 }

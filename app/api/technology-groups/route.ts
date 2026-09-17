@@ -132,6 +132,7 @@ export async function POST(request: NextRequest) {
 		revalidateTag("technology-groups", "default");
 		revalidateTag("products", "default");
 		revalidatePath("/produkter");
+			revalidatePath(`/klinikutrustning/teknologi/${finalSlug}`);
 
 		return successResponse(group, "Technology group created successfully");
 	} catch (error: unknown) {

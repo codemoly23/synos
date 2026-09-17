@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { productRepository } from "@/lib/repositories/product.repository";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { getTechnologyGroupModel } from "@/models/technology-group.model";
+import { technologyCategoriesPageRepository } from "@/lib/repositories/technology-categories-page.repository";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -237,6 +238,61 @@ export const getTechnologyGroupByName = unstable_cache(
 	["technology-group-by-name"],
 	{
 		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+/**
+ * Get a single technology group by slug (for /klinikutrustning/teknologi/[slug])
+ */
+export const getTechnologyGroupBySlug = unstable_cache(
+	async (slug: string): Promise<TechnologyGroupDetail | null> => {
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const group = await TechnologyGroup.findOne({ slug, isActive: true }).lean();
+		if (!group) return null;
+		const rawFaqs = Array.isArray(group.faqs) ? group.faqs : [];
+		return {
+			_id: group._id.toString(),
+			name: group.name,
+			slug: group.slug,
+			description: group.description || "",
+			image: group.image || null,
+			heroTitle: group.heroTitle || "",
+			heroSubtitle: group.heroSubtitle || "",
+			heroBulletPoints: Array.isArray(group.heroBulletPoints) ? group.heroBulletPoints : [],
+			heroBgMobile: group.heroBgMobile || null,
+			heroBgDesktop: group.heroBgDesktop || null,
+			inquiryBgMobile: group.inquiryBgMobile || null,
+			inquiryBgDesktop: group.inquiryBgDesktop || null,
+			order: group.order,
+			faqTitle: group.faqTitle || "",
+			faqs: rawFaqs.map((f, idx) => ({
+				_id: f._id?.toString() || `tech-faq-${idx}`,
+				question: f.question,
+				answer: f.answer,
+				visible: f.visible ?? true,
+			})),
+			seo: group.seo,
+		};
+	},
+	["technology-group-by-slug"],
+	{
+		tags: [TECHNOLOGY_GROUPS_CACHE_TAG],
+		revalidate: CACHE_REVALIDATE,
+	}
+);
+
+/**
+ * Get technology categories page description (for /klinikutrustning listing page)
+ */
+export const getTechnologyCategoriesPageDescription = unstable_cache(
+	async (): Promise<string> => {
+		const page = await technologyCategoriesPageRepository.get();
+		return page.description || "";
+	},
+	["technology-categories-page-description"],
+	{
+		tags: ["technology-categories-page"],
 		revalidate: CACHE_REVALIDATE,
 	}
 );

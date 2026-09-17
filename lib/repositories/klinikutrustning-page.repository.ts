@@ -80,7 +80,7 @@ class KlinikutrustningPageRepository {
 		const updated = await KlinikutrustningPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<KlinikutrustningPageData>();
 
 		if (!updated) {

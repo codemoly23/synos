@@ -14,6 +14,7 @@ export interface ITrainingSectionVisibility {
 	inquiryForm: boolean;
 	resources: boolean;
 	richContent: boolean;
+	applicationForm: boolean;
 }
 
 const TrainingSectionVisibilitySchema =
@@ -28,6 +29,7 @@ const TrainingSectionVisibilitySchema =
 			inquiryForm: { type: Boolean, default: true },
 			resources: { type: Boolean, default: true },
 			richContent: { type: Boolean, default: false },
+			applicationForm: { type: Boolean, default: true },
 		},
 		{ _id: false }
 	);
@@ -215,6 +217,27 @@ const TrainingInquirySectionSchema = new Schema<ITrainingInquirySection>(
 );
 
 // ============================================================================
+// APPLICATION FORM SECTION
+// ============================================================================
+export interface ITrainingApplicationSection {
+	badge?: string;
+	title?: string;
+	subtitle?: string;
+	categories?: string[];
+}
+
+const TrainingApplicationSectionSchema =
+	new Schema<ITrainingApplicationSection>(
+		{
+			badge: { type: String, trim: true },
+			title: { type: String, trim: true },
+			subtitle: { type: String, trim: true },
+			categories: { type: [String], default: [] },
+		},
+		{ _id: false }
+	);
+
+// ============================================================================
 // RESOURCE CARD
 // ============================================================================
 export interface ITrainingResourceCard {
@@ -283,6 +306,7 @@ export interface ITrainingPage extends Document {
 	processSection: ITrainingProcessSection;
 	supportSection: ITrainingSupportSection;
 	inquirySection: ITrainingInquirySection;
+	applicationSection: ITrainingApplicationSection;
 	resourcesSection: ITrainingResourcesSection;
 	richContent?: string;
 	seo: ITrainingPageSeo;
@@ -303,6 +327,7 @@ const TrainingPageSchema = new Schema<ITrainingPage>(
 				inquiryForm: true,
 				resources: true,
 				richContent: false,
+				applicationForm: true,
 			},
 		},
 		hero: { type: TrainingHeroSectionSchema, default: {} },
@@ -312,6 +337,10 @@ const TrainingPageSchema = new Schema<ITrainingPage>(
 		processSection: { type: TrainingProcessSectionSchema, default: {} },
 		supportSection: { type: TrainingSupportSectionSchema, default: {} },
 		inquirySection: { type: TrainingInquirySectionSchema, default: {} },
+		applicationSection: {
+			type: TrainingApplicationSectionSchema,
+			default: {},
+		},
 		resourcesSection: { type: TrainingResourcesSectionSchema, default: {} },
 		richContent: { type: String, default: "" },
 		seo: { type: TrainingPageSeoSchema, default: {} },

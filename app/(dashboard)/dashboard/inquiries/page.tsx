@@ -73,6 +73,7 @@ export default async function InquiriesPage({ searchParams }: PageProps) {
 				phone: s.phone || "",
 				countryCode: s.countryCode || "",
 				countryName: s.countryName || "",
+				companyName: s.companyName || null,
 				productName: s.productName || null,
 				productSlug: s.productSlug || null,
 				helpType: s.helpType || null,
@@ -80,6 +81,9 @@ export default async function InquiriesPage({ searchParams }: PageProps) {
 				subject: s.subject || null,
 				preferredDate: s.preferredDate?.toISOString() || null,
 				preferredTime: s.preferredTime || null,
+				jobTitle: s.jobTitle || null,
+				careerType: s.careerType || null,
+				category: s.category || null,
 				createdAt: s.createdAt.toISOString(),
 			}))}
 			initialStats={stats}

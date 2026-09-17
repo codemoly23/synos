@@ -872,7 +872,7 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 									<div className="mt-6 flex flex-wrap gap-4">
 										{data.gdprSection?.primaryCta?.text &&
 											data.gdprSection?.primaryCta?.href && (
-												<Button asChild>
+												<Button asChild className="btn-copper-gradient">
 													<Link href={data.gdprSection.primaryCta.href}>
 														{data.gdprSection.primaryCta.text}
 													</Link>
@@ -914,7 +914,7 @@ export function LegalPageClient({ data }: LegalPageClientProps) {
 								<div className="flex flex-wrap justify-center gap-4">
 									{data.ctaSection?.primaryCta?.text &&
 										data.ctaSection?.primaryCta?.href && (
-											<Button asChild size="lg">
+											<Button asChild size="lg" className="btn-copper-gradient">
 												<Link href={data.ctaSection.primaryCta.href}>
 													{data.ctaSection.primaryCta.text}
 												</Link>

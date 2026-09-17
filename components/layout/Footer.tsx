@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import {
@@ -10,6 +11,7 @@ import {
 	MapPin,
 	Phone,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "../common/logo";
@@ -23,8 +25,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 	newsletterTitle: "Håll dig uppdaterad",
 	quickLinks: [
 		{ label: "Om oss", href: "/om-oss" },
-		{ label: "Produkter", href: "/produkter" },
-		{ label: "Tjänster", href: "/service" },
+		{ label: "Klinikutrustning", href: "/klinikutrustning" },
 		{ label: "Utbildningar", href: "/utbildningar" },
 		{ label: "Nyheter", href: "/blogg" },
 		{ label: "Kontakt", href: "/kontakt" },
@@ -38,6 +39,7 @@ const DEFAULT_FOOTER_SETTINGS: IFooterSettings = {
 		{ label: "FAQ", href: "/faq" },
 		{ label: "Sitemap", href: "/sitemap.xml" },
 	],
+	copyrightText: "Alla rättigheter förbehållna | Designed by NordiGate",
 };
 
 interface FooterProps {
@@ -53,6 +55,45 @@ export function Footer({
 }: FooterProps) {
 	const currentYear = new Date().getFullYear();
 	const primaryAddress = config.company.addresses[0];
+
+	const [newsletterEmail, setNewsletterEmail] = useState("");
+	const [isSubscribing, setIsSubscribing] = useState(false);
+
+	const handleNewsletterSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(newsletterEmail)) {
+			toast.error("Vänligen ange en giltig e-postadress");
+			return;
+		}
+
+		setIsSubscribing(true);
+		try {
+			const response = await fetch("/api/form-submissions", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: "newsletter_subscription",
+					email: newsletterEmail,
+					pageUrl: window.location.href,
+				}),
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
+				toast.success("Tack! Du är nu prenumerant på vårt nyhetsbrev.");
+				setNewsletterEmail("");
+			} else {
+				toast.error(result.message || "Något gick fel. Försök igen.");
+			}
+		} catch {
+			toast.error("Något gick fel. Försök igen senare.");
+		} finally {
+			setIsSubscribing(false);
+		}
+	};
 
 	// Merge provided settings with defaults
 	const settings = {
@@ -79,6 +120,8 @@ export function Footer({
 			footerSettings?.bottomLinks?.length
 				? footerSettings.bottomLinks
 				: DEFAULT_FOOTER_SETTINGS.bottomLinks,
+		copyrightText:
+			footerSettings?.copyrightText || DEFAULT_FOOTER_SETTINGS.copyrightText,
 	};
 
 	// Social media icons mapping
@@ -187,15 +230,26 @@ export function Footer({
 						<p className="text-sm text-primary-foreground/70 mb-4">
 							{settings.newsletterDescription}
 						</p>
-						<div className="flex flex-col gap-3">
+						<form
+							onSubmit={handleNewsletterSubmit}
+							className="flex flex-col gap-3"
+						>
 							<Input
+								type="email"
+								value={newsletterEmail}
+								onChange={(e) => setNewsletterEmail(e.target.value)}
 								placeholder={settings.newsletterPlaceholder}
+								disabled={isSubscribing}
 								className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary"
 							/>
-							<Button className="bg-primary hover:bg-primary-hover text-white w-full">
-								{settings.newsletterButtonText}
+							<Button
+								type="submit"
+								disabled={isSubscribing}
+								className="btn-copper-gradient w-full"
+							>
+								{isSubscribing ? "Skickar..." : settings.newsletterButtonText}
 							</Button>
-						</div>
+						</form>
 					</div>
 				</div>
 
@@ -203,8 +257,7 @@ export function Footer({
 
 				<div className="flex flex-col md:grid md:grid-cols-2 items-center gap-4 text-sm text-primary-foreground/50">
 					<p>
-						© {currentYear} {config.company.name}. Alla rättigheter
-						förbehållna.
+						© {currentYear} {config.company.name}. {settings.copyrightText}
 					</p>
 					<div className="flex justify-end gap-6">
 						{settings.bottomLinks

@@ -35,6 +35,8 @@ export interface ProductFeatureGridProps {
 		items: GridFeatureItem[]; // 3 items recommended
 	};
 	corners?: SectionCorners;
+	/** When false, this whole section is hidden — controlled by a "Läs mer" toggle elsewhere on the page. Defaults to visible. */
+	expanded?: boolean;
 }
 
 /**
@@ -49,7 +51,10 @@ export function ProductFeatureGrid({
 	imageAlt,
 	bottomBlock,
 	corners = "all",
+	expanded = true,
 }: ProductFeatureGridProps) {
+	if (!expanded) return null;
+
 	return (
 		<section>
 			<div className="_container">
@@ -107,10 +112,10 @@ export function ProductFeatureGrid({
 												/>
 											</div>
 											<div className="min-w-0 overflow-hidden">
-												<h3 className="text-xs sm:text-[15px] font-semibold text-secondary mb-1 leading-snug break-words">
+												<h3 className="text-sm sm:text-[15px] font-semibold text-secondary mb-1 leading-snug break-words">
 													{feature.title}
 												</h3>
-												<p className="text-[10px] sm:text-[12.5px] leading-relaxed text-slate-600 break-words">
+												<p className="text-xs sm:text-[12.5px] leading-relaxed text-slate-600 break-words">
 													{feature.description}
 												</p>
 											</div>
@@ -161,7 +166,7 @@ export function ProductFeatureGrid({
 												<h4 className="text-base font-semibold text-secondary mb-1.5 leading-snug">
 													{item.title}
 												</h4>
-												<p className="text-[13px] leading-relaxed text-slate-600">
+												<p className="text-sm leading-relaxed text-slate-600">
 													{item.description}
 												</p>
 											</div>

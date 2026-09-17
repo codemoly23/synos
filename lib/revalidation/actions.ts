@@ -296,3 +296,8 @@ export async function revalidateProdukterPage(): Promise<void> {
 	revalidateTag(CACHE_TAGS.PRODUKTER_PAGE, "default");
 	revalidatePath(PATHS.PRODUCTS);
 }
+
+export async function revalidateTechnologyCategoriesPage(): Promise<void> {
+	revalidateTag(CACHE_TAGS.TECHNOLOGY_CATEGORIES_PAGE, "default");
+	revalidatePath(PATHS.KLINIKUTRUSTNING);
+}

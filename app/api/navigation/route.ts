@@ -1,12 +1,14 @@
 import { unstable_cache } from "next/cache";
 import { categoryRepository } from "@/lib/repositories/category.repository";
 import { productRepository } from "@/lib/repositories/product.repository";
+import { getTechnologyGroupModel } from "@/models/technology-group.model";
+import { generateSlug } from "@/lib/utils/product-helpers";
 import { logger } from "@/lib/utils/logger";
 import {
 	successResponse,
 	internalServerErrorResponse,
 } from "@/lib/utils/api-response";
-import { PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG } from "@/lib/services/product-cache.service";
+import { PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG, TECHNOLOGY_GROUPS_CACHE_TAG } from "@/lib/services/product-cache.service";
 
 export interface NavProduct {
 	_id: string;
@@ -31,6 +33,7 @@ export interface NavTechProduct {
 
 export interface NavTechGroup {
 	name: string;
+	slug: string;
 	products: NavTechProduct[];
 }
 
@@ -43,15 +46,28 @@ const fetchNavigationData = unstable_cache(
 	async (): Promise<NavigationData> => {
 		const categories = await categoryRepository.findActiveCategories();
 		const { data: products } = await productRepository.findPublished({ limit: 200 });
-		return buildNavigationData(categories, products);
+
+		// Map technology group name -> slug (from the TechnologyGroup collection),
+		// so each menu group can link to /klinikutrustning/teknologi/[slug].
+		const TechnologyGroup = await getTechnologyGroupModel();
+		const techDocs = await TechnologyGroup.find({ isActive: true })
+			.select("name slug")
+			.lean();
+		const techSlugByName = new Map<string, string>();
+		for (const t of techDocs) {
+			if (t.name && t.slug) techSlugByName.set(t.name, t.slug);
+		}
+
+		return buildNavigationData(categories, products, techSlugByName);
 	},
 	["navigation-data"],
-	{ tags: [PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG], revalidate: 86400 }
+	{ tags: [PRODUCTS_CACHE_TAG, CATEGORIES_CACHE_TAG, TECHNOLOGY_GROUPS_CACHE_TAG], revalidate: 86400 }
 );
 
 function buildNavigationData(
 	categories: Awaited<ReturnType<typeof categoryRepository.findActiveCategories>>,
-	products: Awaited<ReturnType<typeof productRepository.findPublished>>["data"]
+	products: Awaited<ReturnType<typeof productRepository.findPublished>>["data"],
+	techSlugByName: Map<string, string>
 ): NavigationData {
 
 	const getCategoryId = (cat: unknown): string | null => {
@@ -123,7 +139,11 @@ function buildNavigationData(
 	}
 
 	const technologyGroups: NavTechGroup[] = Array.from(techGroupMap.entries())
-		.map(([name, techProducts]) => ({ name, products: techProducts }))
+		.map(([name, techProducts]) => ({
+			name,
+			slug: techSlugByName.get(name) || generateSlug(name),
+			products: techProducts,
+		}))
 		.sort((a, b) => a.name.localeCompare(b.name, "sv"));
 
 	return { categories: filteredCategories, technologyGroups };

@@ -177,7 +177,7 @@ class SiteSettingsRepository {
 			const settings = await SiteSettings.findOneAndUpdate(
 				{},
 				{ $set: updateData },
-				{ new: true, upsert: true, runValidators: true }
+				{ returnDocument: "after", upsert: true, runValidators: true }
 			).lean<SiteSettingsData>().exec();
 
 			if (!settings) {
@@ -274,8 +274,7 @@ class SiteSettingsRepository {
 				newsletterTitle: "Håll dig uppdaterad",
 				quickLinks: [
 					{ label: "Om oss", href: "/om-oss" },
-					{ label: "Produkter", href: "/produkter" },
-					{ label: "Tjänster", href: "/service" },
+					{ label: "Klinikutrustning", href: "/klinikutrustning" },
 					{ label: "Utbildningar", href: "/utbildningar" },
 					{ label: "Nyheter", href: "/nyheter" },
 					{ label: "Kontakt", href: "/kontakt" },

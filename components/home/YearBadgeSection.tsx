@@ -5,6 +5,10 @@ import { motion } from "framer-motion";
 import Script from "next/script";
 
 const YEARS = [2021, 2022, 2023, 2024, 2025];
+const SCALE = 0.7;
+// Smaller scale on mobile so the full 6-badge row fits within _container (px-4)
+// + this wrapper's px-6 padding without overflowing (~310px on a 390px viewport).
+const MOBILE_SCALE = 0.44;
 const BADGE_W = 110;
 const BADGE_H = 103;
 const GAP = 5;
@@ -19,7 +23,9 @@ const BADGES_CLOSE_MS = (YEARS.length - 1) * 180 + 500 + 80;
 
 export function YearBadgeContent() {
 	const [phase, setPhase] = useState<Phase>("idle");
+	const [isMobile, setIsMobile] = useState(false);
 	const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+	const sectionRef = useRef<HTMLDivElement>(null);
 
 	const clearTimers = useCallback(() => {
 		timersRef.current.forEach((t) => clearTimeout(t));
@@ -50,17 +56,55 @@ export function YearBadgeContent() {
 
 	useEffect(() => () => clearTimers(), [clearTimers]);
 
+	// Track viewport: mobile has no hover, so use a smaller scale + scroll trigger.
+	useEffect(() => {
+		const mq = window.matchMedia("(max-width: 767px)");
+		const sync = () => setIsMobile(mq.matches);
+		sync();
+		mq.addEventListener("change", sync);
+		return () => mq.removeEventListener("change", sync);
+	}, []);
+
+	// On mobile (no hover), play the fly-out when the badge scrolls into view,
+	// and collapse it when it leaves so it replays on the next entry.
+	useEffect(() => {
+		if (!isMobile) return;
+		const el = sectionRef.current;
+		if (!el) return;
+		const io = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) handleMouseEnter();
+				else handleMouseLeave();
+			},
+			{ threshold: 0.6 }
+		);
+		io.observe(el);
+		return () => io.disconnect();
+	}, [isMobile, handleMouseEnter, handleMouseLeave]);
+
+	const scale = isMobile ? MOBILE_SCALE : SCALE;
+
 	return (
 		<div
+			ref={sectionRef}
 			className="w-full pt-14 md:pt-20"
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
 			<div className="flex items-center justify-center px-6">
 				<div
-					className="relative flex-shrink-0"
-					style={{ width: TOTAL_WIDTH, height: BADGE_H }}
+					className="flex-shrink-0"
+					style={{ width: TOTAL_WIDTH * scale, height: BADGE_H * scale }}
 				>
+					<div
+						className="relative"
+						style={{
+							width: TOTAL_WIDTH,
+							height: BADGE_H,
+							transform: `scale(${scale})`,
+							transformOrigin: "top left",
+						}}
+					>
 					{/* Year badges 2021–2025 */}
 					{YEARS.map((year, index) => {
 						let opacityTarget: number;
@@ -144,6 +188,7 @@ export function YearBadgeContent() {
 						/>
 						<div id="reco--badge-yearsInRowBadge" />
 					</motion.div>
+					</div>
 				</div>
 			</div>
 

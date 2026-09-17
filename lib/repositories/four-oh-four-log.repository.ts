@@ -122,7 +122,7 @@ class FourOhFourLogRepository {
 		const log = await FourOhFourLog.findByIdAndUpdate(
 			id,
 			{ $set: { redirectUrl, isRedirectActive: true } },
-			{ new: true }
+			{ returnDocument: "after" }
 		).lean<FourOhFourLogData>();
 
 		return log ? serialize(log) : null;
@@ -138,7 +138,7 @@ class FourOhFourLogRepository {
 		const log = await FourOhFourLog.findByIdAndUpdate(
 			id,
 			{ $set: { redirectUrl: "", isRedirectActive: false } },
-			{ new: true }
+			{ returnDocument: "after" }
 		).lean<FourOhFourLogData>();
 
 		return log ? serialize(log) : null;

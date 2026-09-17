@@ -40,7 +40,7 @@ class FAQPageRepository {
 		const updated = await FAQPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<FAQPageData>();
 
 		if (!updated) {

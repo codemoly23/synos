@@ -44,7 +44,7 @@ class StartaEgetPageRepository {
 		const updated = await StartaEgetPage.findOneAndUpdate(
 			{},
 			{ $set: data },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<StartaEgetPageData>();
 
 		if (!updated) {

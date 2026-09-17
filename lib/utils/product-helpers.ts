@@ -185,8 +185,10 @@ export function parseSortString(sortString: string): Record<string, 1 | -1> {
 		"-publishedAt": { publishedAt: -1 },
 		name: { name: 1 },
 		"-name": { name: -1 },
-		order: { order: 1 },
-		"-order": { order: -1 },
+		// Secondary sort by createdAt keeps items with equal (e.g. untouched, default 0)
+		// order values in a stable, sensible sequence instead of arbitrary DB order.
+		order: { order: 1, createdAt: -1 },
+		"-order": { order: -1, createdAt: -1 },
 	};
 
 	return sortMap[sortString] || { createdAt: -1 };

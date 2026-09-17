@@ -16,6 +16,8 @@ import {
 	normalizeSlug,
 } from "@/lib/utils/product-helpers";
 import type { IBlogPost, BlogPublishType } from "@/models/blog-post.model";
+import { getUserModel } from "@/models/user.model";
+import { isValidObjectId } from "@/lib/utils/product-helpers";
 import type {
 	CreateBlogPostInput,
 	UpdateBlogPostInput,
@@ -114,6 +116,22 @@ class BlogPostService {
 	}
 
 	/**
+	 * Ensure a given user id refers to an existing user (used when the
+	 * dashboard explicitly assigns an author instead of defaulting to the
+	 * logged-in user)
+	 */
+	private async assertAuthorExists(authorId: string): Promise<void> {
+		if (!isValidObjectId(authorId)) {
+			throw new BadRequestError("Invalid author id");
+		}
+		const User = await getUserModel();
+		const user = await User.findById(authorId).select("_id").lean();
+		if (!user) {
+			throw new BadRequestError(`Author "${authorId}" not found`);
+		}
+	}
+
+	/**
 	 * Create a new blog post (draft)
 	 */
 	async createPost(
@@ -160,12 +178,18 @@ class BlogPostService {
 				}
 			}
 
+			// Allow the dashboard to explicitly assign an author; default to
+			// the logged-in user when none is provided
+			if (data.author) {
+				await this.assertAuthorExists(data.author);
+			}
+
 			// Sanitize HTML content
 			const sanitizedData = {
 				...data,
 				slug,
 				content: data.content ? sanitizeHtml(data.content) : "",
-				author: authorId,
+				author: data.author || authorId,
 			};
 
 			const post = await blogPostRepository.create(sanitizedData);
@@ -279,6 +303,11 @@ class BlogPostService {
 						);
 					}
 				}
+			}
+
+			// Validate author if being reassigned
+			if (data.author) {
+				await this.assertAuthorExists(data.author);
 			}
 
 			// Sanitize HTML content if provided

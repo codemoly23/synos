@@ -17,9 +17,10 @@ function convertToArticle(post: IBlogPost): Article {
 
 	const author: Author = {
 		name: authorData?.name || "Synos Medical",
-		role: "Redaktionen",
-		image: authorData?.image || undefined,
+		role: post.authorRole || "Redaktionen",
+		image: post.authorImage || authorData?.image || undefined,
 		bio: undefined,
+		label: post.authorLabel || "Skriven av",
 	};
 
 	// Handle populated categories - extract names

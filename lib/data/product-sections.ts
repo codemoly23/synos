@@ -605,10 +605,9 @@ export function getProductCustomSections(
 	}
 
 	// Fall back to hardcoded or generic content
-	switch (slug) {
-		case "motus-ay":
-			return buildMotusAyContent(s1img, s2topImg, s2botImg, s3img);
-		default:
-			return buildGenericContent(productName, s1img, s2topImg, s2botImg, s3img);
-	}
+	const result =
+		slug === "motus-ay"
+			? buildMotusAyContent(s1img, s2topImg, s2botImg, s3img)
+			: buildGenericContent(productName, s1img, s2topImg, s2botImg, s3img);
+	return result;
 }

@@ -38,7 +38,7 @@ export default async function CommentsPage({ searchParams }: PageProps) {
 		postSlug: string;
 		name: string;
 		email: string;
-		phone: string;
+		phone?: string;
 		comment: string;
 		status: CommentStatus;
 		createdAt: string;

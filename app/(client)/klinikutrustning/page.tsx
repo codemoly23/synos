@@ -4,6 +4,8 @@ import { getSiteConfig } from "@/config/site";
 import {
 	getPublishedProducts,
 	getActiveCategories,
+	getActiveTechnologyGroupNames,
+	getTechnologyCategoriesPageDescription,
 } from "@/lib/services/product-cache.service";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,20 +16,19 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
-import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
-import { technologyMap } from "@/config/technology-map";
+import { ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDrawer";
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
 import { getKlinikutrustningFaqSection, getKlinikutrustningHeroSection, getKlinikutrustningPage } from "@/lib/services/klinikutrustning-page.service";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
+import {
+	generateSimpleBreadcrumbJsonLd,
+	generateCollectionPageJsonLd,
+	generateFaqJsonLd,
+} from "@/lib/seo";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -109,13 +110,13 @@ export async function generateMetadata(): Promise<Metadata> {
 				title: `Kategori | ${siteConfig.name}`,
 				description:
 					"Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
-				url: `${siteConfig.url}/kategori`,
+				url: `${siteConfig.url}/klinikutrustning`,
 				siteName: siteConfig.name,
 				locale: "sv_SE",
 				type: "website",
 			},
 			alternates: {
-				canonical: `${siteConfig.url}/kategori`,
+				canonical: `${siteConfig.url}/klinikutrustning`,
 			},
 		};
 	} catch {
@@ -157,7 +158,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -166,28 +167,17 @@ function ProductCardDB({
 	);
 }
 
-const staticCategories = [
-	{ name: "Permanent Hårborttagning", href: "/klinikutrustning/harborttagning" },
-	{ name: "Tatueringsborttagning", href: "/klinikutrustning/tatueringsborttagning" },
-	{ name: "Hudföryngring", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Skin Resurfacing", href: "/klinikutrustning/co2laser" },
-	{ name: "Huduppstramning", href: "/klinikutrustning/hudforyngring" },
-	{ name: "Pigmentbehandling", href: "/klinikutrustning/pigmentflackar" },
-	{ name: "Kärlbehandling", href: "/klinikutrustning/ytliga-blodkarl-angiom" },
-	{ name: "Akne & Ärrbehandling", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Hudbristningar", href: "/klinikutrustning/akne-arr-och-hudbristningar" },
-	{ name: "Kroppsformning & Fettbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Muskeltoning", href: "/klinikutrustning/kropp-muskler-fett" },
-	{ name: "Cellulitbehandling", href: "/klinikutrustning/kropp-muskler-fett" },
-];
+type TechGroupItem = { _id: string; name: string; slug: string; order: number };
 
 // Sidebar Component
 function KategoriSidebar({
 	categories,
+	techGroups,
 	activeCategory,
 	selectedTech,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	activeCategory?: string;
 	selectedTech?: string;
 }) {
@@ -200,22 +190,26 @@ function KategoriSidebar({
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						href="/klinikutrustning"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Produkter
 					</Link>
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
-				<CardContent className="pb-2! p-0">
-					<div className="px-3">
-						{staticCategories.map((cat) => (
+				<CardContent className="space-y-2 pb-2! p-0">
+					<div className="max-h-[200px] overflow-y-auto px-3">
+						{categories.map((category) => (
 							<Link
-								key={cat.name}
-								href={cat.href}
-								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
+								key={category._id.toString()}
+								href={`/klinikutrustning/${category.slug}`}
+								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+									activeCategory === category.slug
+										? "btn-copper-gradient"
+										: "text-foreground hover:bg-primary/20"
+								}`}
 							>
-								{cat.name}
+								{category.name}
 							</Link>
 						))}
 					</div>
@@ -229,8 +223,8 @@ function KategoriSidebar({
 						Technology Category
 					</CardTitle>
 					<Link
-						href="/kategori"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						href="/klinikutrustning"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Teknologier
 					</Link>
@@ -238,15 +232,18 @@ function KategoriSidebar({
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
 					<div className="px-3">
-						{technologyMap.map((tech) => (
+						{techGroups.map((tech) => (
 							<Link
-								key={tech.name}
-								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								key={tech._id}
+								href={`/klinikutrustning/teknologi/${tech.slug}`}
 								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
 								{tech.name}
 							</Link>
 						))}
+						{techGroups.length === 0 && (
+							<p className="px-3 py-2 text-sm text-muted-foreground">Inga teknologier</p>
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -264,7 +261,7 @@ function KategoriSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary border border-transparent"
+						className="inline-flex items-center justify-center rounded-lg btn-copper-gradient px-4 py-2 text-sm font-medium transition-colors border border-transparent"
 					>
 						Kontakta oss
 					</Link>
@@ -312,31 +309,11 @@ function KategoriSidebar({
 	);
 }
 
-// Mobile Drawer Component
-function MobileDrawer({ categories }: { categories: ICategory[] }) {
-	return (
-		<div className="flex justify-end">
-			<Drawer>
-				<DrawerTrigger asChild>
-					<Button variant="primary" size="sm" className="block sm:hidden">
-						<ListFilter className="h-4 w-4" />
-					</Button>
-				</DrawerTrigger>
-				<DrawerContent className="p-0! rounded-t-sm">
-					<DrawerTitle className="sr-only">Filter</DrawerTitle>
-					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KategoriSidebar categories={categories} />
-					</div>
-				</DrawerContent>
-			</Drawer>
-		</div>
-	);
-}
 
 export default async function KategoriPage() {
-	const [categories, products, contactInfo, faqSection, heroSection, pageData] = await Promise.all([
+	const [categories, products, contactInfo, faqSection, heroSection, pageData, techGroups, techPageDescription, branding] = await Promise.all([
 		getActiveCategories().catch(() => [] as ICategory[]),
-		getPublishedProducts({ limit: 100 }).catch(() => [] as IProduct[]),
+		getPublishedProducts({ limit: 100, sort: "order" }).catch(() => [] as IProduct[]),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
 		getKlinikutrustningFaqSection().catch(() => ({
 			title: FALLBACK_FAQ_TITLE,
@@ -344,6 +321,9 @@ export default async function KategoriPage() {
 		})),
 		getKlinikutrustningHeroSection().catch(() => null),
 		getKlinikutrustningPage().catch(() => null),
+		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		getTechnologyCategoriesPageDescription().catch(() => ""),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	const heroTitle = heroSection?.title || "Motus Pro";
@@ -395,8 +375,39 @@ export default async function KategoriPage() {
 		return "uncategorized";
 	}
 
+	const siteConfig = await getSiteConfig();
+	const breadcrumbJsonLd = generateSimpleBreadcrumbJsonLd([
+		{ name: "Hem", url: siteConfig.url },
+		{ name: "Klinikutrustning", url: `${siteConfig.url}/klinikutrustning` },
+	]);
+	const collectionPageJsonLd = generateCollectionPageJsonLd({
+		name: "Klinikutrustning",
+		description: "Professionell klinikutrustning för hårborttagning, tatueringsborttagning, hudföryngring och mer.",
+		url: `${siteConfig.url}/klinikutrustning`,
+		items: products.map((product) => ({
+			name: product.title,
+			url: `${siteConfig.url}/klinikutrustning/${getCategorySlugForProduct(product)}/${product.slug}`,
+		})),
+	});
+	const faqJsonLd = generateFaqJsonLd(klinikFaqs);
+
 	return (
 		<div className="min-h-screen">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+			/>
+			{faqJsonLd && (
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+				/>
+			)}
+
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 
@@ -414,7 +425,7 @@ export default async function KategoriPage() {
 
 				{/* Mobile text — below background */}
 				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-					<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
+					<h1 className="text-[1.75rem] md:text-5xl font-sans font-light text-white mb-3 leading-tight break-words">
 						{heroTitle}
 					</h1>
 					<div className="w-14 h-[2px] bg-primary mb-4" />
@@ -431,7 +442,11 @@ export default async function KategoriPage() {
 							</li>
 						))}
 					</ul>
-					<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
+					<a
+						href="#inquiry-form"
+						className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full text-white text-sm font-light"
+						style={{ background: "linear-gradient(135deg, #f0d8c5 0%, #d4a07b 18%, #b87a52 40%, #8f5a3a 55%, #b87a52 70%, #d4a07b 85%, #f0d8c5 100%)" }}
+					>
 						<FileText className="h-4 w-4 shrink-0" />
 						Begär offert
 					</a>
@@ -473,9 +488,11 @@ export default async function KategoriPage() {
 						{/* Sidebar */}
 						<div className="w-full lg:w-80 lg:shrink-0">
 							<div className="lg:sticky lg:top-28 hidden sm:block">
-								<KategoriSidebar categories={categories} />
+								<KategoriSidebar categories={categories} techGroups={techGroups} />
 							</div>
-							<MobileDrawer categories={categories} />
+							<MobileFilterDrawer>
+							<KategoriSidebar categories={categories} techGroups={techGroups} />
+						</MobileFilterDrawer>
 						</div>
 
 						{/* Main Content */}
@@ -509,6 +526,14 @@ export default async function KategoriPage() {
 									</p>
 								</div>
 							)}
+
+							{/* Technology Categories Page Description */}
+							{techPageDescription && (
+								<div
+									className="mt-10 prose prose-slate max-w-none prose-headings:text-secondary prose-p:text-muted-foreground prose-li:text-muted-foreground"
+									dangerouslySetInnerHTML={{ __html: techPageDescription }}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
@@ -529,8 +554,8 @@ export default async function KategoriPage() {
 					purchaseDescription="<p>Behöver du hjälp att hitta rätt klinikutrustning för din verksamhet? Vårt team återkommer inom 24 timmar med personlig rådgivning.</p>"
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || undefined}
-					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || undefined}
+					bgMobile={(pageData as unknown as { inquiryBgMobile?: string })?.inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={(pageData as unknown as { inquiryBgDesktop?: string })?.inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

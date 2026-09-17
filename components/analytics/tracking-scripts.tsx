@@ -42,18 +42,7 @@ export function TrackingScripts({
 }: TrackingScriptsProps) {
 	const gtmIdRef = useRef(gtmId);
 
-	// ── Loaders ──────────────────────────────────────────────────────────────
-
-	const loadGTM = useCallback((id: string) => {
-		if (document.getElementById("gtm-runtime")) return;
-		window.dataLayer = window.dataLayer || [];
-		window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-		const s = document.createElement("script");
-		s.id = "gtm-runtime";
-		s.async = true;
-		s.src = `https://www.googletagmanager.com/gtm.js?id=${id}&l=dataLayer`;
-		document.head.appendChild(s);
-	}, []);
+	// ── Loaders (fallback path used only when GTM isn't configured) ──────────
 
 	const loadGA4 = useCallback((gId: string, adsId: string) => {
 		if (document.getElementById("gtag-runtime")) return;
@@ -98,21 +87,36 @@ export function TrackingScripts({
 		window.fbq?.("track", "PageView");
 	}, []);
 
+	// ── Consent Mode v2: relay Cookiebot's real choice into gtag('consent', ──
+	// 'update', ...). GTM itself is already loaded in <head> (see app/layout.tsx)
+	// with everything defaulted to "denied" — this just updates that signal.
+	// Whether tags actually fire on "granted" depends on each tag's own
+	// consent-check configuration inside the GTM container (not this code).
+
+	const updateConsent = useCallback(() => {
+		const consent = window.Cookiebot?.consent;
+		if (!consent || !window.gtag) return;
+		window.gtag("consent", "update", {
+			ad_storage: consent.marketing ? "granted" : "denied",
+			analytics_storage: consent.statistics ? "granted" : "denied",
+			ad_user_data: consent.marketing ? "granted" : "denied",
+			ad_personalization: consent.marketing ? "granted" : "denied",
+		});
+	}, []);
+
 	// ── Trigger all configured tracking ──────────────────────────────────────
 
 	const triggerTracking = useCallback(() => {
 		if (gtmId) {
-			// GTM is configured — it manages GA4, Ads, and Pixel internally.
-			// Do NOT also load Pixel directly or it will double-fire PageView.
-			loadGTM(gtmId);
-		} else {
-			// No GTM — load GA4, Google Ads, and/or Pixel directly.
-			if (ga4Id || googleAdsId) loadGA4(ga4Id, googleAdsId);
-			if (fbPixelId) loadPixel(fbPixelId);
+			// GTM already loaded via the beforeInteractive script in <head>.
+			return;
 		}
-	}, [gtmId, fbPixelId, ga4Id, googleAdsId, loadGTM, loadGA4, loadPixel]);
+		// No GTM — load GA4, Google Ads, and/or Pixel directly.
+		if (ga4Id || googleAdsId) loadGA4(ga4Id, googleAdsId);
+		if (fbPixelId) loadPixel(fbPixelId);
+	}, [gtmId, fbPixelId, ga4Id, googleAdsId, loadGA4, loadPixel]);
 
-	// ── Initial load (gated on Cookiebot consent if configured) ──────────────
+	// ── Initial load / consent wiring ─────────────────────────────────────────
 
 	useEffect(() => {
 		if (!cookiebotId) {
@@ -120,9 +124,15 @@ export function TrackingScripts({
 			return;
 		}
 
-		// Only fire tracking after the user grants marketing consent
 		const checkAndLoad = () => {
-			if (window.Cookiebot?.consent?.marketing) triggerTracking();
+			if (gtmId) {
+				// Relay whatever Cookiebot reports (granted or denied) as a
+				// Consent Mode update — GTM is never blocked from loading.
+				updateConsent();
+			} else if (window.Cookiebot?.consent?.marketing) {
+				// No GTM: fall back to the old gate-until-consent behavior.
+				triggerTracking();
+			}
 		};
 
 		// CookiebotOnLoad: fires on every page load and reads the stored consent

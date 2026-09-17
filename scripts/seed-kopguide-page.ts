@@ -51,7 +51,7 @@ if (!MONGODB_URI) {
 const kopguidePageData = {
 	sectionVisibility: {
 		hero: true,
-		steps: true,
+		guideSteps: true,
 		checklist: true,
 		cta: true,
 		contactForm: true,

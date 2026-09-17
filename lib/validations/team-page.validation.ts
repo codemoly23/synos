@@ -5,6 +5,7 @@ import { z } from "zod";
 // ============================================================================
 export const teamSectionVisibilitySchema = z.object({
 	hero: z.boolean(),
+	mission: z.boolean().default(true),
 	stats: z.boolean(),
 	teamMembers: z.boolean(),
 	values: z.boolean(),
@@ -23,11 +24,28 @@ export const teamHeroSectionSchema = z.object({
 });
 
 // ============================================================================
+// MISSION QUOTE SECTION
+// ============================================================================
+export const teamMissionSectionSchema = z.object({
+	badge: z.string().max(100).optional(),
+	text: z.string().max(1000).optional(),
+});
+
+// ============================================================================
 // STATS
 // ============================================================================
 export const teamStatSchema = z.object({
 	value: z.string().max(50).optional(),
 	label: z.string().max(100).optional(),
+});
+
+// ============================================================================
+// TEAM MEMBERS SECTION HEADING
+// ============================================================================
+export const teamMembersSectionSchema = z.object({
+	badge: z.string().max(100).optional(),
+	title: z.string().max(200).optional(),
+	subtitle: z.string().max(500).optional(),
 });
 
 // ============================================================================
@@ -103,7 +121,9 @@ export const teamPageSeoSchema = z.object({
 export const updateTeamPageSchema = z.object({
 	sectionVisibility: teamSectionVisibilitySchema.optional(),
 	hero: teamHeroSectionSchema.optional(),
+	mission: teamMissionSectionSchema.optional(),
 	stats: z.array(teamStatSchema).optional(),
+	teamSection: teamMembersSectionSchema.optional(),
 	teamMembers: z.array(teamMemberSchema).optional(),
 	valuesSection: teamValuesSectionSchema.optional(),
 	joinUs: teamJoinUsSectionSchema.optional(),
@@ -114,7 +134,9 @@ export const updateTeamPageSchema = z.object({
 // Type exports
 export type TeamSectionVisibilityInput = z.infer<typeof teamSectionVisibilitySchema>;
 export type TeamHeroSectionInput = z.infer<typeof teamHeroSectionSchema>;
+export type TeamMissionSectionInput = z.infer<typeof teamMissionSectionSchema>;
 export type TeamStatInput = z.infer<typeof teamStatSchema>;
+export type TeamMembersSectionInput = z.infer<typeof teamMembersSectionSchema>;
 export type TeamMemberInput = z.infer<typeof teamMemberSchema>;
 export type TeamValueInput = z.infer<typeof teamValueSchema>;
 export type TeamValuesSectionInput = z.infer<typeof teamValuesSectionSchema>;

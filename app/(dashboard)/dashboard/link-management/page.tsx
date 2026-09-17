@@ -1,11 +1,12 @@
 "use client";
 
-import { Palette, BarChart3, ScanSearch, ExternalLink } from "lucide-react";
+import { Palette, BarChart3, ScanSearch, ExternalLink, ArrowRightLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Custom404Form } from "./custom-404-form";
 import { FourOhFourLogsTable } from "./four-oh-four-logs-table";
 import { LinkAuditTab } from "./link-audit-tab";
 import { ExternalLinksTab } from "./external-links-tab";
+import { RedirectsTab } from "./redirects-tab";
 
 export default function LinkManagementPage() {
 	return (
@@ -37,6 +38,10 @@ export default function LinkManagementPage() {
 						<BarChart3 className="h-4 w-4" />
 						404 Monitoring
 					</TabsTrigger>
+					<TabsTrigger value="redirects" className="gap-2">
+						<ArrowRightLeft className="h-4 w-4" />
+						Redirects
+					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="link-audit">
@@ -53,6 +58,10 @@ export default function LinkManagementPage() {
 
 				<TabsContent value="404-monitoring">
 					<FourOhFourLogsTable />
+				</TabsContent>
+
+				<TabsContent value="redirects">
+					<RedirectsTab />
 				</TabsContent>
 			</Tabs>
 		</div>

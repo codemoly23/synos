@@ -93,13 +93,22 @@ const toggleCategory = (categoryId: string) => {
 											/* Dynamic items: Link + expand button */
 											<>
 												<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-													<Link
-														href={item.href}
-														className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary"
-														onClick={() => setOpen(false)}
-													>
-														{item.title}
-													</Link>
+													{item.isTechnologyMenu || item.isCategoryMenu ? (
+														<span
+															className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary cursor-pointer"
+															onClick={() => toggleDynamic(item.title)}
+														>
+															{item.title}
+														</span>
+													) : (
+														<Link
+															href={item.href}
+															className="flex-1 px-3 py-2.5 text-sm font-medium text-secondary hover:text-secondary"
+															onClick={() => setOpen(false)}
+														>
+															{item.title}
+														</Link>
+													)}
 													<button
 														onClick={() => toggleDynamic(item.title)}
 														className="px-3 py-2 text-muted-foreground hover:text-secondary transition-colors"
@@ -120,7 +129,7 @@ const toggleCategory = (categoryId: string) => {
 												<div key={tech.name}>
 													<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
 														<span
-														className="flex-1 px-3 py-1.5 text-xs font-bold text-primary uppercase tracking-wide cursor-pointer"
+														className="flex-1 px-3 py-1.5 text-sm font-medium text-primary uppercase tracking-wide cursor-pointer"
 														onClick={() => toggleTech(tech.name)}
 													>
 															{tech.name}
@@ -143,15 +152,15 @@ const toggleCategory = (categoryId: string) => {
 																<Link
 																	key={`${tech.name}:${product.slug}`}
 																	href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																	className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																	className="block px-3 py-1.5 text-sm text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																	onClick={() => setOpen(false)}
 																>
 																	{product.title}
 																</Link>
 															))}
 															<Link
-																href="/klinikutrustning"
-																className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																href={`/klinikutrustning/teknologi/${tech.slug}`}
+																className="block px-3 py-1.5 text-sm text-secondary font-medium hover:underline"
 																onClick={() => setOpen(false)}
 															>
 																Visa alla →
@@ -163,6 +172,13 @@ const toggleCategory = (categoryId: string) => {
 											{isLoading && (
 												<div className="px-3 py-2 text-sm text-gray-400">Laddar...</div>
 											)}
+											<Link
+												href={item.href}
+												className="block px-3 py-1.5 text-sm text-secondary font-semibold hover:underline"
+												onClick={() => setOpen(false)}
+											>
+												Visa alla →
+											</Link>
 										</>
 									) : item.isCategoryMenu ? (
 															<>
@@ -174,7 +190,10 @@ const toggleCategory = (categoryId: string) => {
 																		{category.products.length > 0 ? (
 																			<>
 																				<div className="flex items-center rounded-lg hover:bg-secondary/5 transition-all">
-																					<span className="flex-1 px-3 py-2 text-sm font-medium text-primary">
+																					<span
+																						className="flex-1 px-3 py-2 text-sm font-medium text-primary cursor-pointer"
+																						onClick={() => toggleCategory(category._id)}
+																					>
 																						{category.name}
 																					</span>
 																					<button
@@ -195,7 +214,7 @@ const toggleCategory = (categoryId: string) => {
 																							<Link
 																								key={product._id}
 																								href={`/klinikutrustning/${product.primaryCategorySlug}/${product.slug}`}
-																								className="block px-3 py-1.5 text-xs text-gray-500 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
+																								className="block px-3 py-1.5 text-sm text-secondary/90 hover:text-secondary hover:bg-secondary/5 rounded-md transition-all"
 																								onClick={() => setOpen(false)}
 																							>
 																								{product.title}
@@ -203,7 +222,7 @@ const toggleCategory = (categoryId: string) => {
 																						))}
 																						<Link
 																							href={`/klinikutrustning/${category.slug}`}
-																							className="block px-3 py-1.5 text-xs text-secondary font-medium hover:underline"
+																							className="block px-3 py-1.5 text-sm text-secondary font-medium hover:underline"
 																							onClick={() => setOpen(false)}
 																						>
 																							Visa alla →
@@ -223,6 +242,13 @@ const toggleCategory = (categoryId: string) => {
 																		Inga kategorier tillgängliga
 																	</div>
 																)}
+																<Link
+																	href={item.href}
+																	className="block px-3 py-1.5 text-sm text-secondary font-semibold hover:underline"
+																	onClick={() => setOpen(false)}
+																>
+																	Visa alla →
+																</Link>
 															</>
 														) : null}
 													</div>
@@ -237,6 +263,13 @@ const toggleCategory = (categoryId: string) => {
 													</AccordionTrigger>
 													<AccordionContent className="pb-1 pt-0.5">
 														<div className="ml-3 pl-3 border-l-2 border-secondary/20 space-y-0.5">
+															<Link
+																href={item.href}
+																className="block px-3 py-2 text-sm font-medium text-primary hover:underline rounded-lg transition-all"
+																onClick={() => setOpen(false)}
+															>
+																Översikt →
+															</Link>
 															{item.items.map((subItem) => (
 																<Link
 																	key={subItem.title}
