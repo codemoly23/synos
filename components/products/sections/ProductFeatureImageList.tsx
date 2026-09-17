@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp, type LucideIcon } from "lucide-react";
-import Link from "next/link";
 import { ImageComponent } from "@/components/common/image-component";
 import { Button } from "@/components/ui/button";
 import { EyebrowTag } from "./EyebrowTag";
@@ -39,8 +38,6 @@ export interface ProductFeatureImageListProps {
 		imageAlt?: string;
 		items: NumberedListItem[];
 	};
-	ctaText?: string;
-	ctaHref?: string;
 	bottomBlock: {
 		sectionNumber: string;
 		title: string;
@@ -65,8 +62,6 @@ export function ProductFeatureImageList({
 	topBlock,
 	bottomBlock,
 	corners = "all",
-	ctaText,
-	ctaHref,
 	expanded: expandedProp,
 	onToggleExpanded,
 }: ProductFeatureImageListProps) {
@@ -135,11 +130,6 @@ export function ProductFeatureImageList({
 									Visa mindre <ChevronUp className="ml-1 h-4 w-4" />
 								</Button>
 							</div>
-						)}
-						{expanded && ctaText && ctaHref && (
-							<Button asChild className="mt-6 rounded-full">
-								<Link href={ctaHref}>{ctaText}</Link>
-							</Button>
 						)}
 					</motion.div>
 

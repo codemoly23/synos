@@ -244,7 +244,7 @@ const toggleCategory = (categoryId: string) => {
 																)}
 																<Link
 																	href={item.href}
-																	className="block px-3 py-1.5 text-xs text-secondary font-semibold hover:underline"
+																	className="block px-3 py-1.5 text-sm text-secondary font-semibold hover:underline"
 																	onClick={() => setOpen(false)}
 																>
 																	Visa alla →
