@@ -29,6 +29,7 @@ jobs:
       - name: Build
         run: |
           cd /home/ubuntu/synos
+          rm -rf .next
           npm run build
           cp -r .next/static .next/standalone/.next/static
           [ -d public ] && cp -r public .next/standalone/public || true
