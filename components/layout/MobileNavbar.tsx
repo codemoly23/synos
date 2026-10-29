@@ -209,7 +209,7 @@ const toggleCategory = (categoryId: string) => {
 																					</button>
 																				</div>
 																				{expandedCategory === category._id && (
-																					<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200 max-h-[200px] overflow-y-auto nav-dropdown-scroll">
+																					<div className="ml-3 pl-3 border-l border-gray-200 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
 																						{category.products.map((product) => (
 																							<Link
 																								key={product._id}

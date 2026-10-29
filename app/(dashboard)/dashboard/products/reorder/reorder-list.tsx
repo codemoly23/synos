@@ -163,7 +163,7 @@ export function ReorderProductsList({ initialProducts }: ReorderProductsListProp
 					</Link>
 					<h1 className="text-3xl font-bold">Reorder Machines</h1>
 					<p className="text-slate-600">
-						Drag products to control the order they appear in on /klinikutrustning.
+						Drag products to control the order they appear in on /klinikutrustning and in the navigation menu (desktop &amp; mobile).
 					</p>
 				</div>
 				{isSaving && (
