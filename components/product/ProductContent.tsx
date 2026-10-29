@@ -117,8 +117,20 @@ export function ProductContent({
 							{product.title}
 						</h1>
 						<div className="w-14 h-[2px] bg-primary mb-4" />
+						{product.treatments && product.treatments.length > 0 && (
+							<div className="flex flex-wrap gap-2 mb-6">
+								{product.treatments.map((tag) => (
+									<span
+										key={tag}
+										className="inline-flex items-center px-3 py-1 rounded-full border border-[#fcf3e1] text-white/90 text-xs font-medium"
+									>
+										{tag}
+									</span>
+								))}
+							</div>
+						)}
 						{(product as unknown as { heroSubtitle?: string }).heroSubtitle && (
-							<p className="text-white/70 text-sm mb-8 leading-relaxed">
+							<p className="text-white/90 text-sm mb-8 leading-relaxed">
 								{(product as unknown as { heroSubtitle?: string }).heroSubtitle}
 							</p>
 						)}
@@ -175,8 +187,20 @@ export function ProductContent({
 									<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
 										{product.title}
 									</h2>
+									{product.treatments && product.treatments.length > 0 && (
+										<div className="flex flex-wrap gap-2 mb-6">
+											{product.treatments.map((tag) => (
+												<span
+													key={tag}
+													className="inline-flex items-center px-3 py-1 rounded-full border border-[#fcf3e1] text-white/90 text-xs font-medium"
+												>
+													{tag}
+												</span>
+											))}
+										</div>
+									)}
 									{(product as unknown as { heroSubtitle?: string }).heroSubtitle && (
-										<p className="text-white/60 text-base mb-8 leading-relaxed">
+										<p className="text-white/90 text-base mb-8 leading-relaxed">
 											{(product as unknown as { heroSubtitle?: string }).heroSubtitle}
 										</p>
 									)}

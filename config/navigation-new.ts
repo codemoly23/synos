@@ -17,7 +17,7 @@ export interface NavItem {
  * - Added KATEGORI
  * - Team page under Om Oss
  *
- * Navigation Order: NYHETER | UTRUSTNING | KATEGORI | STARTA EGET | UTBILDNINGAR | OM OSS | KONTAKT
+ * Navigation Order: NYHETER | KATEGORI | UTRUSTNING | STARTA EGET | UTBILDNINGAR | OM OSS | KONTAKT
  *
  * Old WordPress URLs are redirected in next.config.ts
  */
@@ -28,20 +28,20 @@ export const mainNavNew: NavItem[] = [
 		href: "/blogg",
 	},
 
-	// UTRUSTNING (formerly Produkter) - Equipment/Products
-	{
-		title: "UTRUSTNING",
-		href: "/klinikutrustning",
-		isDynamic: true, // This item loads categories/products from database
-		isTechnologyMenu: true, // Renders static technology-map groups (not DB categories)
-	},
-
 	// KATEGORI - Categories
 	{
 		title: "KATEGORI",
 		href: "/klinikutrustning",
 		isDynamic: true,
 		isCategoryMenu: true, // Renders static category-map list
+	},
+
+	// UTRUSTNING (formerly Produkter) - Equipment/Products
+	{
+		title: "UTRUSTNING",
+		href: "/klinikutrustning",
+		isDynamic: true, // This item loads categories/products from database
+		isTechnologyMenu: true, // Renders static technology-map groups (not DB categories)
 	},
 
 	// STARTA EGET - Start Your Own Business

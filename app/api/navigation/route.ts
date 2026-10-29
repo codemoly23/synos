@@ -45,7 +45,8 @@ export interface NavigationData {
 const fetchNavigationData = unstable_cache(
 	async (): Promise<NavigationData> => {
 		const categories = await categoryRepository.findActiveCategories();
-		const { data: products } = await productRepository.findPublished({ limit: 200 });
+		// Same admin-controlled order as /klinikutrustning (Dashboard → Products → Reorder)
+		const { data: products } = await productRepository.findPublished({ limit: 200, sort: "order" });
 
 		// Map technology group name -> slug (from the TechnologyGroup collection),
 		// so each menu group can link to /klinikutrustning/teknologi/[slug].
