@@ -184,7 +184,7 @@ function CookieBanner() {
 									Anpassa
 								</Button>
 								<Button
-									className="flex-1 h-11 rounded-full bg-primary hover:bg-primary-hover"
+									className="flex-1 h-11 rounded-full btn-copper-gradient"
 									onClick={acceptAll}
 								>
 									Tillåt alla
@@ -200,7 +200,7 @@ function CookieBanner() {
 									Tillbaka
 								</Button>
 								<Button
-									className="flex-1 h-11 rounded-full bg-primary hover:bg-primary-hover"
+									className="flex-1 h-11 rounded-full btn-copper-gradient"
 									onClick={handleAcceptSelected}
 								>
 									Spara inställningar

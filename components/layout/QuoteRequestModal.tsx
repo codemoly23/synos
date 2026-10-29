@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,7 +11,6 @@ import {
 	Phone,
 	Send,
 	Loader2,
-	CheckCircle2,
 	FileText,
 	Building2,
 } from "lucide-react";
@@ -25,21 +25,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { pushEvent } from "@/lib/analytics/gtm";
 
 // Client-side form schema
 const quoteFormSchema = z.object({
-	fullName: z
+	firstName: z
 		.string()
-		.min(2, "Namnet måste vara minst 2 tecken")
-		.max(100, "Namnet får inte överstiga 100 tecken"),
+		.min(1, "Förnamn är obligatoriskt")
+		.max(100, "Förnamnet får inte överstiga 100 tecken"),
+	lastName: z
+		.string()
+		.min(1, "Efternamn är obligatoriskt")
+		.max(100, "Efternamnet får inte överstiga 100 tecken"),
 	email: z.string().email("Ange en giltig e-postadress"),
 	phone: z
 		.string()
 		.min(6, "Telefonnummer måste vara minst 6 siffror")
-		.max(20, "Telefonnummer får inte överstiga 20 siffror"),
+		.max(25, "Telefonnummer får inte överstiga 25 tecken"),
 	companyName: z
 		.string()
-		.max(200, "Företagsnamnet får inte överstiga 200 tecken")
+		.min(1, "Företag är obligatoriskt")
+		.max(200, "Företagsnamnet får inte överstiga 200 tecken"),
+	corporationNumber: z
+		.string()
+		.max(30, "Organisationsnummer får inte överstiga 30 tecken")
 		.optional(),
 	message: z
 		.string()
@@ -59,8 +68,8 @@ export function QuoteRequestModal({
 	open,
 	onOpenChange,
 }: QuoteRequestModalProps) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const {
@@ -72,10 +81,12 @@ export function QuoteRequestModal({
 	} = useForm<FormData>({
 		resolver: zodResolver(quoteFormSchema),
 		defaultValues: {
-			fullName: "",
+			firstName: "",
+			lastName: "",
 			email: "",
 			phone: "",
 			companyName: "",
+			corporationNumber: "",
 			message: "",
 			gdprConsent: undefined as unknown as true,
 		},
@@ -89,7 +100,6 @@ export function QuoteRequestModal({
 	const handleClose = () => {
 		onOpenChange(false);
 		setTimeout(() => {
-			setIsSuccess(false);
 			reset();
 			setGdprChecked(false);
 		}, 200);
@@ -114,9 +124,15 @@ export function QuoteRequestModal({
 			const result = await response.json();
 
 			if (result.success) {
-				setIsSuccess(true);
+				onOpenChange(false);
 				reset();
 				setGdprChecked(false);
+				pushEvent("generate_lead", {
+					form_type: "quote_request",
+					page_path: window.location.pathname,
+					page_url: window.location.href,
+				});
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const fieldErrors = result.errors
@@ -148,62 +164,10 @@ export function QuoteRequestModal({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className={cn(
-					"max-w-[360px] sm:max-w-lg p-0 overflow-hidden border-0 max-h-[90vh]",
-					isSuccess ? "bg-white" : "bg-secondary/95"
-				)}
+				className="max-w-[360px] sm:max-w-lg p-0 overflow-hidden border-0 max-h-[90vh] bg-secondary/95"
 				hideCloseButton
 			>
-				{/* Success State */}
-				{isSuccess && (
-					<div className="relative">
-						{/* Top gradient accent */}
-						<div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400" />
-
-						{/* Close Button */}
-						<button
-							onClick={handleClose}
-							className="absolute top-3 right-3 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-							aria-label="Stäng"
-						>
-							<X className="w-4 h-4" />
-						</button>
-
-						<div className="px-6 pt-10 pb-6 text-center">
-							{/* Success Icon */}
-							<div className="relative w-16 h-16 mx-auto">
-								<div className="absolute inset-0 rounded-full border-3 border-emerald-100" />
-								<div className="absolute inset-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50">
-									<CheckCircle2
-										className="w-7 h-7 text-white"
-										strokeWidth={2}
-									/>
-								</div>
-							</div>
-
-							{/* Success Message */}
-							<h2 className="mt-5 text-xl font-bold text-slate-800">
-								Tack för din förfrågan!
-							</h2>
-							<p className="mt-2 text-sm text-slate-500 leading-relaxed">
-								Vi har mottagit din offertförfrågan och återkommer inom 24
-								timmar med ett prisförslag.
-							</p>
-
-							{/* Close Button */}
-							<Button
-								onClick={handleClose}
-								className="mt-6 w-full h-10 rounded-lg text-sm font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
-							>
-								Stäng
-							</Button>
-						</div>
-					</div>
-				)}
-
-				{/* Form State */}
-				{!isSuccess && (
-					<div className="flex flex-col max-h-[90vh]">
+				<div className="flex flex-col max-h-[90vh]">
 						{/* Header - Fixed */}
 						<div className="relative pt-5 pb-4 px-5 text-center text-white shrink-0">
 							{/* Close Button */}
@@ -235,30 +199,58 @@ export function QuoteRequestModal({
 								onSubmit={handleSubmit(onSubmit)}
 								className="space-y-3"
 							>
-								{/* Full Name */}
+								{/* First Name */}
 								<div className="space-y-1">
 									<Label
-										htmlFor="fullName"
+										htmlFor="firstName"
 										className="text-xs font-semibold"
 									>
-										Namn <span className="text-red-500">*</span>
+										Förnamn <span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
 										<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
 										<Input
-											id="fullName"
-											{...register("fullName")}
-											placeholder="Ditt fullständiga namn"
+											id="firstName"
+											{...register("firstName")}
+											placeholder="Ditt förnamn"
 											className={cn(
 												"pl-10 h-10 text-sm",
-												errors.fullName && "border-red-500"
+												errors.firstName && "border-red-500"
 											)}
 											disabled={isSubmitting}
 										/>
 									</div>
-									{errors.fullName && (
+									{errors.firstName && (
 										<p className="text-xs text-red-500">
-											{errors.fullName.message}
+											{errors.firstName.message}
+										</p>
+									)}
+								</div>
+
+								{/* Last Name */}
+								<div className="space-y-1">
+									<Label
+										htmlFor="lastName"
+										className="text-xs font-semibold"
+									>
+										Efternamn <span className="text-red-500">*</span>
+									</Label>
+									<div className="relative">
+										<User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<Input
+											id="lastName"
+											{...register("lastName")}
+											placeholder="Ditt efternamn"
+											className={cn(
+												"pl-10 h-10 text-sm",
+												errors.lastName && "border-red-500"
+											)}
+											disabled={isSubmitting}
+										/>
+									</div>
+									{errors.lastName && (
+										<p className="text-xs text-red-500">
+											{errors.lastName.message}
 										</p>
 									)}
 								</div>
@@ -323,16 +315,13 @@ export function QuoteRequestModal({
 									)}
 								</div>
 
-								{/* Company Name (Optional) */}
+								{/* Company Name */}
 								<div className="space-y-1">
 									<Label
 										htmlFor="companyName"
 										className="text-xs font-semibold"
 									>
-										Företagsnamn{" "}
-										<span className="text-muted-foreground font-normal">
-											(valfritt)
-										</span>
+										Företag <span className="text-red-500">*</span>
 									</Label>
 									<div className="relative">
 										<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -340,6 +329,37 @@ export function QuoteRequestModal({
 											id="companyName"
 											{...register("companyName")}
 											placeholder="Ditt företags namn"
+											className={cn(
+												"pl-10 h-10 text-sm",
+												errors.companyName && "border-red-500"
+											)}
+											disabled={isSubmitting}
+										/>
+									</div>
+									{errors.companyName && (
+										<p className="text-xs text-red-500">
+											{errors.companyName.message}
+										</p>
+									)}
+								</div>
+
+								{/* Corporation Number (Optional) */}
+								<div className="space-y-1">
+									<Label
+										htmlFor="corporationNumber"
+										className="text-xs font-semibold"
+									>
+										Org. nummer{" "}
+										<span className="text-muted-foreground font-normal">
+											(valfritt)
+										</span>
+									</Label>
+									<div className="relative">
+										<Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+										<Input
+											id="corporationNumber"
+											{...register("corporationNumber")}
+											placeholder="t.ex. 556789-1234"
 											className="pl-10 h-10 text-sm"
 											disabled={isSubmitting}
 										/>
@@ -360,7 +380,7 @@ export function QuoteRequestModal({
 									<Textarea
 										id="message"
 										{...register("message")}
-										placeholder="Berätta gärna vad du är intresserad av eller har frågor om..."
+										placeholder="Berätta mer om dina behov, frågor eller önskemål…"
 										className={cn(
 											"min-h-[70px] resize-none text-sm",
 											errors.message && "border-red-500"
@@ -439,7 +459,6 @@ export function QuoteRequestModal({
 							</form>
 						</div>
 					</div>
-				)}
 			</DialogContent>
 		</Dialog>
 	);

@@ -8,9 +8,19 @@ import { logger } from "@/lib/utils/logger";
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { companyName, firstName, lastName, email, productName, productSlug } = body;
+		const {
+			companyName,
+			firstName,
+			lastName,
+			email,
+			phone,
+			corporationNumber,
+			message,
+			productName,
+			productSlug,
+		} = body;
 
-		if (!companyName || !firstName || !lastName || !email) {
+		if (!companyName || !firstName || !lastName || !email || !phone) {
 			return NextResponse.json({ error: "All fields are required" }, { status: 400 });
 		}
 
@@ -28,6 +38,9 @@ export async function POST(request: NextRequest) {
 				host: smtp.host,
 				port: smtp.port ?? 587,
 				secure: isSecure,
+				connectionTimeout: 10000,
+				greetingTimeout: 10000,
+				socketTimeout: 10000,
 				...(smtp.encryption === "tls" && { requireTLS: true }),
 				...(smtp.username
 					? { auth: { user: smtp.username, pass: smtp.password ?? "" } }
@@ -70,6 +83,10 @@ export async function POST(request: NextRequest) {
                 <td style="padding:8px 12px;border:1px solid #e0e0e0;">${email}</td>
               </tr>
               <tr>
+                <td style="padding:8px 12px;font-weight:600;background:#f5f5f5;border:1px solid #e0e0e0;white-space:nowrap;">Phone</td>
+                <td style="padding:8px 12px;border:1px solid #e0e0e0;">${phone}</td>
+              </tr>
+              <tr>
                 <td style="padding:8px 12px;font-weight:600;background:#f5f5f5;border:1px solid #e0e0e0;white-space:nowrap;">Product</td>
                 <td style="padding:8px 12px;border:1px solid #e0e0e0;">${productName ?? "-"}</td>
               </tr>
@@ -87,14 +104,16 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`;
 
-			await transporter.sendMail({
-				from: `"${fromName}" <${fromEmail}>`,
-				to: smtp.adminNotificationEmail,
-				subject: `Broschyrförfrågan: ${productName ?? "Produkt"} – ${firstName} ${lastName}`,
-				html,
-			});
-
-			logger.info(`Brochure request email sent for product: ${productSlug}`);
+			// Fire-and-forget: a slow/unreachable SMTP host must never block this response
+			transporter
+				.sendMail({
+					from: `"${fromName}" <${fromEmail}>`,
+					to: smtp.adminNotificationEmail,
+					subject: `Broschyrförfrågan: ${productName ?? "Produkt"} – ${firstName} ${lastName}`,
+					html,
+				})
+				.then(() => logger.info(`Brochure request email sent for product: ${productSlug}`))
+				.catch((err) => logger.error("Failed to send brochure request email", err));
 		}
 
 		// Save to database so it appears in dashboard inquiries
@@ -111,7 +130,17 @@ export async function POST(request: NextRequest) {
 		};
 
 		formSubmissionService.createBrochureRequest(
-			{ companyName: companyName as string, firstName: firstName as string, lastName: lastName as string, email: email as string, productName: productName as string | undefined, productSlug: productSlug as string | undefined },
+			{
+				companyName: companyName as string,
+				firstName: firstName as string,
+				lastName: lastName as string,
+				email: email as string,
+				phone: phone as string,
+				corporationNumber: corporationNumber as string | undefined,
+				message: message as string | undefined,
+				productName: productName as string | undefined,
+				productSlug: productSlug as string | undefined,
+			},
 			metadata
 		).catch((err) => logger.error("Failed to save brochure request to DB", err));
 

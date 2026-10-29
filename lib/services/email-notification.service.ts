@@ -14,6 +14,8 @@ const FORM_TYPE_LABELS: Record<string, string> = {
 	job_application: "Job Application",
 	hero_inquiry: "Hero Inquiry",
 	brochure_request: "Brochure Request",
+	training_application: "Training Application",
+	newsletter_subscription: "Newsletter Subscription",
 };
 
 const HELP_TYPE_LABELS: Record<string, string> = {
@@ -49,17 +51,21 @@ function buildEmailHtml(submission: IFormSubmission, fromName: string): string {
 		["Form Type", typeLabel],
 		["Full Name", submission.fullName],
 		["Email", submission.email],
-		["Phone", `${submission.countryCode ?? ""} ${submission.phone}`.trim()],
 	];
 
+	if (submission.phone) rows.push(["Phone", `${submission.countryCode ?? ""} ${submission.phone}`.trim()]);
 	if (submission.countryName) rows.push(["Country", submission.countryName]);
 	if (submission.corporationNumber) rows.push(["Corp. Number", submission.corporationNumber]);
+	if (submission.companyName) rows.push(["Company", submission.companyName]);
 	if (submission.subject) rows.push(["Subject", submission.subject]);
 	if (submission.productName) rows.push(["Product", submission.productName]);
 	if (submission.helpType) rows.push(["Help Type", HELP_TYPE_LABELS[submission.helpType] ?? submission.helpType]);
 	if (submission.trainingInterestType) rows.push(["Training Interest", TRAINING_INTEREST_LABELS[submission.trainingInterestType] ?? submission.trainingInterestType]);
 	if (submission.jobTitle) rows.push(["Job Title", submission.jobTitle]);
 	if (submission.careerType) rows.push(["Career Type", submission.careerType]);
+	if (submission.resumeUrl) rows.push(["Resume", `<a href="${submission.resumeUrl}">Download</a>`]);
+	if (submission.category) rows.push(["Category", submission.category]);
+	if (submission.attachmentUrl) rows.push(["Attachment", `<a href="${submission.attachmentUrl}">Download</a>`]);
 	if (submission.preferredDate) rows.push(["Preferred Date", formatDate(submission.preferredDate)]);
 	if (submission.preferredTime) rows.push(["Preferred Time", submission.preferredTime]);
 	if (submission.message) rows.push(["Message", submission.message]);

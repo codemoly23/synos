@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, type LucideIcon } from "lucide-react";
 import { ImageComponent } from "@/components/common/image-component";
+import { Button } from "@/components/ui/button";
 import { EyebrowTag } from "./EyebrowTag";
 import { NumberMark } from "./NumberMark";
 
@@ -45,6 +47,9 @@ export interface ProductFeatureImageListProps {
 		imageAlt?: string;
 	};
 	corners?: SectionCorners;
+	/** Controlled expand state — pass this along with `onToggleExpanded` when a later section (e.g. ProductFeatureGrid) should reveal/hide together with this one. Falls back to internal state when omitted. */
+	expanded?: boolean;
+	onToggleExpanded?: () => void;
 }
 
 /**
@@ -57,7 +62,13 @@ export function ProductFeatureImageList({
 	topBlock,
 	bottomBlock,
 	corners = "all",
+	expanded: expandedProp,
+	onToggleExpanded,
 }: ProductFeatureImageListProps) {
+	const [internalExpanded, setInternalExpanded] = useState(false);
+	const expanded = expandedProp ?? internalExpanded;
+	const toggleExpanded = onToggleExpanded ?? (() => setInternalExpanded((prev) => !prev));
+
 	return (
 		<section>
 			<div className="_container">
@@ -75,13 +86,56 @@ export function ProductFeatureImageList({
 							{heading}
 						</h2>
 						{description && (
-							<p className="text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[640px] mx-auto">
-								{description}
-							</p>
+							<div className="relative">
+								<p
+									className={
+										!expanded
+											? "text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[640px] mx-auto line-clamp-3 overflow-hidden"
+											: "text-[15px] sm:text-base leading-relaxed text-slate-600 max-w-[640px] mx-auto"
+									}
+								>
+									{description}
+								</p>
+								{!expanded && (
+									<div className="mt-3 flex justify-center">
+										<Button
+											variant="outline"
+											className="rounded-full text-primary hover:text-primary/80 bg-white"
+											onClick={toggleExpanded}
+										>
+											Läs mer <ChevronDown className="ml-1 h-4 w-4" />
+										</Button>
+									</div>
+								)}
+							</div>
+						)}
+						{!description && !expanded && (
+							<div className="flex justify-center">
+								<Button
+									variant="outline"
+									className="rounded-full text-primary hover:text-primary/80 bg-white"
+									onClick={toggleExpanded}
+								>
+									Läs mer <ChevronDown className="ml-1 h-4 w-4" />
+								</Button>
+							</div>
+						)}
+						{expanded && (
+							<div className="mt-6 flex justify-center">
+								<Button
+									variant="outline"
+									className="rounded-full text-primary hover:text-primary/80 bg-white"
+									onClick={toggleExpanded}
+								>
+									Visa mindre <ChevronUp className="ml-1 h-4 w-4" />
+								</Button>
+							</div>
 						)}
 					</motion.div>
 
-					{/* Top block: image left + numbered list right */}
+					{/* Top block: image left + numbered list right — hidden until "Läs mer" */}
+					{expanded && (
+					<>
 					<motion.div
 						initial={{ opacity: 0, y: 24 }}
 						whileInView={{ opacity: 1, y: 0 }}
@@ -203,6 +257,8 @@ export function ProductFeatureImageList({
 							</div>
 						</div>
 					</motion.div>
+					</>
+					)}
 				</div>
 			</div>
 		</section>

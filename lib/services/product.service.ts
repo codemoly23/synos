@@ -876,6 +876,7 @@ class ProductService {
 			page?: number;
 			limit?: number;
 			publishedOnly?: boolean;
+			sort?: string;
 		}
 	): Promise<{
 		data: IProduct[];
@@ -885,6 +886,13 @@ class ProductService {
 		totalPages: number;
 	}> {
 		return productRepository.findByCategory(categoryId, options);
+	}
+
+	/**
+	 * Bulk update product display order (admin drag-and-drop reordering)
+	 */
+	async bulkUpdateOrder(updates: { id: string; order: number }[]): Promise<void> {
+		return productRepository.bulkUpdateOrder(updates);
 	}
 
 	/**

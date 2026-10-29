@@ -3,9 +3,9 @@ import {
 	getAboutPage,
 	getAboutPageSeo,
 } from "@/lib/services/about-page.service";
+import { getContactInfo } from "@/lib/services/site-settings.service";
+import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@/lib/seo";
 import { AboutPageClient } from "./_components/about-page-client";
-
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
 	try {
@@ -31,9 +31,32 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-	const aboutPage = await getAboutPage().catch(() => null);
+	const [aboutPage, contact] = await Promise.all([
+		getAboutPage().catch((error) => {
+			console.error("Failed to load about page:", error);
+			return null;
+		}),
+		getContactInfo(),
+	]);
 
 	if (!aboutPage) return <></>;
 
-	return <AboutPageClient data={aboutPage} />;
+	const [organizationJsonLd, websiteJsonLd] = await Promise.all([
+		generateOrganizationJsonLd(),
+		generateWebSiteJsonLd(),
+	]);
+
+	return (
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+			/>
+			<AboutPageClient data={aboutPage} contact={contact} />
+		</>
+	);
 }

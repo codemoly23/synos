@@ -21,7 +21,7 @@ export const mainNav: NavItem[] = [
 	},
 	{
 		title: "Kategori",
-		href: "/kategori",
+		href: "/klinikutrustning",
 		isDynamic: true, // This item loads categories/products from database
 	},
 	{

@@ -5,6 +5,7 @@ import { updateBlogPostSchema } from "@/lib/validations/blog-post.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
 import { revalidateBlogPost } from "@/lib/revalidation/actions";
+import { redirectService } from "@/lib/services/redirect.service";
 import {
 	successResponse,
 	badRequestResponse,
@@ -84,11 +85,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			);
 		}
 
+		// Get old slug before update to detect slug changes
+		const existingPost = await blogPostService.getPostById(id);
+		const oldSlug = existingPost.slug;
+
 		// Update blog post
 		const post = await blogPostService.updatePost(id, validationResult.data);
 
 		// Revalidate ISR cache for this post
 		await revalidateBlogPost(post.slug);
+
+		if (oldSlug && oldSlug !== post.slug) {
+			await redirectService.createAutoRedirect(
+				`/blogg/${oldSlug}`,
+				`/blogg/${post.slug}`
+			);
+		}
 
 		logger.info("Blog post updated", {
 			postId: id,

@@ -55,7 +55,7 @@ export function CareersListing({ data }: CareersListingProps) {
 									<div className="relative aspect-video">
 										<Image
 											src={data.jobOpeningsSection.featuredImage}
-											alt={data.hero?.title || "Careers at Synos Medical"}
+											alt={data.hero?.title || "Karriär hos Synos Medical"}
 											fill
 											className="object-cover"
 											priority
@@ -76,7 +76,7 @@ export function CareersListing({ data }: CareersListingProps) {
 									<motion.div variants={fadeUp} className="mb-4">
 										<span className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
 											<span className="text-primary">&larr;</span>
-											{data.jobOpeningsSection?.title || "Success Journey"}
+											{data.jobOpeningsSection?.title || "Framgångsresa"}
 											<span className="text-primary">&rarr;</span>
 										</span>
 									</motion.div>
@@ -86,10 +86,10 @@ export function CareersListing({ data }: CareersListingProps) {
 										variants={fadeUp}
 										className="text-3xl md:text-4xl font-bold text-secondary mb-3"
 									>
-										{data.hero?.title || "Driving Traders Toward"}{" "}
+										{data.hero?.title || "Vägen mot"}{" "}
 										<br className="hidden sm:block" />
 										<span className="text-primary">
-											{data.hero?.titleHighlight || "Daily Wins"}
+											{data.hero?.titleHighlight || "Dagliga Framgångar"}
 										</span>
 									</motion.h2>
 

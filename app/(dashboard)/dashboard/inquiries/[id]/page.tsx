@@ -84,6 +84,11 @@ export default async function InquiryDetailPage({ params }: PageProps) {
 				subject: submission.subject || null,
 				preferredDate: submission.preferredDate?.toISOString() || null,
 				preferredTime: submission.preferredTime || null,
+				jobTitle: submission.jobTitle || null,
+				careerType: submission.careerType || null,
+				resumeUrl: submission.resumeUrl || null,
+				category: submission.category || null,
+				attachmentUrl: submission.attachmentUrl || null,
 				metadata: {
 					ipAddress: submission.metadata.ipAddress,
 					userAgent: submission.metadata.userAgent,

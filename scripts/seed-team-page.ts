@@ -51,6 +51,7 @@ if (!MONGODB_URI) {
 const teamPageData = {
 	sectionVisibility: {
 		hero: true,
+		mission: true,
 		stats: true,
 		teamMembers: true,
 		values: true,
@@ -65,6 +66,13 @@ const teamPageData = {
 		title: "Möt experterna bakom Synos Medical",
 		subtitle:
 			"Vi är ett dedikerat team av professionella med mångårig erfarenhet inom estetisk medicinteknologi och kundsupport.",
+	},
+
+	// Mission Quote Section
+	mission: {
+		badge: "Vårt Uppdrag",
+		text:
+			"Vårt erfarna team levererar skräddarsydd **service** och **smarta lösningar** för att hjälpa kliniker att växa effektivt.",
 	},
 
 	// Stats Section
@@ -86,6 +94,13 @@ const teamPageData = {
 			label: "Service-garanti",
 		},
 	],
+
+	// Team Members Section Heading
+	teamSection: {
+		badge: "Vårt team",
+		title: "Möt vårt engagerade team",
+		subtitle: "Från vårt företag",
+	},
 
 	// Team Members - Using professional headshot photos
 	teamMembers: [

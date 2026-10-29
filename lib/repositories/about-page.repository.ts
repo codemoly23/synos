@@ -2,6 +2,7 @@ import type { Document } from "mongoose";
 import { connectMongoose } from "@/lib/db/db-connect";
 import {
 	getAboutPageModelSync,
+	ABOUT_PAGE_SINGLETON_KEY,
 	type IAboutPage,
 	type IAboutHeroSection,
 	type IAboutMissionSection,
@@ -35,6 +36,7 @@ export interface UpdateAboutPageInput {
 	testimonials?: Partial<IAboutTestimonialsSection>;
 	partners?: Partial<IAboutPartnersSection>;
 	cta?: Partial<IAboutCtaSection>;
+	richContent?: string;
 	seo?: Partial<IAboutPageSeo>;
 }
 
@@ -54,11 +56,30 @@ class AboutPageRepository {
 		await connectMongoose();
 		const AboutPage = getAboutPageModelSync();
 
-		let aboutPage = await AboutPage.findOne().lean<AboutPageData>();
+		let aboutPage: AboutPageData | null = await AboutPage.findOne({
+			singleton: ABOUT_PAGE_SINGLETON_KEY,
+		}).lean<AboutPageData>();
 
 		if (!aboutPage) {
-			const created = await AboutPage.create({});
-			aboutPage = created.toObject() as AboutPageData;
+			try {
+				const created = await AboutPage.create({
+					singleton: ABOUT_PAGE_SINGLETON_KEY,
+				});
+				aboutPage = created.toObject() as AboutPageData;
+			} catch (err) {
+				// A concurrent request won the create race (duplicate key) — just re-read it.
+				if ((err as { code?: number }).code === 11000) {
+					aboutPage = await AboutPage.findOne({
+						singleton: ABOUT_PAGE_SINGLETON_KEY,
+					}).lean<AboutPageData>();
+				} else {
+					throw err;
+				}
+			}
+		}
+
+		if (!aboutPage) {
+			throw new Error("Failed to load about page");
 		}
 
 		return toPlainObject(aboutPage);
@@ -117,6 +138,30 @@ class AboutPageRepository {
 			if (data.testimonials.groupCooperation !== undefined) {
 				updateData["testimonials.groupCooperation"] = data.testimonials.groupCooperation;
 			}
+			if (data.testimonials.ctaTitle !== undefined) {
+				updateData["testimonials.ctaTitle"] = data.testimonials.ctaTitle;
+			}
+			if (data.testimonials.ctaDescription !== undefined) {
+				updateData["testimonials.ctaDescription"] = data.testimonials.ctaDescription;
+			}
+			if (data.testimonials.ctaButtonText !== undefined) {
+				updateData["testimonials.ctaButtonText"] = data.testimonials.ctaButtonText;
+			}
+			if (data.testimonials.ctaButtonLink !== undefined) {
+				updateData["testimonials.ctaButtonLink"] = data.testimonials.ctaButtonLink;
+			}
+			if (data.testimonials.rating !== undefined) {
+				updateData["testimonials.rating"] = data.testimonials.rating;
+			}
+			if (data.testimonials.reviewCount !== undefined) {
+				updateData["testimonials.reviewCount"] = data.testimonials.reviewCount;
+			}
+			if (data.testimonials.reviewCountLabel !== undefined) {
+				updateData["testimonials.reviewCountLabel"] = data.testimonials.reviewCountLabel;
+			}
+			if (data.testimonials.reviewPlatforms !== undefined) {
+				updateData["testimonials.reviewPlatforms"] = data.testimonials.reviewPlatforms;
+			}
 		}
 
 		if (data.partners) {
@@ -139,10 +184,14 @@ class AboutPageRepository {
 			});
 		}
 
+		if (data.richContent !== undefined) {
+			updateData.richContent = data.richContent;
+		}
+
 		const aboutPage = await AboutPage.findOneAndUpdate(
-			{},
-			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ singleton: ABOUT_PAGE_SINGLETON_KEY },
+			{ $set: updateData, $setOnInsert: { singleton: ABOUT_PAGE_SINGLETON_KEY } },
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<AboutPageData>();
 
 		if (!aboutPage) {

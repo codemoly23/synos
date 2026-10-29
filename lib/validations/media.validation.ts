@@ -33,6 +33,24 @@ export const isValidUrl = (str: string): boolean => {
 };
 
 /**
+ * Optional numeric schema that tolerates empty form inputs.
+ *
+ * react-hook-form's `valueAsNumber` turns an empty <input type="number">
+ * into `NaN`, and JSON serialization turns it into `null` — both of which
+ * `z.number().optional()` rejects. This preprocesses NaN/null/"" to
+ * `undefined` so optional dimension fields validate on client and server.
+ */
+export const optionalNumber = z.preprocess(
+	(v) =>
+		v === "" ||
+		v === null ||
+		(typeof v === "number" && Number.isNaN(v))
+			? undefined
+			: v,
+	z.number().optional()
+);
+
+/**
  * Single image URL schema - required
  */
 export const imageUrlSchema = z.string().refine(isValidUrl, {

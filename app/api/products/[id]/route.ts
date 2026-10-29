@@ -5,6 +5,7 @@ import { updateProductSchema } from "@/lib/validations/product.validation";
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId, generateSlug } from "@/lib/utils/product-helpers";
 import { revalidateProduct } from "@/lib/revalidation/actions";
+import { redirectService } from "@/lib/services/redirect.service";
 import {
 	successResponse,
 	badRequestResponse,
@@ -87,11 +88,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 			);
 		}
 
+		// Get existing product to detect slug/category changes and (if publishing) merge validation data
+		const existingProduct = await productService.getProductById(id);
+		const oldSlug = existingProduct.slug;
+		const oldPrimaryCat = existingProduct.primaryCategory as unknown as { slug?: string } | null;
+		const oldCategoriesArray = existingProduct.categories as unknown as Array<{ slug?: string }>;
+		const oldCategorySlug = oldPrimaryCat?.slug || oldCategoriesArray?.[0]?.slug;
+
 		// If shouldPublish is true, validate for publishing BEFORE saving
 		if (shouldPublish) {
-			// Get existing product to merge with updates for validation
-			const existingProduct = await productService.getProductById(id);
-
 			// Merge existing data with updates for complete validation
 			const mergedData = {
 				title: validationResult.data.title ?? existingProduct.title,
@@ -149,6 +154,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 				const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 				await revalidateProduct(publishResult.product.slug, categorySlug);
 
+				if (oldCategorySlug && categorySlug) {
+					const fromUrl = `/klinikutrustning/${oldCategorySlug}/${oldSlug}`;
+					const toUrl = `/klinikutrustning/${categorySlug}/${publishResult.product.slug}`;
+					if (fromUrl !== toUrl) {
+						await redirectService.createAutoRedirect(fromUrl, toUrl);
+					}
+				}
+
 				logger.info("Product updated and published", {
 					productId: id,
 					title: product.title,
@@ -173,6 +186,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		const categoriesArray = product.categories as unknown as Array<{ slug?: string }>;
 		const categorySlug = primaryCat?.slug || categoriesArray?.[0]?.slug;
 		await revalidateProduct(product.slug, categorySlug);
+
+		if (oldCategorySlug && categorySlug) {
+			const fromUrl = `/klinikutrustning/${oldCategorySlug}/${oldSlug}`;
+			const toUrl = `/klinikutrustning/${categorySlug}/${product.slug}`;
+			if (fromUrl !== toUrl) {
+				await redirectService.createAutoRedirect(fromUrl, toUrl);
+			}
+		}
 
 		return successResponse(product, "Product updated successfully");
 	} catch (error: unknown) {

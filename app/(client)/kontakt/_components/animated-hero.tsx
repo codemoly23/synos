@@ -76,7 +76,7 @@ export function AnimatedHero({ data, phone, email }: AnimatedHeroProps) {
 					>
 						<Button
 							size="lg"
-							className="h-12 gap-2 rounded-full bg-primary px-8 text-white shadow-lg shadow-secondary/30 hover:bg-primary"
+							className="h-12 gap-2 rounded-full btn-copper-gradient px-8 shadow-lg shadow-secondary/30"
 							asChild
 						>
 							<a href={`tel:${phone.replace(/\s/g, "")}`}>

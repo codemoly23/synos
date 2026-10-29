@@ -155,7 +155,7 @@ class LegalPageRepository {
 		const legalPage = await LegalPage.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<LegalPageData>();
 
 		if (!legalPage) {

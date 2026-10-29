@@ -74,6 +74,24 @@ export const brandingSettingsSchema = z.object({
 		.string()
 		.max(500, "Favicon URL cannot exceed 500 characters")
 		.optional(),
+	productDefaultBackground: z
+		.string()
+		.max(500, "Background URL cannot exceed 500 characters")
+		.optional(),
+	productDefaultBackgroundWidth: z.number().optional(),
+	productDefaultBackgroundHeight: z.number().optional(),
+	inquiryDefaultBgMobile: z
+		.string()
+		.max(500, "Background URL cannot exceed 500 characters")
+		.optional(),
+	inquiryDefaultBgMobileWidth: z.number().optional(),
+	inquiryDefaultBgMobileHeight: z.number().optional(),
+	inquiryDefaultBgDesktop: z
+		.string()
+		.max(500, "Background URL cannot exceed 500 characters")
+		.optional(),
+	inquiryDefaultBgDesktopWidth: z.number().optional(),
+	inquiryDefaultBgDesktopHeight: z.number().optional(),
 });
 
 /**
@@ -121,6 +139,10 @@ export const footerSettingsSchema = z.object({
 		.max(30, "Newsletter button text cannot exceed 30 characters")
 		.optional(),
 	bottomLinks: z.array(footerLinkSchema).optional(),
+	copyrightText: z
+		.string()
+		.max(150, "Copyright text cannot exceed 150 characters")
+		.optional(),
 });
 
 /**

@@ -74,6 +74,9 @@ const formSchema = z.object({
 			title: z.string().max(200).optional(),
 			subtitle: z.string().max(300).optional(),
 			paragraphs: z.array(z.string().max(2000)).optional(),
+			image: z.string().max(500).optional(),
+			highlightsTitle: z.string().max(200).optional(),
+			highlights: z.array(z.string().max(300)).optional(),
 		})
 		.optional(),
 	benefits: z
@@ -144,7 +147,7 @@ export default function StartaEgetPageAdmin() {
 				resources: true,
 			},
 			hero: {},
-			mainContent: { paragraphs: [] },
+			mainContent: { paragraphs: [], highlights: [] },
 			benefits: [],
 			featuresSection: { features: [] },
 			resourcesSection: { resources: [] },
@@ -161,6 +164,12 @@ export default function StartaEgetPageAdmin() {
 		control: form.control,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		name: "mainContent.paragraphs" as any,
+	});
+
+	const highlightsFieldArray = useFieldArray({
+		control: form.control,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		name: "mainContent.highlights" as any,
 	});
 
 	const featuresFieldArray = useFieldArray({
@@ -189,7 +198,7 @@ export default function StartaEgetPageAdmin() {
 							resources: true,
 						},
 						hero: data.hero || {},
-						mainContent: data.mainContent || { paragraphs: [] },
+						mainContent: data.mainContent || { paragraphs: [], highlights: [] },
 						benefits: data.benefits || [],
 						featuresSection: data.featuresSection || { features: [] },
 						resourcesSection: data.resourcesSection || { resources: [] },
@@ -535,6 +544,25 @@ export default function StartaEgetPageAdmin() {
 											</FormItem>
 										)}
 									/>
+									<FormField
+										control={form.control}
+										name="mainContent.image"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Image</FormLabel>
+												<FormControl>
+													<MediaPicker
+														type="image"
+														value={field.value || null}
+														onChange={(url) => field.onChange(url || "")}
+														placeholder="Select an image for this section"
+														galleryTitle="Select Main Content Image"
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
 									{/* Paragraphs */}
 									<div className="space-y-4">
@@ -583,6 +611,77 @@ export default function StartaEgetPageAdmin() {
 															confirmText: "Remove",
 														});
 														if (confirmed) paragraphsFieldArray.remove(index);
+													}}
+												>
+													<Trash2 className="h-4 w-4" />
+												</Button>
+											</div>
+										))}
+									</div>
+
+									{/* Highlights */}
+									<div className="space-y-4">
+										<FormField
+											control={form.control}
+											name="mainContent.highlightsTitle"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Highlights Title</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Det här får du"
+															{...field}
+															value={field.value || ""}
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+										<div className="flex items-center justify-between">
+											<FormLabel>Highlights</FormLabel>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={() =>
+													highlightsFieldArray.append("" as never)
+												}
+											>
+												<Plus className="mr-2 h-4 w-4" />
+												Add Highlight
+											</Button>
+										</div>
+										{highlightsFieldArray.fields.map((field, index) => (
+											<div key={field.id} className="flex gap-4">
+												<FormField
+													control={form.control}
+													name={`mainContent.highlights.${index}`}
+													render={({ field }) => (
+														<FormItem className="flex-1">
+															<FormControl>
+																<Input
+																	placeholder="Skriv en highlight här..."
+																	{...field}
+																	value={field.value || ""}
+																/>
+															</FormControl>
+															<FormMessage />
+														</FormItem>
+													)}
+												/>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													className="shrink-0 text-destructive hover:text-destructive"
+													onClick={async () => {
+														const confirmed = await confirm({
+															title: "Remove Highlight",
+															description: "Are you sure you want to remove this highlight?",
+															confirmText: "Remove",
+														});
+														if (confirmed) highlightsFieldArray.remove(index);
 													}}
 												>
 													<Trash2 className="h-4 w-4" />

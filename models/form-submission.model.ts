@@ -14,7 +14,9 @@ export type FormSubmissionType =
 	| "tour_request"
 	| "job_application"
 	| "hero_inquiry"
-	| "brochure_request";
+	| "brochure_request"
+	| "training_application"
+	| "newsletter_subscription";
 
 /**
  * Form submission status
@@ -62,6 +64,8 @@ export interface IFormSubmission extends Document {
 
 	// Common Fields
 	fullName: string;
+	firstName?: string;
+	lastName?: string;
 	email: string;
 	phone?: string | null;
 	countryCode?: string | null;
@@ -104,6 +108,10 @@ export interface IFormSubmission extends Document {
 	jobTitle?: string;
 	careerType?: string;
 	resumeUrl?: string;
+
+	// Training Application Specific
+	category?: string;
+	attachmentUrl?: string;
 
 	// Metadata
 	metadata: IFormSubmissionMetadata;
@@ -157,7 +165,7 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 		// Form Type
 		type: {
 			type: String,
-			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application", "hero_inquiry", "brochure_request"],
+			enum: ["product_inquiry", "training_inquiry", "contact", "demo_request", "quote_request", "callback_request", "tour_request", "job_application", "hero_inquiry", "brochure_request", "training_application", "newsletter_subscription"],
 			required: [true, "Form type is required"],
 			index: true,
 		},
@@ -168,6 +176,18 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			required: [true, "Full name is required"],
 			trim: true,
 			maxlength: [100, "Full name cannot exceed 100 characters"],
+		},
+		firstName: {
+			type: String,
+			trim: true,
+			maxlength: [100, "First name cannot exceed 100 characters"],
+			default: null,
+		},
+		lastName: {
+			type: String,
+			trim: true,
+			maxlength: [100, "Last name cannot exceed 100 characters"],
+			default: null,
 		},
 		email: {
 			type: String,
@@ -337,6 +357,20 @@ const FormSubmissionSchema = new Schema<IFormSubmission>(
 			type: String,
 			trim: true,
 			maxlength: [500, "Resume URL cannot exceed 500 characters"],
+			default: null,
+		},
+
+		// Training Application Specific
+		category: {
+			type: String,
+			trim: true,
+			maxlength: [100, "Category cannot exceed 100 characters"],
+			default: null,
+		},
+		attachmentUrl: {
+			type: String,
+			trim: true,
+			maxlength: [500, "Attachment URL cannot exceed 500 characters"],
 			default: null,
 		},
 

@@ -14,21 +14,21 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
-import { ListFilter, ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { ShieldCheck, BookOpen, Settings, Check, FileText } from "lucide-react";
+import { MobileFilterDrawer } from "@/components/klinikutrustning/MobileFilterDrawer";
 import { ImageComponent } from "@/components/common/image-component";
 import { ProductFAQ } from "@/components/products/ProductFAQ";
 import { ProductInquiryForm } from "@/components/products/ProductInquiryForm";
-import { getContactInfo } from "@/lib/services/site-settings.service";
-import { technologyMap } from "@/config/technology-map";
+import { getContactInfo, getBrandingSettings } from "@/lib/services/site-settings.service";
+import { getActiveTechnologyGroupNames } from "@/lib/services/product-cache.service";
 import { categoryHeroConfig } from "@/config/category-hero-config";
 import { HeroCategoryForm } from "@/components/klinikutrustning/HeroCategoryForm";
 import { CategoryDescriptionExpander } from "@/components/klinikutrustning/CategoryDescriptionExpander";
+import {
+	generateSimpleBreadcrumbJsonLd,
+	generateCollectionPageJsonLd,
+	generateFaqJsonLd,
+} from "@/lib/seo";
 import type { IProduct } from "@/models/product.model";
 import type { ICategory } from "@/models/category.model";
 
@@ -172,6 +172,7 @@ async function getProductsByCategory(categoryId: string) {
 			const { data } = await productRepository.findUncategorized({
 				limit: 100,
 				publishedOnly: true,
+				sort: "order",
 			});
 			return data;
 		}
@@ -179,6 +180,7 @@ async function getProductsByCategory(categoryId: string) {
 		const { data } = await productRepository.findByCategory(categoryId, {
 			limit: 100,
 			publishedOnly: true,
+			sort: "order",
 		});
 		return data;
 	} catch (error) {
@@ -285,7 +287,7 @@ function ProductCardDB({
 						{product.shortDescription}
 					</p>
 					<div className="flex-1" />
-					<Button className="w-full bg-primary text-primary-foreground transition-colors">
+					<Button className="w-full btn-copper-gradient transition-colors">
 						Läs mer
 					</Button>
 				</div>
@@ -294,12 +296,16 @@ function ProductCardDB({
 	);
 }
 
+type TechGroupItem = { _id: string; name: string; slug: string; order: number };
+
 // Sidebar Component
 function KategoriSidebar({
 	categories,
+	techGroups,
 	activeCategory,
 }: {
 	categories: ICategory[];
+	techGroups: TechGroupItem[];
 	activeCategory?: string;
 }) {
 	return (
@@ -311,10 +317,10 @@ function KategoriSidebar({
 						Behandlingskategorier
 					</CardTitle>
 					<Link
-						href="/kategori"
+						href="/klinikutrustning"
 						className={`block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
 							!activeCategory
-								? "bg-primary text-primary-foreground"
+								? "btn-copper-gradient"
 								: "text-foreground hover:bg-primary/50"
 						}`}
 					>
@@ -330,7 +336,7 @@ function KategoriSidebar({
 								href={`/klinikutrustning/${category.slug}`}
 								className={`block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
 									activeCategory === category.slug
-										? "bg-primary text-primary-foreground"
+										? "btn-copper-gradient"
 										: "text-foreground hover:bg-primary/20"
 								}`}
 							>
@@ -349,23 +355,26 @@ function KategoriSidebar({
 					</CardTitle>
 					<Link
 						href="/klinikutrustning"
-						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors bg-primary text-primary-foreground"
+						className="block rounded-lg px-4 py-1.5 text-sm font-medium transition-colors btn-copper-gradient"
 					>
 						Alla Teknologier
 					</Link>
 				</CardHeader>
 				<Separator className="my-2 bg-primary/50" />
 				<CardContent className="pb-2! p-0">
-					<div className="px-3">
-						{technologyMap.map((tech) => (
+					<div className="max-h-[200px] overflow-y-auto px-3">
+						{techGroups.map((tech) => (
 							<Link
-								key={tech.name}
-								href={`/produkter?technology=${encodeURIComponent(tech.name)}`}
+								key={tech._id}
+								href={`/klinikutrustning/teknologi/${tech.slug}`}
 								className="block rounded-lg px-3 py-1.5 text-sm font-medium transition-colors text-foreground hover:bg-primary/20"
 							>
 								{tech.name}
 							</Link>
 						))}
+						{techGroups.length === 0 && (
+							<p className="px-3 py-2 text-sm text-muted-foreground">Inga teknologier</p>
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -379,7 +388,7 @@ function KategoriSidebar({
 					</p>
 					<Link
 						href="/kontakt"
-						className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 border border-transparent"
+						className="inline-flex w-full items-center justify-center rounded-lg btn-copper-gradient px-4 py-2.5 text-sm font-semibold transition-colors border border-transparent"
 					>
 						Begär produktförfrågan
 					</Link>
@@ -441,35 +450,6 @@ function KategoriSidebar({
 	);
 }
 
-// Mobile Drawer Component
-function MobileDrawer({
-	categories,
-	activeCategory,
-}: {
-	categories: ICategory[];
-	activeCategory: string;
-}) {
-	return (
-		<div className="flex justify-end">
-			<Drawer>
-				<DrawerTrigger asChild>
-					<Button variant="primary" size="sm" className="block sm:hidden">
-						<ListFilter className="h-4 w-4" />
-					</Button>
-				</DrawerTrigger>
-				<DrawerContent className="p-0! rounded-t-sm">
-					<DrawerTitle className="sr-only">Filter</DrawerTitle>
-					<div className="max-h-[90vh] p-3 overflow-y-auto">
-						<KategoriSidebar
-							categories={categories}
-							activeCategory={activeCategory}
-						/>
-					</div>
-				</DrawerContent>
-			</Drawer>
-		</div>
-	);
-}
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
 	const { category: categorySlug } = await params;
@@ -483,9 +463,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const [products, contactInfo] = await Promise.all([
+	const [products, contactInfo, techGroups, branding] = await Promise.all([
 		getProductsByCategory(category._id.toString()),
 		getContactInfo().catch(() => ({ phone: "", email: "" })),
+		getActiveTechnologyGroupNames().catch(() => [] as TechGroupItem[]),
+		getBrandingSettings().catch(() => null),
 	]);
 
 	const heroConfig = categoryHeroConfig[categorySlug];
@@ -498,7 +480,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		heroBgDesktop?: string;
 	};
 
-	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title;
+	// Always resolve a hero title (own field → legacy static config → category name)
+	// so every category — including brand-new ones with no hero config set yet —
+	// gets the full hero layout with the inquiry form, matching the technology
+	// group pages' behavior (see teknologi/[slug]/page.tsx).
+	const resolvedHeroTitle = catExtra.heroTitle || heroConfig?.title || category.name;
 	const resolvedHeroSubtitle = catExtra.heroSubtitle || heroConfig?.subtitle;
 	const resolvedBulletPoints =
 		catExtra.heroBulletPoints?.filter(Boolean).length
@@ -506,121 +492,136 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			: heroConfig?.bulletPoints ?? [];
 	const resolvedBgMobile = catExtra.heroBgMobile || "/images/Background Mobile.jpeg";
 	const resolvedBgDesktop = catExtra.heroBgDesktop || "/images/Product detail breadcrumbs background.jpeg";
-	const showHeroLayout = !!resolvedHeroTitle;
+
+	const adminFaqs = category.faqs
+		?.filter((f) => f.visible)
+		.map((f) => ({
+			_id: f._id?.toString() || `cat-faq-${Math.random()}`,
+			question: f.question,
+			answer: f.answer,
+			visible: f.visible,
+		}));
+	const faqs =
+		adminFaqs && adminFaqs.length > 0
+			? adminFaqs
+			: buildCategoryFaqs(category.name);
+	const faqTitle =
+		category.faqTitle && category.faqTitle.trim().length > 0
+			? category.faqTitle
+			: `Vanliga frågor om ${category.name.toLowerCase()}`;
+
+	const siteConfig = await getSiteConfig();
+	const breadcrumbJsonLd = generateSimpleBreadcrumbJsonLd([
+		{ name: "Hem", url: siteConfig.url },
+		{ name: "Klinikutrustning", url: `${siteConfig.url}/klinikutrustning` },
+		{ name: category.name, url: `${siteConfig.url}/klinikutrustning/${categorySlug}` },
+	]);
+	const collectionPageJsonLd = generateCollectionPageJsonLd({
+		name: category.name,
+		description: (category as unknown as { description?: string }).description
+			? stripHtml((category as unknown as { description?: string }).description!).slice(0, 300)
+			: undefined,
+		url: `${siteConfig.url}/klinikutrustning/${categorySlug}`,
+		items: products.map((product) => ({
+			name: product.title,
+			url: `${siteConfig.url}/klinikutrustning/${categorySlug}/${product.slug}`,
+		})),
+	});
+	const faqJsonLd = generateFaqJsonLd(faqs);
 
 	return (
 		<div className="min-h-screen">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+			/>
+			{faqJsonLd && (
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+				/>
+			)}
+
 			{/* Hero Section */}
 			<section className="relative overflow-hidden pt-20 sm:pt-24 bg-black">
 
-				{showHeroLayout ? (
-					<>
-						{/* ── MOBILE LAYOUT ── */}
-						<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
-							<ImageComponent
-								src={resolvedBgMobile}
-								alt=""
-								fill
-								priority
-								className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
-								sizes="100vw"
-							/>
-						</div>
+				{/* ── MOBILE LAYOUT ── */}
+				<div className="relative overflow-hidden h-[calc(100vh-5rem)] sm:h-[calc(100vh-6rem)] lg:hidden">
+					<ImageComponent
+						src={resolvedBgMobile}
+						alt=""
+						fill
+						priority
+						className="object-cover object-[40%_62%] scale-[1.2] origin-[0%_62%] -translate-y-[20%]"
+						sizes="100vw"
+					/>
+				</div>
 
-						{/* Mobile text */}
-						<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
-							<h1 className="text-5xl font-sans font-light text-white mb-3 leading-tight">
-								{resolvedHeroTitle}
-							</h1>
-							<div className="w-14 h-[2px] bg-primary mb-4" />
-							{resolvedHeroSubtitle && (
-								<p className="text-white/70 text-sm mb-8 leading-relaxed">
-									{resolvedHeroSubtitle}
-								</p>
-							)}
-							{resolvedBulletPoints.length > 0 && (
-								<ul className="space-y-4">
-									{resolvedBulletPoints.map((item) => (
-										<li key={item} className="flex items-center gap-3">
-											<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
-												<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
-											</div>
-											<span className="text-white/90 text-sm font-thin">{item}</span>
-										</li>
-									))}
-								</ul>
-							)}
-							<a href="#inquiry-form" className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full border border-[#cf9d7c] text-[#cf9d7c] text-sm font-light">
-								<FileText className="h-4 w-4 shrink-0" />
-								Begär offert
-							</a>
-						</div>
-
-						{/* ── DESKTOP LAYOUT ── */}
-						<div className="hidden lg:block">
-							<div className="_container relative overflow-hidden min-h-[740px]">
-								<ImageComponent
-									src={resolvedBgDesktop}
-									alt=""
-									fill
-									priority
-									className="object-cover object-center"
-									sizes="(max-width: 2560px) 100vw, 2560px"
-								/>
-								<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
-									<div />
-									{/* Right — Form */}
-									<div className="flex flex-col justify-center py-10 pl-10 pr-8">
-										<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
-											{resolvedHeroTitle}
-										</h2>
-										{resolvedHeroSubtitle && (
-											<p className="text-white/60 text-base mb-8 leading-relaxed">
-												{resolvedHeroSubtitle}
-											</p>
-										)}
-										<HeroCategoryForm categoryName={resolvedHeroTitle} />
+				{/* Mobile text */}
+				<div className="lg:hidden relative z-10 px-6 py-8 pb-12 -mt-[28vh]">
+					<h1 className="text-2xl md:text-5xl font-sans font-light text-white mb-3 leading-tight break-normal">
+						{resolvedHeroTitle}
+					</h1>
+					<div className="w-14 h-[2px] bg-primary mb-4" />
+					{resolvedHeroSubtitle && (
+						<p className="text-white/70 text-sm mb-8 leading-relaxed">
+							{resolvedHeroSubtitle}
+						</p>
+					)}
+					{resolvedBulletPoints.length > 0 && (
+						<ul className="space-y-4">
+							{resolvedBulletPoints.map((item) => (
+								<li key={item} className="flex items-center gap-3">
+									<div className="h-6 w-6 rounded-full border border-[#fcf3e1] flex items-center justify-center shrink-0">
+										<Check className="h-3 w-3 text-[#fcf3e1]" strokeWidth={1} />
 									</div>
-								</div>
-							</div>
-						</div>
-					</>
-				) : (
-					/* Fallback for categories without hero config */
-					<div className="relative bg-secondary pt-20 sm:pt-24 pb-0">
-						<div className="_container relative z-10">
-							<div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 min-h-[280px]">
-								<div className="py-12 lg:py-16">
-									<p className="text-primary text-sm font-medium mb-2 uppercase tracking-widest">
-										Klinikutrustning
+									<span className="text-white/90 text-sm font-thin">{item}</span>
+								</li>
+							))}
+						</ul>
+					)}
+					<a
+						href="#inquiry-form"
+						className="mt-6 w-full flex items-center justify-center gap-2 py-3 px-6 rounded-full text-white text-sm font-light"
+						style={{ background: "linear-gradient(135deg, #f0d8c5 0%, #d4a07b 18%, #b87a52 40%, #8f5a3a 55%, #b87a52 70%, #d4a07b 85%, #f0d8c5 100%)" }}
+					>
+						<FileText className="h-4 w-4 shrink-0" />
+						Begär offert
+					</a>
+				</div>
+
+				{/* ── DESKTOP LAYOUT ── */}
+				<div className="hidden lg:block">
+					<div className="_container relative overflow-hidden min-h-[740px]">
+						<ImageComponent
+							src={resolvedBgDesktop}
+							alt=""
+							fill
+							priority
+							className="object-cover object-center"
+							sizes="(max-width: 2560px) 100vw, 2560px"
+						/>
+						<div className="relative z-10 grid grid-cols-2 items-center min-h-[740px] gap-8">
+							<div />
+							{/* Right — Form */}
+							<div className="flex flex-col justify-center py-10 pl-10 pr-8">
+								<h2 className="text-5xl font-sans font-light text-white mb-2 leading-tight">
+									{resolvedHeroTitle}
+								</h2>
+								{resolvedHeroSubtitle && (
+									<p className="text-white/60 text-base mb-8 leading-relaxed">
+										{resolvedHeroSubtitle}
 									</p>
-									<h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
-										{category.name}
-									</h1>
-									{resolvedHeroSubtitle && (
-										<p className="text-white/60 text-base max-w-lg leading-relaxed">
-											{resolvedHeroSubtitle}
-										</p>
-									)}
-								</div>
-								{category.image && (
-									<div className="hidden lg:flex items-center justify-end">
-										<div className="relative w-[500px] h-80 drop-shadow-2xl">
-											<ImageComponent
-												src={category.image}
-												alt={category.name}
-												fill
-												className="object-contain object-center"
-												priority
-												sizes="500px"
-											/>
-										</div>
-									</div>
 								)}
+								<HeroCategoryForm categoryName={resolvedHeroTitle} />
 							</div>
 						</div>
 					</div>
-				)}
+				</div>
 
 			</section>
 
@@ -632,14 +633,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					<div className="w-full lg:w-80 lg:shrink-0">
 						<div className="lg:sticky lg:top-28 hidden sm:block">
 							<KategoriSidebar
-								categories={categories}
+								categories={categories} techGroups={techGroups}
 								activeCategory={categorySlug}
 							/>
 						</div>
-						<MobileDrawer
-							categories={categories}
-							activeCategory={categorySlug}
-						/>
+						<MobileFilterDrawer>
+							<KategoriSidebar
+								categories={categories} techGroups={techGroups}
+								activeCategory={categorySlug}
+							/>
+						</MobileFilterDrawer>
 					</div>
 
 					{/* Main Content */}
@@ -675,7 +678,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 									Inga produkter tillgängliga i denna kategori för tillfället.
 								</p>
 								<Link
-									href="/kategori"
+									href="/klinikutrustning"
 									className="mt-4 inline-block text-primary hover:underline"
 								>
 									← Tillbaka till alla kategorier
@@ -695,31 +698,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 			</div>
 
 			{/* FAQ Footer Section — admin-controllable via dashboard, falls back to default content */}
-			{(() => {
-				const adminFaqs = category.faqs
-					?.filter((f) => f.visible)
-					.map((f) => ({
-						_id: f._id?.toString() || `cat-faq-${Math.random()}`,
-						question: f.question,
-						answer: f.answer,
-						visible: f.visible,
-					}));
-				const faqs =
-					adminFaqs && adminFaqs.length > 0
-						? adminFaqs
-						: buildCategoryFaqs(category.name);
-				const faqTitle =
-					category.faqTitle && category.faqTitle.trim().length > 0
-						? category.faqTitle
-						: `Vanliga frågor om ${category.name.toLowerCase()}`;
-				return (
-					<section className="bg-white py-12 md:py-16 border-t border-slate-200">
-						<div className="_container mx-auto px-4">
-							<ProductFAQ title={faqTitle} faqs={faqs} />
-						</div>
-					</section>
-				);
-			})()}
+			<section className="bg-white py-12 md:py-16 border-t border-slate-200">
+				<div className="_container mx-auto px-4">
+					<ProductFAQ title={faqTitle} faqs={faqs} limit={5} />
+				</div>
+			</section>
 
 			{/* Contact form (dark, product-inquiry styling, generic mode with category context) */}
 			<div id="inquiry-form">
@@ -730,8 +713,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					categoryName={category.name}
 					contactPhone={contactInfo.phone}
 					contactEmail={contactInfo.email}
-					bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || undefined}
-					bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || undefined}
+					bgMobile={(category as unknown as { inquiryBgMobile?: string }).inquiryBgMobile || branding?.inquiryDefaultBgMobile || undefined}
+					bgDesktop={(category as unknown as { inquiryBgDesktop?: string }).inquiryBgDesktop || branding?.inquiryDefaultBgDesktop || undefined}
 				/>
 			</div>
 		</div>

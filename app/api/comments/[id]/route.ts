@@ -112,7 +112,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 		const comment = await BlogComment.findByIdAndUpdate(
 			id,
 			{ status: status as CommentStatus },
-			{ new: true }
+			{ returnDocument: "after" }
 		).lean();
 
 		if (!comment) {

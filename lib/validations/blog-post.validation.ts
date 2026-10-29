@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalNumber } from "./media.validation";
 
 /**
  * Check if a string is a valid local path (starts with /)
@@ -61,8 +62,8 @@ const slugSchema = z
 const blogImageSchema = z.object({
 	url: z.string().min(1, "Image URL is required"),
 	alt: z.string().max(200).optional().default(""),
-	width: z.number().optional(),
-	height: z.number().optional(),
+	width: optionalNumber,
+	height: optionalNumber,
 });
 
 /**
@@ -72,8 +73,8 @@ const blogHeaderImageSchema = z.object({
 	url: z.string().min(1, "Header image URL is required"),
 	alt: z.string().max(200).optional().default(""),
 	showTitleOverlay: z.boolean().optional().default(false),
-	width: z.number().optional(),
-	height: z.number().optional(),
+	width: optionalNumber,
+	height: optionalNumber,
 });
 
 /**
@@ -104,10 +105,15 @@ export const createBlogPostSchema = z.object({
 	content: z.string().optional().default(""),
 	featuredImage: blogImageSchema.nullable().optional(),
 	headerImage: blogHeaderImageSchema.nullable().optional(),
+	author: z.string().min(1, "Author is required").optional(),
+	authorRole: z.string().max(100, "Author role cannot exceed 100 characters").optional(),
+	authorImage: optionalUrlSchema,
+	authorLabel: z.string().max(50, "Author label cannot exceed 50 characters").optional(),
 	categories: z.array(z.string()).optional().default([]),
 	tags: z.array(z.string().max(50)).optional().default([]),
 	seo: blogSeoSchema.optional(),
 	publishType: z.enum(["publish", "draft", "private"]).default("draft"),
+	publishedAt: z.coerce.date().optional(),
 });
 
 /**
@@ -120,6 +126,10 @@ export const updateBlogPostSchema = z.object({
 	content: z.string().optional(),
 	featuredImage: blogImageSchema.nullable().optional(),
 	headerImage: blogHeaderImageSchema.nullable().optional(),
+	author: z.string().min(1, "Author is required").optional(),
+	authorRole: z.string().max(100, "Author role cannot exceed 100 characters").optional(),
+	authorImage: optionalUrlSchema,
+	authorLabel: z.string().max(50, "Author label cannot exceed 50 characters").optional(),
 	categories: z.array(z.string()).optional(),
 	tags: z.array(z.string().max(50)).optional(),
 	seo: blogSeoSchema.optional(),

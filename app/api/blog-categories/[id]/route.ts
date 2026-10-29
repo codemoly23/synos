@@ -5,6 +5,7 @@ import { updateBlogCategorySchema } from "@/lib/validations/blog-category.valida
 import { logger } from "@/lib/utils/logger";
 import { isValidObjectId } from "@/lib/utils/product-helpers";
 import { revalidateBlogCategory } from "@/lib/revalidation/actions";
+import { redirectService } from "@/lib/services/redirect.service";
 import {
 	successResponse,
 	badRequestResponse,
@@ -99,6 +100,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		// Revalidate ISR cache - both old and new slugs if changed
 		if (oldSlug && oldSlug !== category.slug) {
 			await revalidateBlogCategory(oldSlug);
+			await redirectService.createAutoRedirect(
+				`/blogg/category/${oldSlug}`,
+				`/blogg/category/${category.slug}`
+			);
 		}
 		await revalidateBlogCategory(category.slug);
 

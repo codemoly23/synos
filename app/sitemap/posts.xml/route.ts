@@ -41,7 +41,7 @@ export async function GET(): Promise<NextResponse> {
 
 		// Add news listing page
 		urls.unshift({
-			loc: `${SITEMAP_CONFIG.baseUrl}/blogg`,
+			loc: `${SITEMAP_CONFIG.baseUrl}/blogg/`,
 			lastmod: formatSitemapDate(new Date()),
 			changefreq: SITEMAP_CONFIG.changeFreq.listing,
 			priority: SITEMAP_CONFIG.priority.mainListing,

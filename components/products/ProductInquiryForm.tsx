@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,12 +10,10 @@ import {
 	Phone,
 	User,
 	Loader2,
-	CheckCircle2,
 	Building,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -34,9 +33,6 @@ interface ProductInquiryFormProps {
 	purchaseDescription?: string;
 	formSubtitle?: string;
 	buttonText?: string;
-	productImage?: string;
-	imageWidth?: number;
-	imageHeight?: number;
 	contactPhone?: string;
 	contactEmail?: string;
 	pillLabel?: string;
@@ -48,8 +44,9 @@ const desktopSchema = z.object({
 	firstName: z.string().min(1, "Förnamn är obligatoriskt").max(50),
 	lastName: z.string().min(1, "Efternamn är obligatoriskt").max(50),
 	email: z.string().email("Ange en giltig e-postadress"),
-	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(20),
-	corporationNumber: z.string().min(1, "Org. nummer är obligatoriskt"),
+	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(25),
+	companyName: z.string().min(1, "Företag är obligatoriskt"),
+	corporationNumber: z.string().optional(),
 	message: z.string().max(2000).optional(),
 	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	productId: z.string().optional(),
@@ -62,7 +59,9 @@ const mobileSchema = z.object({
 	firstName: z.string().min(1, "Förnamn är obligatoriskt").max(50),
 	lastName: z.string().min(1, "Efternamn är obligatoriskt").max(50),
 	email: z.string().email("Ange en giltig e-postadress"),
+	phone: z.string().min(6, "Telefonnummer måste vara minst 6 siffror").max(25),
 	companyName: z.string().min(1, "Företag är obligatoriskt"),
+	corporationNumber: z.string().optional(),
 	message: z.string().max(2000).optional(),
 	gdprConsent: z.boolean({ message: "Du måste godkänna integritetspolicyn" }).refine((val) => val === true, { message: "Du måste godkänna integritetspolicyn" }),
 	productId: z.string().optional(),
@@ -100,38 +99,6 @@ async function submitInquiry(
 	return response.json();
 }
 
-function SuccessCard({ context, onReset }: { context: string; onReset: () => void }) {
-	return (
-		<div
-			className="max-w-2xl mx-auto text-center p-8 sm:p-12 rounded-2xl"
-			style={{
-				background: "rgb(24,24,27)",
-				boxShadow: `0 0 0 2px rgba(${BRAND_RGB},0.4), 0 0 60px rgba(${BRAND_RGB},0.12)`,
-			}}
-		>
-			<div
-				className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
-				style={{ background: `rgba(${BRAND_RGB},0.1)` }}
-			>
-				<CheckCircle2 className="h-10 w-10" style={{ color: BRAND }} />
-			</div>
-			<h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-				Tack för din förfrågan!
-			</h2>
-			<p className="text-lg text-zinc-400 mb-6">
-				Vi har mottagit {context} och återkommer till dig inom 24 timmar.
-			</p>
-			<Button
-				variant="outline"
-				onClick={onReset}
-				className="mt-4 border-zinc-700 text-zinc-200 hover:bg-zinc-800"
-			>
-				Skicka ny förfrågan
-			</Button>
-		</div>
-	);
-}
-
 // ─── Desktop Form ────────────────────────────────────────────────────────────
 
 function DesktopInquiryForm({
@@ -144,7 +111,6 @@ function DesktopInquiryForm({
 	formSubtitle,
 	buttonText,
 	isGeneric,
-	successContext,
 }: {
 	productName?: string;
 	productId?: string;
@@ -155,10 +121,9 @@ function DesktopInquiryForm({
 	formSubtitle?: string;
 	buttonText?: string;
 	isGeneric: boolean;
-	successContext: string;
 }) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const { register, handleSubmit, setValue, reset, formState: { errors } } =
@@ -167,6 +132,7 @@ function DesktopInquiryForm({
 			defaultValues: {
 				firstName: "", lastName: "", email: "",
 				phone: "",
+				companyName: "",
 				corporationNumber: "",
 				message: "",
 				gdprConsent: undefined as unknown as true,
@@ -187,21 +153,22 @@ function DesktopInquiryForm({
 		try {
 			const result = await submitInquiry(data, { isGeneric, categoryName });
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 10000);
 
 				// Analytics conversion events
 				const eventData = {
 					form_type: isGeneric ? "contact" : "product_inquiry",
 					...(productName && { product_name: productName }),
 					...(categoryName && { category: categoryName }),
+					page_path: window.location.pathname,
+					page_url: window.location.href,
 				};
-				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				pushEvent("generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
+
+				router.push("/tack/");
 			} else {
 				if (result.errors && Array.isArray(result.errors)) {
 					const msg = result.errors
@@ -220,10 +187,6 @@ function DesktopInquiryForm({
 			setIsSubmitting(false);
 		}
 	};
-
-	if (isSuccess) {
-		return <SuccessCard context={successContext} onReset={() => setIsSuccess(false)} />;
-	}
 
 	return (
 		<div className="relative">
@@ -307,17 +270,25 @@ function DesktopInquiryForm({
 					</div>
 
 					<div className="space-y-1.5">
-						<Label className="text-sm font-semibold text-zinc-200">Org. nummer <span className="text-red-400">*</span></Label>
+						<Label className="text-sm font-semibold text-zinc-200">Företag <span className="text-red-400">*</span></Label>
+						<div className="relative">
+							<Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+							<Input {...register("companyName")} placeholder="Ditt företagsnamn" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
+						</div>
+						{errors.companyName && <p className="text-xs text-red-400">{errors.companyName.message}</p>}
+					</div>
+
+					<div className="space-y-1.5">
+						<Label className="text-sm font-semibold text-zinc-200">Org. nummer <span className="text-zinc-500 font-normal">(valfritt)</span></Label>
 						<div className="relative">
 							<Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
 							<Input {...register("corporationNumber")} placeholder="t.ex. 556789-1234" className="pl-10 h-11 bg-zinc-950 border-zinc-800 text-white" />
 						</div>
-						{errors.corporationNumber && <p className="text-xs text-red-400">{errors.corporationNumber.message}</p>}
 					</div>
 
-<div className="space-y-1.5">
-						<Label className="text-sm font-semibold text-zinc-200">Meddelande</Label>
-						<Textarea {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål..." className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
+					<div className="space-y-1.5">
+						<Label className="text-sm font-semibold text-zinc-200">Meddelande (valfritt)</Label>
+						<Textarea {...register("message")} placeholder="Berätta mer om dina behov, frågor eller önskemål…" className="min-h-[90px] bg-zinc-950 border-zinc-800 text-white" />
 					</div>
 
 					<div className="flex items-start gap-3 pt-1">
@@ -339,8 +310,8 @@ function DesktopInquiryForm({
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="w-full h-12 rounded-md font-semibold text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-						style={{ background: BRAND, boxShadow: `0 0 26px rgba(${BRAND_RGB},0.25)` }}
+						className="w-full h-12 rounded-md font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed btn-copper-gradient"
+						style={{ boxShadow: `0 0 26px rgba(${BRAND_RGB},0.25)` }}
 					>
 						{isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" />Skickar...</> : <><Send className="h-4 w-4" />{buttonText || "Skicka förfrågan"}</>}
 					</button>
@@ -369,7 +340,6 @@ function MobileInquiryForm({
 	contactPhone,
 	contactEmail,
 	isGeneric,
-	successContext,
 }: {
 	productName?: string;
 	productId?: string;
@@ -382,10 +352,9 @@ function MobileInquiryForm({
 	contactPhone?: string;
 	contactEmail?: string;
 	isGeneric: boolean;
-	successContext: string;
 }) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [gdprChecked, setGdprChecked] = useState(false);
 
 	const { register, handleSubmit, setValue, reset, formState: { errors } } =
@@ -393,7 +362,8 @@ function MobileInquiryForm({
 			resolver: zodResolver(mobileSchema),
 			defaultValues: {
 				firstName: "", lastName: "", email: "",
-				companyName: "", message: "",
+				phone: "",
+				companyName: "", corporationNumber: "", message: "",
 				gdprConsent: undefined as unknown as true,
 				productId: productId ?? "",
 				productName: productName ?? "",
@@ -412,21 +382,22 @@ function MobileInquiryForm({
 		try {
 			const result = await submitInquiry(data, { isGeneric, categoryName });
 			if (result.success) {
-				setIsSuccess(true);
 				reset();
 				setGdprChecked(false);
-				toast.success("Tack för din förfrågan! Vi återkommer inom 24 timmar.");
-				setTimeout(() => setIsSuccess(false), 10000);
 
 				// Analytics conversion events
 				const eventData = {
 					form_type: isGeneric ? "contact" : "product_inquiry",
 					...(productName && { product_name: productName }),
 					...(categoryName && { category: categoryName }),
+					page_path: window.location.pathname,
+					page_url: window.location.href,
 				};
-				pushEvent(isGeneric ? "generate_contact" : "generate_lead", eventData);
+				pushEvent("generate_lead", eventData);
 				if (isGeneric) trackContact(eventData);
 				else trackLead(eventData);
+
+				router.push("/tack/");
 			} else {
 				toast.error(result.message || "Något gick fel. Försök igen.");
 			}
@@ -438,12 +409,8 @@ function MobileInquiryForm({
 		}
 	};
 
-	if (isSuccess) {
-		return <SuccessCard context={successContext} onReset={() => setIsSuccess(false)} />;
-	}
-
-	const inputCls = "w-full bg-transparent border border-white/30 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-white/25 outline-none focus:border-white/50 transition-colors";
-	const labelCls = "block text-xs text-white/60 mb-1.5";
+	const inputCls = "w-full bg-transparent border border-white/30 rounded-md px-3 py-2.5 text-white text-sm placeholder:text-[#d0d0d0] outline-none focus:border-white/50 transition-colors";
+	const labelCls = "block text-xs text-white mb-1.5";
 
 	return (
 		<div className="space-y-8">
@@ -452,16 +419,16 @@ function MobileInquiryForm({
 			<div className="space-y-3">
 				{productName ? (
 					<>
-						<h2 className="text-4xl font-light text-white leading-tight">Intresserad av</h2>
-						<h2 className="text-4xl font-bold leading-tight" style={{ color: BRAND }}>{productName.toUpperCase()}?</h2>
+						<h2 className="text-[1.8rem] md:text-4xl font-light text-white leading-tight">Intresserad av</h2>
+						<h2 className="text-[1.8rem] md:text-4xl font-bold leading-tight" style={{ color: BRAND }}>{productName.toUpperCase()}?</h2>
 					</>
 				) : purchaseTitle ? (
-					<h2 className="text-4xl font-bold text-white leading-tight">{purchaseTitle}</h2>
+					<h2 className="text-[1.8rem] md:text-4xl font-bold text-white leading-tight">{purchaseTitle}</h2>
 				) : null}
 				{purchaseDescription ? (
-					<div className="text-zinc-400 text-sm leading-relaxed [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: purchaseDescription }} />
+					<div className="text-white/80 text-sm leading-relaxed [&_p]:mb-2" dangerouslySetInnerHTML={{ __html: purchaseDescription }} />
 				) : (
-					<p className="text-zinc-400 text-sm leading-relaxed">
+					<p className="text-white/80 text-sm leading-relaxed">
 						Kontakta oss idag för en kostnadsfri konsultation och upptäck hur vi kan hjälpa dig att nå dina mål.
 					</p>
 				)}
@@ -477,7 +444,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Ring oss</p>
-								<p className="text-xs text-zinc-500">Vi finns tillgängliga för att hjälpa dig</p>
+								<p className="text-xs text-white/80">Vi finns tillgängliga för att hjälpa dig</p>
 								<span className="text-sm font-semibold block" style={{ color: BRAND }}>{contactPhone}</span>
 							</div>
 						</a>
@@ -489,7 +456,7 @@ function MobileInquiryForm({
 							</div>
 							<div>
 								<p className="text-sm font-bold text-white">Maila oss</p>
-								<p className="text-xs text-zinc-500">Skicka oss ett meddelande</p>
+								<p className="text-xs text-white/80">Skicka oss ett meddelande</p>
 								<span className="text-sm font-medium block" style={{ color: BRAND }}>{contactEmail}</span>
 							</div>
 						</a>
@@ -498,7 +465,7 @@ function MobileInquiryForm({
 			)}
 
 			{/* Form */}
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-black px-4 sm:px-6 py-6 -mx-4 sm:-mx-6">
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-4 sm:px-6 py-6 -mx-4 sm:-mx-6">
 				<div className="grid grid-cols-2 gap-4">
 					<div>
 						<label className={labelCls}>Förnamn <span className="text-red-400">*</span></label>
@@ -519,14 +486,25 @@ function MobileInquiryForm({
 				</div>
 
 				<div>
+					<label className={labelCls}>Org. nummer <span className="text-white/50">(valfritt)</span></label>
+					<input {...register("corporationNumber")} placeholder="t.ex. 556789-1234" className={inputCls} />
+				</div>
+
+				<div>
 					<label className={labelCls}>E-post <span className="text-red-400">*</span></label>
 					<input {...register("email")} type="email" placeholder="din.email@exempel.se" className={inputCls} />
 					{errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
 				</div>
 
 				<div>
-					<label className={labelCls}>När är du intresserad av att ta nästa steg?</label>
-					<textarea {...register("message")} rows={4} placeholder="Beskriv när det passar er bäst eller andra detaljer..." className={`${inputCls} resize-none`} />
+					<label className={labelCls}>Telefon <span className="text-red-400">*</span></label>
+					<input {...register("phone")} type="tel" placeholder="070 123 45 67" className={inputCls} />
+					{errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone.message}</p>}
+				</div>
+
+				<div>
+					<label className={labelCls}>Meddelande (valfritt)</label>
+					<textarea {...register("message")} rows={4} placeholder="Berätta mer om dina behov, frågor eller önskemål…" className={`${inputCls} resize-none`} />
 				</div>
 
 				<div className="flex items-start gap-3">
@@ -548,8 +526,8 @@ function MobileInquiryForm({
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					className="w-full h-12 rounded-md font-semibold text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-					style={{ background: BRAND }}
+					className="w-full h-12 rounded-md font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed btn-copper-gradient"
+					style={{}}
 				>
 					{isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" />Skickar...</> : <><Send className="h-4 w-4" />{buttonText || "Skicka förfrågan"}</>}
 				</button>
@@ -574,9 +552,6 @@ export function ProductInquiryForm({
 	purchaseDescription,
 	formSubtitle,
 	buttonText,
-	productImage,
-	imageWidth,
-	imageHeight,
 	contactPhone,
 	contactEmail,
 	pillLabel,
@@ -586,7 +561,6 @@ export function ProductInquiryForm({
 	const isGeneric = !productId;
 	const resolvedPillLabel = pillLabel ?? (productName ? `${productName.toUpperCase()} DEMO` : "SYNOS MEDICAL");
 	const resolvedTitle = purchaseTitle || (productName ? `Intresserad av ${productName}?` : "Kontakta oss");
-	const successContext = productName || "din förfrågan";
 
 	const defaultBg = "/images/Product detail breadcrumbs background.jpeg";
 
@@ -628,7 +602,6 @@ export function ProductInquiryForm({
 						contactPhone={contactPhone}
 						contactEmail={contactEmail}
 						isGeneric={isGeneric}
-						successContext={successContext}
 					/>
 				</div>
 
@@ -680,23 +653,6 @@ export function ProductInquiryForm({
 								</a>
 							)}
 						</div>
-
-						{productImage && (
-							<div
-								className="relative mx-auto"
-								style={imageWidth && imageHeight
-									? { width: imageWidth, height: imageHeight, maxWidth: "100%" }
-									: { height: 320 }}
-							>
-								<ImageComponent
-									src={productImage}
-									alt={productName ?? "Product"}
-									fill
-									className="object-contain drop-shadow-2xl"
-									sizes="(max-width: 1280px) 50vw, 600px"
-								/>
-							</div>
-						)}
 					</div>
 
 					{/* Right — Desktop Form Card */}
@@ -710,7 +666,6 @@ export function ProductInquiryForm({
 						formSubtitle={formSubtitle}
 						buttonText={buttonText}
 						isGeneric={isGeneric}
-						successContext={successContext}
 					/>
 				</div>
 			</div>

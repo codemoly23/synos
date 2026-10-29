@@ -74,7 +74,7 @@ class Custom404PageRepository {
 		const page = await Custom404Page.findOneAndUpdate(
 			{},
 			{ $set: updateData },
-			{ new: true, upsert: true, runValidators: true }
+			{ returnDocument: "after", upsert: true, runValidators: true }
 		).lean<Custom404PageData>();
 
 		if (!page) {

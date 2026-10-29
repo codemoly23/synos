@@ -7,12 +7,16 @@ interface AnimatedFormSectionProps {
 	data: IKontaktFormSection;
 	contactPhone?: string;
 	contactEmail?: string;
+	bgMobile?: string;
+	bgDesktop?: string;
 }
 
 export function AnimatedFormSection({
 	data,
 	contactPhone,
 	contactEmail,
+	bgMobile,
+	bgDesktop,
 }: AnimatedFormSectionProps) {
 	return (
 		<ProductInquiryForm
@@ -25,6 +29,8 @@ export function AnimatedFormSection({
 			}
 			contactPhone={contactPhone}
 			contactEmail={contactEmail}
+			bgMobile={bgMobile}
+			bgDesktop={bgDesktop}
 		/>
 	);
 }

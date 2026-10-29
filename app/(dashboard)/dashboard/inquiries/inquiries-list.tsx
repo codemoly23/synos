@@ -55,6 +55,7 @@ interface Submission {
 	phone: string;
 	countryCode: string;
 	countryName: string;
+	companyName: string | null;
 	productName: string | null;
 	productSlug: string | null;
 	helpType: HelpType | null;
@@ -62,6 +63,9 @@ interface Submission {
 	subject: string | null;
 	preferredDate: string | null;
 	preferredTime: string | null;
+	jobTitle: string | null;
+	careerType: string | null;
+	category: string | null;
 	createdAt: string;
 }
 
@@ -485,6 +489,9 @@ export function InquiriesList({
 								<option value="callback_request">Callback Request</option>
 								<option value="hero_inquiry">Hero Inquiry</option>
 								<option value="brochure_request">Brochure Request</option>
+								<option value="job_application">Job Application</option>
+								<option value="training_application">Training Application</option>
+								<option value="newsletter_subscription">Newsletter Subscription</option>
 							</select>
 						</div>
 					</CardContent>
@@ -597,6 +604,12 @@ export function InquiriesList({
 													{submission.phone}
 												</span>
 											</div>
+											{submission.companyName && (
+												<div className="flex items-center gap-1 text-sm text-slate-600 mt-1">
+													<Building className="h-3 w-3" />
+													{submission.companyName}
+												</div>
+											)}
 											{submission.productName && (
 												<div className="flex items-center gap-1 text-sm text-primary mt-1">
 													<Building className="h-3 w-3" />
@@ -647,6 +660,22 @@ export function InquiriesList({
 													{submission.preferredTime || "No time"}
 												</div>
 											)}
+											{submission.type === "job_application" &&
+												(submission.jobTitle || submission.careerType) && (
+													<div className="flex items-center gap-1 text-sm text-primary mt-1">
+														<Badge variant="outline" className="text-xs">
+															{submission.jobTitle || submission.careerType}
+														</Badge>
+													</div>
+												)}
+											{submission.type === "training_application" &&
+												submission.category && (
+													<div className="flex items-center gap-1 text-sm text-primary mt-1">
+														<Badge variant="outline" className="text-xs">
+															{submission.category}
+														</Badge>
+													</div>
+												)}
 										</div>
 
 										{/* Type Badge */}
